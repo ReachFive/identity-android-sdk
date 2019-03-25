@@ -1,10 +1,10 @@
-package com.reach5.identity.sdk.facebook
+package com.reach5.identity.sdk.google
 
 import com.reach5.identity.sdk.core.Provider
 
-class FacebookProvider : Provider {
+class GoogleProvider : Provider {
     companion object {
-        const val NAME = "facebook"
+        const val NAME = "google"
     }
 
     override val name: String = NAME
