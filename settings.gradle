@@ -1,1 +1,1 @@
-include ':app', ':core', ':sdk', ':facebook', ':google'
+include ':app', ':core', ':sdk', ':facebook', ':google', ':webview'

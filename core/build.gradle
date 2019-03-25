@@ -5,14 +5,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-group = 'com.reach5.identity.sdk'
-version = '0.1.0'
+group = lib_group
+version = lib_version
 
 android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion min_sdk_version
         targetSdkVersion 28
         versionCode 1
         versionName this.version
@@ -30,6 +30,9 @@ android {
 }
 
 dependencies {
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
@@ -38,60 +41,4 @@ repositories {
     mavenCentral()
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            name 'Reachfive'
-            description 'SDK'
-            url 'https://github.com/ReachFive/identity-android-sdk-poc'
-            inceptionYear '2019'
-
-            packaging 'aar'
-            groupId 'com.reach5.identity.sdk'
-            artifactId 'core' //Library name and must   be same as package name on bintray
-            version this.version
-
-            licenses {
-                license {
-                    name 'The MIT License (MIT)'
-                    url 'https://opensource.org/licenses/MIT'
-                }
-            }
-            scm {
-                connection 'https://github.com/ReachFive/identity-android-sdk-poc.git'
-                url 'https://github.com/ReachFive/identity-android-sdk-poc'
-
-            }
-            developers {
-                developer {
-                    id = 'reachfive'
-                    name 'Reachfive'
-                }
-            }
-        }
-    }
-}
-
-// Bintray
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-   user = properties.getProperty('user')
-   key = properties.getProperty('key')
-   configurations = ['archives']
-   pkg {
-       repo = 'identity-sdk' // must be same as on bintray repo name
-       name = 'sdk-core' // must be same of library name as bintray
-       userOrg = 'reachfive' // this is username of bintray account
-       licenses = ['MIT']
-       vcsUrl = 'https://github.com/ReachFive/identity-android-sdk-poc'
-       publish = true
-       version {
-           name = this.version
-           desc = "Version ${this.version}"
-           released = new Date()
-           vcsTag = "v${this.version}"
-       }
-   }
-}
+apply from: rootProject.file('bintray.gradle')

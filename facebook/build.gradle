@@ -2,14 +2,20 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+group = lib_group
+version = lib_version
+
 android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion min_sdk_version
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName this.version
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -25,7 +31,7 @@ android {
 }
 
 dependencies {
-    compileOnly project(":core")
+    implementation project(":core")
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
@@ -33,3 +39,5 @@ dependencies {
 repositories {
     mavenCentral()
 }
+
+apply from: rootProject.file('bintray.gradle')
