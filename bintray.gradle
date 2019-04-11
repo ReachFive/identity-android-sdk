@@ -39,13 +39,9 @@ install {
     }
 }
 
-// Bintray
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 bintray {
-    user = properties.getProperty('user')
-    key = properties.getProperty('key')
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
     configurations = ['archives']
     pkg {
         repo = 'identity-sdk' // must be same as on bintray repo name
