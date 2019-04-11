@@ -7,4 +7,9 @@
         android:icon="@drawable/ic_power_settings"
         android:title="@string/logout"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_java"
+        android:title="@string/java"
+        app:showAsAction="ifRoom" />
 </menu>

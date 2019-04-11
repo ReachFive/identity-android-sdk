@@ -23,7 +23,9 @@
         <activity
                 android:name="com.reach5.identity.sdk.webview.ReachFiveLoginActivity"
                 android:screenOrientation="portrait" />
-        <activity android:name=".JavaMainActivity"/>
+        <activity
+                android:name=".JavaMainActivity"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>

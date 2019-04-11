@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         ).init({ fetchedProviders ->
             providerAdapter.refresh(fetchedProviders)
         }, {
-            Log.d(TAG, "ReachFive init 2 ${it.message}")
+            Log.d(TAG, "ReachFive init ${it.message}")
             showToast("ReachFive init ${it.message}")
         })
 
@@ -113,8 +113,12 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_logout -> {
                 reach5.logout {
-
+                    // TODO
                 }
+                true
+            }
+            R.id.menu_java -> {
+                this.startActivity(Intent(this, JavaMainActivity::class.java))
                 true
             }
             else -> {

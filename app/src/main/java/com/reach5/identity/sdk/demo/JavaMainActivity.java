@@ -48,7 +48,8 @@ public class JavaMainActivity extends AppCompatActivity {
         reach5.init(providers ->
             providerAdapter.refresh(providers)
         , error -> {
-            
+            Log.d(TAG, "ReachFive init ${it.message}");
+            showToast("ReachFive init ${it.message}");
         });
 
         providerAdapter = new ProvidersAdapter(getApplicationContext(), reach5.getProviders());
@@ -61,13 +62,13 @@ public class JavaMainActivity extends AppCompatActivity {
             reach5.loginWithNativeProvider(provider.getName(), "home", this);
         });
 
-        EditText username = findViewById(R.id.username);
-        EditText password = findViewById(R.id.password);
+        EditText usernameEditText = findViewById(R.id.username);
+        EditText passwordEditText = findViewById(R.id.password);
 
-        Profile profile = new Profile(
-                username.getText().toString(),
-                password.getText().toString()
-        );
+        String username = usernameEditText.getText().toString();
+        String password = passwordEditText.getText().toString();
+
+        Profile profile = new Profile(username, password);
 
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
             reach5.signupWithPassword(profile, this::handleLoginSuccess, failure -> {
@@ -77,7 +78,7 @@ public class JavaMainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.passwordLogin).setOnClickListener(view -> {
-            reach5.loginWithPassword(username.getText().toString(), password.getText().toString(), this::handleLoginSuccess, failure -> {
+            reach5.loginWithPassword(username, password, this::handleLoginSuccess, failure -> {
                 Log.d(TAG, "loginWithPassword error=" + failure.getMessage());
                 showToast("Login With Password Error " + failure.getMessage());
             });
@@ -111,7 +112,9 @@ public class JavaMainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_logout:
                 reach5.logout();
-                startActivity(new Intent(this, JavaMainActivity.class));
+                return true;
+            case R.id.menu_java:
+                this.startActivity(new Intent(this, MainActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
