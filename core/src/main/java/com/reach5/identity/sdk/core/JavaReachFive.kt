@@ -47,11 +47,12 @@ class JavaReachFive(context: Context, sdkConfig: SdkConfig, providersCreators: L
 
     fun onActivityResult(
         requestCode: Int,
+        resultCode: Int,
         data: Intent?,
         success: Callback<OpenIdTokenResponse>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.onActivityResult(requestCode, data, success::call, failure::call)
+        return reach5.onActivityResult(requestCode, resultCode, data, success::call, failure::call)
     }
 
     fun logout() {

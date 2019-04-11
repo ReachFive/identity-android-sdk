@@ -84,11 +84,11 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
         ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback(success, failure))
     }
 
-    fun onActivityResult(requestCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>) {
         Log.d(TAG, "ReachFive.onActivityResult requestCode=$requestCode")
         val provider =  providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
-            provider.onActivityResult(requestCode, data, success, failure)
+            provider.onActivityResult(requestCode, resultCode, data, success, failure)
         } else {
             failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
         }

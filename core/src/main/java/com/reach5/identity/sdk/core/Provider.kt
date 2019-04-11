@@ -17,7 +17,7 @@ interface Provider {
     val providerConfig: ProviderConfig
     val reachFiveApi: ReachFiveApi
     fun login(origin: String, activity: Activity)
-    fun onActivityResult(requestCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>)
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>)
     fun onStop() {}
     fun logout() { /* TODO */ }
 }

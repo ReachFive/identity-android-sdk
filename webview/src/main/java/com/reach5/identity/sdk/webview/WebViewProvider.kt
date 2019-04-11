@@ -54,6 +54,7 @@ class ConfiguredWebViewProvider(
 
     override fun onActivityResult(
         requestCode: Int,
+        resultCode: Int,
         data: Intent?,
         success: Success<OpenIdTokenResponse>,
         failure: Failure<ReachFiveError>

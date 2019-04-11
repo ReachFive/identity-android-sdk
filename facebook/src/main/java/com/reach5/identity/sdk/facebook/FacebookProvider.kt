@@ -45,6 +45,7 @@ class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, ov
     init {
         FacebookSdk.setApplicationId(providerConfig.clientId)
         // FIXME resolve deprecation
+        @Suppress("DEPRECATION")
         FacebookSdk.sdkInitialize(context)
 
         LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
@@ -66,11 +67,12 @@ class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, ov
 
     override fun onActivityResult(
         requestCode: Int,
+        resultCode: Int,
         data: Intent?,
         success: Success<OpenIdTokenResponse>,
         failure: Failure<ReachFiveError>
     ) {
-        callbackManager.onActivityResult(requestCode, 0 /* TODO resultCode */, data)
+        callbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun login(origin: String, activity: Activity) {

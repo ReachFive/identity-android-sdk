@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d("ReachFive", "MainActivity.onActivityResult requestCode=$requestCode resultCode=$resultCode")
-        this.reach5.onActivityResult(requestCode, data, success = {
+        this.reach5.onActivityResult(requestCode, resultCode, data, success = {
             handleLoginSuccess(it)
         }, failure = {
             Log.d(TAG, "onActivityResult error=$it")
