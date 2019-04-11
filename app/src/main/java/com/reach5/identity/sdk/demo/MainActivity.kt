@@ -12,6 +12,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.api.Profile
 import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
 import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
 
@@ -35,9 +36,15 @@ class MainActivity : AppCompatActivity() {
             clientId = "7qasrzZQBbZLomtKPmvS"
         )
 
+        val providersCreators = listOf(
+            GoogleProvider(),
+            FacebookProvider(),
+            WebViewProvider()
+        )
+
         this.reach5 = ReachFive(
             sdkConfig = sdkConfig,
-            providersCreators = listOf(GoogleProvider(), WebViewProvider()),
+            providersCreators = providersCreators,
             context = applicationContext
         ).init({ fetchedProviders ->
             providerAdapter.refresh(fetchedProviders)
