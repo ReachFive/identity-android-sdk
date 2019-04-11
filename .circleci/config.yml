@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/android:api-28
 
     working_directory: ~/repo
 
@@ -16,19 +16,18 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-      - run: gradle dependencies
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
 
       - save_cache:
           paths:
             - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-      # run tests!
-      - run: gradle test
+      - run:
+          name: Run Tests
+          command: ./gradlew lint test
