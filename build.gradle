@@ -5,10 +5,10 @@ buildscript {
     ext.lib_version = '4.0.0'
     ext.lib_group = 'com.reach5.identity'
     ext.min_sdk_version = 19
+    ext.target_sdk_version = 28
     repositories {
         google()
         jcenter()
-        
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.2'
@@ -25,6 +25,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven {
             url  "https://dl.bintray.com/reachfive/identity-sdk"
         }

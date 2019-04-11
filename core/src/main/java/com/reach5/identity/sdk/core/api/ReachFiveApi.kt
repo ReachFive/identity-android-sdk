@@ -13,8 +13,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.QueryMap
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import java.lang.Exception
 
@@ -33,13 +31,8 @@ interface ReachFiveApi {
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-            val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
-
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://${config.domain}")
-                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
