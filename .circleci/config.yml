@@ -29,6 +29,7 @@ jobs:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-      - run:
-          name: Run Tests
-          command: ./gradlew lint test
+      - run: cd core && ../gradlew lint test
+      - run: cd facebook && ../gradlew lint test
+      - run: cd google && ../gradlew lint test
+      - run: cd webview && ../gradlew lint test
