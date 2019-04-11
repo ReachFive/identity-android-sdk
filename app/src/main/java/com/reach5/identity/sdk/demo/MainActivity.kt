@@ -1,0 +1,135 @@
+package com.reach5.identity.sdk.demo
+
+import kotlinx.android.synthetic.main.activity_main.*
+import android.content.Intent
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import com.reach5.identity.sdk.core.ReachFive
+import com.reach5.identity.sdk.core.api.Profile
+import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
+import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.google.GoogleProvider
+import com.reach5.identity.sdk.webview.WebViewProvider
+
+class MainActivity : AppCompatActivity() {
+
+    private val TAG = "Reach5_MainActivity"
+
+    private lateinit var reach5: ReachFive
+
+    private lateinit var openIdTokenResponse: OpenIdTokenResponse
+
+    private lateinit var providerAdapter: ProvidersAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.toolbar))
+
+        val sdkConfig = SdkConfig(
+            domain = "egor-sandbox.reach5.net",
+            clientId = "7qasrzZQBbZLomtKPmvS"
+        )
+
+        this.reach5 = ReachFive(
+            sdkConfig = sdkConfig,
+            providersCreators = listOf(GoogleProvider(), WebViewProvider()),
+            context = applicationContext
+        ).init({ fetchedProviders ->
+            providerAdapter.refresh(fetchedProviders)
+        }, {
+            Log.d(TAG, "ReachFive init 2 ${it.message}")
+            showToast("ReachFive init ${it.message}")
+        })
+
+        providerAdapter = ProvidersAdapter(applicationContext, reach5.getProviders())
+
+        providers.adapter = providerAdapter
+
+        providers.setOnItemClickListener { _, _, position, _ ->
+            val provider = reach5.getProviders()[position]
+            this.reach5.loginWithNativeProvider(provider.name, "home", this)
+        }
+
+        passwordSignup.setOnClickListener {
+            this.reach5.signupWithPassword(Profile(
+                email = username.text.toString(),
+                password = password.text.toString()
+            ), success = {
+                handleLoginSuccess(it)
+            }, failure = {
+                Log.d(TAG, "signupWithPassword error=$it")
+                showToast("Signup With Password Error ${it.message}")
+            })
+        }
+
+        passwordLogin.setOnClickListener {
+            this.reach5.loginWithPassword(
+                username = username.text.toString(),
+                password = password.text.toString(),
+                success = {
+                    handleLoginSuccess(it)
+                },
+                failure = {
+                    Log.d(TAG, "loginWithPassword error=$it")
+                    showToast("Login error=${it.message}")
+                }
+            )
+        }
+    }
+
+    private fun handleLoginSuccess(openIdTokenResponse: OpenIdTokenResponse) {
+        this.openIdTokenResponse = openIdTokenResponse
+        val user = openIdTokenResponse.getUser() // TODO add try
+        Log.d(TAG, "loginWithPassword user=$user success=$openIdTokenResponse")
+        supportActionBar?.title = user.email
+        showToast("Login success=${user.email} token=${openIdTokenResponse.accessToken}")
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("ReachFive", "MainActivity.onActivityResult requestCode=$requestCode resultCode=$resultCode")
+        this.reach5.onActivityResult(requestCode, data, success = {
+            handleLoginSuccess(it)
+        }, failure = {
+            Log.d(TAG, "onActivityResult error=$it")
+            showToast("LoginProvider error=${it.message}")
+        })
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.d("ReachFive", "MainActivity.onRequestPermissionsResult requestCode=$requestCode permissions=$permissions grantResults=$grantResults")
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_logout -> {
+                reach5.logout {
+
+                }
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        reach5.onStop()
+    }
+}
