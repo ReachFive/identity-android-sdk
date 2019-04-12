@@ -22,6 +22,7 @@ data class ReachFiveError(
     val data: ReachFiveApiError? = null
 ): Throwable(message) {
     companion object {
+        @JvmStatic
         fun from(error: Exception): ReachFiveError {
             return ReachFiveError(
                 message = error.message ?: error.toString(),
@@ -29,6 +30,7 @@ data class ReachFiveError(
             )
         }
 
+        @JvmStatic
         fun from(message: String): ReachFiveError {
             return ReachFiveError(
                 message = message

@@ -47,8 +47,8 @@ class MainActivity : AppCompatActivity() {
             sdkConfig = sdkConfig,
             providersCreators = providersCreators,
             context = applicationContext
-        ).init({ fetchedProviders ->
-            providerAdapter.refresh(fetchedProviders)
+        ).init({
+            providerAdapter.refresh(it)
         }, {
             Log.d(TAG, "ReachFive init ${it.message}")
             showToast("ReachFive init ${it.message}")

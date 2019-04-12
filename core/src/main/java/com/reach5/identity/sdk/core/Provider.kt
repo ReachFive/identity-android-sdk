@@ -11,18 +11,25 @@ import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 
+interface ProviderCreator {
+    val name: String
+    fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, context: Context): Provider
+}
+
+/**
+ * Common interface of the provider
+ */
 interface Provider {
     val name: String
+    /**
+     * Is an identifier of the request, tha identifies the return of an activity
+     */
     val requestCode: Int
-    val providerConfig: ProviderConfig
-    val reachFiveApi: ReachFiveApi
     fun login(origin: String, activity: Activity)
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>)
     fun onStop() {}
     fun logout() { /* TODO */ }
 }
 
-interface ProviderCreator {
-    val name: String
-    fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, context: Context): Provider
-}
+
+

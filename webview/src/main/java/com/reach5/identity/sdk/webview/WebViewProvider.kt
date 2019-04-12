@@ -22,14 +22,13 @@ class WebViewProvider : ProviderCreator {
         reachFiveApi: ReachFiveApi,
         context: Context
     ): Provider {
-        return ConfiguredWebViewProvider(providerConfig, sdkConfig, reachFiveApi)
+        return ConfiguredWebViewProvider(providerConfig, sdkConfig)
     }
 }
 
 class ConfiguredWebViewProvider(
-    override val providerConfig: ProviderConfig,
-    private val sdkConfig: SdkConfig,
-    override val reachFiveApi: ReachFiveApi
+    private val providerConfig: ProviderConfig,
+    private val sdkConfig: SdkConfig
 ) : Provider {
 
     override val name: String = providerConfig.provider

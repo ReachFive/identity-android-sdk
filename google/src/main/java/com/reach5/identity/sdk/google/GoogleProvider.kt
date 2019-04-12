@@ -34,12 +34,7 @@ class GoogleProvider : ProviderCreator {
     }
 }
 
-class ConfiguredGoogleProvider(override val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, override val reachFiveApi: ReachFiveApi, context: Context) : Provider {
-    // TODO remove ?
-    override fun toString(): String {
-        return providerConfig.provider
-    }
-
+class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, private val sdkConfig: SdkConfig, private val reachFiveApi: ReachFiveApi, context: Context) : Provider {
     private lateinit var origin: String
 
     private val googleApiClient: GoogleApiClient

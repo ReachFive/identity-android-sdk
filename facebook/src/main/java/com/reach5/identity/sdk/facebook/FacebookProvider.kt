@@ -31,7 +31,7 @@ class FacebookProvider : ProviderCreator {
     }
 }
 
-class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, override val reachFiveApi: ReachFiveApi, context: Context): Provider {
+class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, val reachFiveApi: ReachFiveApi, context: Context): Provider {
     companion object {
         const val TAG = "Reach5_FbProvider"
     }
@@ -73,7 +73,8 @@ class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, va
                         ReachFiveApiCallback(success, failure)
                     )
                 } else {
-                    // TODO handle error
+                    failure(ReachFiveError.from("Facebook didn't return an access token!"))
+
                 }
             }
 
