@@ -79,11 +79,11 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
             }
 
             override fun onCancel() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                // TODO
             }
 
             override fun onError(error: FacebookException?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                // TODO
             }
 
         })
