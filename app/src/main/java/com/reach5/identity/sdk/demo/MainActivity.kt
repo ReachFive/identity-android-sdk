@@ -15,6 +15,7 @@ import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,8 +33,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         val sdkConfig = SdkConfig(
-            domain = "egor-sandbox.reach5.net",
-            clientId = "7qasrzZQBbZLomtKPmvS"
+            domain = "local-sandbox.og4.me",
+            clientId = "sg48CdAYohRPeRWZ9j1H"
         )
 
         val providersCreators = listOf(
@@ -90,11 +91,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleLoginSuccess(openIdTokenResponse: OpenIdTokenResponse) {
-        this.openIdTokenResponse = openIdTokenResponse
-        val user = openIdTokenResponse.getUser() // TODO add try
-        Log.d(TAG, "loginWithPassword user=$user success=$openIdTokenResponse")
-        supportActionBar?.title = user.email
-        showToast("Login success=${user.email} token=${openIdTokenResponse.accessToken}")
+        try {
+            this.openIdTokenResponse = openIdTokenResponse
+            val user = openIdTokenResponse.getUser() // TODO add try
+            Log.d(TAG, "login user= success=$openIdTokenResponse")
+            supportActionBar?.title = user.email
+            showToast("Login success= token=${openIdTokenResponse.accessToken}")
+        } catch (e: Exception) {
+            Log.d(TAG, "Login error=$openIdTokenResponse")
+            showToast("Login error=$openIdTokenResponse")
+        }
     }
 
     private fun showToast(message: String) {

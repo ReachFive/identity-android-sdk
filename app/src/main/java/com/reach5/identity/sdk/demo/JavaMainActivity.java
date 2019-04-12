@@ -20,7 +20,6 @@ import com.reach5.identity.sdk.google.GoogleProvider;
 import com.reach5.identity.sdk.webview.WebViewProvider;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Objects;
 
 public class JavaMainActivity extends AppCompatActivity {
@@ -35,8 +34,8 @@ public class JavaMainActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.toolbar));
 
         SdkConfig sdkConfig = new SdkConfig(
-            "egor-sandbox.reach5.net",
-            "7qasrzZQBbZLomtKPmvS"
+            "local-sandbox.og4.me",
+            "sg48CdAYohRPeRWZ9j1H"
         );
 
         Objects.requireNonNull(getSupportActionBar()).setTitle("Java Sdk Example");

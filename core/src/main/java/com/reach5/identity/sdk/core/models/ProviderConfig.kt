@@ -9,6 +9,9 @@ data class ProviderConfig(
     val clientSecret: String?,
     val scope: Set<String>
 ) : Parcelable {
+
+    fun getScope(): String = scope.joinToString { " " }
+
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,

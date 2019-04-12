@@ -11,14 +11,13 @@ import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.reach5.identity.sdk.core.Provider
-import com.reach5.identity.sdk.core.models.ProviderConfig
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.ProviderCreator
+import com.reach5.identity.sdk.core.api.LoginProviderRequest
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.api.ReachFiveApi
-import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
-import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
+import com.reach5.identity.sdk.core.models.*
 
 class FacebookProvider : ProviderCreator {
     companion object {
@@ -28,17 +27,19 @@ class FacebookProvider : ProviderCreator {
     override val name: String = NAME
 
     override fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, context: Context): Provider {
-        return ConfiguredFacebookProvider(providerConfig, reachFiveApi, context)
+        return ConfiguredFacebookProvider(providerConfig, sdkConfig, reachFiveApi, context)
     }
 }
 
-class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, override val reachFiveApi: ReachFiveApi, context: Context): Provider {
+class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, override val reachFiveApi: ReachFiveApi, context: Context): Provider {
     companion object {
         const val TAG = "Reach5_FbProvider"
     }
 
-    override val requestCode: Int = 123121212
+    override val requestCode: Int = 64206
     override val name: String = FacebookProvider.NAME
+
+    private lateinit var origin: String
 
     private val callbackManager = CallbackManager.Factory.create()
 
@@ -47,10 +48,33 @@ class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, ov
         // FIXME resolve deprecation
         @Suppress("DEPRECATION")
         FacebookSdk.sdkInitialize(context)
+    }
 
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        success: Success<OpenIdTokenResponse>,
+        failure: Failure<ReachFiveError>
+    ) {
         LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                val accessToken = result?.accessToken?.token
+                if (accessToken != null) {
+                    val loginProviderRequest = LoginProviderRequest(
+                        provider = name,
+                        providerToken = accessToken,
+                        clientId = sdkConfig.clientId,
+                        origin = origin,
+                        scope = providerConfig.scope.joinToString { " " }.plus("openid")
+                    )
+                    reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(
+                        ReachFiveApiCallback(success, failure)
+                    )
+                } else {
+                    // TODO handle error
+                }
             }
 
             override fun onCancel() {
@@ -62,23 +86,12 @@ class ConfiguredFacebookProvider(override val providerConfig: ProviderConfig, ov
             }
 
         })
-    }
-
-
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        success: Success<OpenIdTokenResponse>,
-        failure: Failure<ReachFiveError>
-    ) {
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun login(origin: String, activity: Activity) {
         Log.d(TAG, "login with native provider")
+        this.origin = origin
         LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)
     }
-
-
 }

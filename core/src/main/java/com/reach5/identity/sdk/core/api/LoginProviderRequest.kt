@@ -4,8 +4,10 @@ import com.google.gson.annotations.SerializedName
 
 data class LoginProviderRequest(
     val provider: String,
-    val code: String,
-    val origin: String,
+    @SerializedName("provider_token")
+    val providerToken: String? = null,
+    val code: String? = null,
+    val origin: String? = null,
     @SerializedName("client_id")
     val clientId: String,
     @SerializedName("response_type")

@@ -6,4 +6,6 @@
     <string name="signup">Signup</string>
     <string name="logout">Logout</string>
     <string name="java">Java</string>
+    <string name="facebook_app_id">1634029666893228</string>
+    <string name="fb_login_protocol_scheme">fb1634029666893228</string>
 </resources>
