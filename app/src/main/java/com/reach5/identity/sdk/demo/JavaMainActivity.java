@@ -17,7 +17,9 @@ import com.reach5.identity.sdk.core.models.OpenIdTokenResponse;
 import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.User;
 import com.reach5.identity.sdk.google.GoogleProvider;
+import com.reach5.identity.sdk.webview.WebViewProvider;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -42,7 +44,7 @@ public class JavaMainActivity extends AppCompatActivity {
         reach5 = new JavaReachFive(
             this,
             sdkConfig,
-            Collections.singletonList(new GoogleProvider())
+            Arrays.asList(new GoogleProvider(), new WebViewProvider())
         );
 
         reach5.init(providers ->
@@ -114,7 +116,7 @@ public class JavaMainActivity extends AppCompatActivity {
                 reach5.logout();
                 return true;
             case R.id.menu_java:
-                this.startActivity(new Intent(this, MainActivity.class));
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
