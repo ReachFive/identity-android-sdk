@@ -74,18 +74,20 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
                     )
                 } else {
                     failure(ReachFiveError.from("Facebook didn't return an access token!"))
-
                 }
             }
 
             override fun onCancel() {
-                // TODO
+                failure(ReachFiveError.from("User cancel")) // TODO is it a real error or we do nothing ?
             }
 
             override fun onError(error: FacebookException?) {
-                // TODO
+                if (error != null) {
+                    failure(ReachFiveError.from(error))
+                } else {
+                    failure(ReachFiveError.from("Technical error"))
+                }
             }
-
         })
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
