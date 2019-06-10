@@ -6,6 +6,8 @@ buildscript {
     ext.lib_group = 'com.reach5.identity'
     ext.min_sdk_version = 19
     ext.target_sdk_version = 28
+    ext.compile_sdk_version = 28
+    ext.version_code = 1
     repositories {
         google()
         jcenter()
