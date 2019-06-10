@@ -3,33 +3,72 @@
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
 version: 2
+
+defaults: &defaults
+  docker:
+    - image: circleci/android:api-28
+
+default_steps: &default_steps
+  steps:
+    - checkout:
+          path: ~/repo
+    - restore_cache:
+        key: v1-jars-{{ checksum "build.gradle" }}
+    - run:
+        name: Download Dependencies
+        command: ./gradlew androidDependencies
+    - save_cache:
+        paths:
+          - ~/.gradle
+        key: v1-jars-{{ checksum "build.gradle" }}
+
+    - run: ./gradlew lint test
+    - run: ./gradlew clean build bintrayUpload
+
 jobs:
-  build:
-    docker:
-      - image: circleci/android:api-28
+  build_core:
+    <<: *defaults
+    working_directory: ~/repo/core
+    <<: *default_steps
 
-    working_directory: ~/repo
+  # build:
+  #   docker:
+  #     - image: circleci/android:api-28
 
-    environment:
-      JVM_OPTS: -Xmx3200m
+  #   working_directory: ~/repo
 
-    steps:
-      - checkout
-      - run: echo "hello"
+  #   environment:
+  #     JVM_OPTS: -Xmx3200m
 
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+  #   steps:
+  #     - checkout
 
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+  #     - restore_cache:
+  #         key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+  #     - run:
+  #         name: Download Dependencies
+  #         command: ./gradlew androidDependencies
 
-      - run: cd core && ../gradlew lint test
-      - run: cd facebook && ../gradlew lint test
-      - run: cd google && ../gradlew lint test
-      - run: cd webview && ../gradlew lint test
+  #     - save_cache:
+  #         paths:
+  #           - ~/.gradle
+  #         key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+
+  #     - run: cd core && ../gradlew lint test
+  #     - run: cd facebook && ../gradlew lint test
+  #     - run: cd google && ../gradlew lint test
+  #     - run: cd webview && ../gradlew lint test
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - build_core
+          # requires:
+          #   - test
+          # filters:
+          #   tags:
+          #     only: /^v.*-alpha\..[0-9]/
+          #   branches:
+          #     ignore: /.*/
