@@ -99,7 +99,7 @@ Add this lines into your `string.xml` resources file with your Facebook applicat
 </resources>
 ```
 
-And into `AndroidManifest.xml` add theses lines
+And into `AndroidManifest.xml` add these lines
 
 ```xml
 <meta-data
