@@ -112,16 +112,13 @@ workflows:
           <<: *default_workflows_filters
       - upload_webview:
           requires:
-            - build_core
-            - upload_core
+            - build_webview
           <<: *default_workflows_filters
       - upload_google:
           requires:
-            - build_core
-            - upload_core
+            - build_google
           <<: *default_workflows_filters
       - upload_facebook:
           requires:
-            - build_core
-            - upload_core
+            - build_facebook
           <<: *default_workflows_filters
