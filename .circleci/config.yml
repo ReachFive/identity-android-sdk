@@ -52,6 +52,7 @@ workflows:
   version: 2
   deploy:
     jobs:
+      - build_core
       - build_webview:
           requires:
             - build_core
