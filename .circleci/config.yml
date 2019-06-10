@@ -16,7 +16,7 @@ default_steps: &default_steps
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
         name: Download Dependencies
-        command: ./gradlew androidDependencies
+        command: ../gradlew androidDependencies
     - save_cache:
         paths:
           - ~/.gradle
