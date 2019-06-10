@@ -82,6 +82,13 @@ jobs:
     working_directory: ~/repo/facebook
     <<: *default_upload_steps
 
+default_workflows_filters: &default_workflows_filters
+  filters:
+    tags:
+      only: /^v.*/
+    branches:
+      ignore: /.*/
+
 workflows:
   version: 2
   deploy:
@@ -93,22 +100,20 @@ workflows:
       - upload_core:
           requires:
             - build_core
+          <<: *default_workflows_filters
       - upload_webview:
           requires:
             - build_core
             - upload_core
+          <<: *default_workflows_filters
       - upload_google:
           requires:
             - build_core
             - upload_core
+          <<: *default_workflows_filters
       - upload_facebook:
           requires:
             - build_core
             - upload_core
-          # requires:
-          #   - test
-          # filters:
-          #   tags:
-          #     only: /^v.*-alpha\..[0-9]/
-          #   branches:
-          #     ignore: /.*/
+          <<: *default_workflows_filters
+
