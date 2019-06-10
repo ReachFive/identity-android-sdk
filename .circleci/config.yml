@@ -10,7 +10,7 @@ defaults: &defaults
   environment:
     JVM_OPTS: -Xmx3200m
 
-default_steps: &default_steps
+default_upload_steps: &default_upload_steps
   steps:
     - checkout:
           path: ~/repo
@@ -23,45 +23,88 @@ default_steps: &default_steps
         paths:
           - ~/.gradle
         key: v1-jars-{{ checksum "build.gradle" }}
-
-    #- run: ../gradlew lint test
     - run: ../gradlew clean build bintrayUpload
 
+default_build_steps: &default_build_steps
+  steps:
+    - checkout:
+          path: ~/repo
+    - restore_cache:
+        key: v1-jars-{{ checksum "build.gradle" }}
+    - run:
+        name: Download Dependencies
+        command: ../gradlew androidDependencies
+    - save_cache:
+        paths:
+          - ~/.gradle
+        key: v1-jars-{{ checksum "build.gradle" }}
+    - run: ../gradlew lint test build
+
 jobs:
+  
   build_core:
     <<: *defaults
     working_directory: ~/repo/core
-    <<: *default_steps
+    <<: *default_build_steps
 
   build_webview:
     <<: *defaults
     working_directory: ~/repo/webview
-    <<: *default_steps
+    <<: *default_build_steps
 
   build_google:
     <<: *defaults
     working_directory: ~/repo/google
-    <<: *default_steps
+    <<: *default_build_steps
 
   build_facebook:
     <<: *defaults
     working_directory: ~/repo/facebook
-    <<: *default_steps
+    <<: *default_build_steps
+
+  upload_core:
+    <<: *defaults
+    working_directory: ~/repo/core
+    <<: *default_upload_steps
+
+  upload_webview:
+    <<: *defaults
+    working_directory: ~/repo/webview
+    <<: *default_upload_steps
+
+  upload_google:
+    <<: *defaults
+    working_directory: ~/repo/google
+    <<: *default_upload_steps
+
+  upload_facebook:
+    <<: *defaults
+    working_directory: ~/repo/facebook
+    <<: *default_upload_steps
 
 workflows:
   version: 2
   deploy:
     jobs:
       - build_core
-      - build_webview:
+      - build_webview
+      - build_google
+      - build_facebook
+      - upload_core:
           requires:
             - build_core
-      - build_google:
+      - upload_webview:
           requires:
             - build_core
-      - build_facebook:
+            - upload_core
+      - upload_google:
           requires:
             - build_core
+            - upload_core
+      - upload_facebook:
+          requires:
+            - build_core
+            - upload_core
           # requires:
           #   - test
           # filters:
