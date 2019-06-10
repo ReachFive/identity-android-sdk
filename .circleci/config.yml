@@ -7,6 +7,8 @@ version: 2
 defaults: &defaults
   docker:
     - image: circleci/android:api-28
+  environment:
+    JVM_OPTS: -Xmx3200m
 
 default_steps: &default_steps
   steps:
@@ -22,7 +24,7 @@ default_steps: &default_steps
           - ~/.gradle
         key: v1-jars-{{ checksum "build.gradle" }}
 
-    - run: ../gradlew lint test
+    #- run: ../gradlew lint test
     - run: ../gradlew clean build bintrayUpload
 
 jobs:
@@ -31,40 +33,34 @@ jobs:
     working_directory: ~/repo/core
     <<: *default_steps
 
-  # build:
-  #   docker:
-  #     - image: circleci/android:api-28
+  build_webview:
+    <<: *defaults
+    working_directory: ~/repo/webview
+    <<: *default_steps
 
-  #   working_directory: ~/repo
+  build_google:
+    <<: *defaults
+    working_directory: ~/repo/google
+    <<: *default_steps
 
-  #   environment:
-  #     JVM_OPTS: -Xmx3200m
-
-  #   steps:
-  #     - checkout
-
-  #     - restore_cache:
-  #         key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-
-  #     - run:
-  #         name: Download Dependencies
-  #         command: ./gradlew androidDependencies
-
-  #     - save_cache:
-  #         paths:
-  #           - ~/.gradle
-  #         key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-
-  #     - run: cd core && ../gradlew lint test
-  #     - run: cd facebook && ../gradlew lint test
-  #     - run: cd google && ../gradlew lint test
-  #     - run: cd webview && ../gradlew lint test
+  build_facebook:
+    <<: *defaults
+    working_directory: ~/repo/facebook
+    <<: *default_steps
 
 workflows:
   version: 2
   deploy:
     jobs:
-      - build_core
+      - build_webview:
+          requires:
+            - build_core
+      - build_google:
+          requires:
+            - build_core
+      - build_facebook:
+          requires:
+            - build_core
           # requires:
           #   - test
           # filters:
