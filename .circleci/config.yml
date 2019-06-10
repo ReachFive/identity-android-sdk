@@ -89,14 +89,23 @@ default_workflows_filters: &default_workflows_filters
     branches:
       ignore: /.*/
 
+default_workflows_tags: &default_workflows_tags
+  filters:
+    tags:
+      only: /.*/
+
 workflows:
   version: 2
   deploy:
     jobs:
-      - build_core
-      - build_webview
-      - build_google
-      - build_facebook
+      - build_core:
+          <<: *default_workflows_tags
+      - build_webview:
+          <<: *default_workflows_tags
+      - build_google:
+          <<: *default_workflows_tags
+      - build_facebook:
+          <<: *default_workflows_tags
       - upload_core:
           requires:
             - build_core
