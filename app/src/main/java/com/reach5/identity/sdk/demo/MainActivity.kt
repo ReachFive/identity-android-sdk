@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         val sdkConfig = SdkConfig(
-            domain = "local-sandbox.og4.me",
-            clientId = "sg48CdAYohRPeRWZ9j1H"
+            domain = "sdk-mobile-sandbox.reach5.net",
+            clientId = "TYAIHFRJ2a1FGJ1T8pKD"
         )
 
         val providersCreators = listOf(
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             sdkConfig = sdkConfig,
             providersCreators = providersCreators,
             context = applicationContext
-        ).init({
+        ).initialize({
             providerAdapter.refresh(it)
         }, {
             Log.d(TAG, "ReachFive init ${it.message}")

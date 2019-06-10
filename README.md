@@ -1,18 +1,26 @@
 <p align="center">
- <img src="https://reachfive.co/img/site-logo.png"/>
+ <img src="https://www.reachfive.com/hs-fs/hubfs/Reachfive_April2019/Images/site-logo.png?width=700&height=192&name=site-logo.png"/>
 </p>
 
 # Identity Android SDK
 
-
-## Android studio
-(https://developer.android.com/studio)[https://developer.android.com/studio]
-
+## Table of Contents
+1. [Installation](#installation)
+2. [Getting Started](#getting-started)
+    * [SDK Core](#sdk-core-required)
+    * [SDK WebView](#sdk-webview)
+    * [SDK Facebook native](#facebook-native-provider)
+    * [SDK Google native](#google-native-provider)
 
 ## Installation
 
-### Repository
+### IDE: Android studio
+(https://developer.android.com/studio)[https://developer.android.com/studio]
+
+### Configure repository
+
 Add repository in your `build.gradle`
+
 ```groovy
 repositories {
     jcenter()
@@ -24,7 +32,13 @@ repositories {
 }
 ```
 
-### Dependencies
+## Getting Started
+
+This SDK is modular and you import only what you really using, only the SDK Core is required
+
+### SDK Core (required)
+It containt all common tools and interfaces, authentication with passwords
+
 ```groovy
 dependencies {
     implementation "com.reach5.identity:sdk-core:4.0.0"
@@ -34,16 +48,9 @@ dependencies {
 }
 ```
 
-This sdk is modular and you can use only what you need
+These permissions is required to communicate with ReachFive servers
 
-`sdk-core` required
-`sdk-google` use native google auth sdk
-`sdk-facebook` use native facebook auth sdk
-`sdk-webview` it use webview to authenticate and support all ReachFive providers
-
-### AndroidManifest.xml
-
-These permissions is required becose it use network to communicate with ReachFive servers
+Add them into `AndroidManifest.xml`
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -51,7 +58,8 @@ These permissions is required becose it use network to communicate with ReachFiv
 <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 ```
 
-### WebView
+### SDK WebView
+This module use WebView to authenticate users, it give all providers supported by reachfive 
 
 ```groovy
 dependencies {
@@ -59,7 +67,8 @@ dependencies {
 }
 ```
 
-To use webview module you need to add this activity
+You need to add this activity into `AndroidManifest.xml`
+
 ```xml
 <activity
     android:name="com.reach5.identity.sdk.webview.ReachFiveLoginActivity"
@@ -67,6 +76,10 @@ To use webview module you need to add this activity
 ```
 
 ### Facebook native provider
+
+This module use Facebook native SDK to provider better user experience
+
+#### Dependencies
 
 ```groovy
 dependencies {
@@ -76,20 +89,45 @@ dependencies {
 ```
 
 #### Configuration
+
 (https://support.reach5.co/article/4-create-facebook-application)[Facebook Connect]
 
-
-### Google native provider
-
-```groovy
-dependencies {
-    implementation "com.reach5.identity:sdk-google:4.0.0"
-}
+Add this lines into your `string.xml` resources file with your Facebook application ID
+```xml
+<resources>
+    <string name="facebook_app_id">XXXXXXXXXXXXXXX</string>
+</resources>
 ```
 
+And into `AndroidManifest.xml` add theses lines
+
+```xml
+<meta-data
+    android:name="com.facebook.sdk.ApplicationId"
+    android:value="@string/facebook_app_id" />
+
+<activity
+    android:name="com.facebook.FacebookActivity"
+    android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+    android:label="@string/app_name" />
+```
+
+### Google native provider
+This module use Google Native SDK to provider better user experience
 #### Configuration
 (https://support.reach5.co/article/5-create-google-application)[Google Connect]
 
+https://developers.google.com/android/guides/google-services-plugin#adding_the_json_file
+
+https://developers.google.com/android/guides/client-auth
+
+##### Dependency
+```groovy
+dependencies {
+    implementation "com.reach5.identity:sdk-google:4.0.0"
+    implementation "com.reach5.identity:sdk-google:4.0.0"
+}
+```
 
 ## Android simulator
 

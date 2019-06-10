@@ -40,6 +40,6 @@ data class ProviderConfig(
 }
 
 data class ProvidersConfigsResult(
-    val items: Array<ProviderConfig>,
+    val items: Array<ProviderConfig>?,
     val status: String
 )

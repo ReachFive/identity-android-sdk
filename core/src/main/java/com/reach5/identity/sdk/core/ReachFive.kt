@@ -19,7 +19,7 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
 
     private var providers: List<Provider> = listOf()
 
-    fun init(success: Success<List<Provider>>, failure: Failure<ReachFiveError>): ReachFive {
+    fun initialize(success: Success<List<Provider>>, failure: Failure<ReachFiveError>): ReachFive {
         providersConfigs(success, failure)
         return this
     }
@@ -34,7 +34,7 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
 
     private fun createProviders(providersConfigsResult: ProvidersConfigsResult): List<Provider> {
         val webViewProvider = providersCreators.find { it.name == "webview" }
-        return providersConfigsResult.items.mapNotNull { config ->
+        return providersConfigsResult.items?.mapNotNull { config ->
             val nativeProvider = providersCreators.find { it.name == config.provider }
             when {
                 nativeProvider != null -> nativeProvider.create(config, sdkConfig, reachFiveApi, context)
@@ -44,7 +44,7 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
                     null
                 }
             }
-        }
+        } ?: listOf()
     }
 
     fun getProvider(name: String): Provider? {

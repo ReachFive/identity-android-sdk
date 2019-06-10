@@ -46,7 +46,7 @@ public class JavaMainActivity extends AppCompatActivity {
             Arrays.asList(new GoogleProvider(), new WebViewProvider())
         );
 
-        reach5.init(providers ->
+        reach5.initialize(providers ->
             providerAdapter.refresh(providers)
         , error -> {
             Log.d(TAG, "ReachFive init ${it.message}");

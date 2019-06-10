@@ -12,8 +12,8 @@ import com.reach5.identity.sdk.core.utils.Callback
 class JavaReachFive(context: Context, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
     private val reach5 = ReachFive(context, sdkConfig, providersCreators)
 
-    fun init(success: Callback<List<Provider>>, failure: Callback<ReachFiveError>): ReachFive {
-        return reach5.init(success::call, failure::call)
+    fun initialize(success: Callback<List<Provider>>, failure: Callback<ReachFiveError>): ReachFive {
+        return reach5.initialize(success::call, failure::call)
     }
 
     fun getProvider(name: String): Provider? {
