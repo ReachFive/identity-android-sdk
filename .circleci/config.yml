@@ -107,7 +107,7 @@ workflows:
             - build_core
           filters:
             tags:
-              only: /^v.*/
+              only: /.*/
             branches:
               ignore: /.*/
 
