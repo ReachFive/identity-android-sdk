@@ -64,7 +64,7 @@ jobs:
 
   upload_core:
     <<: *defaults
-    working_directory: ~/repo/core
+    working_directory: ~/repo/sdk-core
     <<: *default_upload_steps
 
   upload_webview:
