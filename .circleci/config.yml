@@ -83,59 +83,56 @@ jobs:
     <<: *default_upload_steps
 
 default_workflows_filters: &default_workflows_filters
-  # filters:
-  #   tags:
-  #     only: /^v.*/
-  #   branches:
-  #     ignore: /.*/
+  filters:
+    tags:
+      only: /.*/
+    branches:
+      ignore: /.*/
 
 default_workflows_tags: &default_workflows_tags
-  # filters:
-  #   tags:
-  #     only: /.*/
+  filters:
+    tags:
+      only: /.*/
 
 workflows:
   version: 2
   deploy:
     jobs:
-      - build_core:
-          filters:
-            tags:
-              only: /.*/
-      - upload_core:
-          requires:
-            - build_core
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
-
-
-
-
       # - build_core:
-      #     <<: *default_workflows_tags
-      # - build_webview:
-      #     <<: *default_workflows_tags
-      # - build_google:
-      #     <<: *default_workflows_tags
-      # - build_facebook:
-      #     <<: *default_workflows_tags
+      #     filters:
+      #       tags:
+      #         only: /.*/
       # - upload_core:
       #     requires:
       #       - build_core
-      #     <<: *default_workflows_filters
-      # - upload_webview:
-      #     requires:
-      #       - build_webview
-      #     <<: *default_workflows_filters
-      # - upload_google:
-      #     requires:
-      #       - build_google
-      #     <<: *default_workflows_filters
-      # - upload_facebook:
-      #     requires:
-      #       - build_facebook
-      #     <<: *default_workflows_filters
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore: /.*/
+
+      - build_core:
+          <<: *default_workflows_tags
+      - build_webview:
+          <<: *default_workflows_tags
+      - build_google:
+          <<: *default_workflows_tags
+      - build_facebook:
+          <<: *default_workflows_tags
+      - upload_core:
+          requires:
+            - build_core
+          <<: *default_workflows_filters
+      - upload_webview:
+          requires:
+            - build_webview
+          <<: *default_workflows_filters
+      - upload_google:
+          requires:
+            - build_google
+          <<: *default_workflows_filters
+      - upload_facebook:
+          requires:
+            - build_facebook
+          <<: *default_workflows_filters
 
