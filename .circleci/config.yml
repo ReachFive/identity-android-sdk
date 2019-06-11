@@ -22,7 +22,7 @@ default_upload_steps: &default_upload_steps
     - save_cache:
         paths:
           - ~/.gradle
-        key: v1-jars-{{ checksum "build.gradle" }}
+        key: v2-jars-{{ checksum "build.gradle" }}
     - run: ../gradlew clean build bintrayUpload
 
 default_build_steps: &default_build_steps
@@ -30,7 +30,7 @@ default_build_steps: &default_build_steps
     - checkout:
           path: ~/repo
     - restore_cache:
-        key: v1-jars-{{ checksum "build.gradle" }}
+        key: v2-jars-{{ checksum "build.gradle" }}
     - run:
         name: Download Dependencies
         command: ../gradlew androidDependencies
