@@ -44,7 +44,7 @@ jobs:
   
   build_core:
     <<: *defaults
-    working_directory: ~/repo/core
+    working_directory: ~/repo/sdk-core
     <<: *default_build_steps
 
   build_webview:
@@ -111,13 +111,16 @@ workflows:
           <<: *default_workflows_filters
       - upload_webview:
           requires:
+            - build_core
             - build_webview
           <<: *default_workflows_filters
       - upload_google:
           requires:
+            - build_core
             - build_google
           <<: *default_workflows_filters
       - upload_facebook:
           requires:
+            - build_core
             - build_facebook
           <<: *default_workflows_filters
