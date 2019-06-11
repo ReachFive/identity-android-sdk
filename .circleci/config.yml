@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2
+version: 2.1
 
 defaults: &defaults
   docker:
@@ -95,22 +95,8 @@ default_workflows_tags: &default_workflows_tags
       only: /.*/
 
 workflows:
-  version: 2
   deploy:
     jobs:
-      # - build_core:
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      # - upload_core:
-      #     requires:
-      #       - build_core
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore: /.*/
-
       - build_core:
           <<: *default_workflows_tags
       - build_webview:
@@ -135,4 +121,3 @@ workflows:
           requires:
             - build_facebook
           <<: *default_workflows_filters
-
