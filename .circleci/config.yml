@@ -49,17 +49,17 @@ jobs:
 
   build_webview:
     <<: *defaults
-    working_directory: ~/repo/webview
+    working_directory: ~/repo/sdk-webview
     <<: *default_build_steps
 
   build_google:
     <<: *defaults
-    working_directory: ~/repo/google
+    working_directory: ~/repo/sdk-google
     <<: *default_build_steps
 
   build_facebook:
     <<: *defaults
-    working_directory: ~/repo/facebook
+    working_directory: ~/repo/sdk-facebook
     <<: *default_build_steps
 
   upload_core:
@@ -69,17 +69,17 @@ jobs:
 
   upload_webview:
     <<: *defaults
-    working_directory: ~/repo/webview
+    working_directory: ~/repo/sdk-webview
     <<: *default_upload_steps
 
   upload_google:
     <<: *defaults
-    working_directory: ~/repo/google
+    working_directory: ~/repo/sdk-google
     <<: *default_upload_steps
 
   upload_facebook:
     <<: *defaults
-    working_directory: ~/repo/facebook
+    working_directory: ~/repo/sdk-facebook
     <<: *default_upload_steps
 
 default_workflows_filters: &default_workflows_filters

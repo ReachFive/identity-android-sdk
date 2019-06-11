@@ -33,9 +33,9 @@ android {
 
 dependencies {
     implementation project(':sdk-core')
-    implementation project(':facebook')
-    implementation project(':google')
-    implementation project(':webview')
+    implementation project(':sdk-facebook')
+    implementation project(':sdk-google')
+    implementation project(':sdk-webview')
     // implementation "com.reach5.identity:sdk-core:${version}"
     // implementation "com.reach5.identity:sdk-webview:${version}"
     // implementation "com.reach5.identity:sdk-facebook:${version}"
