@@ -32,14 +32,14 @@ android {
 }
 
 dependencies {
-    implementation project(':core')
+    implementation project(':sdk-core')
     implementation project(':facebook')
     implementation project(':google')
     implementation project(':webview')
-    //implementation "com.reach5.identity:sdk-core:${version}"
-    //implementation "com.reach5.identity:sdk-webview:${version}"
-    //implementation "com.reach5.identity:sdk-facebook:${version}"
-    //implementation "com.reach5.identity:sdk-google:${version}"
+    // implementation "com.reach5.identity:sdk-core:${version}"
+    // implementation "com.reach5.identity:sdk-webview:${version}"
+    // implementation "com.reach5.identity:sdk-facebook:${version}"
+    // implementation "com.reach5.identity:sdk-google:${version}"
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.facebook.android:facebook-login:4.37.0'
 
