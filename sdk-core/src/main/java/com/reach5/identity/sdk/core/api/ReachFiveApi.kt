@@ -1,6 +1,5 @@
 package com.reach5.identity.sdk.core.api
 
-import android.util.Log
 import com.google.gson.Gson
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
@@ -43,14 +42,12 @@ interface ReachFiveApi {
 
 class ReachFiveApiCallback<T>(val success: Success<T>, val failure: Failure<ReachFiveError>): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
-        Log.d("Reach5_ApiCallB", "ReachFiveApiCallback onFailure $t")
-        failure(ReachFiveError.from(t.message ?: t.toString()))
+        failure(ReachFiveError.from(t))
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
         val body = response.body()
         val status = response.code()
-        Log.d("Reach5_ApiCallB", "ReachFiveApiCallback onResponse $status")
         if (response.isSuccessful && body != null) {
             success(body)
         } else if (status in 300..400) {

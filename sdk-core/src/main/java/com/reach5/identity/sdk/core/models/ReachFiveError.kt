@@ -31,6 +31,13 @@ data class ReachFiveError(
         }
 
         @JvmStatic
+        fun from(error: Throwable): ReachFiveError {
+            return ReachFiveError(
+                message = error.message ?: error.toString()
+            )
+        }
+
+        @JvmStatic
         fun from(message: String): ReachFiveError {
             return ReachFiveError(
                 message = message
