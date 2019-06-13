@@ -17,7 +17,7 @@ import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.Provider
 import com.reach5.identity.sdk.core.ProviderCreator
 import com.reach5.identity.sdk.core.utils.Success
-import com.reach5.identity.sdk.core.api.LoginProviderRequest
+import com.reach5.identity.sdk.core.models.LoginProviderRequest
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*

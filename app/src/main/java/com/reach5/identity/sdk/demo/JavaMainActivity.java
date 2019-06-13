@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.reach5.identity.sdk.core.JavaReachFive;
 import com.reach5.identity.sdk.core.Provider;
-import com.reach5.identity.sdk.core.api.Profile;
+import com.reach5.identity.sdk.core.models.Profile;
 import com.reach5.identity.sdk.core.models.AuthToken;
 import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.User;

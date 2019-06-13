@@ -9,10 +9,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.api.Profile
+import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
-import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
 import java.lang.Exception
@@ -39,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         val providersCreators = listOf(
             GoogleProvider(),
-            FacebookProvider(),
+            //FacebookProvider(),
             WebViewProvider()
         )
 
@@ -64,10 +63,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         passwordSignup.setOnClickListener {
-            this.reach5.signupWithPassword(Profile(
-                email = username.text.toString(),
-                password = password.text.toString()
-            ), success = {
+            this.reach5.signupWithPassword(
+                Profile(
+                    email = username.text.toString(),
+                    password = password.text.toString()
+                ), success = {
                 handleLoginSuccess(it)
             }, failure = {
                 Log.d(TAG, "signupWithPassword error=$it")

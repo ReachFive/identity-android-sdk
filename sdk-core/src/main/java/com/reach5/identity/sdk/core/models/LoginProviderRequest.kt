@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core.api
+package com.reach5.identity.sdk.core.models
 
 import com.google.gson.annotations.SerializedName
 

@@ -3,7 +3,7 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.reach5.identity.sdk.core.api.Profile
+import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig

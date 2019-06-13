@@ -64,10 +64,11 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        reachFiveApi.signupWithPassword(SignupRequest(
-            clientId = sdkConfig.clientId,
-            data = profile
-        ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
+        reachFiveApi.signupWithPassword(
+            SignupRequest(
+                clientId = sdkConfig.clientId,
+                data = profile
+            ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
             it.toAuthToken().fold(success, failure)
         }, failure))
     }
@@ -78,12 +79,13 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        reachFiveApi.loginWithPassword(LoginRequest(
-            clientId = sdkConfig.clientId,
-            grantType = "password",
-            username = username,
-            password = password
-        ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
+        reachFiveApi.loginWithPassword(
+            LoginRequest(
+                clientId = sdkConfig.clientId,
+                grantType = "password",
+                username = username,
+                password = password
+            ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
             it.toAuthToken().fold(success, failure)
         }, failure))
     }
