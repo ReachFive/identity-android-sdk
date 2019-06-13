@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import com.reach5.identity.sdk.core.api.Profile
 import com.reach5.identity.sdk.core.models.AuthToken
-import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.utils.Callback

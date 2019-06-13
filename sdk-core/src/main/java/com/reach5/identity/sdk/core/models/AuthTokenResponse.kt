@@ -48,7 +48,7 @@ data class AuthToken(
     }
 }
 
-data class OpenIdTokenResponse(
+data class AuthTokenResponse(
     @SerializedName("id_token")
     val idToken: String? = null,
 
@@ -114,8 +114,8 @@ data class OpenIdTokenResponse(
     companion object {
 
         @JvmStatic
-        fun fromQueryString(params: Map<String, String>): OpenIdTokenResponse {
-            return OpenIdTokenResponse(
+        fun fromQueryString(params: Map<String, String>): AuthTokenResponse {
+            return AuthTokenResponse(
                 idToken = params["id_token"],
                 accessToken = params["access_token"],
                 expiresIn = params["expires_in"]?.toIntOrNull(),
@@ -127,12 +127,12 @@ data class OpenIdTokenResponse(
         }
 
         @JvmField
-        val CREATOR = object : Parcelable.Creator<OpenIdTokenResponse> {
-            override fun createFromParcel(parcel: Parcel): OpenIdTokenResponse {
-                return OpenIdTokenResponse(parcel)
+        val CREATOR = object : Parcelable.Creator<AuthTokenResponse> {
+            override fun createFromParcel(parcel: Parcel): AuthTokenResponse {
+                return AuthTokenResponse(parcel)
             }
 
-            override fun newArray(size: Int): Array<OpenIdTokenResponse?> {
+            override fun newArray(size: Int): Array<AuthTokenResponse?> {
                 return arrayOfNulls(size)
             }
         }

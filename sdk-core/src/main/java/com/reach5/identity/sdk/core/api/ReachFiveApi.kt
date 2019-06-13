@@ -21,13 +21,13 @@ interface ReachFiveApi {
     fun providersConfigs(@QueryMap options: Map<String, String>): Call<ProvidersConfigsResult>
 
     @POST("/identity/v1/oauth/provider/token")
-    fun loginWithProvider(@Body loginProviderRequest: LoginProviderRequest, @QueryMap options: Map<String, String>): Call<OpenIdTokenResponse>
+    fun loginWithProvider(@Body loginProviderRequest: LoginProviderRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
     @POST("/identity/v1/signup-token")
-    fun signupWithPassword(@Body signupRequest: SignupRequest, @QueryMap options: Map<String, String>): Call<OpenIdTokenResponse>
+    fun signupWithPassword(@Body signupRequest: SignupRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
     @POST("/oauth/token")
-    fun loginWithPassword(@Body loginRequest: LoginRequest, @QueryMap options: Map<String, String>): Call<OpenIdTokenResponse>
+    fun loginWithPassword(@Body loginRequest: LoginRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {

@@ -33,7 +33,7 @@ class ConfiguredWebViewProvider(
 
     companion object {
         const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
-        const val OpenIdTokenResponse = "OpenIdTokenResponse"
+        const val OpenIdTokenResponse = "AuthTokenResponse"
         const val RequestCode = 52558
         const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
@@ -55,7 +55,7 @@ class ConfiguredWebViewProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        val openIdTokenResponse = data?.getParcelableExtra<OpenIdTokenResponse>(OpenIdTokenResponse)
+        val openIdTokenResponse = data?.getParcelableExtra<AuthTokenResponse>(OpenIdTokenResponse)
         return if (openIdTokenResponse != null) {
             openIdTokenResponse.toAuthToken().fold(success, failure)
         } else {

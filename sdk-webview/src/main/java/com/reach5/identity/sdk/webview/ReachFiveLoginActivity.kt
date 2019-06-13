@@ -12,14 +12,14 @@ import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
+import com.reach5.identity.sdk.core.models.AuthTokenResponse
 import kotlinx.android.synthetic.main.reachfive_login_activity.*
 import java.util.regex.Pattern
 
 class ReachFiveLoginActivity : Activity() {
     private val TAG = "R5"
 
-    private var openIdTokenResponse: OpenIdTokenResponse? = null
+    private var authTokenResponse: AuthTokenResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +57,9 @@ class ReachFiveLoginActivity : Activity() {
         finish()
     }
 
-    fun loginSuccess(openIdTokenResponse: OpenIdTokenResponse) {
+    fun loginSuccess(authTokenResponse: AuthTokenResponse) {
         val intent = Intent()
-        intent.putExtra(ConfiguredWebViewProvider.OpenIdTokenResponse, openIdTokenResponse)
+        intent.putExtra(ConfiguredWebViewProvider.OpenIdTokenResponse, authTokenResponse)
         setResult(ConfiguredWebViewProvider.RequestCode, intent)
         finish()
     }
@@ -114,9 +114,9 @@ class ReachFiveLoginActivity : Activity() {
             return if (matcher.matches()) {
                 val queryStrings = parseQueryStringFragment(url)
                 // avoid multiple calls
-                if (openIdTokenResponse == null) {
-                    val token = OpenIdTokenResponse.fromQueryString(queryStrings)
-                    openIdTokenResponse = token
+                if (authTokenResponse == null) {
+                    val token = AuthTokenResponse.fromQueryString(queryStrings)
+                    authTokenResponse = token
                     loginSuccess(token)
                 }
                 false
