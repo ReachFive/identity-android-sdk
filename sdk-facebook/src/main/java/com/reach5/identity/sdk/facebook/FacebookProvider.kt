@@ -60,7 +60,7 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        success: Success<OpenIdTokenResponse>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
@@ -75,7 +75,7 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
                         scope = providerConfig.scope.joinToString { " " }.plus("openid")
                     )
                     reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(
-                        ReachFiveApiCallback(success, failure)
+                        ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure)
                     )
                 } else {
                     failure(ReachFiveError.from("Facebook didn't return an access token!"))

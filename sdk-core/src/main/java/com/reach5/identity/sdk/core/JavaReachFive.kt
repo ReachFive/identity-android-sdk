@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.reach5.identity.sdk.core.api.Profile
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
@@ -25,12 +26,12 @@ class JavaReachFive(context: Context, sdkConfig: SdkConfig, providersCreators: L
     }
 
     fun loginWithNativeProvider(name: String, origin: String, activity: Activity) {
-        return reach5.loginWithNativeProvider(name, origin, activity)
+        return reach5.loginWithProvider(name, origin, activity)
     }
 
     fun signupWithPassword(
         profile: Profile,
-        success: Callback<OpenIdTokenResponse>,
+        success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.signupWithPassword(profile, success::call, failure::call)
@@ -39,7 +40,7 @@ class JavaReachFive(context: Context, sdkConfig: SdkConfig, providersCreators: L
     fun loginWithPassword(
         username: String,
         password: String,
-        success: Callback<OpenIdTokenResponse>,
+        success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.loginWithPassword(username, password, success::call, failure::call)
@@ -49,7 +50,7 @@ class JavaReachFive(context: Context, sdkConfig: SdkConfig, providersCreators: L
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        success: Callback<OpenIdTokenResponse>,
+        success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.onActivityResult(requestCode, resultCode, data, success::call, failure::call)

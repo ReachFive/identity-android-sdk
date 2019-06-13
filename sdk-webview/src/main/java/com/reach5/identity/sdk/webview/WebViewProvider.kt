@@ -8,10 +8,7 @@ import com.reach5.identity.sdk.core.Provider
 import com.reach5.identity.sdk.core.ProviderCreator
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.api.ReachFiveApi
-import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
-import com.reach5.identity.sdk.core.models.ProviderConfig
-import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.*
 
 class WebViewProvider : ProviderCreator {
     override val name: String = "webview"
@@ -55,12 +52,12 @@ class ConfiguredWebViewProvider(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        success: Success<OpenIdTokenResponse>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val openIdTokenResponse = data?.getParcelableExtra<OpenIdTokenResponse>(OpenIdTokenResponse)
         return if (openIdTokenResponse != null) {
-            success(openIdTokenResponse)
+            openIdTokenResponse.toAuthToken().fold(success, failure)
         } else {
             failure(ReachFiveError.from("No token into activity result"))
         }

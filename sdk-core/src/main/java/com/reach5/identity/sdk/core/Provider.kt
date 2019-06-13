@@ -4,10 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.reach5.identity.sdk.core.api.ReachFiveApi
-import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
-import com.reach5.identity.sdk.core.models.ProviderConfig
-import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 
@@ -36,7 +33,7 @@ interface Provider {
     /**
      * Handle activity result of login action
      */
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>)
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>)
 
     /**
      * On stop activity lifecycle

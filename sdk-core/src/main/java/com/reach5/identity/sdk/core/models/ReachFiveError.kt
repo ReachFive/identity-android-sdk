@@ -20,7 +20,7 @@ data class ReachFiveError(
     override val message: String,
     val exception: Exception? = null,
     val data: ReachFiveApiError? = null
-): Throwable(message) {
+): java.lang.Exception(message) {
     companion object {
         @JvmStatic
         fun from(error: Exception): ReachFiveError {

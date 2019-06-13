@@ -61,19 +61,21 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
 
     fun signupWithPassword(
         profile: Profile,
-        success: Success<OpenIdTokenResponse>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi.signupWithPassword(SignupRequest(
             clientId = sdkConfig.clientId,
             data = profile
-        ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback(success, failure))
+        ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
+            it.toAuthToken().fold(success, failure)
+        }, failure))
     }
 
     fun loginWithPassword(
         username: String,
         password: String,
-        success: Success<OpenIdTokenResponse>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi.loginWithPassword(LoginRequest(
@@ -81,10 +83,12 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
             grantType = "password",
             username = username,
             password = password
-        ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback(success, failure))
+        ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
+            it.toAuthToken().fold(success, failure)
+        }, failure))
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>) {
         Log.d(TAG, "ReachFive.onActivityResult requestCode=$requestCode")
         val provider =  providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {

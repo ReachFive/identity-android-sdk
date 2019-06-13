@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.reach5.identity.sdk.core.JavaReachFive;
 import com.reach5.identity.sdk.core.Provider;
 import com.reach5.identity.sdk.core.api.Profile;
+import com.reach5.identity.sdk.core.models.AuthToken;
 import com.reach5.identity.sdk.core.models.OpenIdTokenResponse;
 import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.User;
@@ -91,8 +92,8 @@ public class JavaMainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    private void handleLoginSuccess(OpenIdTokenResponse openIdTokenResponse) {
-        User user = openIdTokenResponse.getUser(); // TODO add try
+    private void handleLoginSuccess(AuthToken authToken) {
+        User user = authToken.getUser();
         Log.d(TAG, "loginWithPassword user=$user success=$openIdTokenResponse");
         Objects.requireNonNull(getSupportActionBar()).setTitle(user.getEmail());
         showToast("Login success=${user?.email} token=${openIdTokenResponse.accessToken}");

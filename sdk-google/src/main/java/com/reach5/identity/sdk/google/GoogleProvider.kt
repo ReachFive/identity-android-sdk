@@ -84,7 +84,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        success: Success<OpenIdTokenResponse>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
@@ -105,7 +105,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
     private fun loginWithProvider(
         code: String,
         origin: String,
-        success: Success<OpenIdTokenResponse>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val loginProviderRequest = LoginProviderRequest(
@@ -115,7 +115,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
             origin = origin,
             scope = providerConfig.scope.joinToString(" ")
         )
-        reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(ReachFiveApiCallback(success, failure))
+        reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure))
     }
 
     override fun onStop() {

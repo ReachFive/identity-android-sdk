@@ -10,7 +10,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.api.Profile
-import com.reach5.identity.sdk.core.models.OpenIdTokenResponse
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var reach5: ReachFive
 
-    private lateinit var openIdTokenResponse: OpenIdTokenResponse
+    private lateinit var authToken: AuthToken
 
     private lateinit var providerAdapter: ProvidersAdapter
 
@@ -90,16 +90,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleLoginSuccess(openIdTokenResponse: OpenIdTokenResponse) {
+    private fun handleLoginSuccess(authToken: AuthToken) {
         try {
-            this.openIdTokenResponse = openIdTokenResponse
-            val user = openIdTokenResponse.getUser() // TODO add try
-            Log.d(TAG, "login user= success=$openIdTokenResponse")
+            this.authToken = authToken
+            val user = authToken.user
+            Log.d(TAG, "login user= success=$authToken")
             supportActionBar?.title = user.email
-            showToast("Login success= token=${openIdTokenResponse.accessToken}")
+            showToast("Login success= token=${authToken.accessToken}")
         } catch (e: Exception) {
-            Log.d(TAG, "Login error=$openIdTokenResponse")
-            showToast("Login error=$openIdTokenResponse")
+            Log.d(TAG, "Login error=$authToken")
+            showToast("Login error=$authToken")
         }
     }
 
