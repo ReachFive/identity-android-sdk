@@ -42,9 +42,6 @@ It containt all common tools and interfaces, authentication with passwords
 ```groovy
 dependencies {
     implementation "com.reach5.identity:sdk-core:4.0.0"
-    implementation "com.reach5.identity:sdk-webview:4.0.0"
-    implementation "com.reach5.identity:sdk-facebook:4.0.0"
-    implementation "com.reach5.identity:sdk-google:4.0.0"
 }
 ```
 
@@ -124,7 +121,6 @@ https://developers.google.com/android/guides/client-auth
 ##### Dependency
 ```groovy
 dependencies {
-    implementation "com.reach5.identity:sdk-google:4.0.0"
     implementation "com.reach5.identity:sdk-google:4.0.0"
 }
 ```

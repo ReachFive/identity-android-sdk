@@ -21,7 +21,7 @@ interface Provider {
     val name: String
 
     /**
-     * Is an identifier of the request, that identifies the return of an activity
+     * Identifier of the request, that identifies the return of an activity
      */
     val requestCode: Int
 
@@ -42,6 +42,3 @@ interface Provider {
 
     fun logout() {}
 }
-
-
-
