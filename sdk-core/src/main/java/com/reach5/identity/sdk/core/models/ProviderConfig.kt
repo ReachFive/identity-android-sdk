@@ -7,21 +7,21 @@ data class ProviderConfig(
     val provider: String,
     val clientId: String,
     val clientSecret: String?,
-    val scope: Set<String>
+    val scope: Set<String>?
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString(),
-        parcel.createStringArrayList()?.toSet()!!
+        parcel.createStringArrayList()?.toSet() ?: setOf<String>()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(provider)
         parcel.writeString(clientId)
         parcel.writeString(clientSecret)
-        parcel.writeStringList(scope.toList())
+        parcel.writeStringList(scope?.toList())
     }
 
     override fun describeContents(): Int {

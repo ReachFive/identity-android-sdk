@@ -52,7 +52,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
 
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestScopes(Scope(Scopes.OPEN_ID), *providerConfig.scope.map { s -> Scope(s) }.toTypedArray())
+            .requestScopes(Scope(Scopes.OPEN_ID), *(providerConfig.scope ?: setOf()).map { s -> Scope(s) }.toTypedArray())
             .requestServerAuthCode(providerConfig.clientId)
             .requestEmail()
 
@@ -113,7 +113,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
             clientId = sdkConfig.clientId,
             code = code,
             origin = origin,
-            scope = providerConfig.scope.joinToString(" ")
+            scope = (providerConfig.scope ?: setOf("openid")).joinToString(" ")
         )
         reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure))
     }
