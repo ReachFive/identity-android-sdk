@@ -50,6 +50,11 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
         FacebookSdk.sdkInitialize(context)
     }
 
+    override fun login(origin: String, activity: Activity) {
+        Log.d(TAG, "login with native provider")
+        this.origin = origin
+        LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)
+    }
 
     override fun onActivityResult(
         requestCode: Int,
@@ -90,11 +95,5 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
             }
         })
         callbackManager.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun login(origin: String, activity: Activity) {
-        Log.d(TAG, "login with native provider")
-        this.origin = origin
-        LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)
     }
 }

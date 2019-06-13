@@ -20,15 +20,30 @@ interface ProviderCreator {
  * Common interface of the provider
  */
 interface Provider {
+
     val name: String
+
     /**
-     * Is an identifier of the request, tha identifies the return of an activity
+     * Is an identifier of the request, that identifies the return of an activity
      */
     val requestCode: Int
+
+    /**
+     * Initiate login action
+     */
     fun login(origin: String, activity: Activity)
+
+    /**
+     * Handle activity result of login action
+     */
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<OpenIdTokenResponse>, failure: Failure<ReachFiveError>)
+
+    /**
+     * On stop activity lifecycle
+     */
     fun onStop() {}
-    fun logout() { /* TODO */ }
+
+    fun logout() {}
 }
 
 

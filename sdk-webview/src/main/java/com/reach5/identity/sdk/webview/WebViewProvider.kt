@@ -37,7 +37,7 @@ class ConfiguredWebViewProvider(
     companion object {
         const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
         const val OpenIdTokenResponse = "OpenIdTokenResponse"
-        const val RequestCode = 4322
+        const val RequestCode = 52558689
         const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
 
@@ -62,7 +62,7 @@ class ConfiguredWebViewProvider(
         return if (openIdTokenResponse != null) {
             success(openIdTokenResponse)
         } else {
-            failure(ReachFiveError.from("No intent")) // TODO better message
+            failure(ReachFiveError.from("No token into activity result"))
         }
     }
 

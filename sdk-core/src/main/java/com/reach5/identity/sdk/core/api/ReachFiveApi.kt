@@ -47,7 +47,7 @@ class ReachFiveApiCallback<T>(val success: Success<T>, val failure: Failure<Reac
         failure(ReachFiveError.from(t.message ?: t.toString()))
     }
 
-    override fun onResponse(call: Call<T>, response: retrofit2.Response<T>) {
+    override fun onResponse(call: Call<T>, response: Response<T>) {
         val body = response.body()
         val status = response.code()
         Log.d("Reach5_ApiCallB", "ReachFiveApiCallback onResponse $status")

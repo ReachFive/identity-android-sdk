@@ -55,7 +55,7 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
         return providers
     }
 
-    fun loginWithNativeProvider(name: String, origin: String, activity: Activity) {
+    fun loginWithProvider(name: String, origin: String, activity: Activity) {
         getProvider(name)?.login(origin, activity)
     }
 

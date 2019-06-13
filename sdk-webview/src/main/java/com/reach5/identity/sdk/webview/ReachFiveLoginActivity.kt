@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.reachfive_login_activity.*
 import java.util.regex.Pattern
 
 class ReachFiveLoginActivity : Activity() {
-    private val TAG = "Reach5_R5LoginActivity"
+    private val TAG = "R5"
 
     private var openIdTokenResponse: OpenIdTokenResponse? = null
 
@@ -58,7 +58,6 @@ class ReachFiveLoginActivity : Activity() {
     }
 
     fun loginSuccess(openIdTokenResponse: OpenIdTokenResponse) {
-        Log.d(TAG,"loginSuccess $openIdTokenResponse")
         val intent = Intent()
         intent.putExtra(ConfiguredWebViewProvider.OpenIdTokenResponse, openIdTokenResponse)
         setResult(ConfiguredWebViewProvider.RequestCode, intent)
@@ -72,12 +71,10 @@ class ReachFiveLoginActivity : Activity() {
 
     inner class ReachFiveWebViewClient: WebViewClient() {
 
-        private val TAG = "Reach5_R5WVClient"
         private val PATTERN = Pattern.compile("^(reachfive:\\/\\/callback#)(.*)$")
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            Log.d(TAG, "loading started")
             if (url != null) {
                 handleUrlLoading(url)
             }
@@ -113,15 +110,14 @@ class ReachFiveLoginActivity : Activity() {
         }
 
         private fun handleUrlLoading(url: String): Boolean {
-            //Log.d(TAG, "handleUrlLoading : url=$url")
             val matcher = PATTERN.matcher(url)
             return if (matcher.matches()) {
-                Log.d(TAG, "match handleUrlLoading : url=$url")
                 val queryStrings = parseQueryStringFragment(url)
                 // avoid multiple calls
                 if (openIdTokenResponse == null) {
-                    openIdTokenResponse = OpenIdTokenResponse.fromQueryString(queryStrings)
-                    loginSuccess(OpenIdTokenResponse.fromQueryString(queryStrings))
+                    val token = OpenIdTokenResponse.fromQueryString(queryStrings)
+                    openIdTokenResponse = token
+                    loginSuccess(token)
                 }
                 false
             } else {
