@@ -36,6 +36,9 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.signupWithPassword(profile, success::call, failure::call)
     }
 
+    /**
+     * @param username You can use email or phone number
+     */
     fun loginWithPassword(
         username: String,
         password: String,

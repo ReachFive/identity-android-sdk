@@ -73,6 +73,9 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         }, failure))
     }
 
+    /**
+     * @param username You can use email or phone number
+     */
     fun loginWithPassword(
         username: String,
         password: String,
