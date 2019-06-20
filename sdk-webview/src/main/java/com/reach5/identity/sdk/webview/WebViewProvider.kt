@@ -17,7 +17,7 @@ class WebViewProvider : ProviderCreator {
         providerConfig: ProviderConfig,
         sdkConfig: SdkConfig,
         reachFiveApi: ReachFiveApi,
-        context: Context
+        activity: Activity
     ): Provider {
         return ConfiguredWebViewProvider(providerConfig, sdkConfig)
     }
@@ -65,5 +65,9 @@ class ConfiguredWebViewProvider(
 
     override fun toString(): String {
         return providerConfig.provider
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
+        // Do nothing
     }
 }

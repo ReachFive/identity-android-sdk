@@ -3,6 +3,7 @@ package com.reach5.identity.sdk.google
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import com.google.android.gms.auth.api.Auth
@@ -29,18 +30,19 @@ class GoogleProvider : ProviderCreator {
 
     override val name: String = NAME
 
-    override fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, context: Context): Provider {
-        return ConfiguredGoogleProvider(providerConfig, sdkConfig, reachFiveApi, context)
+    override fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, activity: Activity): Provider {
+        return ConfiguredGoogleProvider(providerConfig, sdkConfig, reachFiveApi, activity)
     }
 }
 
-class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, private val sdkConfig: SdkConfig, private val reachFiveApi: ReachFiveApi, context: Context) : Provider {
+class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, private val sdkConfig: SdkConfig, private val reachFiveApi: ReachFiveApi, private val activity: Activity): Provider {
     private lateinit var origin: String
 
     private val googleApiClient: GoogleApiClient
 
     companion object {
-        const val REQUEST_CODE = 142
+        const val REQUEST_CODE = 14267
+        const val PERMISSIONS_REQUEST_GET_ACCOUNTS = 14278
         private const val TAG = "Reach5_CGProvider"
     }
 
@@ -56,7 +58,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
             .requestServerAuthCode(providerConfig.clientId)
             .requestEmail()
 
-        googleApiClient = GoogleApiClient.Builder(context)
+        googleApiClient = GoogleApiClient.Builder(activity.applicationContext)
             .addConnectionCallbacks(object : ConnectionCallbacks {
                 override fun onConnected(bundle: Bundle?) {
                     Log.d(TAG, "GoogleProvider.onConnected")
@@ -99,6 +101,16 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
             }
         } catch (e: ApiException) {
             failure(ReachFiveError.from(e))
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
+        if (PERMISSIONS_REQUEST_GET_ACCOUNTS == requestCode) {
+            if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                login(origin, activity)
+            } else {
+                failure(ReachFiveError.from("permission denied"))
+            }
         }
     }
 

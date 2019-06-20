@@ -9,7 +9,7 @@ import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 
-class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCreators: List<ProviderCreator>) {
+class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersCreators: List<ProviderCreator>) {
 
     companion object {
         private const val TAG = "Reach5_ReachFive"
@@ -37,8 +37,8 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
         return providersConfigsResult.items?.mapNotNull { config ->
             val nativeProvider = providersCreators.find { it.name == config.provider }
             when {
-                nativeProvider != null -> nativeProvider.create(config, sdkConfig, reachFiveApi, context)
-                webViewProvider != null -> webViewProvider.create(config, sdkConfig, reachFiveApi, context)
+                nativeProvider != null -> nativeProvider.create(config, sdkConfig, reachFiveApi, activity)
+                webViewProvider != null -> webViewProvider.create(config, sdkConfig, reachFiveApi, activity)
                 else -> {
                     Log.w(TAG, "Non supported provider found, please add webview or native provider")
                     null
@@ -95,6 +95,15 @@ class ReachFive(val context: Context, val sdkConfig: SdkConfig, val providersCre
         val provider =  providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
             provider.onActivityResult(requestCode, resultCode, data, success, failure)
+        } else {
+            failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
+        }
+    }
+
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
+        val provider =  providers.find { p -> p.requestCode == requestCode }
+        if (provider != null) {
+            provider.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
         } else {
             failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
         }

@@ -26,12 +26,12 @@ class FacebookProvider : ProviderCreator {
 
     override val name: String = NAME
 
-    override fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, context: Context): Provider {
-        return ConfiguredFacebookProvider(providerConfig, sdkConfig, reachFiveApi, context)
+    override fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, activity: Activity): Provider {
+        return ConfiguredFacebookProvider(providerConfig, sdkConfig, reachFiveApi, activity)
     }
 }
 
-class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, val reachFiveApi: ReachFiveApi, context: Context): Provider {
+class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, val reachFiveApi: ReachFiveApi, activity: Activity): Provider {
     companion object {
         const val TAG = "Reach5_FbProvider"
     }
@@ -47,7 +47,7 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
         FacebookSdk.setApplicationId(providerConfig.clientId)
         // FIXME resolve deprecation
         @Suppress("DEPRECATION")
-        FacebookSdk.sdkInitialize(context)
+        FacebookSdk.sdkInitialize(activity.applicationContext)
     }
 
     override fun login(origin: String, activity: Activity) {
@@ -95,5 +95,9 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
             }
         })
         callbackManager.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
+        // Do nothing
     }
 }

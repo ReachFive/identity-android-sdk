@@ -12,6 +12,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
 import java.lang.Exception
@@ -38,14 +39,14 @@ class MainActivity : AppCompatActivity() {
 
         val providersCreators = listOf(
             GoogleProvider(),
-            //FacebookProvider(),
+            FacebookProvider(),
             WebViewProvider()
         )
 
         this.reach5 = ReachFive(
             sdkConfig = sdkConfig,
             providersCreators = providersCreators,
-            context = applicationContext
+            activity = this
         ).initialize({
             providerAdapter.refresh(it)
         }, {
@@ -114,12 +115,16 @@ class MainActivity : AppCompatActivity() {
             handleLoginSuccess(it)
         }, failure = {
             Log.d(TAG, "onActivityResult error=$it")
+            it.exception?.printStackTrace()
             showToast("LoginProvider error=${it.message}")
         })
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.d("ReachFive", "MainActivity.onRequestPermissionsResult requestCode=$requestCode permissions=$permissions grantResults=$grantResults")
+        reach5.onRequestPermissionsResult(requestCode, permissions, grantResults, failure = {
+
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

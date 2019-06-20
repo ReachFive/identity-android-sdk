@@ -10,7 +10,7 @@ import com.reach5.identity.sdk.core.utils.Success
 
 interface ProviderCreator {
     val name: String
-    fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, context: Context): Provider
+    fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, activity: Activity): Provider
 }
 
 /**
@@ -34,6 +34,8 @@ interface Provider {
      * Handle activity result of login action
      */
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>)
+
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>)
 
     /**
      * On stop activity lifecycle

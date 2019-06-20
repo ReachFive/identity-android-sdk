@@ -9,8 +9,8 @@ import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.utils.Callback
 
-class JavaReachFive(context: Context, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
-    private val reach5 = ReachFive(context, sdkConfig, providersCreators)
+class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
+    private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
 
     fun initialize(success: Callback<List<Provider>>, failure: Callback<ReachFiveError>): ReachFive {
         return reach5.initialize(success::call, failure::call)
