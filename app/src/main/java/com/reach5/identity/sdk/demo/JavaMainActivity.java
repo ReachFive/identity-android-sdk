@@ -34,8 +34,8 @@ public class JavaMainActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.toolbar));
 
         SdkConfig sdkConfig = new SdkConfig(
-            "local-sandbox.og4.me",
-            "sg48CdAYohRPeRWZ9j1H"
+            "sdk-mobile-sandbox.reach5.net",
+            "TYAIHFRJ2a1FGJ1T8pKD"
         );
 
         Objects.requireNonNull(getSupportActionBar()).setTitle("Java Sdk Example");
@@ -49,8 +49,8 @@ public class JavaMainActivity extends AppCompatActivity {
         reach5.initialize(providers ->
             providerAdapter.refresh(providers)
         , error -> {
-            Log.d(TAG, "ReachFive init ${it.message}");
-            showToast("ReachFive init ${it.message}");
+            Log.d(TAG, "ReachFive init " + error.getMessage());
+            showToast("ReachFive init " + error.getMessage());
         });
 
         providerAdapter = new ProvidersAdapter(getApplicationContext(), reach5.getProviders());
