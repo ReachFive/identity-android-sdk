@@ -93,18 +93,16 @@ public class JavaMainActivity extends AppCompatActivity {
 
     private void handleLoginSuccess(AuthToken authToken) {
         User user = authToken.getUser();
-        Log.d(TAG, "loginWithPassword user=$user success=$openIdTokenResponse");
         Objects.requireNonNull(getSupportActionBar()).setTitle(user.getEmail());
-        showToast("Login success=${user?.email} token=${openIdTokenResponse.accessToken}");
+        showToast("Login success " + authToken.getAccessToken());
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("ReachFive", "MainActivity.onActivityResult requestCode=$requestCode resultCode=$resultCode");
         reach5.onActivityResult(requestCode, resultCode, data, this::handleLoginSuccess, it -> {
-            Log.d(TAG, "onActivityResult error=$it");
-            showToast("LoginProvider error=${it.message}");
+            Log.d(TAG, "onActivityResult error=" + it.getMessage());
+            showToast("LoginProvider error=" + it.getMessage());
         });
     }
 
