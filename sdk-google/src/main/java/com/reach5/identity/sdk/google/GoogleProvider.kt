@@ -66,7 +66,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
                 }
             })
             .addOnConnectionFailedListener { connectionResult ->
-                Log.d(TAG, "addOnConnectionFailedListener $connectionResult")
+                Log.e(TAG, "addOnConnectionFailedListener $connectionResult")
             }
             .addApi(Auth.GOOGLE_SIGN_IN_API, gso.build())
             .build()

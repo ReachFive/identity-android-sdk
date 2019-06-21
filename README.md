@@ -25,7 +25,7 @@ Add repository in `build.gradle`
 repositories {
     jcenter()
 
-    // Temporary repository, in the future it will be stored into jcenter
+    // Developpement repository, in the future it will be stored into jcenter
     maven {
         url  "https://dl.bintray.com/reachfive/identity-sdk"
     }
@@ -114,11 +114,39 @@ Add these lines into `AndroidManifest.xml`
 ### Google native provider
 This module use Google Native SDK to provider better user experience
 #### Configuration
-(https://support.reach5.co/article/5-create-google-application)[Google Connect]
 
-https://developers.google.com/android/guides/google-services-plugin#adding_the_json_file
+To use Google's native SDK you need to create a Google app, the steps are described in this article (https://support.reach5.co/article/5-create-google-application)[Google Connect]
 
-https://developers.google.com/android/guides/client-auth
+Once the application is created, you need an 'ID client Oauth` specific to Android apps, you can create it by selecting Android, fill in an application name, package name and a SHA1 signature digest that you can retrieve with the following command (more infos https://developers.google.com/android/guides/client-auth)
+
+```sh
+keytool -exportcert -keystore path-to-debug-or-production-keystore -list -v
+```
+
+You have to use the Firebase Google Services, for that you have to create a Firebase project on https://console.firebase.google.com then you have to create an application by clicking on the logo of android
+
+Enter the name of the package the name of the application and the signature SHA-1, download the file `google-services.json` and put it in the root of your project Android, more information in https://firebase.google.com/docs/android/setup or https://developers.google.com/android/guides/google-services-plugin#adding_the_json_file
+
+Add these lines in this file `build.gradle`
+```gradle
+buildscript {
+    dependencies {
+        classpath 'com.google.gms:google-services:4.2.0'
+    }
+}
+```
+
+Make sure the google repository is there
+```
+repositories {
+    google()
+}
+```
+
+Then in `app/build.gradle` add the following line to activate the plugin
+```
+apply plugin: 'com.google.gms.google-services'
+```
 
 ##### Dependency
 ```groovy
@@ -164,7 +192,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
 this.reach5.loginWithProvider(GoogleProvider.NAME, "origin", this)
 // or
 this.reach5.loginWithProvider("paypal", "origin", this)
-
 ```
 
 ### Login with Password
@@ -194,7 +221,6 @@ this.reach5.loginWithPassword(
 )
 ```
 
-
 ### Handle activity result
 ```kotlin
 public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -217,18 +243,4 @@ override fun onStop() {
     super.onStop()
     reach5.onStop()
 }
-```
-
-## Android simulator
-
-### Using local sandbox
-
-[https://stackoverflow.com/questions/41117715/how-to-edit-etc-hosts-file-in-android-studio-emulator-running-in-nougat](https://stackoverflow.com/questions/41117715/how-to-edit-etc-hosts-file-in-android-studio-emulator-running-in-nougat)
-
-```sh
-emulator -avd Nexus_6_API_28 -writable-system
-adb root
-adb remount
-adb push hosts /etc/hosts
-adb reboot
 ```
