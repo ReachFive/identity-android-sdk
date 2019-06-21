@@ -19,7 +19,7 @@
 
 ### Configure repository
 
-Add repository in your `build.gradle`
+Add repository in `build.gradle`
 
 ```groovy
 repositories {
@@ -89,6 +89,8 @@ dependencies {
 
 (https://support.reach5.co/article/4-create-facebook-application)[Facebook Connect]
 
+Note: if you use the latest version of facebook api, remove user_gender scope from reachfive client config
+
 Add this lines into your `string.xml` resources file with your Facebook application ID
 ```xml
 <resources>
@@ -96,7 +98,7 @@ Add this lines into your `string.xml` resources file with your Facebook applicat
 </resources>
 ```
 
-And into `AndroidManifest.xml` add these lines
+Add these lines into `AndroidManifest.xml` 
 
 ```xml
 <meta-data
