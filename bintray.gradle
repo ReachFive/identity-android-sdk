@@ -10,7 +10,7 @@ install {
         pom.project {
             name 'Reachfive'
             description 'SDK'
-            url 'https://github.com/ReachFive/identity-android-sdk-poc'
+            url 'https://github.com/ReachFive/identity-android-sdk'
             inceptionYear '2019'
 
             packaging 'aar'
@@ -25,8 +25,8 @@ install {
                 }
             }
             scm {
-                connection 'https://github.com/ReachFive/identity-android-sdk-poc.git'
-                url 'https://github.com/ReachFive/identity-android-sdk-poc'
+                connection 'https://github.com/ReachFive/identity-android-sdk.git'
+                url 'https://github.com/ReachFive/identity-android-sdk'
 
             }
             developers {
@@ -48,7 +48,7 @@ bintray {
         name = moduleArtifactId // must be same of library name as bintray
         userOrg = 'reachfive' // this is username of bintray account
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/ReachFive/identity-android-sdk-poc'
+        vcsUrl = 'https://github.com/ReachFive/identity-android-sdk'
         publish = true
         version {
             name = this.version
