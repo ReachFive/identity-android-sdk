@@ -125,6 +125,98 @@ dependencies {
 }
 ```
 
+## Usage with kotlin
+
+### Initialaze the SDK
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+    // ...
+
+    val sdkConfig = SdkConfig(
+        domain = "sdk-mobile-sandbox.reach5.net",
+        clientId = "TYAIHFRJ2a1FGJ1T8pKD"
+    )
+
+    val providersCreators = listOf(
+        GoogleProvider(),
+        FacebookProvider(),
+        WebViewProvider()
+    )
+
+    this.reach5 = ReachFive(
+        sdkConfig = sdkConfig,
+        providersCreators = providersCreators,
+        activity = this
+    )
+
+    this.reach5.initialize({ providers ->
+        // You can use this list of providers to show buttons
+    }, { error ->
+        Log.d(TAG, "ReachFive SDK init error ${error.message}")
+    })
+}
+```
+
+### Login with Provider
+```kotlin
+this.reach5.loginWithProvider(GoogleProvider.NAME, "origin", this)
+// or
+this.reach5.loginWithProvider("paypal", "origin", this)
+
+```
+
+### Login with Password
+```kotlin
+this.reach5.loginWithPassword(
+    Profile(
+        email = username.text.toString(),
+        password = password.text.toString()
+    ), success = {
+    handleLoginSuccess(it)
+}, failure = {
+    Log.d(TAG, "loginWithPassword error=$it")
+})
+```
+
+### Signup with Password
+```kotlin
+this.reach5.loginWithPassword(
+    username = username.text.toString(),
+    password = password.text.toString(),
+    success = {
+        handleLoginSuccess(it)
+    },
+    failure = {
+        Log.d(TAG, "signupWithPassword error=$it")
+    }
+)
+```
+
+
+### Handle activity result
+```kotlin
+public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    this.reach5.onActivityResult(requestCode, resultCode, data, success = { authToken ->
+        // Content user information
+        val user = authToken.user
+        val accessToken = authToken.accessToken
+    }, failure = {
+        Log.d(TAG, "onActivityResult error=$it")
+        it.exception?.printStackTrace()
+    })
+}
+```
+
+### Stop the SDK
+
+```kotlin
+override fun onStop() {
+    super.onStop()
+    reach5.onStop()
+}
+```
+
 ## Android simulator
 
 ### Using local sandbox
