@@ -63,7 +63,6 @@ class ReachFiveApiCallback<T>(val success: Success<T>, val failure: Failure<Reac
         }
     }
 
-    // TODO find better solution
     private fun<T> tryOrNull(callback: () -> T): T? {
         return try {
             callback()

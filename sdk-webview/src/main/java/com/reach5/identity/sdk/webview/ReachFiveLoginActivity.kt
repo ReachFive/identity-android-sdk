@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.reachfive_login_activity.*
 import java.util.regex.Pattern
 
 class ReachFiveLoginActivity : Activity() {
-    private val TAG = "R5"
+    private val TAG = "Reach5"
 
     private var authTokenResponse: AuthTokenResponse? = null
 

@@ -1,7 +1,6 @@
 package com.reach5.identity.sdk.google
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -43,15 +42,13 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
     companion object {
         const val REQUEST_CODE = 14267
         const val PERMISSIONS_REQUEST_GET_ACCOUNTS = 14278
-        private const val TAG = "Reach5_CGProvider"
+        private const val TAG = "Reach5"
     }
 
     override val requestCode: Int = REQUEST_CODE
     override val name: String = GoogleProvider.NAME
 
     init {
-        Log.d(TAG, "GoogleProvider.init clientId=${providerConfig.clientId}")
-
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestScopes(Scope(Scopes.OPEN_ID), *(providerConfig.scope ?: setOf()).map { s -> Scope(s) }.toTypedArray())
@@ -76,7 +73,6 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
     }
 
     override fun login(origin: String, activity: Activity) {
-        Log.d(TAG, "GoogleProvider.login")
         this.origin = origin
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
         activity.startActivityForResult(signInIntent, REQUEST_CODE)
@@ -93,11 +89,10 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
         try {
             val account = task.getResult(ApiException::class.java)
             val authCode = account?.serverAuthCode
-            Log.d(TAG, "onActivityResult authCode=$authCode")
             if (authCode != null) {
                 loginWithProvider(authCode, origin, success, failure)
             } else {
-                failure(ReachFiveError.from("No auth code")) // TODO better message
+                failure(ReachFiveError.from("No auth code"))
             }
         } catch (e: ApiException) {
             failure(ReachFiveError.from(e))
@@ -106,7 +101,7 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
         if (PERMISSIONS_REQUEST_GET_ACCOUNTS == requestCode) {
-            if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 login(origin, activity)
             } else {
                 failure(ReachFiveError.from("permission denied"))

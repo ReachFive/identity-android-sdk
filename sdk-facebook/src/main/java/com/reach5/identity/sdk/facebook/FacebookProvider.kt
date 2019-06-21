@@ -1,9 +1,7 @@
 package com.reach5.identity.sdk.facebook
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -32,10 +30,6 @@ class FacebookProvider : ProviderCreator {
 }
 
 class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, val reachFiveApi: ReachFiveApi, activity: Activity): Provider {
-    companion object {
-        const val TAG = "Reach5_FbProvider"
-    }
-
     override val requestCode: Int = 64206
     override val name: String = FacebookProvider.NAME
 
@@ -51,7 +45,6 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
     }
 
     override fun login(origin: String, activity: Activity) {
-        Log.d(TAG, "login with native provider")
         this.origin = origin
         LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)
     }

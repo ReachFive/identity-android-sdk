@@ -1,7 +1,6 @@
 package com.reach5.identity.sdk.core
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.reach5.identity.sdk.core.api.*
@@ -12,7 +11,7 @@ import com.reach5.identity.sdk.core.utils.Success
 class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersCreators: List<ProviderCreator>) {
 
     companion object {
-        private const val TAG = "Reach5_ReachFive"
+        private const val TAG = "Reach5"
     }
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
@@ -26,7 +25,6 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     private fun providersConfigs(success: Success<List<Provider>>, failure: Failure<ReachFiveError>) {
         reachFiveApi.providersConfigs(SdkInfos.getQueries()).enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
-            Log.d(TAG, "providersConfigs success=$it")
             providers = createProviders(it)
             success(providers)
         }, failure))
@@ -64,13 +62,15 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        reachFiveApi.signupWithPassword(
-            SignupRequest(
-                clientId = sdkConfig.clientId,
-                data = profile
-            ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
-            it.toAuthToken().fold(success, failure)
-        }, failure))
+        val signupRequest = SignupRequest(
+            clientId = sdkConfig.clientId,
+            data = profile
+        )
+        reachFiveApi
+            .signupWithPassword(signupRequest, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback({
+                it.toAuthToken().fold(success, failure)
+            }, failure))
     }
 
     /**
@@ -94,7 +94,6 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>) {
-        Log.d(TAG, "ReachFive.onActivityResult requestCode=$requestCode")
         val provider =  providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
             provider.onActivityResult(requestCode, resultCode, data, success, failure)
@@ -113,8 +112,6 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun logout(callback: () -> Unit) {
-        Log.d(TAG, "ReachFive.logout")
-        // TODO
         providers.forEach {
             it.logout()
         }.also {
