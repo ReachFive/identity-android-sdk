@@ -15,17 +15,18 @@
 ## Installation
 
 ### IDE: Android studio
-(https://developer.android.com/studio)[https://developer.android.com/studio]
 
-### Configure repository
+Install [Android Studio](https://developer.android.com/studio).
 
-Add repository in `build.gradle`
+### Repository configuration
+
+Add the repository in `build.gradle`.
 
 ```groovy
 repositories {
     jcenter()
 
-    // Developpement repository, in the future it will be stored into jcenter
+    // Development repository, in the future it will be stored into JCenter
     maven {
         url  "https://dl.bintray.com/reachfive/identity-sdk"
     }
@@ -37,7 +38,10 @@ repositories {
 This SDK is modular and you only need to import what you really plan on using. The only mandatory part is SDK Core.
 
 ### SDK Core (required)
+
 It contains all the main tools and interfaces, as well as methods related to standard authentication by identifier and password.
+
+It contains all common tools and interfaces, authentication with passwords.
 
 ```groovy
 dependencies {
@@ -50,13 +54,18 @@ The following permissions are required to communicate with ReachFive servers `An
 Add them into:
 
 ```xml
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.USE_CREDENTIALS" />
+<manifest>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+</manifest>
 ```
 
 ### SDK WebView
+
 This module uses a WebView to authenticate users, it enables all providers that are supported by ReachFive.
+
+This module use WebView to authenticate users, it give all providers supported by ReachFive.
 
 ```groovy
 dependencies {
@@ -64,7 +73,7 @@ dependencies {
 }
 ```
 
-You need to add this activity into `AndroidManifest.xml`
+You need to add this activity into `AndroidManifest.xml`.
 
 ```xml
 <activity
@@ -87,36 +96,39 @@ dependencies {
 
 #### Configuration
 
-(https://support.reach5.co/article/4-create-facebook-application)[Facebook Connect]
+[Facebook Connect](https://support.reach5.co/article/4-create-facebook-application)
 
-Note: if you're using the latest version of the Facebook API, please remove the user_gender scope from the ReachFive client config to avoid issues.
+Note: if you're using the latest version of the Facebook API, please remove the `user_gender` scope from the ReachFive client config to avoid issues.
 
-Add this line into your `string.xml` resource file with your Facebook application ID
+Add this line into your `string.xml` resource file with your Facebook application ID.
+
 ```xml
 <resources>
-    <string name="facebook_app_id">XXXXXXXXXXXXXXX</string>
+    <string name="facebook_app_id">FACEBOOK_APPLICATION_ID</string>
 </resources>
 ```
 
 And add these lines into `AndroidManifest.xml` 
 
 ```xml
-<meta-data
-    android:name="com.facebook.sdk.ApplicationId"
-    android:value="@string/facebook_app_id" />
-
-<activity
-    android:name="com.facebook.FacebookActivity"
-    android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-    android:label="@string/app_name" />
+<manifest>
+    <meta-data
+        android:name="com.facebook.sdk.ApplicationId"
+        android:value="@string/facebook_app_id" />
+    <activity
+        android:name="com.facebook.FacebookActivity"
+        android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+        android:label="@string/app_name" />
+</manifest>
 ```
 
 ### Google native provider
+
 This module uses the Google native SDK to provide a better user experience.
 
 #### Configuration
 
-To use Google's native SDK you need to create a Google app, the steps are described in this article (https://support.reach5.co/article/5-create-google-application)[Google Connect]
+To use Google's native SDK you need to create a Google app, the steps are described in this article [Google Connect](https://support.reach5.co/article/5-create-google-application).
 
 Once the application is created, you need an 'ID client Oauth` specific to Android apps, you can create it by selecting Android, filling in an application name, package name and a SHA1 signature digest that you can retrieve with the following command (more infos https://developers.google.com/android/guides/client-auth)
 
@@ -126,9 +138,11 @@ keytool -exportcert -keystore path-to-debug-or-production-keystore -list -v
 
 You have to use Google's Firebase services. In order to do so, you need to create a Firebase project on https://console.firebase.google.com then you have to create an application by clicking on Android logo.
 
-Enter the name of the package, the name of the application, and the SHA-1 signature. Then, download the file `google-services.json` and put it in the root of your Android project. You can find more information here: https://firebase.google.com/docs/android/setup or https://developers.google.com/android/guides/google-services-plugin#adding_the_json_file
+Enter the name of the package, the name of the application, and the SHA-1 signature. Then, download the file `google-services.json` and put it in the root of your Android project
+You can find more information here: https://firebase.google.com/docs/android/setup or https://developers.google.com/android/guides/google-services-plugin#adding_the_json_file
 
-Add these lines in this file `build.gradle`
+Add these lines in this file `build.gradle`.
+
 ```gradle
 buildscript {
     dependencies {
@@ -137,7 +151,8 @@ buildscript {
 }
 ```
 
-Make sure the google repository is there
+Make sure the Google repository is there.
+
 ```
 repositories {
     google()
@@ -145,11 +160,13 @@ repositories {
 ```
 
 Then in `app/build.gradle`, add the following line to activate the plugin:
+
 ```
 apply plugin: 'com.google.gms.google-services'
 ```
 
 ##### Dependency
+
 ```groovy
 dependencies {
     implementation "com.reach5.identity:sdk-google:4.0.0"
@@ -158,7 +175,8 @@ dependencies {
 
 ## Usage with Kotlin
 
-### Initialaze the SDK
+### Initialize the SDK
+
 ```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
     // ...
@@ -181,7 +199,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     )
 
     this.reach5.initialize({ providers ->
-        // You can use this list of providers to show buttons
+        // You can use this list of providers to display buttons
     }, { error ->
         Log.d(TAG, "ReachFive SDK init error ${error.message}")
     })
@@ -189,13 +207,15 @@ override fun onCreate(savedInstanceState: Bundle?) {
 ```
 
 ### Login with Provider
+
 ```kotlin
 this.reach5.loginWithProvider(GoogleProvider.NAME, "origin", this)
 // or
 this.reach5.loginWithProvider("paypal", "origin", this)
 ```
 
-### Login with Password
+### Login with password
+
 ```kotlin
 this.reach5.loginWithPassword(
     Profile(
@@ -208,7 +228,8 @@ this.reach5.loginWithPassword(
 })
 ```
 
-### Signup with Password
+### Sign-up with password
+
 ```kotlin
 this.reach5.loginWithPassword(
     username = username.text.toString(),
@@ -223,6 +244,7 @@ this.reach5.loginWithPassword(
 ```
 
 ### Handle activity result
+
 ```kotlin
 public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
