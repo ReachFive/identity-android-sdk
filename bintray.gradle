@@ -1,0 +1,60 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    moduleArtifactId = POM_ARTIFACT_ID
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name 'Reachfive'
+            description 'SDK'
+            url 'https://github.com/ReachFive/identity-android-sdk'
+            inceptionYear '2019'
+
+            packaging 'aar'
+            groupId this.group
+            artifactId moduleArtifactId
+            version this.version
+
+            licenses {
+                license {
+                    name 'The MIT License (MIT)'
+                    url 'https://opensource.org/licenses/MIT'
+                }
+            }
+            scm {
+                connection 'https://github.com/ReachFive/identity-android-sdk.git'
+                url 'https://github.com/ReachFive/identity-android-sdk'
+
+            }
+            developers {
+                developer {
+                    id = 'reachfive'
+                    name 'Reachfive'
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    configurations = ['archives']
+    pkg {
+        repo = 'identity-sdk' // must be same as on bintray repo name
+        name = moduleArtifactId // must be same of library name as bintray
+        userOrg = 'reachfive' // this is username of bintray account
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/ReachFive/identity-android-sdk'
+        publish = true
+        version {
+            name = this.version
+            desc = "Version ${this.version}"
+            released = new Date()
+            vcsTag = "v${this.version}"
+        }
+    }
+}
