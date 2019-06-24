@@ -34,10 +34,10 @@ repositories {
 
 ## Getting Started
 
-This SDK is modular and you import only what you really using, only the SDK Core is required
+This SDK is modular and you only need to import what you really plan on using. The only mandatory part is SDK Core.
 
 ### SDK Core (required)
-It containt all common tools and interfaces, authentication with passwords
+It contains all the main tools and interfaces, as well as methods related to standard authentication by identifier and password.
 
 ```groovy
 dependencies {
@@ -45,9 +45,9 @@ dependencies {
 }
 ```
 
-These permissions is required to communicate with ReachFive servers
+The following permissions are required to communicate with ReachFive servers `AndroidManifest.xml`.
 
-Add them into `AndroidManifest.xml`
+Add them into:
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -56,7 +56,7 @@ Add them into `AndroidManifest.xml`
 ```
 
 ### SDK WebView
-This module use WebView to authenticate users, it give all providers supported by reachfive 
+This module uses a WebView to authenticate users, it enables all providers that are supported by ReachFive.
 
 ```groovy
 dependencies {
@@ -74,7 +74,7 @@ You need to add this activity into `AndroidManifest.xml`
 
 ### Facebook native provider
 
-This module use Facebook native SDK to provider better user experience
+This module uses the Facebook native SDK to provider better user experience.
 
 #### Dependencies
 
@@ -89,16 +89,16 @@ dependencies {
 
 (https://support.reach5.co/article/4-create-facebook-application)[Facebook Connect]
 
-Note: if you use the latest version of facebook api, remove user_gender scope from reachfive client config
+Note: if you're using the latest version of the Facebook API, please remove the user_gender scope from the ReachFive client config to avoid issues.
 
-Add this lines into your `string.xml` resources file with your Facebook application ID
+Add this line into your `string.xml` resource file with your Facebook application ID
 ```xml
 <resources>
     <string name="facebook_app_id">XXXXXXXXXXXXXXX</string>
 </resources>
 ```
 
-Add these lines into `AndroidManifest.xml` 
+And add these lines into `AndroidManifest.xml` 
 
 ```xml
 <meta-data
@@ -112,20 +112,21 @@ Add these lines into `AndroidManifest.xml`
 ```
 
 ### Google native provider
-This module use Google Native SDK to provider better user experience
+This module uses the Google native SDK to provide a better user experience.
+
 #### Configuration
 
 To use Google's native SDK you need to create a Google app, the steps are described in this article (https://support.reach5.co/article/5-create-google-application)[Google Connect]
 
-Once the application is created, you need an 'ID client Oauth` specific to Android apps, you can create it by selecting Android, fill in an application name, package name and a SHA1 signature digest that you can retrieve with the following command (more infos https://developers.google.com/android/guides/client-auth)
+Once the application is created, you need an 'ID client Oauth` specific to Android apps, you can create it by selecting Android, filling in an application name, package name and a SHA1 signature digest that you can retrieve with the following command (more infos https://developers.google.com/android/guides/client-auth)
 
 ```sh
 keytool -exportcert -keystore path-to-debug-or-production-keystore -list -v
 ```
 
-You have to use the Firebase Google Services, for that you have to create a Firebase project on https://console.firebase.google.com then you have to create an application by clicking on the logo of android
+You have to use Google's Firebase services. In order to do so, you need to create a Firebase project on https://console.firebase.google.com then you have to create an application by clicking on Android logo.
 
-Enter the name of the package the name of the application and the signature SHA-1, download the file `google-services.json` and put it in the root of your project Android, more information in https://firebase.google.com/docs/android/setup or https://developers.google.com/android/guides/google-services-plugin#adding_the_json_file
+Enter the name of the package, the name of the application, and the SHA-1 signature. Then, download the file `google-services.json` and put it in the root of your Android project. You can find more information here: https://firebase.google.com/docs/android/setup or https://developers.google.com/android/guides/google-services-plugin#adding_the_json_file
 
 Add these lines in this file `build.gradle`
 ```gradle
@@ -143,7 +144,7 @@ repositories {
 }
 ```
 
-Then in `app/build.gradle` add the following line to activate the plugin
+Then in `app/build.gradle`, add the following line to activate the plugin:
 ```
 apply plugin: 'com.google.gms.google-services'
 ```
@@ -155,7 +156,7 @@ dependencies {
 }
 ```
 
-## Usage with kotlin
+## Usage with Kotlin
 
 ### Initialaze the SDK
 ```kotlin
