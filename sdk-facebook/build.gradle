@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+group = lib_group
+version = lib_version
+
+android {
+    compileSdkVersion compile_sdk_version
+
+    defaultConfig {
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+        versionCode version_code
+        versionName this.version
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // TODO remove
+    lintOptions {
+        abortOnError false
+    }
+
+}
+
+dependencies {
+    implementation project(':sdk-core')
+    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
+    implementation 'com.github.kittinunf.result:result:2.2.0'
+    implementation 'com.facebook.android:facebook-login:5.0.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url  "https://dl.bintray.com/reachfive/identity-sdk"
+    }
+}
+
+apply from: rootProject.file('bintray.gradle')
