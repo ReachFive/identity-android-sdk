@@ -50,7 +50,7 @@ class MainActivityTest {
     fun testSuccessfulSignup() {
         val client = instantiateReachFiveClient()
 
-        client.signupWithPassword(Profile(email = EMAIL, password = PASSWORD), {}, {})
+        client.signup(Profile(email = EMAIL, password = PASSWORD), {}, {})
     }
 
     @Test
@@ -63,7 +63,7 @@ class MainActivityTest {
 
 //        whenever(mocked.onSuccess(any())).thenThrow(Exception("This test should have failed because the email is empty."))
 
-        client.signupWithPassword(
+        client.signup(
             Profile(email = "", password = PASSWORD),
 //            { a -> mocked.onSuccess(a) },
             //mock.onFailure
@@ -88,7 +88,7 @@ class MainActivityTest {
     fun testFailedSignupWithWeakPassword() {
         val client = instantiateReachFiveClient()
 
-        client.signupWithPassword(
+        client.signup(
             Profile(email = EMAIL, password = "toto"),
             { fail("This test should have failed because the password is too weak.") },
             { error -> run {

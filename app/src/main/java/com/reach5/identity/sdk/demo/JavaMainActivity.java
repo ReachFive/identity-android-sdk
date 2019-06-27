@@ -72,8 +72,8 @@ public class JavaMainActivity extends AppCompatActivity {
         Profile profile = new Profile(username, password);
 
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
-            reach5.signupWithPassword(profile, this::handleLoginSuccess, failure -> {
-                Log.d(TAG, "signupWithPassword error=" + failure.getMessage());
+            reach5.signup(profile, this::handleLoginSuccess, failure -> {
+                Log.d(TAG, "signup error=" + failure.getMessage());
                 showToast("Signup With Password Error " + failure.getMessage());
             });
         });

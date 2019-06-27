@@ -64,14 +64,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         passwordSignup.setOnClickListener {
-            this.reach5.signupWithPassword(
+            this.reach5.signup(
                 Profile(
                     email = username.text.toString(),
                     password = password.text.toString()
                 ), success = {
                 handleLoginSuccess(it)
             }, failure = {
-                Log.d(TAG, "signupWithPassword error=$it")
+                Log.d(TAG, "signup error=$it")
                 showToast("Signup With Password Error ${it.message}")
             })
         }

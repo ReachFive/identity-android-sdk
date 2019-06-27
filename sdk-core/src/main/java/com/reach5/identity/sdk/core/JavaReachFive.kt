@@ -28,12 +28,12 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.loginWithProvider(name, origin, activity)
     }
 
-    fun signupWithPassword(
+    fun signup(
         profile: Profile,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.signupWithPassword(profile, success::call, failure::call)
+        return reach5.signup(profile, success::call, failure::call)
     }
 
     /**

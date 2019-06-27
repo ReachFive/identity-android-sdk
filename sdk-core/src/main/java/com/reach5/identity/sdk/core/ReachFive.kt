@@ -57,7 +57,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         getProvider(name)?.login(origin, activity)
     }
 
-    fun signupWithPassword(
+    fun signup(
         profile: Profile,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
@@ -67,7 +67,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             data = profile
         )
         reachFiveApi
-            .signupWithPassword(signupRequest, SdkInfos.getQueries())
+            .signup(signupRequest, SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback({
                 it.toAuthToken().fold(success, failure)
             }, failure))
