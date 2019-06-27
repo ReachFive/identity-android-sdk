@@ -18,7 +18,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     private var providers: List<Provider> = listOf()
 
-    fun initialize(success: Success<List<Provider>>, failure: Failure<ReachFiveError>): ReachFive {
+    fun initialize(success: Success<List<Provider>> = {}, failure: Failure<ReachFiveError> = {}): ReachFive {
         providersConfigs(success, failure)
         return this
     }
