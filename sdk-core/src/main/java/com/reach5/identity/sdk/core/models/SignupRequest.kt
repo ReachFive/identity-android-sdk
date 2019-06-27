@@ -22,7 +22,7 @@ data class Profile(
     val company: String? = null,
     val locale: String? = null,
     // TODO better type for address
-    val address: ProfileAddress? = null,
+    val addresses: List<ProfileAddress>? = null,
     @SerializedName("custom_fields")
     val customFields: Map<String, Any>? = null
 ) {
