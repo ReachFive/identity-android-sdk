@@ -3,7 +3,7 @@ package com.reach5.identity.sdk.core.models
 import com.google.gson.annotations.SerializedName
 
 data class Profile(
-    val email: String,
+    val email: String? = null,
     val password: String,
     @SerializedName("phone_number")
     val phoneNumber: String? = null,
@@ -37,7 +37,7 @@ data class SignupRequest(
     @SerializedName("client_id")
     val clientId: String,
     val data: Profile,
-    val scope: String = "openid profile email",
+    val scope: String,
     @SerializedName("accept_tos")
     val acceptTos: Boolean? = null
 )

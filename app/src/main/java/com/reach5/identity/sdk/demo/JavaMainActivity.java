@@ -19,7 +19,9 @@ import com.reach5.identity.sdk.core.models.User;
 import com.reach5.identity.sdk.google.GoogleProvider;
 import com.reach5.identity.sdk.webview.WebViewProvider;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class JavaMainActivity extends AppCompatActivity {
@@ -71,8 +73,10 @@ public class JavaMainActivity extends AppCompatActivity {
 
         Profile profile = new Profile(username, password);
 
+        List scope = Arrays.asList("openid", "profile", "email");
+
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
-            reach5.signup(profile, this::handleLoginSuccess, failure -> {
+            reach5.signup(profile, scope, this::handleLoginSuccess, failure -> {
                 Log.d(TAG, "signup error=" + failure.getMessage());
                 showToast("Signup With Password Error " + failure.getMessage());
             });

@@ -30,10 +30,11 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
 
     fun signup(
         profile: Profile,
+        scope: List<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.signup(profile, success::call, failure::call)
+        return reach5.signup(profile, scope, success::call, failure::call)
     }
 
     /**

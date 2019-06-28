@@ -59,12 +59,14 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     fun signup(
         profile: Profile,
+        scope: List<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val signupRequest = SignupRequest(
             clientId = sdkConfig.clientId,
-            data = profile
+            data = profile,
+            scope = scope.joinToString(" ")
         )
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())

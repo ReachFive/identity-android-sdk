@@ -12,15 +12,17 @@ import org.junit.runner.RunWith
 import org.junit.rules.ExpectedException
 import com.nhaarman.mockitokotlin2.*
 import com.reach5.identity.sdk.core.models.*
+import org.junit.Ignore
 import java.lang.Error
 import java.lang.Exception
 import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
-
+    // The SMS feature is enabled on this account
     private val DOMAIN = "sdk-mobile-sandbox.reach5.net"
     private val CLIENT_ID = "TYAIHFRJ2a1FGJ1T8pKD"
+    private val SCOPE = listOf("openid")
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -53,8 +55,9 @@ class MainActivityTest {
                 email = "test_john.doe@gmail.com",
                 password = "hjk90wxc"
             ),
+            SCOPE,
             { authToken -> assertNotNull(authToken) },
-            { fail("This test should have failed because the data are correct.") }
+            { fail("This test should not have failed because the data are correct.") }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -65,8 +68,8 @@ class MainActivityTest {
     fun testFailedSignupWithAlreadyUsedEmail() {
         val client = instantiateReachFiveClient()
 
-        val EMAIL = "test_sylvie.lamour@gmail.com"
-        val PASSWORD = "trcnjrn89"
+        val email = "test_sylvie.lamour@gmail.com"
+        val password = "trcnjrn89"
 
         client.signup(
             Profile(
@@ -74,15 +77,17 @@ class MainActivityTest {
                 familyName = "Lamour",
                 gender = "female",
                 addresses = listOf(ProfileAddress(country = "France")),
-                email = EMAIL,
-                password = PASSWORD
+                email = email,
+                password = password
             ),
+            SCOPE,
             { authToken -> run {
                 // Check that the returned authentication token is not null
                 assertNotNull(authToken)
 
                 client.signup(
-                    Profile(email = EMAIL, password = PASSWORD),
+                    Profile(email = email, password = password),
+                    SCOPE,
                     { fail("This test should have failed because the email is already used.") },
                     { error ->
                         run {
@@ -93,7 +98,7 @@ class MainActivityTest {
                     }
                 )
             } },
-            { fail("This test should have failed because the data are correct.") }
+            { fail("This test should not have failed because the data are correct.") }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -112,6 +117,7 @@ class MainActivityTest {
 
         client.signup(
             Profile(email = "", password = "jdhkzkzk"),
+            SCOPE,
 //            { a -> mocked.onSuccess(a) },
             //mock.onFailure
             { fail("This test should have failed because the email is empty.") },
@@ -134,11 +140,55 @@ class MainActivityTest {
     }
 
     @Test
-    fun testFailedSignupWithWeakPassword() {
+    fun testSuccessfulSignupWithPhoneNumber() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(
+                givenName = "Alita",
+                familyName = "Sylvain",
+                gender = "female",
+                phoneNumber = "+33656244150",
+                password = "hjk90wxc"
+            ),
+            SCOPE,
+            { authToken -> assertNotNull(authToken) },
+            { fail("This test should not have failed because the data are correct.") }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Ignore
+    @Test
+    fun testSuccessfulSignupWithLocalPhoneNumber() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(
+                givenName = "Belda",
+                familyName = "Fortier",
+                gender = "female",
+                phoneNumber = "0735745612",
+                password = "hjk00exc"
+            ),
+            listOf("openid", "profile", "phone"),
+            { authToken -> assertNotNull(authToken) },
+            { fail("This test should not have failed because the data are correct.") }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedSignupWeakPassword() {
         val client = instantiateReachFiveClient()
 
         client.signup(
             Profile(email = "test_marshall.babin@gmail.fr", password = "toto"),
+            SCOPE,
             { fail("This test should have failed because the password is too weak.") },
             { error -> run {
                 assertEquals(error.message, "Bad Request")
@@ -151,6 +201,24 @@ class MainActivityTest {
         sleep(1000)
     }
 
+    @Test
+    fun testFailedAuthTokenRetrievalWithMissingScope() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(
+                name = "Jeanette Hachee",
+                email = "test_jeanette.hachee@gmail.com",
+                password = "jdhkzkzk"
+            ),
+            listOf(),
+            {},
+            { error -> assertEquals(error.message, "No id_token returned, verify if you have the open_id scope configured into your API Client Settings") }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
 
     private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
         val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
