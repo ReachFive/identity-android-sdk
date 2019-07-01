@@ -23,6 +23,7 @@ class MainActivityTest {
     private val DOMAIN = "sdk-mobile-sandbox.reach5.net"
     private val CLIENT_ID = "TYAIHFRJ2a1FGJ1T8pKD"
     private val SCOPE = listOf("openid")
+    private val TEST_SHOULD_NOT_FAIL = "This test should not have failed because the data are correct."
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -40,7 +41,7 @@ class MainActivityTest {
         exceptionRule.expect(IllegalArgumentException::class.java)
         exceptionRule.expectMessage("Invalid URL host: \"\"")
 
-        instantiateReachFiveClient("","TYAIHFRJ2a1FGJ1T8pKD")
+        instantiateReachFiveClient("", CLIENT_ID)
     }
 
     @Test
@@ -57,7 +58,7 @@ class MainActivityTest {
             ),
             SCOPE,
             { authToken -> assertNotNull(authToken) },
-            { fail("This test should not have failed because the data are correct.") }
+            { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -98,7 +99,7 @@ class MainActivityTest {
                     }
                 )
             } },
-            { fail("This test should not have failed because the data are correct.") }
+            { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -153,7 +154,7 @@ class MainActivityTest {
             ),
             SCOPE,
             { authToken -> assertNotNull(authToken) },
-            { fail("This test should not have failed because the data are correct.") }
+            { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -170,12 +171,12 @@ class MainActivityTest {
                 givenName = "Belda",
                 familyName = "Fortier",
                 gender = "female",
-                phoneNumber = "0735745612",
+                phoneNumber = "0750253354",
                 password = "hjk00exc"
             ),
-            listOf("openid", "profile", "phone"),
+            SCOPE,
             { authToken -> assertNotNull(authToken) },
-            { fail("This test should not have failed because the data are correct.") }
+            { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -214,6 +215,121 @@ class MainActivityTest {
             listOf(),
             {},
             { error -> assertEquals(error.message, "No id_token returned, verify if you have the open_id scope configured into your API Client Settings") }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testSuccessfulLoginWithEmail() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_chad.morrison@gmail.com"
+        val password = "frkjfkrnf"
+
+        client.signup(
+            Profile(
+                givenName = "Chad",
+                familyName = "Morrison",
+                gender = "male",
+                email = email,
+                password = password
+            ),
+            SCOPE,
+            {
+                client.loginWithPassword(
+                    email,
+                    password,
+                    { authToken -> assertNotNull(authToken) },
+                    { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testSuccessfulLoginWithPhoneNumber() {
+        val client = instantiateReachFiveClient()
+
+        val phoneNumber = "+33782234140"
+        val password = "jfk7!fckook"
+
+        client.signup(
+            Profile(
+                givenName = "Lucas",
+                familyName = "Girard",
+                gender = "male",
+                phoneNumber = phoneNumber,
+                password = password
+            ),
+            SCOPE,
+            {
+                client.loginWithPassword(
+                    phoneNumber,
+                    password,
+                    { authToken -> assertNotNull(authToken) },
+                    { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedLoginWithNonExistingIdentifier() {
+        val client = instantiateReachFiveClient()
+
+        client.loginWithPassword(
+            "test_audric.louis@gmail.com",
+            "kfjrifjr",
+            { fail("This test should have failed because the profile is not registered.") },
+            { error -> run {
+                assertEquals(error.message, "Bad Request")
+                assertEquals(error.data?.error, "invalid_grant")
+                assertEquals(error.data?.errorDescription, "Invalid email or password")
+            } }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedLoginWithWrongPassword() {
+        val client = instantiateReachFiveClient()
+
+        val phoneNumber = "+33682234940"
+
+        client.signup(
+            Profile(
+                givenName = "Florus",
+                familyName = "Lejeune",
+                gender = "male",
+                phoneNumber = phoneNumber,
+                password = "UCrcF4RH"
+            ),
+            SCOPE,
+            {
+                client.loginWithPassword(
+                    phoneNumber,
+                    "6sPePvkY",
+                    { fail("This test should have failed because the password is incorrect.") },
+                    { error -> run {
+                        assertEquals(error.message, "Bad Request")
+                        assertEquals(error.data?.error, "invalid_grant")
+                        assertEquals(error.data?.errorDescription, "Invalid phone number or password")
+                    } }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
