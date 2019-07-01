@@ -9,5 +9,5 @@ data class LoginRequest(
     val grantType: String,
     @SerializedName("client_id")
     val clientId: String,
-    val scope: String = "openid profile email"
+    val scope: String
 )

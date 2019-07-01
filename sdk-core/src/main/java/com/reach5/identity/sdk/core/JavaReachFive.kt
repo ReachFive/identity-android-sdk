@@ -43,10 +43,11 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     fun loginWithPassword(
         username: String,
         password: String,
+        scope: List<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.loginWithPassword(username, password, success::call, failure::call)
+        return reach5.loginWithPassword(username, password, scope, success::call, failure::call)
     }
 
     fun onActivityResult(

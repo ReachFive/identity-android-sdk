@@ -203,7 +203,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun testFailedAuthTokenRetrievalWithMissingScope() {
+    fun testFailedSignupAuthTokenRetrievalWithMissingScope() {
         val client = instantiateReachFiveClient()
 
         client.signup(
@@ -241,6 +241,7 @@ class MainActivityTest {
                 client.loginWithPassword(
                     email,
                     password,
+                    SCOPE,
                     { authToken -> assertNotNull(authToken) },
                     { fail(TEST_SHOULD_NOT_FAIL) }
                 )
@@ -272,6 +273,7 @@ class MainActivityTest {
                 client.loginWithPassword(
                     phoneNumber,
                     password,
+                    SCOPE,
                     { authToken -> assertNotNull(authToken) },
                     { fail(TEST_SHOULD_NOT_FAIL) }
                 )
@@ -290,6 +292,7 @@ class MainActivityTest {
         client.loginWithPassword(
             "test_audric.louis@gmail.com",
             "kfjrifjr",
+            SCOPE,
             { fail("This test should have failed because the profile is not registered.") },
             { error -> run {
                 assertEquals(error.message, "Bad Request")
@@ -321,12 +324,45 @@ class MainActivityTest {
                 client.loginWithPassword(
                     phoneNumber,
                     "6sPePvkY",
+                    SCOPE,
                     { fail("This test should have failed because the password is incorrect.") },
                     { error -> run {
                         assertEquals(error.message, "Bad Request")
                         assertEquals(error.data?.error, "invalid_grant")
                         assertEquals(error.data?.errorDescription, "Invalid phone number or password")
                     } }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedLoginAuthTokenRetrievalWithMissingScope() {
+        val client = instantiateReachFiveClient()
+
+        val phoneNumber = "+33754234152"
+        val password = "9fmHmFWm"
+
+        client.signup(
+            Profile(
+                givenName = "Clarimunda",
+                familyName = "Devoe",
+                gender = "other",
+                phoneNumber = phoneNumber,
+                password = password
+            ),
+            SCOPE,
+            {
+                client.loginWithPassword(
+                    phoneNumber,
+                    password,
+                    listOf(),
+                    {},
+                    { error -> assertEquals(error.message, "No id_token returned, verify if you have the open_id scope configured into your API Client Settings") }
                 )
             },
             { fail(TEST_SHOULD_NOT_FAIL) }

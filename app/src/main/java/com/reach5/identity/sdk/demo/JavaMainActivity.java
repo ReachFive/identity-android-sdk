@@ -83,7 +83,7 @@ public class JavaMainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.passwordLogin).setOnClickListener(view -> {
-            reach5.loginWithPassword(username, password, this::handleLoginSuccess, failure -> {
+            reach5.loginWithPassword(username, password, scope, this::handleLoginSuccess, failure -> {
                 Log.d(TAG, "loginWithPassword error=" + failure.getMessage());
                 showToast("Login With Password Error " + failure.getMessage());
             });

@@ -66,7 +66,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         val signupRequest = SignupRequest(
             clientId = sdkConfig.clientId,
             data = profile,
-            scope = scope.joinToString(" ")
+            scope = formatScope(scope)
         )
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
@@ -81,6 +81,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun loginWithPassword(
         username: String,
         password: String,
+        scope: List<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -89,7 +90,8 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
                 clientId = sdkConfig.clientId,
                 grantType = "password",
                 username = username,
-                password = password
+                password = password,
+                scope = formatScope(scope)
             ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
             it.toAuthToken().fold(success, failure)
         }, failure))
@@ -125,5 +127,9 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         providers.forEach {
             it.onStop()
         }
+    }
+
+    private fun formatScope(scope: List<String>): String {
+        return scope.joinToString(" ")
     }
 }
