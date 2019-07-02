@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             this.authToken = authToken
             val user = authToken.user
             Log.d(TAG, "login user= success=$authToken")
-            supportActionBar?.title = user.email
+            supportActionBar?.title = user?.email
             showToast("Login success= token=${authToken.accessToken}")
         } catch (e: Exception) {
             Log.d(TAG, "Login error=$authToken")
