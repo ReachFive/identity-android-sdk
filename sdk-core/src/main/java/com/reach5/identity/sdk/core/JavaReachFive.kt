@@ -12,6 +12,8 @@ import com.reach5.identity.sdk.core.utils.Callback
 class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
     private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
 
+    val defaultScope = reach5.defaultScope
+
     fun initialize(success: Callback<List<Provider>>, failure: Callback<ReachFiveError>): ReachFive {
         return reach5.initialize(success::call, failure::call)
     }
@@ -28,6 +30,9 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.loginWithProvider(name, origin, activity)
     }
 
+    /**
+     * Sign-up with required scopes
+     */
     fun signup(
         profile: Profile,
         scope: List<String>,
@@ -38,6 +43,18 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     }
 
     /**
+     * Sign-up with no required scopes (needed by the Java API)
+     */
+    fun signup(
+        profile: Profile,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.signup(profile, success = success::call, failure = failure::call)
+    }
+
+    /**
+     * Login with required scopes
      * @param username You can use email or phone number
      */
     fun loginWithPassword(
@@ -48,6 +65,19 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         failure: Callback<ReachFiveError>
     ) {
         return reach5.loginWithPassword(username, password, scope, success::call, failure::call)
+    }
+
+    /**
+     * Login with no required scopes (needed by the Java API)
+     * @param username You can use email or phone number
+     */
+    fun loginWithPassword(
+        username: String,
+        password: String,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.loginWithPassword(username, password, success = success::call, failure = failure::call)
     }
 
     fun updateProfile(

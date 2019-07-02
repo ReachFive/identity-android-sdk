@@ -68,15 +68,12 @@ public class JavaMainActivity extends AppCompatActivity {
         EditText usernameEditText = findViewById(R.id.username);
         EditText passwordEditText = findViewById(R.id.password);
 
-        List scope = Arrays.asList("openid", "profile", "email");
-
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
             reach5.signup(
                 new Profile(
                     usernameEditText.getText().toString(),
                     passwordEditText.getText().toString()
                 ),
-                scope,
                 this::handleLoginSuccess,
                 failure -> {
                     Log.d(TAG, "signup error=" + failure.getMessage());
@@ -89,7 +86,6 @@ public class JavaMainActivity extends AppCompatActivity {
             reach5.loginWithPassword(
                 usernameEditText.getText().toString(),
                 passwordEditText.getText().toString(),
-                scope,
                 this::handleLoginSuccess,
                 failure -> {
                     Log.d(TAG, "loginWithPassword error=" + failure.getMessage());

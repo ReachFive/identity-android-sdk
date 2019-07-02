@@ -22,7 +22,6 @@ class MainActivityTest {
     // The SMS feature is enabled on this account
     private val DOMAIN = "sdk-mobile-sandbox.reach5.net"
     private val CLIENT_ID = "TYAIHFRJ2a1FGJ1T8pKD"
-    private val SCOPE = listOf("openid")
     private val TEST_SHOULD_NOT_FAIL = "This test should not have failed because the data are correct."
 
     @get:Rule
@@ -56,9 +55,8 @@ class MainActivityTest {
                 email = "test_john.doe@gmail.com",
                 password = "hjk90wxc"
             ),
-            SCOPE,
-            { authToken -> assertNotNull(authToken) },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            success = { authToken -> assertNotNull(authToken) },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -81,16 +79,14 @@ class MainActivityTest {
                 email = email,
                 password = password
             ),
-            SCOPE,
-            { authToken -> run {
+            success = { authToken -> run {
                 // Check that the returned authentication token is not null
                 assertNotNull(authToken)
 
                 client.signup(
                     Profile(email = email, password = password),
-                    SCOPE,
-                    { fail("This test should have failed because the email is already used.") },
-                    { error ->
+                    success = { fail("This test should have failed because the email is already used.") },
+                    failure = { error ->
                         run {
                             assertEquals(error.message, "Bad Request")
                             assertEquals(error.data?.error, "email_already_exists")
@@ -99,7 +95,7 @@ class MainActivityTest {
                     }
                 )
             } },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -118,11 +114,10 @@ class MainActivityTest {
 
         client.signup(
             Profile(email = "", password = "jdhkzkzk"),
-            SCOPE,
 //            { a -> mocked.onSuccess(a) },
             //mock.onFailure
-            { fail("This test should have failed because the email is empty.") },
-            { error -> run {
+            success = { fail("This test should have failed because the email is empty.") },
+            failure = { error -> run {
                 assertEquals(error.message, "Bad Request")
                 assertEquals(error.data?.error, "invalid_request")
                 assertEquals(error.data?.errorDescription, "Validation failed")
@@ -152,9 +147,8 @@ class MainActivityTest {
                 phoneNumber = "+33656244150",
                 password = "hjk90wxc"
             ),
-            SCOPE,
-            { authToken -> assertNotNull(authToken) },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            success = { authToken -> assertNotNull(authToken) },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -174,9 +168,8 @@ class MainActivityTest {
                 phoneNumber = "0750253354",
                 password = "hjk00exc"
             ),
-            SCOPE,
-            { authToken -> assertNotNull(authToken) },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            success = { authToken -> assertNotNull(authToken) },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -189,9 +182,8 @@ class MainActivityTest {
 
         client.signup(
             Profile(email = "test_marshall.babin@gmail.fr", password = "toto"),
-            SCOPE,
-            { fail("This test should have failed because the password is too weak.") },
-            { error -> run {
+            success = { fail("This test should have failed because the password is too weak.") },
+            failure = { error -> run {
                 assertEquals(error.message, "Bad Request")
                 assertEquals(error.data?.errorDescription, "Validation failed")
                 assertEquals(error.data?.errorDetails?.get(0)?.message, "Password too weak")
@@ -236,17 +228,15 @@ class MainActivityTest {
                 email = email,
                 password = password
             ),
-            SCOPE,
-            {
+            success = {
                 client.loginWithPassword(
                     email,
                     password,
-                    SCOPE,
-                    { authToken -> assertNotNull(authToken) },
-                    { fail(TEST_SHOULD_NOT_FAIL) }
+                    success = { authToken -> assertNotNull(authToken) },
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -268,17 +258,15 @@ class MainActivityTest {
                 phoneNumber = phoneNumber,
                 password = password
             ),
-            SCOPE,
-            {
+            success = {
                 client.loginWithPassword(
                     phoneNumber,
                     password,
-                    SCOPE,
-                    { authToken -> assertNotNull(authToken) },
-                    { fail(TEST_SHOULD_NOT_FAIL) }
+                    success = { authToken -> assertNotNull(authToken) },
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -292,9 +280,8 @@ class MainActivityTest {
         client.loginWithPassword(
             "test_audric.louis@gmail.com",
             "kfjrifjr",
-            SCOPE,
-            { fail("This test should have failed because the profile is not registered.") },
-            { error -> run {
+            success = { fail("This test should have failed because the profile is not registered.") },
+            failure = { error -> run {
                 assertEquals(error.message, "Bad Request")
                 assertEquals(error.data?.error, "invalid_grant")
                 assertEquals(error.data?.errorDescription, "Invalid email or password")
@@ -319,21 +306,19 @@ class MainActivityTest {
                 phoneNumber = phoneNumber,
                 password = "UCrcF4RH"
             ),
-            SCOPE,
-            {
+            success = {
                 client.loginWithPassword(
                     phoneNumber,
                     "6sPePvkY",
-                    SCOPE,
-                    { fail("This test should have failed because the password is incorrect.") },
-                    { error -> run {
+                    success = { fail("This test should have failed because the password is incorrect.") },
+                    failure = { error -> run {
                         assertEquals(error.message, "Bad Request")
                         assertEquals(error.data?.error, "invalid_grant")
                         assertEquals(error.data?.errorDescription, "Invalid phone number or password")
                     } }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -355,8 +340,7 @@ class MainActivityTest {
                 phoneNumber = phoneNumber,
                 password = password
             ),
-            SCOPE,
-            {
+            success = {
                 client.loginWithPassword(
                     phoneNumber,
                     password,
@@ -365,7 +349,7 @@ class MainActivityTest {
                     { error -> assertEquals(error.message, "No id_token returned, verify if you have the open_id scope configured into your API Client Settings") }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -383,16 +367,7 @@ class MainActivityTest {
 
         client.signup(
             Profile(givenName = "Christabel", familyName = "Coue", gender = "female", email = email, password = password),
-            listOf(
-                // Access the ID token
-                "openid",
-                // Access the email
-                "email",
-                // Access the profile's personal information
-                "profile",
-                // Allow to edit the profile
-                "full_write"
-            ),
+            client.defaultScope.plus("full_write"),
             { authToken ->
                 client
                 .updateProfile(
@@ -423,8 +398,7 @@ class MainActivityTest {
 
         client.signup(
             Profile(givenName = "Petter", gender = "male", email = "test_petter.desimone@gmail.com", password = "ZhVaJP2v"),
-            SCOPE,
-            { authToken ->
+            success = { authToken ->
                 client
                     .updateProfile(
                         authToken,
@@ -437,7 +411,7 @@ class MainActivityTest {
                         } }
                     )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
 
         // TODO: replace the `sleep` method by a callback mock

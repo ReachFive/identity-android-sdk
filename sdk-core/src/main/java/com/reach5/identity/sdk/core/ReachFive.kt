@@ -14,6 +14,17 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         private const val TAG = "Reach5"
     }
 
+    val defaultScope = listOf(
+        // Access the ID token
+        "openid",
+        // Access the email address
+        "email",
+        // Access the phone number
+        "phone",
+        // Access the profile's personal information
+        "profile"
+    )
+
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
 
     private var providers: List<Provider> = listOf()
@@ -59,7 +70,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     fun signup(
         profile: Profile,
-        scope: List<String>,
+        scope: List<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -81,7 +92,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun loginWithPassword(
         username: String,
         password: String,
-        scope: List<String>,
+        scope: List<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {

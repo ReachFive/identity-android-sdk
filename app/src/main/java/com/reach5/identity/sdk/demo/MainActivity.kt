@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
                     email = username.text.toString(),
                     password = password.text.toString()
                 ),
-                scope = listOf("openid", "profile", "email"),
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "signup error=$it")
@@ -82,7 +81,6 @@ class MainActivity : AppCompatActivity() {
             this.reach5.loginWithPassword(
                 username = username.text.toString(),
                 password = password.text.toString(),
-                scope = listOf("openid", "profile", "email"),
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "loginWithPassword error=$it")
