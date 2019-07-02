@@ -97,6 +97,17 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         }, failure))
     }
 
+    fun updateProfile(
+        authToken: AuthToken,
+        profile: Profile,
+        success: Success<Profile>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .updateProfile("${authToken.tokenType} ${authToken.accessToken}", profile, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success , failure))
+    }
+
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>) {
         val provider =  providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {

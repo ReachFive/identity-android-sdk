@@ -372,6 +372,78 @@ class MainActivityTest {
         sleep(1000)
     }
 
+    @Test
+    fun testSuccessfulProfileUpdate() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_christabel.couet@gmail.com"
+        val password = "n8URZzWf"
+        val updatedGivenName = "Christelle"
+        val updatedFamilyName = "Couet"
+
+        client.signup(
+            Profile(givenName = "Christabel", familyName = "Coue", gender = "female", email = email, password = password),
+            listOf(
+                // Access the ID token
+                "openid",
+                // Access the email
+                "email",
+                // Access the profile's personal information
+                "profile",
+                // Allow to edit the profile
+                "full_write"
+            ),
+            { authToken ->
+                client
+                .updateProfile(
+                    authToken,
+                    Profile(givenName = updatedGivenName, familyName = updatedFamilyName),
+                    { updatedProfile ->
+                        run {
+                            assertNotNull(updatedProfile)
+                            assertEquals(updatedProfile.email, email)
+                            assertEquals(updatedProfile.givenName, updatedGivenName)
+                            assertEquals(updatedProfile.familyName, updatedFamilyName)
+                            assertEquals(updatedProfile.gender, "female")
+                        }
+                    },
+                    { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedProfileUpdateWithMissingScope() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(givenName = "Petter", gender = "male", email = "test_petter.desimone@gmail.com", password = "ZhVaJP2v"),
+            SCOPE,
+            { authToken ->
+                client
+                    .updateProfile(
+                        authToken,
+                        Profile(givenName = "Peter"),
+                        { fail("This test should have failed because the 'full_write' scope is missing.") },
+                        { error -> run {
+                            assertEquals(error.message, "Technical Error")
+                            assertEquals(error.data?.error, "insufficient_scope")
+                            assertEquals(error.data?.errorDescription, "The token does not contain the required scope: full_write")
+                        } }
+                    )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
     private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
         val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
 

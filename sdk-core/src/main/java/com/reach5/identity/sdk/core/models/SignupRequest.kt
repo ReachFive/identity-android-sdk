@@ -2,9 +2,13 @@ package com.reach5.identity.sdk.core.models
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * This class is used for sign-up and update, that's why some parameters are optional while there are required for some actions
+ * Example: the `password` field is optional while it's required for sign-up
+ */
 data class Profile(
     val email: String? = null,
-    val password: String,
+    val password: String? = null,
     @SerializedName("phone_number")
     val phoneNumber: String? = null,
     val gender: String? = null,

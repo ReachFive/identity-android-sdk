@@ -50,6 +50,15 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.loginWithPassword(username, password, scope, success::call, failure::call)
     }
 
+    fun updateProfile(
+        authToken: AuthToken,
+        profile: Profile,
+        success: Callback<Profile>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.updateProfile(authToken, profile, success::call, failure::call)
+    }
+
     fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -61,9 +70,7 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     }
 
     fun logout() {
-        reach5.logout {
-
-        }
+        reach5.logout {}
     }
 
     fun onStop() {
