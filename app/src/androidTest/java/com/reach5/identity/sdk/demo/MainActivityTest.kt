@@ -61,6 +61,8 @@ class MainActivityTest {
 
         // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
+
+        // TODO: check that the profile has received a verification email
     }
 
     @Test
@@ -100,6 +102,8 @@ class MainActivityTest {
 
         // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
+
+        // TODO: check that the profile has not received a verification email
     }
 
     @Test
@@ -133,6 +137,8 @@ class MainActivityTest {
 
         //verify.onSuccess(check { fail("This test should have failed because the email is empty.") })
         //verify.onFailure(ReachFiveError(message = "Bad Request"))
+
+        // TODO: check that the profile has not received a verification email
     }
 
     @Test
@@ -153,6 +159,8 @@ class MainActivityTest {
 
         // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
+
+        // TODO: check that the profile has received a verification SMS
     }
 
     @Ignore
@@ -174,6 +182,8 @@ class MainActivityTest {
 
         // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
+
+        // TODO: check that the profile has received a verification SMS
     }
 
     @Test
@@ -192,6 +202,8 @@ class MainActivityTest {
 
         // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
+
+        // TODO: check that the profile has not received a verification email
     }
 
     @Test
@@ -211,6 +223,8 @@ class MainActivityTest {
 
         // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
+
+        // TODO: check that the profile has not received a verification email
     }
 
     @Test
@@ -410,6 +424,80 @@ class MainActivityTest {
                             assertEquals(error.data?.errorDescription, "The token does not contain the required scope: full_write")
                         } }
                     )
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testSuccessfulRequestPasswordResetWithEmail() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_sidney.stanley@gmail.com"
+
+        client.signup(
+            Profile(givenName = "Sidney", familyName = "Stanley", gender = "male", email = email, password = "AZE9pX7U"),
+            success = { authToken ->
+                client.requestPasswordReset(
+                    authToken,
+                    email = email,
+                    success = {},
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+
+        // TODO: check that the profile has received an email
+    }
+
+    @Test
+    fun testSuccessfulRequestPasswordResetWithPhoneNumber() {
+        val client = instantiateReachFiveClient()
+
+        val phoneNumber = "+33789345263"
+
+        client.signup(
+            Profile(givenName = "Maria", familyName = "Tynan", gender = "female", phoneNumber = phoneNumber, password = "FHEq5mw5"),
+            success = { authToken ->
+                client.requestPasswordReset(
+                    authToken,
+                    phoneNumber = phoneNumber,
+                    success = {},
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+
+        // TODO: check that the profile has received an SMS
+    }
+
+    @Test
+    fun testFailedRequestPasswordResetWithNoIdentifier() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(phoneNumber = "+33780345263", password = "5mCFFhKt"),
+            success = { authToken ->
+                client.requestPasswordReset(
+                    authToken,
+                    success = { fail("This test should have failed because neither the email or the phone number are provided.") },
+                    failure = { error -> run {
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "invalid_grant")
+                        assertEquals(error.data?.errorDescription, "Invalid credentials")
+                    } }
+                )
             },
             failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
