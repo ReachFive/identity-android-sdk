@@ -35,10 +35,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     private fun providersConfigs(success: Success<List<Provider>>, failure: Failure<ReachFiveError>) {
-        reachFiveApi.providersConfigs(SdkInfos.getQueries()).enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
-            providers = createProviders(it)
-            success(providers)
-        }, failure))
+        reachFiveApi
+            .providersConfigs(SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
+                providers = createProviders(it)
+                success(providers)
+            }, failure))
     }
 
     private fun createProviders(providersConfigsResult: ProvidersConfigsResult): List<Provider> {
@@ -81,9 +83,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         )
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback({
-                it.toAuthToken().fold(success, failure)
-            }, failure))
+            .enqueue(ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure))
     }
 
     /**
@@ -96,16 +96,16 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        reachFiveApi.loginWithPassword(
-            LoginRequest(
-                clientId = sdkConfig.clientId,
-                grantType = "password",
-                username = username,
-                password = password,
-                scope = formatScope(scope)
-            ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
-            it.toAuthToken().fold(success, failure)
-        }, failure))
+        val loginRequest = LoginRequest(
+            clientId = sdkConfig.clientId,
+            grantType = "password",
+            username = username,
+            password = password,
+            scope = formatScope(scope)
+        )
+        reachFiveApi
+            .loginWithPassword(loginRequest, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure))
     }
 
     fun updateProfile(
@@ -115,7 +115,24 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
-            .updateProfile("${authToken.tokenType} ${authToken.accessToken}", profile, SdkInfos.getQueries())
+            .updateProfile(formatAuthorization(authToken), profile, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success , failure))
+    }
+
+    fun requestPasswordReset(
+        authToken: AuthToken,
+        email: String? = null,
+        redirectUrl: String? = null,
+        phoneNumber: String? = null,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .requestPasswordReset(
+                formatAuthorization(authToken),
+                RequestPasswordResetRequest(sdkConfig.clientId, email, redirectUrl, phoneNumber),
+                SdkInfos.getQueries()
+            )
             .enqueue(ReachFiveApiCallback(success , failure))
     }
 
@@ -149,6 +166,10 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         providers.forEach {
             it.onStop()
         }
+    }
+
+    private fun formatAuthorization(authToken: AuthToken): String {
+        return "${authToken.tokenType} ${authToken.accessToken}"
     }
 
     private fun formatScope(scope: List<String>): String {

@@ -89,6 +89,17 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.updateProfile(authToken, profile, success::call, failure::call)
     }
 
+    fun requestPasswordReset(
+        authToken: AuthToken,
+        email: String?,
+        redirectUrl: String?,
+        phoneNumber: String?,
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.requestPasswordReset(authToken, email, redirectUrl, phoneNumber, success::call, failure::call)
+    }
+
     fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
