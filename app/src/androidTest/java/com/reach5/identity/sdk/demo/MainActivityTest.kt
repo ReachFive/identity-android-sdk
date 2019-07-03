@@ -482,6 +482,30 @@ class MainActivityTest {
         // TODO: check that the profile has received an SMS
     }
 
+    @Test
+    fun testFailedRequestPasswordResetWithNoIdentifier() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(phoneNumber = "+33780345263", password = "5mCFFhKt"),
+            success = { authToken ->
+                client.requestPasswordReset(
+                    authToken,
+                    success = { fail("This test should have failed because neither the email or the phone number are provided.") },
+                    failure = { error -> run {
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "invalid_grant")
+                        assertEquals(error.data?.errorDescription, "Invalid credentials")
+                    } }
+                )
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
     private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
         val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
 
