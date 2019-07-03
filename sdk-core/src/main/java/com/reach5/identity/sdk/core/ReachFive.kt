@@ -14,11 +14,22 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         private const val TAG = "Reach5"
     }
 
+    val defaultScope = listOf(
+        // Access the ID token
+        "openid",
+        // Access the email address
+        "email",
+        // Access the phone number
+        "phone",
+        // Access the profile's personal information
+        "profile"
+    )
+
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
 
     private var providers: List<Provider> = listOf()
 
-    fun initialize(success: Success<List<Provider>>, failure: Failure<ReachFiveError>): ReachFive {
+    fun initialize(success: Success<List<Provider>> = {}, failure: Failure<ReachFiveError> = {}): ReachFive {
         providersConfigs(success, failure)
         return this
     }
@@ -57,17 +68,19 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         getProvider(name)?.login(origin, activity)
     }
 
-    fun signupWithPassword(
+    fun signup(
         profile: Profile,
+        scope: List<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val signupRequest = SignupRequest(
             clientId = sdkConfig.clientId,
-            data = profile
+            data = profile,
+            scope = formatScope(scope)
         )
         reachFiveApi
-            .signupWithPassword(signupRequest, SdkInfos.getQueries())
+            .signup(signupRequest, SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback({
                 it.toAuthToken().fold(success, failure)
             }, failure))
@@ -79,6 +92,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun loginWithPassword(
         username: String,
         password: String,
+        scope: List<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -87,10 +101,22 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
                 clientId = sdkConfig.clientId,
                 grantType = "password",
                 username = username,
-                password = password
+                password = password,
+                scope = formatScope(scope)
             ), SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({
             it.toAuthToken().fold(success, failure)
         }, failure))
+    }
+
+    fun updateProfile(
+        authToken: AuthToken,
+        profile: Profile,
+        success: Success<Profile>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .updateProfile("${authToken.tokenType} ${authToken.accessToken}", profile, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success , failure))
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>) {
@@ -123,5 +149,9 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         providers.forEach {
             it.onStop()
         }
+    }
+
+    private fun formatScope(scope: List<String>): String {
+        return scope.joinToString(" ")
     }
 }

@@ -19,7 +19,9 @@ import com.reach5.identity.sdk.core.models.User;
 import com.reach5.identity.sdk.google.GoogleProvider;
 import com.reach5.identity.sdk.webview.WebViewProvider;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class JavaMainActivity extends AppCompatActivity {
@@ -66,23 +68,30 @@ public class JavaMainActivity extends AppCompatActivity {
         EditText usernameEditText = findViewById(R.id.username);
         EditText passwordEditText = findViewById(R.id.password);
 
-        String username = usernameEditText.getText().toString();
-        String password = passwordEditText.getText().toString();
-
-        Profile profile = new Profile(username, password);
-
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
-            reach5.signupWithPassword(profile, this::handleLoginSuccess, failure -> {
-                Log.d(TAG, "signupWithPassword error=" + failure.getMessage());
-                showToast("Signup With Password Error " + failure.getMessage());
-            });
+            reach5.signup(
+                new Profile(
+                    usernameEditText.getText().toString(),
+                    passwordEditText.getText().toString()
+                ),
+                this::handleLoginSuccess,
+                failure -> {
+                    Log.d(TAG, "signup error=" + failure.getMessage());
+                    showToast("Signup With Password Error " + failure.getMessage());
+                }
+            );
         });
 
         findViewById(R.id.passwordLogin).setOnClickListener(view -> {
-            reach5.loginWithPassword(username, password, this::handleLoginSuccess, failure -> {
-                Log.d(TAG, "loginWithPassword error=" + failure.getMessage());
-                showToast("Login With Password Error " + failure.getMessage());
-            });
+            reach5.loginWithPassword(
+                usernameEditText.getText().toString(),
+                passwordEditText.getText().toString(),
+                this::handleLoginSuccess,
+                failure -> {
+                    Log.d(TAG, "loginWithPassword error=" + failure.getMessage());
+                    showToast("Login With Password Error " + failure.getMessage());
+                }
+            );
         });
 
     }

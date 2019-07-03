@@ -2,9 +2,13 @@ package com.reach5.identity.sdk.core.models
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * This class is used for sign-up and update, that's why some parameters are optional while there are required for some actions
+ * Example: the `password` field is optional while it's required for sign-up
+ */
 data class Profile(
-    val email: String,
-    val password: String,
+    val email: String? = null,
+    val password: String? = null,
     @SerializedName("phone_number")
     val phoneNumber: String? = null,
     val gender: String? = null,
@@ -22,7 +26,7 @@ data class Profile(
     val company: String? = null,
     val locale: String? = null,
     // TODO better type for address
-    val address: ProfileAddress? = null,
+    val addresses: List<ProfileAddress>? = null,
     @SerializedName("custom_fields")
     val customFields: Map<String, Any>? = null
 ) {
@@ -37,7 +41,7 @@ data class SignupRequest(
     @SerializedName("client_id")
     val clientId: String,
     val data: Profile,
-    val scope: String = "openid profile email",
+    val scope: String,
     @SerializedName("accept_tos")
     val acceptTos: Boolean? = null
 )
