@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ReachFiveApiError(
     val error: String,
+
     @SerializedName("error_description")
     val errorDescription: String?,
 

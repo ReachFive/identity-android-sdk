@@ -8,11 +8,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.QueryMap
 import retrofit2.Response
+import retrofit2.http.*
 import java.lang.Exception
 
 interface ReachFiveApi {
@@ -23,10 +20,17 @@ interface ReachFiveApi {
     fun loginWithProvider(@Body loginProviderRequest: LoginProviderRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
     @POST("/identity/v1/signup-token")
-    fun signupWithPassword(@Body signupRequest: SignupRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+    fun signup(@Body signupRequest: SignupRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
     @POST("/oauth/token")
     fun loginWithPassword(@Body loginRequest: LoginRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+
+    @POST("/identity/v1/update-profile")
+    fun updateProfile(
+        @Header("Authorization") authorization: String,
+        @Body updatedProfile: Profile,
+        @QueryMap options: Map<String, String>
+    ): Call<Profile>
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {

@@ -64,25 +64,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         passwordSignup.setOnClickListener {
-            this.reach5.signupWithPassword(
+            this.reach5.signup(
                 Profile(
                     email = username.text.toString(),
                     password = password.text.toString()
-                ), success = {
-                handleLoginSuccess(it)
-            }, failure = {
-                Log.d(TAG, "signupWithPassword error=$it")
-                showToast("Signup With Password Error ${it.message}")
-            })
+                ),
+                success = { handleLoginSuccess(it) },
+                failure = {
+                    Log.d(TAG, "signup error=$it")
+                    showToast("Signup With Password Error ${it.message}")
+                }
+            )
         }
 
         passwordLogin.setOnClickListener {
             this.reach5.loginWithPassword(
                 username = username.text.toString(),
                 password = password.text.toString(),
-                success = {
-                    handleLoginSuccess(it)
-                },
+                success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "loginWithPassword error=$it")
                     showToast("Login error=${it.message}")
@@ -96,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             this.authToken = authToken
             val user = authToken.user
             Log.d(TAG, "login user= success=$authToken")
-            supportActionBar?.title = user.email
+            supportActionBar?.title = user?.email
             showToast("Login success= token=${authToken.accessToken}")
         } catch (e: Exception) {
             Log.d(TAG, "Login error=$authToken")

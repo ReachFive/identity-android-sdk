@@ -13,7 +13,8 @@ data class AuthToken(
     val code: String?,
     val tokenType: String?,
     val expiresIn: Int?,
-    val user: User
+    // The `user` field is optional because if the `openid` scope is not provided, the `idToken` is not returned
+    val user: User?
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
