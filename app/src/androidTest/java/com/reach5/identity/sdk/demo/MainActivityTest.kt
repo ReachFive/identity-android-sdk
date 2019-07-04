@@ -23,6 +23,7 @@ class MainActivityTest {
     private val DOMAIN = "sdk-mobile-sandbox.reach5.net"
     private val CLIENT_ID = "TYAIHFRJ2a1FGJ1T8pKD"
     private val TEST_SHOULD_NOT_FAIL = "This test should not have failed because the data are correct."
+    private val TEST_SHOULD_FAIL_SCOPE_MISSING = "This test should have failed because the 'full_write' scope is missing."
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -412,6 +413,92 @@ class MainActivityTest {
     }
 
     @Test
+    fun testSuccessfulEmailUpdate() {
+        val client = instantiateReachFiveClient()
+
+        val updatedEmail = "test_merci.blais@gmail.com"
+
+        client.signup(
+            Profile(
+                givenName = "Merci",
+                familyName = "Blais",
+                gender = "female",
+                email = "test_merssi.blais@gmail.com",
+                password = "5HXuhmhu"
+            ),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updateEmail(
+                    authToken,
+                    updatedEmail,
+                    success = { updatedProfile -> run {
+                        assertNotNull(updatedProfile)
+                        assertEquals(updatedProfile.email, updatedEmail)
+                    } },
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedEmailUpdateWithSameEmail() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_adrien.hernandez@gmail.com"
+
+        client.signup(
+            Profile(email = email, password = "2mmtyiQb"),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updateEmail(
+                    authToken,
+                    email,
+                    success = { fail("This test should have failed because the email has not changed.") },
+                    failure = { error -> run {
+                        assertEquals(error.message, "Bad Request")
+                        assertEquals(error.data?.error, "email_already_exists")
+                        assertEquals(error.data?.errorDescription, "Email already in use")
+                    } }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedEmailUpdateWithMissingScope() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(givenName = "Holly", gender = "female", email = "test_holy.camacho@gmail.com", password = "KnpP8G95"),
+            success = { authToken ->
+                client.updateEmail(
+                    authToken,
+                    "test_holly.camacho@gmail.com",
+                    success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
+                    failure =  { error -> run {
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "insufficient_scope")
+                        assertEquals(error.data?.errorDescription, "The token does not contain the required scope: full_write")
+                    } }
+                )
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
     fun testSuccessfulProfileUpdate() {
         val client = instantiateReachFiveClient()
 
@@ -458,7 +545,7 @@ class MainActivityTest {
                     .updateProfile(
                         authToken,
                         Profile(givenName = "Peter"),
-                        { fail("This test should have failed because the 'full_write' scope is missing.") },
+                        { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
                         { error -> run {
                             assertEquals(error.message, "Technical Error")
                             assertEquals(error.data?.error, "insufficient_scope")
