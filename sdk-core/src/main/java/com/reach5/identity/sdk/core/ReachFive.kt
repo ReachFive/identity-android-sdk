@@ -136,6 +136,17 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .enqueue(ReachFiveApiCallback(success , failure))
     }
 
+    fun updatePhoneNumber(
+        authToken: AuthToken,
+        phoneNumber: String,
+        success: Success<Profile>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .updatePhoneNumber(formatAuthorization(authToken), UpdatePhoneNumberRequest(phoneNumber), SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success , failure))
+    }
+
     fun updateProfile(
         authToken: AuthToken,
         profile: Profile,

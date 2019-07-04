@@ -100,6 +100,15 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.updateEmail(authToken, email, redirectUrl, success::call, failure::call)
     }
 
+    fun updatePhoneNumber(
+        authToken: AuthToken,
+        phoneNumber: String,
+        success: Callback<Profile>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.updatePhoneNumber(authToken, phoneNumber, success::call, failure::call)
+    }
+
     fun updateProfile(
         authToken: AuthToken,
         profile: Profile,
