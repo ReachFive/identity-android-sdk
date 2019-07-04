@@ -80,6 +80,16 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.loginWithPassword(username, password, success = success::call, failure = failure::call)
     }
 
+    fun verifyPhoneNumber(
+        authToken: AuthToken,
+        phoneNumber: String,
+        verificationCode: String,
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.verifyPhoneNumber(authToken, phoneNumber, verificationCode, success::call, failure::call)
+    }
+
     fun updateProfile(
         authToken: AuthToken,
         profile: Profile,

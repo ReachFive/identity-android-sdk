@@ -370,6 +370,47 @@ class MainActivityTest {
         sleep(1000)
     }
 
+    @Ignore
+    @Test
+    fun testSuccessVerifyPhoneNumber() {
+        // TODO : write this test once we can get the SMS list from Twilio
+    }
+
+    @Test
+    fun testFailedVerifyPhoneNumberWithWrongCode() {
+        val client = instantiateReachFiveClient()
+
+        val phoneNumber = "+33771221392"
+
+        client.signup(
+            Profile(
+                givenName = "Damien",
+                familyName = "Cannon",
+                gender = "other",
+                phoneNumber = phoneNumber,
+                password = "9fmHmFWm"
+            ),
+            client.defaultScope.plus("full_write"),
+            success = { authToken ->
+                client.verifyPhoneNumber(
+                    authToken,
+                    phoneNumber,
+                    "500",
+                    { fail("This test should have failed because the verification code is incorrect.") },
+                    { error -> run {
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "invalid_grant")
+                        assertEquals(error.data?.errorDescription, "Invalid verification code")
+                    } }
+                )
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
     @Test
     fun testSuccessfulProfileUpdate() {
         val client = instantiateReachFiveClient()
