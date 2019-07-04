@@ -25,6 +25,13 @@ interface ReachFiveApi {
     @POST("/oauth/token")
     fun loginWithPassword(@Body loginRequest: LoginRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
+    @POST("/identity/v1/verify-phone-number")
+    fun verifyPhoneNumber(
+        @Header("Authorization") authorization: String,
+        @Body verifyPhoneNumberRequest: VerifyPhoneNumberRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
     @POST("/identity/v1/update-profile")
     fun updateProfile(
         @Header("Authorization") authorization: String,
