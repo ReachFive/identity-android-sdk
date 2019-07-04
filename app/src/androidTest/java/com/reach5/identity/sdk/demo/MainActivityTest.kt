@@ -499,6 +499,85 @@ class MainActivityTest {
     }
 
     @Test
+    fun testSuccessfulPhoneNumberUpdate() {
+        val client = instantiateReachFiveClient()
+
+        val updatedPhoneNumber = "+33762342563"
+
+        client.signup(
+            Profile(givenName = "Tony", familyName = "Howard", gender = "male", phoneNumber = "+33765342563", password = "2m8WrJQf"),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updatePhoneNumber(
+                    authToken,
+                    updatedPhoneNumber,
+                    success = { updatedProfile -> run {
+                        assertNotNull(updatedProfile)
+                        assertEquals(updatedProfile.phoneNumber, updatedPhoneNumber)
+                    } },
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testSuccessfulPhoneNumberUpdateWithSameNumber() {
+        val client = instantiateReachFiveClient()
+
+        val phoneNumber = "+33772342563"
+
+        client.signup(
+            Profile(phoneNumber = phoneNumber, password = "2m8WrJQf"),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updatePhoneNumber(
+                    authToken,
+                    phoneNumber,
+                    success = { updatedProfile -> run {
+                        assertNotNull(updatedProfile)
+                        assertEquals(updatedProfile.phoneNumber, phoneNumber)
+                    } },
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedPhoneNumberUpdateWithMissingScope() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(givenName = "Tom", gender = "male", phoneNumber = "+33771312563", password = "f2923kSN"),
+            success = { authToken ->
+                client.updatePhoneNumber(
+                    authToken,
+                    "+33771312564",
+                    success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
+                    failure =  { error -> run {
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "insufficient_scope")
+                        assertEquals(error.data?.errorDescription, "The token does not contain the required scope: full_write")
+                    } }
+                )
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
     fun testSuccessfulProfileUpdate() {
         val client = instantiateReachFiveClient()
 

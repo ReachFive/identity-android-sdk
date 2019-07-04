@@ -40,6 +40,11 @@ data class UpdateEmailRequest (
     val redirectUrl: String? = null
 )
 
+data class UpdatePhoneNumberRequest (
+    @SerializedName("phone_number")
+    val phoneNumber: String
+)
+
 data class RequestPasswordResetRequest (
     @SerializedName("client_id")
     val clientId: String,
