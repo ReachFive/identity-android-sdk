@@ -124,6 +124,18 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .enqueue(ReachFiveApiCallback(success , failure))
     }
 
+    fun updateEmail(
+        authToken: AuthToken,
+        email: String,
+        redirectUrl: String? = null,
+        success: Success<Profile>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .updateEmail(formatAuthorization(authToken), UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success , failure))
+    }
+
     fun updateProfile(
         authToken: AuthToken,
         profile: Profile,

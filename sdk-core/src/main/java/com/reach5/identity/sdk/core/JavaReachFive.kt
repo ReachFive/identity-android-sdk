@@ -90,6 +90,16 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.verifyPhoneNumber(authToken, phoneNumber, verificationCode, success::call, failure::call)
     }
 
+    fun updateEmail(
+        authToken: AuthToken,
+        email: String,
+        redirectUrl: String? = null,
+        success: Callback<Profile>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.updateEmail(authToken, email, redirectUrl, success::call, failure::call)
+    }
+
     fun updateProfile(
         authToken: AuthToken,
         profile: Profile,

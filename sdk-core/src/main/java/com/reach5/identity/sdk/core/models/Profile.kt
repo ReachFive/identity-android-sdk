@@ -36,12 +36,3 @@ data class Profile(
 data class ProfileAddress(
     val country: String
 )
-
-data class SignupRequest(
-    @SerializedName("client_id")
-    val clientId: String,
-    val data: Profile,
-    val scope: String,
-    @SerializedName("accept_tos")
-    val acceptTos: Boolean? = null
-)
