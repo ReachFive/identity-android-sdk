@@ -39,6 +39,13 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<Profile>
 
+    @POST("/identity/v1/update-phone-number")
+    fun updatePhoneNumber(
+        @Header("Authorization") authorization: String,
+        @Body updatePhoneNumberRequest: UpdatePhoneNumberRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Profile>
+
     @POST("/identity/v1/update-profile")
     fun updateProfile(
         @Header("Authorization") authorization: String,
