@@ -122,7 +122,9 @@ class ConfiguredGoogleProvider(private val providerConfig: ProviderConfig, priva
             origin = origin,
             scope = (providerConfig.scope ?: setOf("openid")).joinToString(" ")
         )
-        reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure))
+        reachFiveApi
+            .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
     }
 
     override fun onStop() {
