@@ -18,13 +18,14 @@ import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.User;
 import com.reach5.identity.sdk.google.GoogleProvider;
 import com.reach5.identity.sdk.webview.WebViewProvider;
+import io.github.cdimascio.dotenv.Dotenv;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class JavaMainActivity extends AppCompatActivity {
+    private Dotenv dotenv = Dotenv.configure().directory("/assets").filename("env").load();
+
     private static String TAG = "Reach5_MainActivity";
     private JavaReachFive reach5;
     private ProvidersAdapter providerAdapter;
@@ -36,8 +37,8 @@ public class JavaMainActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.toolbar));
 
         SdkConfig sdkConfig = new SdkConfig(
-            "sdk-mobile-sandbox.reach5.net",
-            "TYAIHFRJ2a1FGJ1T8pKD"
+            Objects.requireNonNull(dotenv.get("DOMAIN")),
+            Objects.requireNonNull(dotenv.get("CLIENT_ID"))
         );
 
         Objects.requireNonNull(getSupportActionBar()).setTitle("Java Sdk Example");

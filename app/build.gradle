@@ -49,6 +49,8 @@ dependencies {
     // implementation "com.reach5.identity:sdk-facebook:${version}"
     // implementation "com.reach5.identity:sdk-google:${version}"
 
+    implementation "io.github.cdimascio:java-dotenv:5.1.0"
+
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.facebook.android:facebook-login:5.0.3'
 
