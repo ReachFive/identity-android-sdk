@@ -15,11 +15,19 @@ import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
+import io.github.cdimascio.dotenv.dotenv
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "Reach5_MainActivity"
+
+    private val dotenv = dotenv {
+        directory = "/assets"
+        filename = "env"
+    }
+    private val domain = dotenv["DOMAIN"] ?: throw IllegalArgumentException("The ReachFive domain is undefined! Check your `env` file.")
+    private val clientId = dotenv["CLIENT_ID"] ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
 
@@ -32,10 +40,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        val sdkConfig = SdkConfig(
-            domain = "sdk-mobile-sandbox.reach5.net",
-            clientId = "TYAIHFRJ2a1FGJ1T8pKD"
-        )
+        val sdkConfig = SdkConfig(domain, clientId)
 
         val providersCreators = listOf(
             GoogleProvider(),
