@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
+import io.github.cdimascio.dotenv.dotenv
 import junit.framework.TestCase.*
 import org.junit.Rule
 import org.junit.Test
@@ -20,8 +21,13 @@ import java.lang.Thread.sleep
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
     // The SMS feature is enabled on this account
-    private val DOMAIN = "sdk-mobile-sandbox.reach5.net"
-    private val CLIENT_ID = "TYAIHFRJ2a1FGJ1T8pKD"
+    private val dotenv = dotenv {
+        directory = "/assets"
+        filename = "env"
+    }
+    private val DOMAIN = dotenv["DOMAIN"] ?: ""
+    private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
+
     private val TEST_SHOULD_NOT_FAIL = "This test should not have failed because the data are correct."
     private val TEST_SHOULD_FAIL_SCOPE_MISSING = "This test should have failed because the 'full_write' scope is missing."
 
