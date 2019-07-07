@@ -1,7 +1,7 @@
 # Changelog
 
 ## v4.0.0
-### 11 June 2019
+### 07 July 2019
 ### Changes
 New modular version of the Identity SDK Android
 * sdk-core
