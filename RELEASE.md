@@ -4,10 +4,11 @@
 
 2. Describe the new features and the bug fixes in the [CHANGELOG.md](CHANGELOG.md) file.
 
-3. Upgrade version into `build.gradle`
-```grouvy
+3. Upgrade the `x.y.z` version into `build.gradle`:
+
+```groovy
 buildscript {
-  ext.lib_version = '4.0.0'
+    ext.lib_version = 'x.y.z'
 }
 ```
 
@@ -19,10 +20,10 @@ buildscript {
     git push origin <tag_name> 
     ```
 
-    [circleci](https://circleci.com/) will automatically trigger a build, run the tests and publish the new version of the SDK on [`npm`](https://www.npmjs.com/package/@reachfive/identity-core).
+    [circleci](https://circleci.com/) will automatically trigger a build, run the tests and publish the new version of the SDK on [`JCenter`](https://circleci.com/gh/ReachFive/identity-android-sdk).
     
-    > It's important to push the tag separately otherwise the deployement job is not triggered (https://support.circleci.com/hc/en-us/articles/115013854347-Jobs-builds-not-triggered-when-pushing-tag).
+    > It's important to push the tag separately otherwise the deployment job is not triggered (https://support.circleci.com/hc/en-us/articles/115013854347-Jobs-builds-not-triggered-when-pushing-tag).
 
     Refer to the [.circleci/config.yml](.circleci/config.yml) file to set up the integration.
 
-6.  Finally, draft a new release in the [Github releases tab](https://github.com/ReachFive/identity-android-sdk/releases) (copy/past the changelog in the release's description).
+6.  Finally, draft a new release in the [Github releases tab](https://github.com/ReachFive/identity-android-sdk/releases) (copy & paste the changelog in the release's description).
