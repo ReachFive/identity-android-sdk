@@ -18,9 +18,13 @@ import java.lang.Error
 import java.lang.Exception
 import java.lang.Thread.sleep
 
+/**
+ * These tests use an account with:
+ * - the SMS feature enabled
+ * - the country set to "France"
+ */
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
-    // The SMS feature is enabled on this account
     private val dotenv = dotenv {
         directory = "/assets"
         filename = "env"
@@ -170,7 +174,6 @@ class MainActivityTest {
         // TODO: check that the profile has received a verification SMS
     }
 
-    @Ignore
     @Test
     fun testSuccessfulSignupWithLocalPhoneNumber() {
         val client = instantiateReachFiveClient()
