@@ -3,10 +3,7 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.reach5.identity.sdk.core.models.Profile
-import com.reach5.identity.sdk.core.models.AuthToken
-import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.utils.Callback
 
 class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
@@ -84,10 +81,10 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         authToken: AuthToken,
         phoneNumber: String,
         verificationCode: String,
-        success: Callback<Unit>,
+        successWithNoContent: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.verifyPhoneNumber(authToken, phoneNumber, verificationCode, success::call, failure::call)
+        return reach5.verifyPhoneNumber(authToken, phoneNumber, verificationCode, { successWithNoContent.call(Unit) }, failure::call)
     }
 
     fun updateEmail(
@@ -118,15 +115,24 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.updateProfile(authToken, profile, success::call, failure::call)
     }
 
+    fun updatePassword(
+        authToken: AuthToken,
+        updatePhoneNumberRequest: UpdatePasswordRequest,
+        successWithNoContent: Callback<Unit>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.updatePassword(authToken, updatePhoneNumberRequest, { successWithNoContent.call(Unit) }, failure::call)
+    }
+
     fun requestPasswordReset(
         authToken: AuthToken,
         email: String?,
         redirectUrl: String?,
         phoneNumber: String?,
-        success: Callback<Unit>,
+        successWithNoContent: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.requestPasswordReset(authToken, email, redirectUrl, phoneNumber, success::call, failure::call)
+        return reach5.requestPasswordReset(authToken, email, redirectUrl, phoneNumber, { successWithNoContent.call(Unit) }, failure::call)
     }
 
     fun onActivityResult(

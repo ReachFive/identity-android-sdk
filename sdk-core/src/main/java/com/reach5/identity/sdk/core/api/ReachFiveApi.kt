@@ -1,9 +1,11 @@
 package com.reach5.identity.sdk.core.api
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
@@ -53,6 +55,13 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<Profile>
 
+    @POST("/identity/v1/update-password")
+    fun updatePassword(
+        @Header("Authorization") authorization: String,
+        @Body updatePhoneNumberRequest: UpdatePasswordRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
     @POST("/identity/v1/forgot-password")
     fun requestPasswordReset(
         @Header("Authorization") authorization: String,
@@ -62,9 +71,13 @@ interface ReachFiveApi {
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
+            val gson = GsonBuilder()
+                .registerTypeAdapter(UpdatePasswordRequest::class.java, UpdatePasswordRequestSerializer())
+                .create()
+
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://${config.domain}")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
 
             return retrofit.create(ReachFiveApi::class.java)
@@ -72,16 +85,17 @@ interface ReachFiveApi {
     }
 }
 
-class ReachFiveApiCallback<T>(val success: Success<T>, val failure: Failure<ReachFiveError>): Callback<T> {
+class ReachFiveApiCallback<T>(val success: Success<T> = { Unit }, val successWithNoContent: SuccessWithNoContent<Unit> = { Unit }, val failure: Failure<ReachFiveError>): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         failure(ReachFiveError.from(t))
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
-        val body = response.body()
         val status = response.code()
-        if (response.isSuccessful && body != null) {
-            success(body)
+        if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) success(body)
+            else successWithNoContent(Unit)
         } else if (status in 300..400) {
             failure(ReachFiveError(
                 message = "Bad Request",

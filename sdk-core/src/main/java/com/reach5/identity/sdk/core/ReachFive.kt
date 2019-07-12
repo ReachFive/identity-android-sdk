@@ -5,8 +5,10 @@ import android.content.Intent
 import android.util.Log
 import com.reach5.identity.sdk.core.api.*
 import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.UpdatePasswordRequest.Companion.enrichWithClientId
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
+import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 
 class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersCreators: List<ProviderCreator>) {
 
@@ -40,7 +42,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
                 providers = createProviders(it)
                 success(providers)
-            }, failure))
+            }, failure = failure))
     }
 
     private fun createProviders(providersConfigsResult: ProvidersConfigsResult): List<Provider> {
@@ -83,7 +85,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         )
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure))
+            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
     }
 
     /**
@@ -105,14 +107,14 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         )
         reachFiveApi
             .loginWithPassword(loginRequest, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback({ it.toAuthToken().fold(success, failure) }, failure))
+            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
     }
 
     fun verifyPhoneNumber(
         authToken: AuthToken,
         phoneNumber: String,
         verificationCode: String,
-        success: Success<Unit>,
+        successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
@@ -121,7 +123,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
                 VerifyPhoneNumberRequest(phoneNumber, verificationCode),
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(success , failure))
+            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
     }
 
     fun updateEmail(
@@ -133,7 +135,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     ) {
         reachFiveApi
             .updateEmail(formatAuthorization(authToken), UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success , failure))
+            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
     fun updatePhoneNumber(
@@ -144,7 +146,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     ) {
         reachFiveApi
             .updatePhoneNumber(formatAuthorization(authToken), UpdatePhoneNumberRequest(phoneNumber), SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success , failure))
+            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
     fun updateProfile(
@@ -155,7 +157,22 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     ) {
         reachFiveApi
             .updateProfile(formatAuthorization(authToken), profile, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success , failure))
+            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+    }
+
+    fun updatePassword(
+        authToken: AuthToken,
+        updatePhoneNumberRequest: UpdatePasswordRequest,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .updatePassword(
+                formatAuthorization(authToken),
+                enrichWithClientId(updatePhoneNumberRequest, sdkConfig.clientId),
+                SdkInfos.getQueries()
+            )
+            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
     }
 
     fun requestPasswordReset(
@@ -163,7 +180,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         email: String? = null,
         redirectUrl: String? = null,
         phoneNumber: String? = null,
-        success: Success<Unit>,
+        successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
@@ -172,7 +189,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
                 RequestPasswordResetRequest(sdkConfig.clientId, email, redirectUrl, phoneNumber),
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(success , failure))
+            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>) {
