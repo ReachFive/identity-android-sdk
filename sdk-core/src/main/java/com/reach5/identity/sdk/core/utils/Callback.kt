@@ -6,4 +6,5 @@ interface Callback<T> {
 }
 
 typealias Success<T> = (data: T) -> Unit
+typealias SuccessWithNoContent<Unit> = Success<Unit>
 typealias Failure<E> = (error: E) -> Unit

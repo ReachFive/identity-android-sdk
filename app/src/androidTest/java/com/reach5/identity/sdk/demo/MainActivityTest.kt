@@ -649,6 +649,157 @@ class MainActivityTest {
     }
 
     @Test
+    fun testSuccessfulPasswordUpdateWithFreshAccessToken() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_marquis.jones@gmail.com"
+        val oldPassword = "gVc7piBn"
+        val newPassword = "ZPf7LFtc"
+
+        client.signup(
+            Profile(givenName = "Marquis", familyName = "Jones", gender = "male", email = email, password = oldPassword),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updatePassword(
+                    authToken,
+                    UpdatePasswordRequest.FreshAccessTokenUpdatePasswordParams(newPassword),
+                    successWithNoContent = {
+                        client.loginWithPassword(
+                            email,
+                            newPassword,
+                            success = { authToken -> assertNotNull(authToken) },
+                            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                        )
+                    },
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(2000)
+    }
+
+    @Test
+    fun testSuccessfulPasswordUpdateWithAccessToken() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_francoise.leveille@gmail.com"
+        val oldPassword = "f7SM4ryE"
+        val newPassword = "XLpYXz7z"
+
+        client.signup(
+            Profile(givenName = "Françoise", familyName = "Léveillé", gender = "female", email = email, password = oldPassword),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updatePassword(
+                    authToken,
+                    UpdatePasswordRequest.AccessTokenUpdatePasswordParams(oldPassword, newPassword),
+                    successWithNoContent = {
+                        client.loginWithPassword(
+                            email,
+                            newPassword,
+                            success = { authToken -> assertNotNull(authToken) },
+                            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                        )
+                    },
+                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(2000)
+    }
+
+    @Test
+    fun testFailedPasswordUpdateWithAccessTokenWithSamePassword() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_jeanette.laliberte@gmail.com"
+        val oldPassword = "d9qtNk75"
+
+        client.signup(
+            Profile(givenName = "Jeanette", familyName = "Laliberté", gender = "female", email = email, password = oldPassword),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updatePassword(
+                    authToken,
+                    UpdatePasswordRequest.AccessTokenUpdatePasswordParams(oldPassword, oldPassword),
+                    successWithNoContent = { fail("This test should have failed because the password has not changed.") },
+                    failure = { error -> run {
+                        assertEquals(error.message, "Bad Request")
+                        assertEquals(error.data?.error, "invalid_request")
+                        assertEquals(error.data?.errorDescription, "New password should be different from the old password")
+                    } }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedPasswordUpdateWithEmailAndWrongCode() {
+        val client = instantiateReachFiveClient()
+
+        val email = "test_dalmace.legault@gmail.com"
+
+        client.signup(
+            Profile(givenName = "Dalmace", familyName = "Legault", gender = "female", email = email, password = "AkRxUS2C"),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updatePassword(
+                    authToken,
+                    UpdatePasswordRequest.EmailUpdatePasswordParams(email, "234", "DoTJR39D"),
+                    successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
+                    failure = { error -> run {
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "invalid_grant")
+                        assertEquals(error.data?.errorDescription, "Invalid verification code")
+                    } }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
+    fun testFailedPasswordUpdateWithPhoneNumberAndWrongCode() {
+        val client = instantiateReachFiveClient()
+
+        val phoneNumber = "+33643890990"
+
+        client.signup(
+            Profile(givenName = "Royce", familyName = "Tardif", gender = "male", phoneNumber = phoneNumber, password = "w2saTZPn"),
+            client.defaultScope.plus("full_write"),
+            { authToken ->
+                client.updatePassword(
+                    authToken,
+                    UpdatePasswordRequest.SmsUpdatePasswordParams(phoneNumber, "908", "qdnsgRc3"),
+                    successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
+                    failure = { error -> run {
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "invalid_grant")
+                        assertEquals(error.data?.errorDescription, "Invalid verification code")
+                    } }
+                )
+            },
+            { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
     fun testSuccessfulRequestPasswordResetWithEmail() {
         val client = instantiateReachFiveClient()
 
@@ -660,7 +811,7 @@ class MainActivityTest {
                 client.requestPasswordReset(
                     authToken,
                     email = email,
-                    success = {},
+                    successWithNoContent = {},
                     failure = { fail(TEST_SHOULD_NOT_FAIL) }
                 )
             },
@@ -685,7 +836,7 @@ class MainActivityTest {
                 client.requestPasswordReset(
                     authToken,
                     phoneNumber = phoneNumber,
-                    success = {},
+                    successWithNoContent = {},
                     failure = { fail(TEST_SHOULD_NOT_FAIL) }
                 )
             },
@@ -707,7 +858,7 @@ class MainActivityTest {
             success = { authToken ->
                 client.requestPasswordReset(
                     authToken,
-                    success = { fail("This test should have failed because neither the email or the phone number are provided.") },
+                    successWithNoContent = { fail("This test should have failed because neither the email or the phone number are provided.") },
                     failure = { error -> run {
                         assertEquals(error.message, "Technical Error")
                         assertEquals(error.data?.error, "invalid_grant")
