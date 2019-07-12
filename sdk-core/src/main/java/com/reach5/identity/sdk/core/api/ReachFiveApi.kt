@@ -14,18 +14,22 @@ import retrofit2.Response
 import retrofit2.http.*
 import java.lang.Exception
 
+
 interface ReachFiveApi {
     @GET("/api/v1/providers")
     fun providersConfigs(@QueryMap options: Map<String, String>): Call<ProvidersConfigsResult>
 
-    @POST("/identity/v1/oauth/provider/token")
-    fun loginWithProvider(@Body loginProviderRequest: LoginProviderRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
-
     @POST("/identity/v1/signup-token")
     fun signup(@Body signupRequest: SignupRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
+    @POST("/identity/v1/oauth/provider/token")
+    fun loginWithProvider(@Body loginProviderRequest: LoginProviderRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+
     @POST("/oauth/token")
     fun loginWithPassword(@Body loginRequest: LoginRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+
+    @GET("/identity/v1/logout")
+    fun logout(@QueryMap options: Map<String, String>): Call<Unit>
 
     @POST("/identity/v1/verify-phone-number")
     fun verifyPhoneNumber(

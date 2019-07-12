@@ -77,6 +77,14 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.loginWithPassword(username, password, success = success::call, failure = failure::call)
     }
 
+    fun logout(
+        redirectTo: String? = null,
+        successWithNoContent: Callback<Unit>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.logout(redirectTo, { successWithNoContent.call(Unit) },  failure::call)
+    }
+
     fun verifyPhoneNumber(
         authToken: AuthToken,
         phoneNumber: String,
@@ -145,8 +153,8 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.onActivityResult(requestCode, resultCode, data, success::call, failure::call)
     }
 
-    fun logout() {
-        reach5.logout {}
+    fun logoutWithProviders() {
+        reach5.logoutWithProviders {}
     }
 
     fun onStop() {
