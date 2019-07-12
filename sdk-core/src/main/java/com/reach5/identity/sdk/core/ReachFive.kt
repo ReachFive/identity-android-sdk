@@ -110,6 +110,18 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
     }
 
+    fun logout(
+        redirectTo: String? = null,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val queries = SdkInfos.getQueries()
+        val options = if(redirectTo != null) queries.plus(Pair("redirect_to", redirectTo)) else queries
+        reachFiveApi
+            .logout(options)
+            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
+    }
+
     fun verifyPhoneNumber(
         authToken: AuthToken,
         phoneNumber: String,
@@ -210,7 +222,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         }
     }
 
-    fun logout(callback: () -> Unit) {
+    fun logoutWithProviders(callback: () -> Unit) {
         providers.forEach {
             it.logout()
         }.also {
