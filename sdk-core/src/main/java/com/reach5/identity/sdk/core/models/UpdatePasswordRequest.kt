@@ -5,23 +5,23 @@ import com.google.gson.annotations.SerializedName
 import java.lang.reflect.Type
 
 sealed class UpdatePasswordRequest {
-    data class FreshAccessTokenUpdatePasswordParams (
+    data class FreshAccessTokenParams (
         val password: String
     ) : UpdatePasswordRequest()
 
-    data class AccessTokenUpdatePasswordParams (
+    data class AccessTokenParams (
         @SerializedName("old_password")
         val oldPassword: String,
         val password: String
     ) : UpdatePasswordRequest()
 
-    data class EmailUpdatePasswordParams (
+    data class EmailParams (
         val email: String,
         val verificationCode: String,
         val password: String
     ) : UpdatePasswordRequest()
 
-    data class EmailUpdatePasswordParamsWithClientId (
+    data class EmailWithClientIdParams (
         val email: String,
         @SerializedName("verification_code")
         val verificationCode: String,
@@ -30,13 +30,13 @@ sealed class UpdatePasswordRequest {
         val clientId: String
     ) : UpdatePasswordRequest()
 
-    data class SmsUpdatePasswordParams (
+    data class SmsParams (
         val phoneNumber: String,
         val verificationCode: String,
         val password: String
     ) : UpdatePasswordRequest()
 
-    data class SmsUpdatePasswordParamsWithClientId (
+    data class SmsWithClientIdParams (
         @SerializedName("phone_number")
         val phoneNumber: String,
         @SerializedName("verification_code")
@@ -49,10 +49,10 @@ sealed class UpdatePasswordRequest {
     companion object {
         fun<T : UpdatePasswordRequest> enrichWithClientId(params: T, clientId: String): UpdatePasswordRequest  {
             return when(params) {
-                is EmailUpdatePasswordParams ->
-                    EmailUpdatePasswordParamsWithClientId(params.email, params.verificationCode, params.password, clientId)
-                is SmsUpdatePasswordParams ->
-                    SmsUpdatePasswordParamsWithClientId(params.phoneNumber, params.verificationCode, params.password, clientId)
+                is EmailParams ->
+                    EmailWithClientIdParams(params.email, params.verificationCode, params.password, clientId)
+                is SmsParams ->
+                    SmsWithClientIdParams(params.phoneNumber, params.verificationCode, params.password, clientId)
                 else -> params
             }
         }
