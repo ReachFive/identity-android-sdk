@@ -662,7 +662,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.FreshAccessTokenUpdatePasswordParams(newPassword),
+                    UpdatePasswordRequest.FreshAccessTokenParams(newPassword),
                     successWithNoContent = {
                         client.loginWithPassword(
                             email,
@@ -695,7 +695,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.AccessTokenUpdatePasswordParams(oldPassword, newPassword),
+                    UpdatePasswordRequest.AccessTokenParams(oldPassword, newPassword),
                     successWithNoContent = {
                         client.loginWithPassword(
                             email,
@@ -727,7 +727,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.AccessTokenUpdatePasswordParams(oldPassword, oldPassword),
+                    UpdatePasswordRequest.AccessTokenParams(oldPassword, oldPassword),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
                     failure = { error -> run {
                         assertEquals(error.message, "Bad Request")
@@ -755,7 +755,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.EmailUpdatePasswordParams(email, "234", "DoTJR39D"),
+                    UpdatePasswordRequest.EmailParams(email, "234", "DoTJR39D"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error -> run {
                         assertEquals(error.message, "Technical Error")
@@ -783,7 +783,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.SmsUpdatePasswordParams(phoneNumber, "908", "qdnsgRc3"),
+                    UpdatePasswordRequest.SmsParams(phoneNumber, "908", "qdnsgRc3"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error -> run {
                         assertEquals(error.message, "Technical Error")
