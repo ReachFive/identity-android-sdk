@@ -873,6 +873,26 @@ class MainActivityTest {
         sleep(1000)
     }
 
+    @Test
+    fun testSuccessfulLogout() {
+        val client = instantiateReachFiveClient()
+
+        client.signup(
+            Profile(
+                givenName = "Audric",
+                familyName = "Francoeur",
+                gender = "male",
+                email = "test_audric.francoeur@gmail.com",
+                password = "ZL7czYWw"
+            ),
+            success = { client.logout(successWithNoContent = {}, failure = { fail(TEST_SHOULD_NOT_FAIL) }) },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
     private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
         val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
 
