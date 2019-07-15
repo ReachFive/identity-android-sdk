@@ -3,7 +3,7 @@
 </p>
 
 [![CircleCI](https://circleci.com/gh/ReachFive/identity-android-sdk/tree/master.svg?style=svg)](https://circleci.com/gh/ReachFive/identity-android-sdk/tree/master)
-[![Download](https://api.bintray.com/packages/reachfive/identity-sdk/sdk-core/images/download.svg?version=4.0.0) ](https://bintray.com/reachfive/identity-sdk/sdk-core/4.0.0/link)
+[![Download](https://api.bintray.com/packages/reachfive/identity-sdk/sdk-core/images/download.svg) ](https://bintray.com/reachfive/identity-sdk)
 
 # ReachFive Identity Android SDK
 
