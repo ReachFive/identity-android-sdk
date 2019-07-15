@@ -14,13 +14,19 @@ buildscript {
 
 4. Submit your pull request.
 
-5. Once the branch is merged into `master`, push the new tag.
+5. Once the branch is merged into `master`, create a new tag.
+
+    ```sh
+    git tag <tag_name> 
+    ```
+    
+    Push it on origin.
    
     ```sh
     git push origin <tag_name> 
     ```
 
-    [circleci](https://circleci.com/) will automatically trigger a build, run the tests and publish the new version of the SDK on [`JCenter`](https://circleci.com/gh/ReachFive/identity-android-sdk).
+    [circleci](https://circleci.com/gh/ReachFive/identity-android-sdk) will automatically trigger a build, run the tests and publish the new version of the SDK on [`JCenter`](https://bintray.com/beta/#/reachfive/identity-sdk?tab=packages).
     
     > It's important to push the tag separately otherwise the deployment job is not triggered (https://support.circleci.com/hc/en-us/articles/115013854347-Jobs-builds-not-triggered-when-pushing-tag).
 
