@@ -2,17 +2,16 @@ package com.reach5.identity.sdk.core.api
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
-import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.Response
 import retrofit2.http.*
-import java.lang.Exception
 
 
 interface ReachFiveApi {
@@ -27,6 +26,9 @@ interface ReachFiveApi {
 
     @POST("/oauth/token")
     fun loginWithPassword(@Body loginRequest: LoginRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+
+    @POST("/oauth/token")
+    fun authenticateWithCode(@Body authCodeRequest: AuthCodeRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
     @GET("/identity/v1/logout")
     fun logout(@QueryMap options: Map<String, String>): Call<Unit>

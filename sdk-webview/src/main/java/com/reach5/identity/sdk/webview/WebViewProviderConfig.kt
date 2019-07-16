@@ -20,7 +20,7 @@ internal data class WebViewProviderConfig(
             "provider" to providerConfig.provider,
             "origin" to origin,
             "redirect_uri" to "reachfive://callback",
-            "response_type" to "token",
+            "response_type" to "code",
             "scope" to scope.joinToString(" ")
         ) + SdkInfos.getQueries()
         val query = params.entries.joinToString("&") { (key, value) ->
