@@ -1,11 +1,15 @@
 package com.reach5.identity.sdk.core.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 
 /**
  * This class is used for sign-up and update, that's why some parameters are optional while there are required for some actions
  * Example: the `password` field is optional while it's required for sign-up
  */
+@Parcelize
 data class Profile(
     val email: String? = null,
     val password: String? = null,
@@ -28,11 +32,10 @@ data class Profile(
     // TODO better type for address
     val addresses: List<ProfileAddress>? = null,
     @SerializedName("custom_fields")
-    val customFields: Map<String, Any>? = null
-) {
+    val customFields: Map<String, @RawValue Any>? = null
+) : Parcelable {
     constructor(email: String, password: String): this(email, password, null)
 }
 
-data class ProfileAddress(
-    val country: String
-)
+@Parcelize
+data class ProfileAddress(val country: String) : Parcelable

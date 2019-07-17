@@ -1,12 +1,13 @@
 package com.reach5.identity.sdk.core.models
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.map
 import com.google.gson.annotations.SerializedName
 import com.reach5.identity.sdk.core.utils.Jwt
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class AuthToken(
     val idToken: String,
     val accessToken: String,
@@ -15,40 +16,9 @@ data class AuthToken(
     val expiresIn: Int?,
     // The `user` field is optional because if the `openid` scope is not provided, the `idToken` is not returned
     val user: User?
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readValue(Int::class.java.classLoader) as? Int,
-        parcel.readParcelable(User::class.java.classLoader)!!
-    )
+) : Parcelable
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(idToken)
-        parcel.writeString(accessToken)
-        parcel.writeString(code)
-        parcel.writeString(tokenType)
-        parcel.writeValue(expiresIn)
-        parcel.writeParcelable(user, flags)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<AuthToken> {
-        override fun createFromParcel(parcel: Parcel): AuthToken {
-            return AuthToken(parcel)
-        }
-
-        override fun newArray(size: Int): Array<AuthToken?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
-
+@Parcelize
 data class AuthTokenResponse(
     @SerializedName("id_token")
     val idToken: String? = null,
@@ -71,16 +41,6 @@ data class AuthTokenResponse(
     @SerializedName("error_description")
     val errorDescription: String? = null
 ) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readValue(Int::class.java.classLoader) as? Int,
-        parcel.readString(),
-        parcel.readString()
-    )
-
     fun toAuthToken(): Result<AuthToken, ReachFiveError> {
         if (idToken != null) {
             return if (accessToken != null) {
@@ -113,7 +73,6 @@ data class AuthTokenResponse(
     }
 
     companion object {
-
         @JvmStatic
         fun fromQueryString(params: Map<String, String>): AuthTokenResponse {
             return AuthTokenResponse(
@@ -126,30 +85,5 @@ data class AuthTokenResponse(
                 code = null
             )
         }
-
-        @JvmField
-        val CREATOR = object : Parcelable.Creator<AuthTokenResponse> {
-            override fun createFromParcel(parcel: Parcel): AuthTokenResponse {
-                return AuthTokenResponse(parcel)
-            }
-
-            override fun newArray(size: Int): Array<AuthTokenResponse?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(idToken)
-        parcel.writeString(accessToken)
-        parcel.writeString(code)
-        parcel.writeString(tokenType)
-        parcel.writeValue(expiresIn)
-        parcel.writeString(error)
-        parcel.writeString(errorDescription)
-    }
-
-    override fun describeContents(): Int {
-        return 0
     }
 }

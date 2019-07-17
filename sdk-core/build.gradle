@@ -1,6 +1,6 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 
 group = lib_group
 version = lib_version
@@ -18,7 +18,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
 
@@ -30,14 +30,22 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    androidExtensions {
+        /**
+         *  Used to create automatically the @Parcelize methods
+         *  Link: https://kotlinlang.org/docs/tutorials/android-plugin.html#parcelable-implementations-generator
+         */
+        experimental = true
+    }
 }
 
 dependencies {
-    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
-    implementation 'com.github.kittinunf.result:result:2.2.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation "com.squareup.retrofit2:retrofit:2.6.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.6.0"
+    implementation "com.github.kittinunf.result:result:2.2.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-apply from: rootProject.file('bintray.gradle')
+apply from: rootProject.file("bintray.gradle")
