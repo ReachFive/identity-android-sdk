@@ -1,6 +1,6 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 
 group = lib_group
 version = lib_version
@@ -18,7 +18,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
 
@@ -29,12 +29,12 @@ android {
 }
 
 dependencies {
-    implementation project(':sdk-core')
-    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
-    implementation 'com.github.kittinunf.result:result:2.2.0'
-    implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation 'com.android.support:support-v4:28.0.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation project(":sdk-core")
+    implementation "com.squareup.retrofit2:retrofit:2.6.0"
+    implementation "com.github.kittinunf.result:result:2.2.0"
+    implementation "com.google.android.gms:play-services-auth:16.0.1"
+    implementation "com.android.support:support-v4:28.0.0"
+    implementation "com.android.support:appcompat-v7:28.0.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
@@ -42,4 +42,4 @@ repositories {
     mavenCentral()
 }
 
-apply from: rootProject.file('bintray.gradle')
+apply from: rootProject.file("bintray.gradle")
