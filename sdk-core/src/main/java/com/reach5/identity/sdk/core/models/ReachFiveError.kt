@@ -1,7 +1,10 @@
 package com.reach5.identity.sdk.core.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class ReachFiveApiError(
     val error: String,
 
@@ -10,18 +13,20 @@ data class ReachFiveApiError(
 
     @SerializedName("error_details")
     val errorDetails: List<ReachFiveApiErrorDetail>?
-)
+) : Parcelable
 
+@Parcelize
 data class ReachFiveApiErrorDetail(
     val field: String,
     val message: String
-)
+) : Parcelable
 
+@Parcelize
 data class ReachFiveError(
     override val message: String,
     val exception: Exception? = null,
     val data: ReachFiveApiError? = null
-): java.lang.Exception(message) {
+): java.lang.Exception(message), Parcelable {
     companion object {
         @JvmStatic
         fun from(error: Exception): ReachFiveError {

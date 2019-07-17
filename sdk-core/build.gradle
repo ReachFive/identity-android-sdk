@@ -30,6 +30,14 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    androidExtensions {
+        /**
+         *  Used to create automatically the @Parcelize methods
+         *  Link: https://kotlinlang.org/docs/tutorials/android-plugin.html#parcelable-implementations-generator
+         */
+        experimental = true
+    }
 }
 
 dependencies {
