@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class User(
-    // Correspond au champ "sub" dans le JSON
+    // Corresponds to the `sub` field in the JSON
     @SerializedName("sub")
     val id: String?,
     @SerializedName("preferred_username")
@@ -32,7 +32,7 @@ data class User(
     @SerializedName("phone_number_verified")
     val phoneNumberVerified: Boolean?,
     val address: Address?,
-    // Date de naissance au format ISO­8601 (par ex. 1965­12­31)
+    // DOB in ISO­-8601 format (ex: 1965-12-31)
     var birthdate: String?
 ) : Parcelable
 
