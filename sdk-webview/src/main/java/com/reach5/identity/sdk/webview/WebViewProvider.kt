@@ -34,7 +34,7 @@ class ConfiguredWebViewProvider(
 
     companion object {
         const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
-        const val AuthCode = "code"
+        const val AuthCode = "AuthCode"
         const val RequestCode = 52558
         const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
