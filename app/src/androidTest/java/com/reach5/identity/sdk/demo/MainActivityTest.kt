@@ -34,6 +34,7 @@ class MainActivityTest {
 
     private val TEST_SHOULD_NOT_FAIL = "This test should not have failed because the data are correct."
     private val TEST_SHOULD_FAIL_SCOPE_MISSING = "This test should have failed because the 'full_write' scope is missing."
+    private val NO_ID_TOKEN = "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -228,7 +229,7 @@ class MainActivityTest {
             ),
             listOf(),
             {},
-            { error -> assertEquals(error.message, "No id_token returned, verify if you have the open_id scope configured into your API Client Settings") }
+            { error -> assertEquals(error.message, NO_ID_TOKEN) }
         )
 
         // TODO: replace the `sleep` method by a callback mock
@@ -370,7 +371,7 @@ class MainActivityTest {
                     password,
                     listOf(),
                     {},
-                    { error -> assertEquals(error.message, "No id_token returned, verify if you have the open_id scope configured into your API Client Settings") }
+                    { error -> assertEquals(error.message, NO_ID_TOKEN) }
                 )
             },
             failure = { fail(TEST_SHOULD_NOT_FAIL) }

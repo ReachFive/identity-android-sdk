@@ -58,7 +58,7 @@ data class AuthTokenResponse(
                 Result.error(ReachFiveError.from("No access_token returned"))
             }
         } else {
-            return Result.error(ReachFiveError.from("No id_token returned, verify if you have the open_id scope configured into your API Client Settings"))
+            return Result.error(ReachFiveError.from("No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."))
         }
     }
 
