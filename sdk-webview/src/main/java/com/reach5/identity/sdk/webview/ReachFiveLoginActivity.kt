@@ -5,6 +5,7 @@ import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,14 +13,13 @@ import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.reach5.identity.sdk.core.models.AuthTokenResponse
 import kotlinx.android.synthetic.main.reachfive_login_activity.*
 import java.util.regex.Pattern
 
 class ReachFiveLoginActivity : Activity() {
     private val TAG = "Reach5"
 
-    private var authTokenResponse: AuthTokenResponse? = null
+    private var code: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +57,9 @@ class ReachFiveLoginActivity : Activity() {
         finish()
     }
 
-    fun loginSuccess(authTokenResponse: AuthTokenResponse) {
+    fun loginSuccess(authCode: String?) {
         val intent = Intent()
-        intent.putExtra(ConfiguredWebViewProvider.OpenIdTokenResponse, authTokenResponse)
+        intent.putExtra(ConfiguredWebViewProvider.AuthCode, authCode)
         setResult(ConfiguredWebViewProvider.RequestCode, intent)
         finish()
     }
@@ -71,7 +71,7 @@ class ReachFiveLoginActivity : Activity() {
 
     inner class ReachFiveWebViewClient: WebViewClient() {
 
-        private val PATTERN = Pattern.compile("^(reachfive:\\/\\/callback#)(.*)$")
+        private val PATTERN = Pattern.compile("^(reachfive:\\/\\/callback)(.*)$")
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
@@ -112,24 +112,15 @@ class ReachFiveLoginActivity : Activity() {
         private fun handleUrlLoading(url: String): Boolean {
             val matcher = PATTERN.matcher(url)
             return if (matcher.matches()) {
-                val queryStrings = parseQueryStringFragment(url)
                 // avoid multiple calls
-                if (authTokenResponse == null) {
-                    val token = AuthTokenResponse.fromQueryString(queryStrings)
-                    authTokenResponse = token
-                    loginSuccess(token)
+                if (code == null) {
+                    code = Uri.parse(url).getQueryParameter("code")
+                    loginSuccess(code)
                 }
                 false
             } else {
                 true
             }
-        }
-
-        private fun parseQueryStringFragment(url: String): Map<String, String> {
-            return url.split("#").drop(1).first().split("&").map {
-                val (key, value) = it.split("=")
-                key to value
-            }.associate { v -> v }
         }
     }
 }

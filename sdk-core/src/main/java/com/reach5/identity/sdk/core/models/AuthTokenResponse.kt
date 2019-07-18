@@ -71,19 +71,4 @@ data class AuthTokenResponse(
             }
         }
     }
-
-    companion object {
-        @JvmStatic
-        fun fromQueryString(params: Map<String, String>): AuthTokenResponse {
-            return AuthTokenResponse(
-                idToken = params["id_token"],
-                accessToken = params["access_token"],
-                expiresIn = params["expires_in"]?.toIntOrNull(),
-                tokenType = params["token_type"],
-                error = params["error"],
-                errorDescription = params["error_description"],
-                code = null
-            )
-        }
-    }
 }
