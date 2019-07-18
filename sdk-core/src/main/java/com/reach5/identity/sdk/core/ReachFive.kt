@@ -3,7 +3,8 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import com.reach5.identity.sdk.core.api.*
+import com.reach5.identity.sdk.core.api.ReachFiveApi
+import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.UpdatePasswordRequest.Companion.enrichWithClientId
 import com.reach5.identity.sdk.core.utils.Failure
@@ -223,17 +224,11 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun logoutWithProviders(callback: () -> Unit) {
-        providers.forEach {
-            it.logout()
-        }.also {
-            callback()
-        }
+        providers.forEach { it.logout() }.also { callback() }
     }
 
     fun onStop() {
-        providers.forEach {
-            it.onStop()
-        }
+        providers.forEach { it.onStop() }
     }
 
     private fun formatAuthorization(authToken: AuthToken): String {
