@@ -63,7 +63,7 @@ class ConfiguredWebViewProvider(
                 .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
                 .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
         } else {
-            failure(ReachFiveError.from("No authentication code into activity result"))
+            failure(ReachFiveError.from("No authorization code into activity result"))
         }
     }
 
