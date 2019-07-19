@@ -8,6 +8,7 @@ import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.utils.Failure
+import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success
 
 class WebViewProvider : ProviderCreator {
@@ -35,6 +36,7 @@ class ConfiguredWebViewProvider(
     companion object {
         const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
         const val AuthCode = "AuthCode"
+        const val PKCE = "PKCE"
         const val RequestCode = 52558
         const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
@@ -46,6 +48,7 @@ class ConfiguredWebViewProvider(
             sdkConfig = sdkConfig,
             origin = origin
         ))
+        intent.putExtra(PKCE, Pkce.generate())
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -57,13 +60,20 @@ class ConfiguredWebViewProvider(
         failure: Failure<ReachFiveError>
     ) {
         val authCode = data?.getStringExtra(AuthCode)
-        return if (authCode != null) {
-            val authCodeRequest = AuthCodeRequest(sdkConfig.clientId, authCode, "authorization_code", "reachfive://callback")
+        val pkce = data?.getParcelableExtra<Pkce>(PKCE)
+        return if (authCode != null && pkce != null) {
+            val authCodeRequest = AuthCodeRequest(
+                sdkConfig.clientId,
+                authCode,
+                "authorization_code",
+                "reachfive://callback",
+                pkce.codeVerifier
+            )
             reachFiveApi
                 .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
                 .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
         } else {
-            failure(ReachFiveError.from("No authorization code found in activity result"))
+            failure(ReachFiveError.from("No authorization code or PKCE verifier code found in activity result"))
         }
     }
 
