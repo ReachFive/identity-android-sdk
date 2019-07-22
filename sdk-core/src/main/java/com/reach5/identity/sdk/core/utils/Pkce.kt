@@ -14,39 +14,39 @@ class Pkce(val codeVerifier: String) : Parcelable {
     val codeChallenge: String
     @IgnoredOnParcel
     val codeChallengeMethod: String
-
+    
     init {
         this.codeChallenge = generateCodeChallenge(codeVerifier)
         this.codeChallengeMethod = "S256"
     }
 
-    override fun toString(): String {
-        return "code_verifier=$codeVerifier, code_challenge=$codeChallenge, code_challenge_method=$codeChallengeMethod"
-    }
+    override fun toString(): String =
+        "code_verifier=$codeVerifier, code_challenge=$codeChallenge, code_challenge_method=$codeChallengeMethod"
 
     companion object {
-        fun generate(): Pkce {
-            val codeVerifier= generateCodeVerifier()
-            return Pkce(codeVerifier)
-        }
+        private const val BASE64_FLAGS = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
+        
+        fun generate(): Pkce = Pkce(generateCodeVerifier())
 
-        private fun generateCodeVerifier(): String {
-            val secureRandom = SecureRandom()
-
-            val code = ByteArray(32)
-            secureRandom.nextBytes(code)
-
-            return Base64.encodeToString(code, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
-        }
+        private fun generateCodeVerifier(): String =
+            SecureRandom()
+                .let { secureRandom ->
+                    ByteArray(32).also { secureRandom.nextBytes(it) }
+                }
+                .let { code ->
+                    Base64.encodeToString(code, BASE64_FLAGS)
+                }
     }
 
-    private fun generateCodeChallenge(codeVerifier: String): String {
-        val bytes = codeVerifier.toByteArray(UTF_8)
-
-        val messageDigest = MessageDigest.getInstance("SHA-256")
-        messageDigest.update(bytes, 0, bytes.size)
-        val digest = messageDigest.digest()
-
-        return Base64.encodeToString(digest, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
-    }
+    private fun generateCodeChallenge(codeVerifier: String): String =
+        codeVerifier
+            .toByteArray(UTF_8)
+            .let { bytes ->
+                MessageDigest.getInstance("SHA-256")
+                    .also { it.update(bytes, 0, bytes.size) }
+                    .digest()
+            }
+            .let{ digest ->
+                Base64.encodeToString(digest, BASE64_FLAGS)
+            }
 }
