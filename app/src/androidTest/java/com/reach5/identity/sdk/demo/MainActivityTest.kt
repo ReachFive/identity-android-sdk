@@ -56,6 +56,34 @@ class MainActivityTest {
     }
 
     @Test
+    fun testClientUsesConfiguredScopes() {
+        val client = ReachFive(
+            activity = activityRule.activity,
+            sdkConfig = SdkConfig(domain = DOMAIN, clientId = CLIENT_ID),
+            providersCreators = listOf()
+        )
+        val expectedScopes = setOf(
+            "email",
+            "full_write",
+            "openid",
+            "phone",
+            "profile"
+        )
+
+        assertEquals("Pre-init scopes should be default", client.defaultScope, client.scopes)
+
+        client.initialize(
+            success = {
+                assertEquals("Post-init scopes should correspond to Client Settings", expectedScopes, client.scopes)
+            },
+            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+        )
+
+        // TODO: replace the `sleep` method by a callback mock
+        sleep(1000)
+    }
+
+    @Test
     fun testSuccessfulSignupWithEmail() {
         val client = instantiateReachFiveClient()
 

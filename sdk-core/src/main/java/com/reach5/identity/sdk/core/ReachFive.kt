@@ -17,7 +17,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         private const val TAG = "Reach5"
     }
 
-    val defaultScope = listOf(
+    val defaultScope = setOf(
         // Access the ID token
         "openid",
         // Access the email address
@@ -27,13 +27,23 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         // Access the profile's personal information
         "profile"
     )
+    var scopes: Set<String> = defaultScope
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
 
-    private var providers: List<Provider> = listOf()
+    private var providers: List<Provider> = emptyList()
 
     fun initialize(success: Success<List<Provider>> = {}, failure: Failure<ReachFiveError> = {}): ReachFive {
-        providersConfigs(success, failure)
+        reachFiveApi
+            .clientConfig(mapOf("client_id" to sdkConfig.clientId))
+            .enqueue(ReachFiveApiCallback<ClientConfigResponse>(
+                success = { clientConfig ->
+                    scopes = clientConfig.scope.split(" ").toSet()
+                    providersConfigs(success, failure)
+                },
+                failure = failure)
+            )
+
         return this
     }
 
@@ -75,7 +85,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     fun signup(
         profile: Profile,
-        scope: List<String> = defaultScope,
+        scope: Set<String> = scopes,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -95,7 +105,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun loginWithPassword(
         username: String,
         password: String,
-        scope: List<String> = defaultScope,
+        scope: Set<String> = scopes,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -117,7 +127,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         failure: Failure<ReachFiveError>
     ) {
         val queries = SdkInfos.getQueries()
-        val options = if(redirectTo != null) queries.plus(Pair("redirect_to", redirectTo)) else queries
+        val options = if (redirectTo != null) queries.plus(Pair("redirect_to", redirectTo)) else queries
         reachFiveApi
             .logout(options)
             .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
@@ -158,7 +168,11 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
-            .updatePhoneNumber(formatAuthorization(authToken), UpdatePhoneNumberRequest(phoneNumber), SdkInfos.getQueries())
+            .updatePhoneNumber(
+                formatAuthorization(authToken),
+                UpdatePhoneNumberRequest(phoneNumber),
+                SdkInfos.getQueries()
+            )
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
@@ -205,8 +219,14 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>) {
-        val provider =  providers.find { p -> p.requestCode == requestCode }
+    fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val provider = providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
             provider.onActivityResult(requestCode, resultCode, data, success, failure)
         } else {
@@ -214,8 +234,13 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         }
     }
 
-    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
-        val provider =  providers.find { p -> p.requestCode == requestCode }
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+        failure: Failure<ReachFiveError>
+    ) {
+        val provider = providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
             provider.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
         } else {
@@ -235,7 +260,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         return "${authToken.tokenType} ${authToken.accessToken}"
     }
 
-    private fun formatScope(scope: List<String>): String {
+    private fun formatScope(scope: Set<String>): String {
         return scope.joinToString(" ")
     }
 }
