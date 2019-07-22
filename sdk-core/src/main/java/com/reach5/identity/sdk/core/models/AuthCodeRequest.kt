@@ -12,5 +12,7 @@ data class AuthCodeRequest(
     @SerializedName("grant_type")
     val grantType: String,
     @SerializedName("redirect_uri")
-    val redirectUri: String
+    val redirectUri: String,
+    @SerializedName("code_verifier")
+    val codeVerifier: String
 ) : Parcelable
