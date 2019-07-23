@@ -41,8 +41,8 @@ class MainActivityTest {
     private val TEST_SHOULD_FAIL_SCOPE_MISSING = "This test should have failed because the 'full_write' scope is missing."
     private val NO_ID_TOKEN = "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 
-    private fun getRandomSeed() = dotenv["RANDOM_SEED"]?.let { it.toInt() } ?: Random.nextInt(1000)
-    private val random: Random = getRandomSeed().let { seed -> Random(seed) }
+    private fun getRandomSeed() = dotenv["RANDOM_SEED"]?.toInt() ?: Random.nextInt(1000)
+    private val random: Random = Random(getRandomSeed())
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
