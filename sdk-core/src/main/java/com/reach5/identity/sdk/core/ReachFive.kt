@@ -75,7 +75,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     fun signup(
         profile: Profile,
-        scope: Set<String> = this.scope,
+        scope: Collection<String> = this.scope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -95,7 +95,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun loginWithPassword(
         username: String,
         password: String,
-        scope: Set<String> = this.scope,
+        scope: Collection<String> = this.scope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -250,7 +250,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         return "${authToken.tokenType} ${authToken.accessToken}"
     }
 
-    private fun formatScope(scope: Set<String>): String {
-        return scope.joinToString(" ")
+    private fun formatScope(scope: Collection<String>): String {
+        return scope.toSet().joinToString(" ")
     }
 }
