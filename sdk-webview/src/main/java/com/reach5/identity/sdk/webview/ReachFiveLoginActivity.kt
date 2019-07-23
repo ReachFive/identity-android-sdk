@@ -13,6 +13,7 @@ import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.reach5.identity.sdk.core.utils.Pkce
 import kotlinx.android.synthetic.main.reachfive_login_activity.*
 import java.util.regex.Pattern
 
@@ -32,7 +33,8 @@ class ReachFiveLoginActivity : Activity() {
 
         webview.webViewClient = ReachFiveWebViewClient()
 
-        val url = config.buildUrl()
+        val pkce = intent.getParcelableExtra<Pkce>(ConfiguredWebViewProvider.PKCE)
+        val url = config.buildUrl(pkce)
 
         Log.d(TAG, "ReachFiveLoginActivity onCreate : $url")
 
@@ -58,7 +60,6 @@ class ReachFiveLoginActivity : Activity() {
     }
 
     fun loginSuccess(authCode: String?) {
-        val intent = Intent()
         intent.putExtra(ConfiguredWebViewProvider.AuthCode, authCode)
         setResult(ConfiguredWebViewProvider.RequestCode, intent)
         finish()

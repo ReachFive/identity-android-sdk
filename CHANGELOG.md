@@ -1,5 +1,12 @@
 # Changelog
 
+## v4.2.0 (22/07/2019)
+
+### Features
+
+- All the SDK core models are now serialized for an Android implementation.
+- The authorization flow with code and the PKCE are implemented for a login with the `WebViewProvider`.
+
 ## v4.1.0 (12/07/2019)
 
 ### Features
