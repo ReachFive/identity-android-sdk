@@ -34,8 +34,6 @@ class MainActivityTest {
         filename = "env"
     }
 
-    private lateinit var TAG: String
-
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
 
@@ -44,12 +42,7 @@ class MainActivityTest {
     private val NO_ID_TOKEN = "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 
     private fun getRandomSeed() = dotenv["RANDOM_SEED"]?.let { it.toInt() } ?: Random.nextInt(1000)
-    private val random: Random =
-        getRandomSeed().let { seed ->
-            Log.i("", "Random seed: $seed")
-            TAG = "MainActivityTest-S$seed"
-            Random(seed)
-        }
+    private val random: Random = getRandomSeed().let { seed -> Random(seed) }
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -876,9 +869,6 @@ class MainActivityTest {
             .let {
                 if (international) "+336$it"
                 else "07$it"
-            }
-            .also {
-                Log.d(TAG, "Genered phone number: $it")
             }
 }
 
