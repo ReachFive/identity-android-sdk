@@ -17,6 +17,8 @@ import org.junit.Ignore
 import java.lang.Error
 import java.lang.Exception
 import java.lang.Thread.sleep
+import java.util.*
+import kotlin.random.Random
 
 /**
  * These tests use an account with:
@@ -55,46 +57,52 @@ class MainActivityTest {
         instantiateReachFiveClient("", CLIENT_ID)
     }
 
-    @Test
-    fun testClientUsesConfiguredScopes() {
-        val client = ReachFive(
-            activity = activityRule.activity,
-            sdkConfig = SdkConfig(domain = DOMAIN, clientId = CLIENT_ID),
-            providersCreators = listOf()
-        )
-        val expectedScopes = setOf(
-            "email",
-            "full_write",
-            "openid",
-            "phone",
-            "profile"
+    private fun aProfile() =
+        Profile(
+            givenName = "John",
+            familyName = "Doe",
+            gender = "male",
+            email = UUID.randomUUID().let { uuid -> "$uuid@testaccount.io" },
+            password = "hjk90wxc"
         )
 
-        assertEquals("Pre-init scopes should be default", client.defaultScope, client.scopes)
-
-        client.initialize(
-            success = {
-                assertEquals("Post-init scopes should correspond to Client Settings", expectedScopes, client.scopes)
-            },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
-        )
-
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-    }
+    // TODO
+//    @Test
+//    fun testClientUsesConfiguredScopes() {
+//        val client = ReachFive(
+//            activity = activityRule.activity,
+//            sdkConfig = SdkConfig(domain = DOMAIN, clientId = CLIENT_ID),
+//            providersCreators = listOf()
+//        )
+//        val expectedScopes = setOf(
+//            "email",
+//            "full_write",
+//            "openid",
+//            "phone",
+//            "profile"
+//        )
+//
+//        assertEquals("Pre-init scopes should be empty", emptySet<String>(), client.scope)
+//
+//        client.initialize(
+//            success = {
+//                assertEquals("Post-init scopes should correspond to Client Settings", expectedScopes, client.scopes)
+//            },
+//            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+//        )
+//
+//
+//
+//        // TODO: replace the `sleep` method by a callback mock
+//        sleep(1000)
+//    }
 
     @Test
     fun testSuccessfulSignupWithEmail() {
         val client = instantiateReachFiveClient()
 
         client.signup(
-            Profile(
-                givenName = "John",
-                familyName = "Doe",
-                gender = "male",
-                email = "test_john.doe@gmail.com",
-                password = "hjk90wxc"
-            ),
+            aProfile(),
             success = { authToken -> assertNotNull(authToken) },
             failure = { fail(TEST_SHOULD_NOT_FAIL) }
         )
@@ -289,7 +297,8 @@ class MainActivityTest {
                     failure = { fail(TEST_SHOULD_NOT_FAIL) }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { fail(TEST_SHOULD_NOT_FAIL) },
+//            scopes =
         )
 
         // TODO: replace the `sleep` method by a callback mock

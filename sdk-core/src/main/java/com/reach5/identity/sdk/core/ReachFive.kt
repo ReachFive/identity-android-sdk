@@ -17,19 +17,9 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         private const val TAG = "Reach5"
     }
 
-    val defaultScope = setOf(
-        // Access the ID token
-        "openid",
-        // Access the email address
-        "email",
-        // Access the phone number
-        "phone",
-        // Access the profile's personal information
-        "profile"
-    )
-    var scopes: Set<String> = defaultScope
-
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
+
+    private var scope: Set<String> = emptySet()
 
     private var providers: List<Provider> = emptyList()
 
@@ -38,7 +28,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .clientConfig(mapOf("client_id" to sdkConfig.clientId))
             .enqueue(ReachFiveApiCallback<ClientConfigResponse>(
                 success = { clientConfig ->
-                    scopes = clientConfig.scope.split(" ").toSet()
+                    scope = clientConfig.scope.split(" ").toSet()
                     providersConfigs(success, failure)
                 },
                 failure = failure)
@@ -85,7 +75,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     fun signup(
         profile: Profile,
-        scope: Set<String> = scopes,
+        scope: Set<String> = this.scope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -105,7 +95,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun loginWithPassword(
         username: String,
         password: String,
-        scope: Set<String> = scopes,
+        scope: Set<String> = this.scope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
