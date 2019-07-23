@@ -378,7 +378,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            scope = setOf("full_write"),
             success = { authToken ->
                 client.verifyPhoneNumber(
                     authToken,
@@ -408,7 +408,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updateEmail(
                     authToken,
@@ -435,7 +435,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updateEmail(
                     authToken,
@@ -492,7 +492,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePhoneNumber(
                     authToken,
@@ -519,7 +519,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePhoneNumber(
                     authToken,
@@ -576,7 +576,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client
                 .updateProfile(
@@ -638,7 +638,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -670,7 +670,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -701,7 +701,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -730,7 +730,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -759,7 +759,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -882,6 +882,8 @@ class MainActivityTest {
             providersCreators = listOf()
         ).initialize()
     }
+
+    private val fullWriteScope = setOf("full_write")
 
     private fun aProfile() =
         Profile(
