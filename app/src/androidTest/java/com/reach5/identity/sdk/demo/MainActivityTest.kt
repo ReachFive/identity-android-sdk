@@ -26,6 +26,10 @@ import kotlin.random.Random
  * These tests use an account with:
  * - the SMS feature enabled
  * - the country set to "France"
+ * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile']
+ *
+ * TODO:
+ * - replace sleep(1000) with a better mechanism to wait for tests
  */
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -36,10 +40,6 @@ class MainActivityTest {
 
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
-
-    private val TEST_SHOULD_NOT_FAIL = "This test should not have failed because the data are correct."
-    private val TEST_SHOULD_FAIL_SCOPE_MISSING = "This test should have failed because the 'full_write' scope is missing."
-    private val NO_ID_TOKEN = "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 
     private fun getRandomSeed() = dotenv["RANDOM_SEED"]?.toInt() ?: Random.nextInt(1000)
     private val random: Random = Random(getRandomSeed())
@@ -72,13 +72,11 @@ class MainActivityTest {
         client.signup(
             profile,
             success = { authToken -> assertNotNull(authToken) },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has received a verification email
+        sleep(1000)
     }
 
     @Test
@@ -105,13 +103,11 @@ class MainActivityTest {
                     }
                 )
             } },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has not received a verification email
+        sleep(1000)
     }
 
     @Test
@@ -132,10 +128,8 @@ class MainActivityTest {
             } }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has not received a verification email
+        sleep(1000)
     }
 
     @Test
@@ -147,13 +141,11 @@ class MainActivityTest {
         client.signup(
             profile,
             success = { authToken -> assertNotNull(authToken) },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has received a verification SMS
+        sleep(1000)
     }
 
     @Test
@@ -165,13 +157,11 @@ class MainActivityTest {
         client.signup(
             profile,
             success = { authToken -> assertNotNull(authToken) },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has received a verification SMS
+        sleep(1000)
     }
 
     @Test
@@ -191,10 +181,8 @@ class MainActivityTest {
             } }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has not received a verification email
+        sleep(1000)
     }
 
     @Test
@@ -210,10 +198,8 @@ class MainActivityTest {
             failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has not received a verification email
+        sleep(1000)
     }
 
     @Test
@@ -229,13 +215,12 @@ class MainActivityTest {
                     profile.email!!,
                     profile.password!!,
                     success = { authToken -> assertNotNull(authToken) },
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -252,13 +237,12 @@ class MainActivityTest {
                     profile.phoneNumber!!,
                     profile.password!!,
                     success = { authToken -> assertNotNull(authToken) },
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -277,7 +261,6 @@ class MainActivityTest {
             } }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -301,10 +284,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -325,10 +307,9 @@ class MainActivityTest {
                     failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -361,10 +342,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -386,13 +366,12 @@ class MainActivityTest {
                         assertNotNull(updatedProfile)
                         assertEquals(updatedProfile.email, newEmail)
                     } },
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -417,10 +396,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -445,10 +423,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -470,13 +447,12 @@ class MainActivityTest {
                         assertNotNull(updatedProfile)
                         assertEquals(updatedProfile.phoneNumber, newNumber)
                     } },
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -497,13 +473,12 @@ class MainActivityTest {
                         assertNotNull(updatedProfile)
                         assertEquals(updatedProfile.phoneNumber, profile.phoneNumber!!)
                     } },
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -528,10 +503,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -560,13 +534,12 @@ class MainActivityTest {
                             assertEquals(updatedProfile.gender, profile.gender!!)
                         }
                     },
-                    { fail(TEST_SHOULD_NOT_FAIL) }
+                    { failWithReachFiveError(it) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -591,10 +564,9 @@ class MainActivityTest {
                         } }
                     )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -617,16 +589,15 @@ class MainActivityTest {
                             profile.email!!,
                             newPassword,
                             success = { authToken -> assertNotNull(authToken) },
-                            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                            failure = { failWithReachFiveError(it) }
                         )
                     },
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(2000)
     }
 
@@ -649,16 +620,15 @@ class MainActivityTest {
                             profile.email!!,
                             newPassword,
                             success = { authToken -> assertNotNull(authToken) },
-                            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                            failure = { failWithReachFiveError(it) }
                         )
                     },
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(2000)
     }
 
@@ -683,10 +653,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -712,10 +681,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -741,10 +709,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            { fail(TEST_SHOULD_NOT_FAIL) }
+            { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -761,16 +728,14 @@ class MainActivityTest {
                     authToken,
                     email = profile.email!!,
                     successWithNoContent = {},
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has received an email
+        sleep(1000)
     }
 
     @Test
@@ -786,16 +751,14 @@ class MainActivityTest {
                     authToken,
                     phoneNumber = profile.phoneNumber!!,
                     successWithNoContent = {},
-                    failure = { fail(TEST_SHOULD_NOT_FAIL) }
+                    failure = { failWithReachFiveError(it) }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
-        sleep(1000)
-
         // TODO: check that the profile has received an SMS
+        sleep(1000)
     }
 
     @Test
@@ -819,10 +782,9 @@ class MainActivityTest {
                     } }
                 )
             },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -834,11 +796,10 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            success = { client.logout(successWithNoContent = {}, failure = { fail(TEST_SHOULD_NOT_FAIL) }) },
-            failure = { fail(TEST_SHOULD_NOT_FAIL) }
+            success = { client.logout(successWithNoContent = {}, failure = { failWithReachFiveError(it) }) },
+            failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: replace the `sleep` method by a callback mock
         sleep(1000)
     }
 
@@ -870,5 +831,24 @@ class MainActivityTest {
                 if (international) "+336$it"
                 else "07$it"
             }
+
+    private fun failWithReachFiveError(e: ReachFiveError) {
+        val maybeData = e.data?.let { data ->
+            """
+                Error: ${data.error}
+                Description: ${data.errorDescription}
+                Details: ${data.errorDetails
+                ?.map { (f, m) -> "'$f': $m" }
+                ?.joinToString("\n", "> ")
+                ?.let { "\n$it" } ?: "N/A"
+            }
+            """.trimIndent()
+        }
+
+        fail("\nReason: ${e.message} $maybeData￿")
+    }
+
+    private val TEST_SHOULD_FAIL_SCOPE_MISSING = "This test should have failed because the 'full_write' scope is missing."
+    private val NO_ID_TOKEN = "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 }
 
