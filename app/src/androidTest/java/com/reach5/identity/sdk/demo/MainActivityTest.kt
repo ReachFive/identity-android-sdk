@@ -849,7 +849,7 @@ class MainActivityTest {
 
     private fun anEmail(): String = UUID.randomUUID().let { uuid -> "$uuid@testaccount.io" }
 
-    private fun aPhoneNumber(international: Boolean = false): String =
+    private fun aPhoneNumber(international: Boolean = true): String =
         random
             .nextInt(10000000, 99999999)
             .let {

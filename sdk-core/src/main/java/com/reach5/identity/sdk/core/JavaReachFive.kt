@@ -30,7 +30,7 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
      */
     fun signup(
         profile: Profile,
-        scope: Set<String>,
+        scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
@@ -55,7 +55,7 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     fun loginWithPassword(
         username: String,
         password: String,
-        scope: Set<String>,
+        scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
