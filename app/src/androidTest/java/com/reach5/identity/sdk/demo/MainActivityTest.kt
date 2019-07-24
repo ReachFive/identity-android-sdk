@@ -59,6 +59,38 @@ class MainActivityTest {
     }
 
     @Test
+    fun testSuccessfulClientConfigFetch() = clientTest(initialize = false) { client ->
+        val profile = aProfile()
+
+        client.signup(
+            profile,
+            success = { fail("This test should have failed because the `openid` scope should be missing prior to client initialization, causing auth token parsing to fail.") },
+            failure = { expectedError ->
+                // Signup success but no id_token returned
+                assertEquals(
+                    NO_ID_TOKEN,
+                    expectedError.message
+                )
+
+                client
+                    .initialize()
+                    .signup(
+                        profile,
+                        success = { fail("This test should have failed because the email is now already used.") },
+                        failure = { emailAlreadyExists ->
+                            assertEquals(
+                                "Bad Request",
+                                emailAlreadyExists.message
+                            )
+                        }
+                    )
+            }
+        )
+
+        sleep(1000)
+    }
+
+    @Test
     fun testSuccessfulSignupWithEmail() {
         val client = instantiateReachFiveClient()
 
@@ -310,7 +342,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             success = { authToken ->
                 client.verifyPhoneNumber(
                     authToken,
@@ -339,7 +371,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updateEmail(
                     authToken,
@@ -365,7 +397,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updateEmail(
                     authToken,
@@ -420,7 +452,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePhoneNumber(
                     authToken,
@@ -446,7 +478,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePhoneNumber(
                     authToken,
@@ -501,7 +533,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client
                 .updateProfile(
@@ -561,7 +593,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -592,7 +624,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -622,7 +654,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -650,7 +682,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -678,7 +710,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            client.defaultScope.plus("full_write"),
+            fullWriteScope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -783,6 +815,16 @@ class MainActivityTest {
         sleep(1000)
     }
 
+    private fun clientTest(initialize: Boolean = true, f: (ReachFive) -> Unit) =
+        ReachFive(
+            activity = activityRule.activity,
+            sdkConfig = SdkConfig(DOMAIN, CLIENT_ID),
+            providersCreators = listOf()
+        ).also {
+            if (initialize) it.initialize()
+            else it
+        }.run(f)
+
     private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
         val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
 
@@ -792,6 +834,8 @@ class MainActivityTest {
             providersCreators = listOf()
         ).initialize()
     }
+
+    private val fullWriteScope = setOf("full_write")
 
     private fun aProfile() =
         Profile(
