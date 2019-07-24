@@ -9,8 +9,6 @@ import com.reach5.identity.sdk.core.utils.Callback
 class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
     private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
 
-    val defaultScope = reach5.defaultScope
-
     fun initialize(success: Callback<List<Provider>>, failure: Callback<ReachFiveError>): ReachFive {
         return reach5.initialize(success::call, failure::call)
     }
@@ -32,7 +30,7 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
      */
     fun signup(
         profile: Profile,
-        scope: List<String>,
+        scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
@@ -57,7 +55,7 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     fun loginWithPassword(
         username: String,
         password: String,
-        scope: List<String>,
+        scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {

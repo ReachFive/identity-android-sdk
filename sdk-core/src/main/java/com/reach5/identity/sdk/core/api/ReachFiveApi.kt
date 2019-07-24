@@ -17,6 +17,9 @@ import retrofit2.http.*
 
 
 interface ReachFiveApi {
+    @GET("/identity/v1/config")
+    fun clientConfig(@QueryMap options: Map<String, String>): Call<ClientConfigResponse>
+
     @GET("/api/v1/providers")
     fun providersConfigs(@QueryMap options: Map<String, String>): Call<ProvidersConfigsResult>
 
