@@ -35,6 +35,7 @@ class MainActivityTest {
 
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
+    private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID)
 
     private fun getRandomSeed() = dotenv["RANDOM_SEED"]?.toInt() ?: Random.nextInt(1000)
     private val random: Random = Random(getRandomSeed())
@@ -46,17 +47,21 @@ class MainActivityTest {
     var exceptionRule: ExpectedException = ExpectedException.none()
 
     @Test
-    fun testSuccessfulReachFiveClientInstantiation() {
-        assertNotNull(instantiateReachFiveClient())
-    }
+    fun testFailedReachFiveClientInitialization() =
+        clientTest(
+            initialize = false,
+            sdkConfig = SdkConfig("", CLIENT_ID)
+        ) { client ->
+            exceptionRule.expect(IllegalArgumentException::class.java)
+            exceptionRule.expectMessage("Invalid URL host: \"\"")
 
-    @Test
-    fun testFailedReachFiveClientInstantiation() {
-        exceptionRule.expect(IllegalArgumentException::class.java)
-        exceptionRule.expectMessage("Invalid URL host: \"\"")
+            client.initialize(
+                success = { fail("Should have failed initializatio due to missing domain.") },
+                failure = { failWithReachFiveError(it) }
+            )
 
-        instantiateReachFiveClient("", CLIENT_ID)
-    }
+            sleep(1000)
+        }
 
     @Test
     fun testSuccessfulClientConfigFetch() = clientTest(initialize = false) { client ->
@@ -87,12 +92,10 @@ class MainActivityTest {
             }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulSignupWithEmail() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulSignupWithEmail() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -102,12 +105,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupWithAlreadyUsedEmail() {
-        val client = instantiateReachFiveClient()
+    fun testFailedSignupWithAlreadyUsedEmail() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -134,12 +135,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupWithEmptyEmail() {
-        val client = instantiateReachFiveClient()
+    fun testFailedSignupWithEmptyEmail() = clientTest { client ->
 
         val profileWithNoEmail = aProfile().copy(email = "")
 
@@ -157,12 +156,10 @@ class MainActivityTest {
             }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulSignupWithPhoneNumber() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulSignupWithPhoneNumber() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
@@ -172,12 +169,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulSignupWithLocalPhoneNumber() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulSignupWithLocalPhoneNumber() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = false))
 
@@ -187,12 +182,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupWeakPassword() {
-        val client = instantiateReachFiveClient()
+    fun testFailedSignupWeakPassword() = clientTest { client ->
 
         val weakPassword = "toto"
         val profile = aProfile().copy(password = weakPassword)
@@ -209,12 +202,10 @@ class MainActivityTest {
             }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupAuthTokenRetrievalWithMissingScope() {
-        val client = instantiateReachFiveClient()
+    fun testFailedSignupAuthTokenRetrievalWithMissingScope() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -225,12 +216,10 @@ class MainActivityTest {
             failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulLoginWithEmail() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulLoginWithEmail() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -247,12 +236,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulLoginWithPhoneNumber() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulLoginWithPhoneNumber() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
@@ -269,12 +256,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedLoginWithNonExistingIdentifier() {
-        val client = instantiateReachFiveClient()
+    fun testFailedLoginWithNonExistingIdentifier() = clientTest { client ->
 
         client.loginWithPassword(
             "satoshi.nakamoto@testaccount.io",
@@ -289,12 +274,10 @@ class MainActivityTest {
             }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedLoginWithWrongPassword() {
-        val client = instantiateReachFiveClient()
+    fun testFailedLoginWithWrongPassword() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
@@ -317,12 +300,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedLoginAuthTokenRetrievalWithMissingScope() {
-        val client = instantiateReachFiveClient()
+    fun testFailedLoginAuthTokenRetrievalWithMissingScope() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
@@ -340,12 +321,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedVerifyPhoneNumberWithWrongCode() {
-        val client = instantiateReachFiveClient()
+    fun testFailedVerifyPhoneNumberWithWrongCode() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "500"
@@ -371,12 +350,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulEmailUpdate() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulEmailUpdate() = clientTest { client ->
 
         val profile = aProfile()
         val newEmail = anEmail()
@@ -400,12 +377,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedEmailUpdateWithSameEmail() {
-        val client = instantiateReachFiveClient()
+    fun testFailedEmailUpdateWithSameEmail() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -429,12 +404,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedEmailUpdateWithMissingScope() {
-        val client = instantiateReachFiveClient()
+    fun testFailedEmailUpdateWithMissingScope() = clientTest { client ->
 
         val profile = aProfile()
         val newEmail = anEmail()
@@ -461,12 +434,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulPhoneNumberUpdate() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulPhoneNumberUpdate() = clientTest { client ->
 
         val profile = aProfile()
         val newNumber = aPhoneNumber()
@@ -490,12 +461,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulPhoneNumberUpdateWithSameNumber() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulPhoneNumberUpdateWithSameNumber() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
@@ -518,12 +487,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedPhoneNumberUpdateWithMissingScope() {
-        val client = instantiateReachFiveClient()
+    fun testFailedPhoneNumberUpdateWithMissingScope() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val newNumber = aPhoneNumber()
@@ -550,12 +517,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulProfileUpdate() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulProfileUpdate() = clientTest { client ->
 
         val profile = aProfile()
         val updatedGivenName = "Christelle"
@@ -584,12 +549,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedProfileUpdateWithMissingScope() {
-        val client = instantiateReachFiveClient()
+    fun testFailedProfileUpdateWithMissingScope() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -616,12 +579,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulPasswordUpdateWithFreshAccessToken() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulPasswordUpdateWithFreshAccessToken() = clientTest { client ->
 
         val profile = aProfile()
         val newPassword = "ZPf7LFtc"
@@ -651,8 +612,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun testSuccessfulPasswordUpdateWithAccessToken() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulPasswordUpdateWithAccessToken() = clientTest { client ->
 
         val profile = aProfile()
         val newPassword = "XLpYXz7z"
@@ -682,8 +642,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun testFailedPasswordUpdateWithAccessTokenWithSamePassword() {
-        val client = instantiateReachFiveClient()
+    fun testFailedPasswordUpdateWithAccessTokenWithSamePassword() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -710,12 +669,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedPasswordUpdateWithEmailAndWrongCode() {
-        val client = instantiateReachFiveClient()
+    fun testFailedPasswordUpdateWithEmailAndWrongCode() = clientTest { client ->
 
         val profile = aProfile()
         val incorrectVerificationCode = "234"
@@ -740,12 +697,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedPasswordUpdateWithPhoneNumberAndWrongCode() {
-        val client = instantiateReachFiveClient()
+    fun testFailedPasswordUpdateWithPhoneNumberAndWrongCode() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "234"
@@ -770,12 +725,10 @@ class MainActivityTest {
             { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulRequestPasswordResetWithEmail() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulRequestPasswordResetWithEmail() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -792,12 +745,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulRequestPasswordResetWithPhoneNumber() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulRequestPasswordResetWithPhoneNumber() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
@@ -814,12 +765,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testFailedRequestPasswordResetWithNoIdentifier() {
-        val client = instantiateReachFiveClient()
+    fun testFailedRequestPasswordResetWithNoIdentifier() = clientTest { client ->
 
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
@@ -843,12 +792,10 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulLogout() {
-        val client = instantiateReachFiveClient()
+    fun testSuccessfulLogout() = clientTest { client ->
 
         val profile = aProfile()
 
@@ -857,29 +804,26 @@ class MainActivityTest {
             success = { client.logout(successWithNoContent = {}, failure = { failWithReachFiveError(it) }) },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
-    private fun clientTest(initialize: Boolean = true, f: (ReachFive) -> Unit) =
+    private fun clientTest(
+        initialize: Boolean = true,
+        sdkConfig: SdkConfig = defaultSdkConfig,
+        block: (ReachFive) -> Unit
+    ) =
         ReachFive(
-            activity = activityRule.activity,
-            sdkConfig = SdkConfig(DOMAIN, CLIENT_ID),
-            providersCreators = listOf()
-        ).also {
-            if (initialize) it.initialize()
-            else it
-        }.run(f)
-
-    private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
-        val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
-
-        return ReachFive(
             activity = activityRule.activity,
             sdkConfig = sdkConfig,
             providersCreators = listOf()
-        ).initialize()
-    }
+        ).also { client ->
+            if (initialize) client.initialize(
+                success = { block(client) },
+                failure = { failWithReachFiveError(it) }
+            )
+            else block(client)
+        }
+            .run {
+            }
 
     private val fullWriteScope = setOf("full_write")
 
