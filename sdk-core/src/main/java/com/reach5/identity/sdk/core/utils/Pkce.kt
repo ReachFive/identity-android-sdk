@@ -14,7 +14,7 @@ class Pkce(val codeVerifier: String) : Parcelable {
     val codeChallenge: String
     @IgnoredOnParcel
     val codeChallengeMethod: String
-    
+
     init {
         this.codeChallenge = generateCodeChallenge(codeVerifier)
         this.codeChallengeMethod = "S256"
@@ -25,7 +25,7 @@ class Pkce(val codeVerifier: String) : Parcelable {
 
     companion object {
         private const val BASE64_FLAGS = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
-        
+
         fun generate(): Pkce = Pkce(generateCodeVerifier())
 
         private fun generateCodeVerifier(): String =
@@ -46,7 +46,7 @@ class Pkce(val codeVerifier: String) : Parcelable {
                     .also { it.update(bytes, 0, bytes.size) }
                     .digest()
             }
-            .let{ digest ->
+            .let { digest ->
                 Base64.encodeToString(digest, BASE64_FLAGS)
             }
 }

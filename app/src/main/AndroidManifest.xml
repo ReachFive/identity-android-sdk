@@ -22,22 +22,22 @@
 
         <activity
                 android:name="com.reach5.identity.sdk.webview.ReachFiveLoginActivity"
-                android:screenOrientation="portrait" />
+                android:screenOrientation="portrait"/>
         <activity
                 android:name=".JavaMainActivity"
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <meta-data android:name="com.facebook.sdk.ApplicationId"
-                   android:value="@string/facebook_app_id" />
+                   android:value="@string/facebook_app_id"/>
 
         <activity android:name="com.facebook.FacebookActivity"
                   android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-                  android:label="@string/app_name" />
+                  android:label="@string/app_name"/>
 
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
 
 </manifest>

@@ -113,22 +113,24 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            success = { authToken -> run {
-                // Check that the returned authentication token is not null
-                assertNotNull(authToken)
+            success = { authToken ->
+                run {
+                    // Check that the returned authentication token is not null
+                    assertNotNull(authToken)
 
-                client.signup(
-                    Profile(email = profile.email, password = profile.email),
-                    success = { fail("This test should have failed because the email should be already used.") },
-                    failure = { error ->
-                        run {
-                            assertEquals(error.message, "Bad Request")
-                            assertEquals(error.data?.error, "email_already_exists")
-                            assertEquals(error.data?.errorDescription, "Email already in use")
+                    client.signup(
+                        Profile(email = profile.email, password = profile.email),
+                        success = { fail("This test should have failed because the email should be already used.") },
+                        failure = { error ->
+                            run {
+                                assertEquals(error.message, "Bad Request")
+                                assertEquals(error.data?.error, "email_already_exists")
+                                assertEquals(error.data?.errorDescription, "Email already in use")
+                            }
                         }
-                    }
-                )
-            } },
+                    )
+                }
+            },
             failure = { failWithReachFiveError(it) }
         )
 
@@ -144,13 +146,15 @@ class MainActivityTest {
         client.signup(
             profileWithNoEmail,
             success = { fail("This test should have failed because the email is empty.") },
-            failure = { error -> run {
-                assertEquals(error.message, "Bad Request")
-                assertEquals(error.data?.error, "invalid_request")
-                assertEquals(error.data?.errorDescription, "Validation failed")
-                assertEquals(error.data?.errorDetails?.get(0)?.field, "data.email")
-                assertEquals(error.data?.errorDetails?.get(0)?.message, "Must be a valid email")
-            } }
+            failure = { error ->
+                run {
+                    assertEquals(error.message, "Bad Request")
+                    assertEquals(error.data?.error, "invalid_request")
+                    assertEquals(error.data?.errorDescription, "Validation failed")
+                    assertEquals(error.data?.errorDetails?.get(0)?.field, "data.email")
+                    assertEquals(error.data?.errorDetails?.get(0)?.message, "Must be a valid email")
+                }
+            }
         )
 
         sleep(1000)
@@ -196,11 +200,13 @@ class MainActivityTest {
         client.signup(
             profile,
             success = { fail("This test should have failed because the password is too weak.") },
-            failure = { error -> run {
-                assertEquals(error.message, "Bad Request")
-                assertEquals(error.data?.errorDescription, "Validation failed")
-                assertEquals(error.data?.errorDetails?.get(0)?.message, "Password too weak")
-            } }
+            failure = { error ->
+                run {
+                    assertEquals(error.message, "Bad Request")
+                    assertEquals(error.data?.errorDescription, "Validation failed")
+                    assertEquals(error.data?.errorDetails?.get(0)?.message, "Password too weak")
+                }
+            }
         )
 
         sleep(1000)
@@ -274,11 +280,13 @@ class MainActivityTest {
             "satoshi.nakamoto@testaccount.io",
             "buybitcoin",
             success = { fail("This test should have failed because the profile is not registered.") },
-            failure = { error -> run {
-                assertEquals(error.message, "Bad Request")
-                assertEquals(error.data?.error, "invalid_grant")
-                assertEquals(error.data?.errorDescription, "Invalid email or password")
-            } }
+            failure = { error ->
+                run {
+                    assertEquals(error.message, "Bad Request")
+                    assertEquals(error.data?.error, "invalid_grant")
+                    assertEquals(error.data?.errorDescription, "Invalid email or password")
+                }
+            }
         )
 
         sleep(1000)
@@ -297,11 +305,13 @@ class MainActivityTest {
                     profile.phoneNumber!!,
                     "WRONG_PASSWORD",
                     success = { fail("This test should have failed because the password is incorrect.") },
-                    failure = { error -> run {
-                        assertEquals(error.message, "Bad Request")
-                        assertEquals(error.data?.error, "invalid_grant")
-                        assertEquals(error.data?.errorDescription, "Invalid phone number or password")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Bad Request")
+                            assertEquals(error.data?.error, "invalid_grant")
+                            assertEquals(error.data?.errorDescription, "Invalid phone number or password")
+                        }
+                    }
                 )
             },
             failure = { failWithReachFiveError(it) }
@@ -349,11 +359,13 @@ class MainActivityTest {
                     profile.phoneNumber!!,
                     incorrectVerificationCode,
                     { fail("This test should have failed because the verification code is incorrect.") },
-                    { error -> run {
-                        assertEquals(error.message, "Technical Error")
-                        assertEquals(error.data?.error, "invalid_grant")
-                        assertEquals(error.data?.errorDescription, "Invalid verification code")
-                    } }
+                    { error ->
+                        run {
+                            assertEquals(error.message, "Technical Error")
+                            assertEquals(error.data?.error, "invalid_grant")
+                            assertEquals(error.data?.errorDescription, "Invalid verification code")
+                        }
+                    }
                 )
             },
             failure = { failWithReachFiveError(it) }
@@ -376,10 +388,12 @@ class MainActivityTest {
                 client.updateEmail(
                     authToken,
                     newEmail,
-                    success = { updatedProfile -> run {
-                        assertNotNull(updatedProfile)
-                        assertEquals(updatedProfile.email, newEmail)
-                    } },
+                    success = { updatedProfile ->
+                        run {
+                            assertNotNull(updatedProfile)
+                            assertEquals(updatedProfile.email, newEmail)
+                        }
+                    },
                     failure = { failWithReachFiveError(it) }
                 )
             },
@@ -403,11 +417,13 @@ class MainActivityTest {
                     authToken,
                     profile.email!!,
                     success = { fail("This test should have failed because the email has not changed.") },
-                    failure = { error -> run {
-                        assertEquals(error.message, "Bad Request")
-                        assertEquals(error.data?.error, "email_already_exists")
-                        assertEquals(error.data?.errorDescription, "Email already in use")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Bad Request")
+                            assertEquals(error.data?.error, "email_already_exists")
+                            assertEquals(error.data?.errorDescription, "Email already in use")
+                        }
+                    }
                 )
             },
             { failWithReachFiveError(it) }
@@ -430,11 +446,16 @@ class MainActivityTest {
                     authToken,
                     newEmail,
                     success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
-                    failure =  { error -> run {
-                        assertEquals(error.message, "Technical Error")
-                        assertEquals(error.data?.error, "insufficient_scope")
-                        assertEquals(error.data?.errorDescription, "The token does not contain the required scope: full_write")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Technical Error")
+                            assertEquals(error.data?.error, "insufficient_scope")
+                            assertEquals(
+                                error.data?.errorDescription,
+                                "The token does not contain the required scope: full_write"
+                            )
+                        }
+                    }
                 )
             },
             failure = { failWithReachFiveError(it) }
@@ -457,10 +478,12 @@ class MainActivityTest {
                 client.updatePhoneNumber(
                     authToken,
                     newNumber,
-                    success = { updatedProfile -> run {
-                        assertNotNull(updatedProfile)
-                        assertEquals(updatedProfile.phoneNumber, newNumber)
-                    } },
+                    success = { updatedProfile ->
+                        run {
+                            assertNotNull(updatedProfile)
+                            assertEquals(updatedProfile.phoneNumber, newNumber)
+                        }
+                    },
                     failure = { failWithReachFiveError(it) }
                 )
             },
@@ -483,10 +506,12 @@ class MainActivityTest {
                 client.updatePhoneNumber(
                     authToken,
                     profile.phoneNumber!!,
-                    success = { updatedProfile -> run {
-                        assertNotNull(updatedProfile)
-                        assertEquals(updatedProfile.phoneNumber, profile.phoneNumber!!)
-                    } },
+                    success = { updatedProfile ->
+                        run {
+                            assertNotNull(updatedProfile)
+                            assertEquals(updatedProfile.phoneNumber, profile.phoneNumber!!)
+                        }
+                    },
                     failure = { failWithReachFiveError(it) }
                 )
             },
@@ -510,11 +535,16 @@ class MainActivityTest {
                     authToken,
                     newNumber,
                     success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
-                    failure =  { error -> run {
-                        assertEquals(error.message, "Technical Error")
-                        assertEquals(error.data?.error, "insufficient_scope")
-                        assertEquals(error.data?.errorDescription, "The token does not contain the required scope: full_write")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Technical Error")
+                            assertEquals(error.data?.error, "insufficient_scope")
+                            assertEquals(
+                                error.data?.errorDescription,
+                                "The token does not contain the required scope: full_write"
+                            )
+                        }
+                    }
                 )
             },
             failure = { failWithReachFiveError(it) }
@@ -536,20 +566,20 @@ class MainActivityTest {
             fullWriteScope,
             { authToken ->
                 client
-                .updateProfile(
-                    authToken,
-                    Profile(givenName = updatedGivenName, familyName = updatedFamilyName),
-                    { updatedProfile ->
-                        run {
-                            assertNotNull(updatedProfile)
-                            assertEquals(updatedProfile.email, profile.email)
-                            assertEquals(updatedProfile.givenName, updatedGivenName)
-                            assertEquals(updatedProfile.familyName, updatedFamilyName)
-                            assertEquals(updatedProfile.gender, profile.gender!!)
-                        }
-                    },
-                    { failWithReachFiveError(it) }
-                )
+                    .updateProfile(
+                        authToken,
+                        Profile(givenName = updatedGivenName, familyName = updatedFamilyName),
+                        { updatedProfile ->
+                            run {
+                                assertNotNull(updatedProfile)
+                                assertEquals(updatedProfile.email, profile.email)
+                                assertEquals(updatedProfile.givenName, updatedGivenName)
+                                assertEquals(updatedProfile.familyName, updatedFamilyName)
+                                assertEquals(updatedProfile.gender, profile.gender!!)
+                            }
+                        },
+                        { failWithReachFiveError(it) }
+                    )
             },
             { failWithReachFiveError(it) }
         )
@@ -571,11 +601,16 @@ class MainActivityTest {
                         authToken,
                         Profile(givenName = "Peter"),
                         { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
-                        { error -> run {
-                            assertEquals(error.message, "Technical Error")
-                            assertEquals(error.data?.error, "insufficient_scope")
-                            assertEquals(error.data?.errorDescription, "The token does not contain the required scope: full_write")
-                        } }
+                        { error ->
+                            run {
+                                assertEquals(error.message, "Technical Error")
+                                assertEquals(error.data?.error, "insufficient_scope")
+                                assertEquals(
+                                    error.data?.errorDescription,
+                                    "The token does not contain the required scope: full_write"
+                                )
+                            }
+                        }
                     )
             },
             failure = { failWithReachFiveError(it) }
@@ -660,11 +695,16 @@ class MainActivityTest {
                     authToken,
                     UpdatePasswordRequest.AccessTokenParams(profile.password!!, profile.password!!),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
-                    failure = { error -> run {
-                        assertEquals(error.message, "Bad Request")
-                        assertEquals(error.data?.error, "invalid_request")
-                        assertEquals(error.data?.errorDescription, "New password should be different from the old password")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Bad Request")
+                            assertEquals(error.data?.error, "invalid_request")
+                            assertEquals(
+                                error.data?.errorDescription,
+                                "New password should be different from the old password"
+                            )
+                        }
+                    }
                 )
             },
             { failWithReachFiveError(it) }
@@ -688,11 +728,13 @@ class MainActivityTest {
                     authToken,
                     UpdatePasswordRequest.EmailParams(profile.email!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
-                    failure = { error -> run {
-                        assertEquals(error.message, "Technical Error")
-                        assertEquals(error.data?.error, "invalid_grant")
-                        assertEquals(error.data?.errorDescription, "Invalid verification code")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Technical Error")
+                            assertEquals(error.data?.error, "invalid_grant")
+                            assertEquals(error.data?.errorDescription, "Invalid verification code")
+                        }
+                    }
                 )
             },
             { failWithReachFiveError(it) }
@@ -716,11 +758,13 @@ class MainActivityTest {
                     authToken,
                     UpdatePasswordRequest.SmsParams(profile.phoneNumber!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
-                    failure = { error -> run {
-                        assertEquals(error.message, "Technical Error")
-                        assertEquals(error.data?.error, "invalid_grant")
-                        assertEquals(error.data?.errorDescription, "Invalid verification code")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Technical Error")
+                            assertEquals(error.data?.error, "invalid_grant")
+                            assertEquals(error.data?.errorDescription, "Invalid verification code")
+                        }
+                    }
                 )
             },
             { failWithReachFiveError(it) }
@@ -787,11 +831,13 @@ class MainActivityTest {
                     email = null,
                     phoneNumber = null,
                     successWithNoContent = { fail("This test should have failed because neither the email or the phone number were provided.") },
-                    failure = { error -> run {
-                        assertEquals(error.message, "Technical Error")
-                        assertEquals(error.data?.error, "invalid_grant")
-                        assertEquals(error.data?.errorDescription, "Invalid credentials")
-                    } }
+                    failure = { error ->
+                        run {
+                            assertEquals(error.message, "Technical Error")
+                            assertEquals(error.data?.error, "invalid_grant")
+                            assertEquals(error.data?.errorDescription, "Invalid credentials")
+                        }
+                    }
                 )
             },
             failure = { failWithReachFiveError(it) }
@@ -871,7 +917,9 @@ class MainActivityTest {
         fail("\nReason: ${e.message} $maybeData￿")
     }
 
-    private val TEST_SHOULD_FAIL_SCOPE_MISSING = "This test should have failed because the 'full_write' scope is missing."
-    private val NO_ID_TOKEN = "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
+    private val TEST_SHOULD_FAIL_SCOPE_MISSING =
+        "This test should have failed because the 'full_write' scope is missing."
+    private val NO_ID_TOKEN =
+        "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 }
 

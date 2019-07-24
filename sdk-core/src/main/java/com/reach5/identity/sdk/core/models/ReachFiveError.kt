@@ -26,7 +26,7 @@ data class ReachFiveError(
     override val message: String,
     val exception: Exception? = null,
     val data: ReachFiveApiError? = null
-): java.lang.Exception(message), Parcelable {
+) : java.lang.Exception(message), Parcelable {
     companion object {
         @JvmStatic
         fun from(error: Exception): ReachFiveError {

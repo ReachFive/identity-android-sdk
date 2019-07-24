@@ -43,11 +43,13 @@ class ConfiguredWebViewProvider(
 
     override fun login(origin: String, activity: Activity) {
         val intent = Intent(activity, ReachFiveLoginActivity::class.java)
-        intent.putExtra(BUNDLE_ID, WebViewProviderConfig(
-            providerConfig = providerConfig,
-            sdkConfig = sdkConfig,
-            origin = origin
-        ))
+        intent.putExtra(
+            BUNDLE_ID, WebViewProviderConfig(
+                providerConfig = providerConfig,
+                sdkConfig = sdkConfig,
+                origin = origin
+            )
+        )
         intent.putExtra(PKCE, Pkce.generate())
         activity.startActivityForResult(intent, requestCode)
     }
@@ -81,7 +83,12 @@ class ConfiguredWebViewProvider(
         return providerConfig.provider
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+        failure: Failure<ReachFiveError>
+    ) {
         // Do nothing
     }
 }

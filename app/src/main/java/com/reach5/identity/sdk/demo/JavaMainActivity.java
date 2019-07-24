@@ -12,8 +12,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.reach5.identity.sdk.core.JavaReachFive;
 import com.reach5.identity.sdk.core.Provider;
-import com.reach5.identity.sdk.core.models.Profile;
 import com.reach5.identity.sdk.core.models.AuthToken;
+import com.reach5.identity.sdk.core.models.Profile;
 import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.User;
 import com.reach5.identity.sdk.google.GoogleProvider;
@@ -37,24 +37,24 @@ public class JavaMainActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.toolbar));
 
         SdkConfig sdkConfig = new SdkConfig(
-            Objects.requireNonNull(dotenv.get("DOMAIN")),
-            Objects.requireNonNull(dotenv.get("CLIENT_ID"))
+                Objects.requireNonNull(dotenv.get("DOMAIN")),
+                Objects.requireNonNull(dotenv.get("CLIENT_ID"))
         );
 
         Objects.requireNonNull(getSupportActionBar()).setTitle("Java Sdk Example");
 
         reach5 = new JavaReachFive(
-            this,
-            sdkConfig,
-            Arrays.asList(new GoogleProvider(), new WebViewProvider())
+                this,
+                sdkConfig,
+                Arrays.asList(new GoogleProvider(), new WebViewProvider())
         );
 
         reach5.initialize(providers ->
-            providerAdapter.refresh(providers)
-        , error -> {
-            Log.d(TAG, "ReachFive init " + error.getMessage());
-            showToast("ReachFive init " + error.getMessage());
-        });
+                        providerAdapter.refresh(providers)
+                , error -> {
+                    Log.d(TAG, "ReachFive init " + error.getMessage());
+                    showToast("ReachFive init " + error.getMessage());
+                });
 
         providerAdapter = new ProvidersAdapter(getApplicationContext(), reach5.getProviders());
 
@@ -71,27 +71,27 @@ public class JavaMainActivity extends AppCompatActivity {
 
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
             reach5.signup(
-                new Profile(
-                    usernameEditText.getText().toString(),
-                    passwordEditText.getText().toString()
-                ),
-                this::handleLoginSuccess,
-                failure -> {
-                    Log.d(TAG, "signup error=" + failure.getMessage());
-                    showToast("Signup With Password Error " + failure.getMessage());
-                }
+                    new Profile(
+                            usernameEditText.getText().toString(),
+                            passwordEditText.getText().toString()
+                    ),
+                    this::handleLoginSuccess,
+                    failure -> {
+                        Log.d(TAG, "signup error=" + failure.getMessage());
+                        showToast("Signup With Password Error " + failure.getMessage());
+                    }
             );
         });
 
         findViewById(R.id.passwordLogin).setOnClickListener(view -> {
             reach5.loginWithPassword(
-                usernameEditText.getText().toString(),
-                passwordEditText.getText().toString(),
-                this::handleLoginSuccess,
-                failure -> {
-                    Log.d(TAG, "loginWithPassword error=" + failure.getMessage());
-                    showToast("Login With Password Error " + failure.getMessage());
-                }
+                    usernameEditText.getText().toString(),
+                    passwordEditText.getText().toString(),
+                    this::handleLoginSuccess,
+                    failure -> {
+                        Log.d(TAG, "loginWithPassword error=" + failure.getMessage());
+                        showToast("Login With Password Error " + failure.getMessage());
+                    }
             );
         });
 

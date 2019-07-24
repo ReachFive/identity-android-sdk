@@ -13,7 +13,7 @@ defaults: &defaults
 default_upload_steps: &default_upload_steps
   steps:
     - checkout:
-          path: ~/repo
+        path: ~/repo
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
@@ -28,7 +28,7 @@ default_upload_steps: &default_upload_steps
 default_build_steps: &default_build_steps
   steps:
     - checkout:
-          path: ~/repo
+        path: ~/repo
     - restore_cache:
         key: v2-jars-{{ checksum "build.gradle" }}
     - run:
@@ -41,7 +41,7 @@ default_build_steps: &default_build_steps
     - run: ../gradlew lint test build
 
 jobs:
-  
+
   build_core:
     <<: *defaults
     working_directory: ~/repo/sdk-core
