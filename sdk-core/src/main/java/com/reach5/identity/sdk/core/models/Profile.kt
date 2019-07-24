@@ -34,7 +34,7 @@ data class Profile(
     @SerializedName("custom_fields")
     val customFields: Map<String, @RawValue Any>? = null
 ) : Parcelable {
-    constructor(email: String, password: String): this(email, password, null)
+    constructor(email: String, password: String) : this(email, password, null)
 }
 
 @Parcelize

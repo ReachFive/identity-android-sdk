@@ -94,7 +94,11 @@ interface ReachFiveApi {
     }
 }
 
-class ReachFiveApiCallback<T>(val success: Success<T> = { Unit }, val successWithNoContent: SuccessWithNoContent<Unit> = { Unit }, val failure: Failure<ReachFiveError>): Callback<T> {
+class ReachFiveApiCallback<T>(
+    val success: Success<T> = { Unit },
+    val successWithNoContent: SuccessWithNoContent<Unit> = { Unit },
+    val failure: Failure<ReachFiveError>
+) : Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         failure(ReachFiveError.from(t))
     }
@@ -118,7 +122,7 @@ class ReachFiveApiCallback<T>(val success: Success<T> = { Unit }, val successWit
         }
     }
 
-    private fun<T> tryOrNull(callback: () -> T): T? {
+    private fun <T> tryOrNull(callback: () -> T): T? {
         return try {
             callback()
         } catch (e: Exception) {
@@ -126,7 +130,7 @@ class ReachFiveApiCallback<T>(val success: Success<T> = { Unit }, val successWit
         }
     }
 
-    private fun<T> parseErrorBody(response: Response<T>): ReachFiveApiError {
+    private fun <T> parseErrorBody(response: Response<T>): ReachFiveApiError {
         return Gson().fromJson(response.errorBody()?.string(), ReachFiveApiError::class.java)
     }
 }

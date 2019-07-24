@@ -1,16 +1,23 @@
 package com.reach5.identity.sdk.core
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import com.reach5.identity.sdk.core.api.ReachFiveApi
-import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.AuthToken
+import com.reach5.identity.sdk.core.models.ProviderConfig
+import com.reach5.identity.sdk.core.models.ReachFiveError
+import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 
 interface ProviderCreator {
     val name: String
-    fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, activity: Activity): Provider
+    fun create(
+        providerConfig: ProviderConfig,
+        sdkConfig: SdkConfig,
+        reachFiveApi: ReachFiveApi,
+        activity: Activity
+    ): Provider
 }
 
 /**
@@ -33,9 +40,20 @@ interface Provider {
     /**
      * Handle activity result of login action
      */
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, success: Success<AuthToken>, failure: Failure<ReachFiveError>)
+    fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    )
 
-    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>)
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+        failure: Failure<ReachFiveError>
+    )
 
     /**
      * On stop activity lifecycle

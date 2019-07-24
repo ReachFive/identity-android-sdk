@@ -11,26 +11,26 @@ import java.lang.reflect.Type
 
 sealed class UpdatePasswordRequest {
     @Parcelize
-    data class FreshAccessTokenParams (
+    data class FreshAccessTokenParams(
         val password: String
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
-    data class AccessTokenParams (
+    data class AccessTokenParams(
         @SerializedName("old_password")
         val oldPassword: String,
         val password: String
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
-    data class EmailParams (
+    data class EmailParams(
         val email: String,
         val verificationCode: String,
         val password: String
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
-    data class EmailWithClientIdParams (
+    data class EmailWithClientIdParams(
         val email: String,
         @SerializedName("verification_code")
         val verificationCode: String,
@@ -40,14 +40,14 @@ sealed class UpdatePasswordRequest {
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
-    data class SmsParams (
+    data class SmsParams(
         val phoneNumber: String,
         val verificationCode: String,
         val password: String
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
-    data class SmsWithClientIdParams (
+    data class SmsWithClientIdParams(
         @SerializedName("phone_number")
         val phoneNumber: String,
         @SerializedName("verification_code")
@@ -58,8 +58,8 @@ sealed class UpdatePasswordRequest {
     ) : UpdatePasswordRequest(), Parcelable
 
     companion object {
-        fun<T : UpdatePasswordRequest> enrichWithClientId(params: T, clientId: String): UpdatePasswordRequest  {
-            return when(params) {
+        fun <T : UpdatePasswordRequest> enrichWithClientId(params: T, clientId: String): UpdatePasswordRequest {
+            return when (params) {
                 is EmailParams ->
                     EmailWithClientIdParams(params.email, params.verificationCode, params.password, clientId)
                 is SmsParams ->
@@ -70,8 +70,12 @@ sealed class UpdatePasswordRequest {
     }
 }
 
-internal class UpdatePasswordRequestSerializer: JsonSerializer<UpdatePasswordRequest> {
-    override fun serialize(src: UpdatePasswordRequest?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+internal class UpdatePasswordRequestSerializer : JsonSerializer<UpdatePasswordRequest> {
+    override fun serialize(
+        src: UpdatePasswordRequest?,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
         return Gson().toJsonTree(src)
     }
 }

@@ -40,20 +40,20 @@ data class LoginRequest(
 ) : Parcelable
 
 @Parcelize
-data class UpdateEmailRequest (
+data class UpdateEmailRequest(
     val email: String,
     @SerializedName("redirect_url")
     val redirectUrl: String? = null
 ) : Parcelable
 
 @Parcelize
-data class UpdatePhoneNumberRequest (
+data class UpdatePhoneNumberRequest(
     @SerializedName("phone_number")
     val phoneNumber: String
 ) : Parcelable
 
 @Parcelize
-data class RequestPasswordResetRequest (
+data class RequestPasswordResetRequest(
     @SerializedName("client_id")
     val clientId: String,
     val email: String?,
@@ -64,7 +64,7 @@ data class RequestPasswordResetRequest (
 ) : Parcelable
 
 @Parcelize
-data class VerifyPhoneNumberRequest (
+data class VerifyPhoneNumberRequest(
     @SerializedName("phone_number")
     val phoneNumber: String,
     @SerializedName("verification_code")

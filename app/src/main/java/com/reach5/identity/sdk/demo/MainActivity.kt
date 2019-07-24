@@ -1,6 +1,5 @@
 package com.reach5.identity.sdk.demo
 
-import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -9,14 +8,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.AuthToken
+import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
 import io.github.cdimascio.dotenv.dotenv
-import java.lang.Exception
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,8 +25,10 @@ class MainActivity : AppCompatActivity() {
         directory = "/assets"
         filename = "env"
     }
-    private val domain = dotenv["DOMAIN"] ?: throw IllegalArgumentException("The ReachFive domain is undefined! Check your `env` file.")
-    private val clientId = dotenv["CLIENT_ID"] ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
+    private val domain =
+        dotenv["DOMAIN"] ?: throw IllegalArgumentException("The ReachFive domain is undefined! Check your `env` file.")
+    private val clientId = dotenv["CLIENT_ID"]
+        ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
 
@@ -125,7 +126,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.d("ReachFive", "MainActivity.onRequestPermissionsResult requestCode=$requestCode permissions=$permissions grantResults=$grantResults")
+        Log.d(
+            "ReachFive",
+            "MainActivity.onRequestPermissionsResult requestCode=$requestCode permissions=$permissions grantResults=$grantResults"
+        )
         reach5.onRequestPermissionsResult(requestCode, permissions, grantResults, failure = {
 
         })

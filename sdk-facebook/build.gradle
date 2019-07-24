@@ -43,7 +43,7 @@ dependencies {
 repositories {
     mavenCentral()
     maven {
-        url  "https://dl.bintray.com/reachfive/identity-sdk"
+        url "https://dl.bintray.com/reachfive/identity-sdk"
     }
 }
 
