@@ -63,36 +63,37 @@ class MainActivityTest {
         instantiateReachFiveClient("", CLIENT_ID)
     }
 
-    // TODO
-//    @Test
-//    fun testClientUsesConfiguredScopes() {
-//        val client = ReachFive(
-//            activity = activityRule.activity,
-//            sdkConfig = SdkConfig(domain = DOMAIN, clientId = CLIENT_ID),
-//            providersCreators = listOf()
-//        )
-//        val expectedScopes = setOf(
-//            "email",
-//            "full_write",
-//            "openid",
-//            "phone",
-//            "profile"
-//        )
-//
-//        assertEquals("Pre-init scopes should be empty", emptySet<String>(), client.scope)
-//
-//        client.initialize(
-//            success = {
-//                assertEquals("Post-init scopes should correspond to Client Settings", expectedScopes, client.scopes)
-//            },
-//            failure = { fail(TEST_SHOULD_NOT_FAIL) }
-//        )
-//
-//
-//
-//        // TODO: replace the `sleep` method by a callback mock
-//        sleep(1000)
-//    }
+    @Test
+    fun testSuccessfulClientConfigFetch() = clientTest(initialize = false) { client ->
+        val profile = aProfile()
+
+        client.signup(
+            profile,
+            success = {fail("This test should have failed because the `openid` scope should be missing prior to client initialization, causing auth token parsing to fail.") },
+            failure = { expectedError ->
+                // Signup success but no id_token returned
+                assertEquals(
+                    "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings.",
+                    expectedError.message
+                )
+
+                client
+                    .initialize()
+                    .signup(
+                        profile,
+                        success = { fail("This test should have failed because the email is now already used.") },
+                        failure = { emailAlreadyExists ->
+                            assertEquals(
+                                "Bad Request",
+                                emailAlreadyExists.message
+                            )
+                        }
+                    )
+            }
+        )
+
+        sleep(1000)
+    }
 
     @Test
     fun testSuccessfulSignupWithEmail() {
@@ -359,7 +360,7 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            scope = setOf("full_write"),
+            fullWriteScope,
             success = { authToken ->
                 client.verifyPhoneNumber(
                     authToken,
@@ -833,6 +834,16 @@ class MainActivityTest {
 
         sleep(1000)
     }
+
+    private fun clientTest(initialize: Boolean = true, f: (ReachFive) -> Unit) =
+        ReachFive(
+            activity = activityRule.activity,
+            sdkConfig = SdkConfig(DOMAIN, CLIENT_ID),
+            providersCreators = listOf()
+        ).also {
+            if (initialize) it.initialize()
+            else it
+        }.run(f)
 
     private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
         val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
