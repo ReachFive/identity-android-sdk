@@ -2,24 +2,19 @@ package com.reach5.identity.sdk.demo
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import android.util.Log
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.Success
+import com.reach5.identity.sdk.core.models.Profile
+import com.reach5.identity.sdk.core.models.ReachFiveError
+import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
 import junit.framework.TestCase.*
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.junit.rules.ExpectedException
-import com.nhaarman.mockitokotlin2.*
-import com.reach5.identity.sdk.core.models.*
-import org.junit.Ignore
-import java.lang.Error
-import java.lang.Exception
+import org.junit.runner.RunWith
 import java.lang.Thread.sleep
-import java.util.UUID
-import java.util.logging.Logger
+import java.util.*
 import kotlin.random.Random
 
 /**
@@ -75,7 +70,6 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: check that the profile has received a verification email
         sleep(1000)
     }
 
@@ -106,7 +100,6 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: check that the profile has not received a verification email
         sleep(1000)
     }
 
@@ -128,7 +121,6 @@ class MainActivityTest {
             } }
         )
 
-        // TODO: check that the profile has not received a verification email
         sleep(1000)
     }
 
@@ -136,7 +128,7 @@ class MainActivityTest {
     fun testSuccessfulSignupWithPhoneNumber() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
@@ -144,7 +136,6 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: check that the profile has received a verification SMS
         sleep(1000)
     }
 
@@ -160,7 +151,6 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: check that the profile has received a verification SMS
         sleep(1000)
     }
 
@@ -181,7 +171,6 @@ class MainActivityTest {
             } }
         )
 
-        // TODO: check that the profile has not received a verification email
         sleep(1000)
     }
 
@@ -198,7 +187,6 @@ class MainActivityTest {
             failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
         )
 
-        // TODO: check that the profile has not received a verification email
         sleep(1000)
     }
 
@@ -228,7 +216,7 @@ class MainActivityTest {
     fun testSuccessfulLoginWithPhoneNumber() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
@@ -268,7 +256,7 @@ class MainActivityTest {
     fun testFailedLoginWithWrongPassword() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
@@ -294,7 +282,7 @@ class MainActivityTest {
     fun testFailedLoginAuthTokenRetrievalWithMissingScope() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
@@ -313,17 +301,11 @@ class MainActivityTest {
         sleep(1000)
     }
 
-    @Ignore
-    @Test
-    fun testSuccessVerifyPhoneNumber() {
-        // TODO : write this test once we can get the SMS list from Twilio
-    }
-
     @Test
     fun testFailedVerifyPhoneNumberWithWrongCode() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "500"
 
         client.signup(
@@ -434,7 +416,7 @@ class MainActivityTest {
         val client = instantiateReachFiveClient()
 
         val profile = aProfile()
-        val newNumber = aPhoneNumber(international = true)
+        val newNumber = aPhoneNumber()
 
         client.signup(
             profile,
@@ -460,7 +442,7 @@ class MainActivityTest {
     fun testSuccessfulPhoneNumberUpdateWithSameNumber() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
@@ -486,8 +468,8 @@ class MainActivityTest {
     fun testFailedPhoneNumberUpdateWithMissingScope() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
-        val newNumber = aPhoneNumber(international = true)
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
+        val newNumber = aPhoneNumber()
 
         client.signup(
             profile,
@@ -691,7 +673,7 @@ class MainActivityTest {
     fun testFailedPasswordUpdateWithPhoneNumberAndWrongCode() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "234"
 
         client.signup(
@@ -734,7 +716,6 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: check that the profile has received an email
         sleep(1000)
     }
 
@@ -742,7 +723,7 @@ class MainActivityTest {
     fun testSuccessfulRequestPasswordResetWithPhoneNumber() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
@@ -757,7 +738,6 @@ class MainActivityTest {
             failure = { failWithReachFiveError(it) }
         )
 
-        // TODO: check that the profile has received an SMS
         sleep(1000)
     }
 
@@ -765,7 +745,7 @@ class MainActivityTest {
     fun testFailedRequestPasswordResetWithNoIdentifier() {
         val client = instantiateReachFiveClient()
 
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = true))
+        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
@@ -824,7 +804,7 @@ class MainActivityTest {
 
     private fun anEmail(): String = UUID.randomUUID().let { uuid -> "$uuid@testaccount.io" }
 
-    private fun aPhoneNumber(international: Boolean = false): String =
+    private fun aPhoneNumber(international: Boolean = true): String =
         random
             .nextInt(10000000, 99999999)
             .let {
@@ -838,8 +818,7 @@ class MainActivityTest {
                 Error: ${data.error}
                 Description: ${data.errorDescription}
                 Details: ${data.errorDetails
-                ?.map { (f, m) -> "'$f': $m" }
-                ?.joinToString("\n", "> ")
+                ?.joinToString("\n", "> ") { (f, m) -> "'$f': $m" }
                 ?.let { "\n$it" } ?: "N/A"
             }
             """.trimIndent()
