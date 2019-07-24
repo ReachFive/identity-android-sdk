@@ -2,7 +2,6 @@ package com.reach5.identity.sdk.demo
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import android.util.Log
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.ReachFiveError
@@ -65,11 +64,11 @@ class MainActivityTest {
 
         client.signup(
             profile,
-            success = {fail("This test should have failed because the `openid` scope should be missing prior to client initialization, causing auth token parsing to fail.") },
+            success = { fail("This test should have failed because the `openid` scope should be missing prior to client initialization, causing auth token parsing to fail.") },
             failure = { expectedError ->
                 // Signup success but no id_token returned
                 assertEquals(
-                    "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings.",
+                    NO_ID_TOKEN,
                     expectedError.message
                 )
 
