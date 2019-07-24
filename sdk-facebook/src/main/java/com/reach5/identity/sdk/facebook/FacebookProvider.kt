@@ -9,13 +9,12 @@ import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.reach5.identity.sdk.core.Provider
-import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.ProviderCreator
-import com.reach5.identity.sdk.core.models.LoginProviderRequest
-import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.utils.Failure
+import com.reach5.identity.sdk.core.utils.Success
 
 class FacebookProvider : ProviderCreator {
     companion object {
@@ -24,12 +23,22 @@ class FacebookProvider : ProviderCreator {
 
     override val name: String = NAME
 
-    override fun create(providerConfig: ProviderConfig, sdkConfig: SdkConfig, reachFiveApi: ReachFiveApi, activity: Activity): Provider {
+    override fun create(
+        providerConfig: ProviderConfig,
+        sdkConfig: SdkConfig,
+        reachFiveApi: ReachFiveApi,
+        activity: Activity
+    ): Provider {
         return ConfiguredFacebookProvider(providerConfig, sdkConfig, reachFiveApi, activity)
     }
 }
 
-class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val sdkConfig: SdkConfig, val reachFiveApi: ReachFiveApi, activity: Activity): Provider {
+class ConfiguredFacebookProvider(
+    private val providerConfig: ProviderConfig,
+    val sdkConfig: SdkConfig,
+    val reachFiveApi: ReachFiveApi,
+    activity: Activity
+) : Provider {
     override val requestCode: Int = 64206
     override val name: String = FacebookProvider.NAME
 
@@ -90,7 +99,12 @@ class ConfiguredFacebookProvider(private val providerConfig: ProviderConfig, val
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray, failure: Failure<ReachFiveError>) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+        failure: Failure<ReachFiveError>
+    ) {
         // Do nothing
     }
 }

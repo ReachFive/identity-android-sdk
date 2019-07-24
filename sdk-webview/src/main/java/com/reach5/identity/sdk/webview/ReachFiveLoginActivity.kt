@@ -70,7 +70,7 @@ class ReachFiveLoginActivity : Activity() {
         webview.visibility = View.VISIBLE
     }
 
-    inner class ReachFiveWebViewClient: WebViewClient() {
+    inner class ReachFiveWebViewClient : WebViewClient() {
 
         private val PATTERN = Pattern.compile("^(reachfive:\\/\\/callback)(.*)$")
 
