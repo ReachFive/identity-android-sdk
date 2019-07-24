@@ -26,14 +26,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun initialize(success: Success<List<Provider>> = {}, failure: Failure<ReachFiveError> = {}): ReachFive {
         reachFiveApi
             .clientConfig(mapOf("client_id" to sdkConfig.clientId))
-            .enqueue(
-                ReachFiveApiCallback<ClientConfigResponse>(
-                    success = { clientConfig ->
-                        scope = clientConfig.scope.split(" ").toSet()
-                        providersConfigs(success, failure)
-                    },
-                    failure = failure
-                )
+            .enqueue(ReachFiveApiCallback<ClientConfigResponse>(
+                success = { clientConfig ->
+                    scope = clientConfig.scope.split(" ").toSet()
+                    providersConfigs(success, failure)
+                },
+                failure = failure)
             )
 
         return this

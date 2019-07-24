@@ -6,6 +6,8 @@ import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,6 +82,10 @@ interface ReachFiveApi {
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
+            val logging = HttpLoggingInterceptor()
+            logging.apply { logging.level = HttpLoggingInterceptor.Level.BASIC }
+            val client = OkHttpClient.Builder().addInterceptor(logging).build()
+
             val gson = GsonBuilder()
                 .registerTypeAdapter(UpdatePasswordRequest::class.java, UpdatePasswordRequestSerializer())
                 .create()
@@ -87,6 +93,7 @@ interface ReachFiveApi {
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://${config.domain}")
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(client)
                 .build()
 
             return retrofit.create(ReachFiveApi::class.java)
