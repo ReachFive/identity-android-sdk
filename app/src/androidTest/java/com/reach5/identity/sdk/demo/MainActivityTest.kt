@@ -13,7 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import java.lang.Thread.sleep
 import java.util.*
 import kotlin.random.Random
 
@@ -22,9 +21,6 @@ import kotlin.random.Random
  * - the SMS feature enabled
  * - the country set to "France"
  * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile']
- *
- * TODO:
- * - replace sleep(1000) with a better mechanism to wait for tests
  */
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -35,9 +31,7 @@ class MainActivityTest {
 
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
-
-    private fun getRandomSeed() = dotenv["RANDOM_SEED"]?.toInt() ?: Random.nextInt(1000)
-    private val random: Random = Random(getRandomSeed())
+    private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID)
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -46,24 +40,29 @@ class MainActivityTest {
     var exceptionRule: ExpectedException = ExpectedException.none()
 
     @Test
-    fun testSuccessfulReachFiveClientInstantiation() {
-        assertNotNull(instantiateReachFiveClient())
-    }
-
-    @Test
-    fun testFailedReachFiveClientInstantiation() {
+    fun testFailedReachFiveClientInitialization() {
         exceptionRule.expect(IllegalArgumentException::class.java)
         exceptionRule.expectMessage("Invalid URL host: \"\"")
 
-        instantiateReachFiveClient("", CLIENT_ID)
+        clientTest(
+            initialize = false,
+            sdkConfig = SdkConfig("", CLIENT_ID)
+        ) { client ->
+            client.initialize(
+                success = { fail("Should have failed initialization due to missing domain.") },
+                failure = { failWithReachFiveError(it) }
+            )
+        }
     }
 
     @Test
     fun testSuccessfulClientConfigFetch() = clientTest(initialize = false) { client ->
         val profile = aProfile()
 
+        // given an uninitialized client
         client.signup(
             profile,
+            /*scope = setOf("openid"),*/ // WHEN INITIALIZED: becomes setOf('email', 'full_write', 'openid', 'phone', 'profile')
             success = { fail("This test should have failed because the `openid` scope should be missing prior to client initialization, causing auth token parsing to fail.") },
             failure = { expectedError ->
                 // Signup success but no id_token returned
@@ -86,248 +85,203 @@ class MainActivityTest {
                     )
             }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulSignupWithEmail() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulSignupWithEmail() = clientTest { client ->
         val profile = aProfile()
 
         client.signup(
             profile,
+            scope = openId,
             success = { authToken -> assertNotNull(authToken) },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupWithAlreadyUsedEmail() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedSignupWithAlreadyUsedEmail() = clientTest { client ->
         val profile = aProfile()
 
         client.signup(
             profile,
+            scope = openId,
             success = { authToken ->
-                run {
-                    // Check that the returned authentication token is not null
-                    assertNotNull(authToken)
+                // Check that the returned authentication token is not null
+                assertNotNull(authToken)
 
-                    client.signup(
-                        Profile(email = profile.email, password = profile.email),
-                        success = { fail("This test should have failed because the email should be already used.") },
-                        failure = { error ->
-                            run {
-                                assertEquals(error.message, "Bad Request")
-                                assertEquals(error.data?.error, "email_already_exists")
-                                assertEquals(error.data?.errorDescription, "Email already in use")
-                            }
-                        }
-                    )
-                }
+                client.signup(
+                    Profile(email = profile.email, password = profile.email),
+                    scope = openId,
+                    success = { fail("This test should have failed because the email should be already used.") },
+                    failure = { error ->
+                        assertEquals("Bad Request", error.message)
+                        assertEquals("email_already_exists", error.data?.error)
+                        assertEquals("Email already in use", error.data?.errorDescription)
+                    }
+                )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupWithEmptyEmail() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedSignupWithEmptyEmail() = clientTest { client ->
         val profileWithNoEmail = aProfile().copy(email = "")
 
         client.signup(
             profileWithNoEmail,
+            scope = openId,
             success = { fail("This test should have failed because the email is empty.") },
             failure = { error ->
-                run {
-                    assertEquals(error.message, "Bad Request")
-                    assertEquals(error.data?.error, "invalid_request")
-                    assertEquals(error.data?.errorDescription, "Validation failed")
-                    assertEquals(error.data?.errorDetails?.get(0)?.field, "data.email")
-                    assertEquals(error.data?.errorDetails?.get(0)?.message, "Must be a valid email")
-                }
+                assertEquals("Bad Request", error.message)
+                assertEquals("invalid_request", error.data?.error)
+                assertEquals("Validation failed", error.data?.errorDescription)
+                assertEquals("data.email", error.data?.errorDetails?.get(0)?.field)
+                assertEquals("Must be a valid email", error.data?.errorDetails?.get(0)?.message)
             }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulSignupWithPhoneNumber() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulSignupWithPhoneNumber() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
+            scope = openId,
             success = { authToken -> assertNotNull(authToken) },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulSignupWithLocalPhoneNumber() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulSignupWithLocalPhoneNumber() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = false))
 
         client.signup(
             profile,
+            scope = openId,
             success = { authToken -> assertNotNull(authToken) },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupWeakPassword() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedSignupWeakPassword() = clientTest { client ->
         val weakPassword = "toto"
         val profile = aProfile().copy(password = weakPassword)
 
         client.signup(
             profile,
+            scope = openId,
             success = { fail("This test should have failed because the password is too weak.") },
             failure = { error ->
-                run {
-                    assertEquals(error.message, "Bad Request")
-                    assertEquals(error.data?.errorDescription, "Validation failed")
-                    assertEquals(error.data?.errorDetails?.get(0)?.message, "Password too weak")
-                }
+                assertEquals("Bad Request", error.message)
+                assertEquals("Validation failed", error.data?.errorDescription)
+                assertEquals("Password too weak", error.data?.errorDetails?.get(0)?.message)
             }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedSignupAuthTokenRetrievalWithMissingScope() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedSignupAuthTokenRetrievalWithMissingScope() = clientTest { client ->
         val profile = aProfile()
 
         client.signup(
             profile,
             scope = emptyList(),
             success = { fail("This test should have failed because no 'id_token' was found.") },
-            failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
+            failure = { error -> assertEquals(NO_ID_TOKEN, error.message) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulLoginWithEmail() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulLoginWithEmail() = clientTest { client ->
         val profile = aProfile()
 
         client.signup(
             profile,
+            scope = openId,
             success = {
                 client.loginWithPassword(
                     profile.email!!,
                     profile.password!!,
+                    scope = openId,
                     success = { authToken -> assertNotNull(authToken) },
                     failure = { failWithReachFiveError(it) }
                 )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulLoginWithPhoneNumber() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulLoginWithPhoneNumber() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
+            scope = openId,
             success = {
                 client.loginWithPassword(
                     profile.phoneNumber!!,
                     profile.password!!,
+                    scope = openId,
                     success = { authToken -> assertNotNull(authToken) },
                     failure = { failWithReachFiveError(it) }
                 )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedLoginWithNonExistingIdentifier() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedLoginWithNonExistingIdentifier() = clientTest { client ->
         client.loginWithPassword(
             "satoshi.nakamoto@testaccount.io",
             "buybitcoin",
+            scope = openId,
             success = { fail("This test should have failed because the profile is not registered.") },
             failure = { error ->
-                run {
-                    assertEquals(error.message, "Bad Request")
-                    assertEquals(error.data?.error, "invalid_grant")
-                    assertEquals(error.data?.errorDescription, "Invalid email or password")
-                }
+                assertEquals("Bad Request", error.message)
+                assertEquals("invalid_grant", error.data?.error)
+                assertEquals("Invalid email or password", error.data?.errorDescription)
             }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedLoginWithWrongPassword() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedLoginWithWrongPassword() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
+            scope = openId,
             success = {
                 client.loginWithPassword(
                     profile.phoneNumber!!,
                     "WRONG_PASSWORD",
+                    scope = openId,
                     success = { fail("This test should have failed because the password is incorrect.") },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Bad Request")
-                            assertEquals(error.data?.error, "invalid_grant")
-                            assertEquals(error.data?.errorDescription, "Invalid phone number or password")
-                        }
+                        assertEquals("Bad Request", error.message)
+                        assertEquals("invalid_grant", error.data?.error)
+                        assertEquals("Invalid phone number or password", error.data?.errorDescription)
                     }
                 )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedLoginAuthTokenRetrievalWithMissingScope() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedLoginAuthTokenRetrievalWithMissingScope() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
             profile,
+            scope = openId,
             success = {
                 client.loginWithPassword(
                     profile.phoneNumber!!,
@@ -339,20 +293,16 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedVerifyPhoneNumberWithWrongCode() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedVerifyPhoneNumberWithWrongCode() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "500"
 
         client.signup(
             profile,
-            fullWriteScope,
+            fullWrite + openId,
             success = { authToken ->
                 client.verifyPhoneNumber(
                     authToken,
@@ -360,241 +310,201 @@ class MainActivityTest {
                     incorrectVerificationCode,
                     { fail("This test should have failed because the verification code is incorrect.") },
                     { error ->
-                        run {
-                            assertEquals(error.message, "Technical Error")
-                            assertEquals(error.data?.error, "invalid_grant")
-                            assertEquals(error.data?.errorDescription, "Invalid verification code")
-                        }
+                        assertEquals("Technical Error", error.message)
+                        assertEquals("invalid_grant", error.data?.error)
+                        assertEquals("Invalid verification code", error.data?.errorDescription)
                     }
                 )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulEmailUpdate() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulEmailUpdate() = clientTest { client ->
         val profile = aProfile()
         val newEmail = anEmail()
+        val scope = fullWrite + openId + email
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updateEmail(
                     authToken,
                     newEmail,
                     success = { updatedProfile ->
-                        run {
-                            assertNotNull(updatedProfile)
-                            assertEquals(updatedProfile.email, newEmail)
-                        }
+                        assertNotNull(updatedProfile)
+                        assertEquals(newEmail, updatedProfile.email)
                     },
                     failure = { failWithReachFiveError(it) }
                 )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedEmailUpdateWithSameEmail() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedEmailUpdateWithSameEmail() = clientTest { client ->
         val profile = aProfile()
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updateEmail(
                     authToken,
                     profile.email!!,
                     success = { fail("This test should have failed because the email has not changed.") },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Bad Request")
-                            assertEquals(error.data?.error, "email_already_exists")
-                            assertEquals(error.data?.errorDescription, "Email already in use")
-                        }
+                        assertEquals("Bad Request", error.message)
+                        assertEquals("email_already_exists", error.data?.error)
+                        assertEquals("Email already in use", error.data?.errorDescription)
                     }
                 )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedEmailUpdateWithMissingScope() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedEmailUpdateWithMissingScope() = clientTest { client ->
         val profile = aProfile()
         val newEmail = anEmail()
 
         client.signup(
             profile,
+            openId,
             success = { authToken ->
                 client.updateEmail(
                     authToken,
                     newEmail,
                     success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Technical Error")
-                            assertEquals(error.data?.error, "insufficient_scope")
-                            assertEquals(
-                                error.data?.errorDescription,
-                                "The token does not contain the required scope: full_write"
-                            )
-                        }
+                        assertEquals(error.message, "Technical Error")
+                        assertEquals(error.data?.error, "insufficient_scope")
+                        assertEquals(
+                            "The token does not contain the required scope: full_write",
+                            error.data?.errorDescription
+                        )
                     }
                 )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulPhoneNumberUpdate() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulPhoneNumberUpdate() = clientTest { client ->
         val profile = aProfile()
         val newNumber = aPhoneNumber()
+        val scope = fullWrite + openId + phone
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updatePhoneNumber(
                     authToken,
                     newNumber,
                     success = { updatedProfile ->
-                        run {
-                            assertNotNull(updatedProfile)
-                            assertEquals(updatedProfile.phoneNumber, newNumber)
-                        }
+                        assertNotNull(updatedProfile)
+                        assertEquals(newNumber, updatedProfile.phoneNumber)
                     },
                     failure = { failWithReachFiveError(it) }
                 )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulPhoneNumberUpdateWithSameNumber() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulPhoneNumberUpdateWithSameNumber() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
+        val scope = fullWrite + openId + phone
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updatePhoneNumber(
                     authToken,
                     profile.phoneNumber!!,
                     success = { updatedProfile ->
-                        run {
-                            assertNotNull(updatedProfile)
-                            assertEquals(updatedProfile.phoneNumber, profile.phoneNumber!!)
-                        }
+                        assertNotNull(updatedProfile)
+                        assertEquals(profile.phoneNumber!!, updatedProfile.phoneNumber)
                     },
                     failure = { failWithReachFiveError(it) }
                 )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedPhoneNumberUpdateWithMissingScope() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedPhoneNumberUpdateWithMissingScope() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val newNumber = aPhoneNumber()
 
         client.signup(
             profile,
+            openId,
             success = { authToken ->
                 client.updatePhoneNumber(
                     authToken,
                     newNumber,
                     success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Technical Error")
-                            assertEquals(error.data?.error, "insufficient_scope")
-                            assertEquals(
-                                error.data?.errorDescription,
-                                "The token does not contain the required scope: full_write"
-                            )
-                        }
+                        assertEquals("Technical Error", error.message)
+                        assertEquals("insufficient_scope", error.data?.error)
+                        assertEquals(
+                            "The token does not contain the required scope: full_write",
+                            error.data?.errorDescription
+                        )
                     }
                 )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulProfileUpdate() {
-        val client = instantiateReachFiveClient()
-
-        val profile = aProfile()
+    fun testSuccessfulProfileUpdate() = clientTest { client ->
+        val theProfile = aProfile()
         val updatedGivenName = "Christelle"
         val updatedFamilyName = "Couet"
+        val scope = fullWrite + openId + email + profile
 
         client.signup(
-            profile,
-            fullWriteScope,
+            theProfile,
+            scope,
             { authToken ->
                 client
                     .updateProfile(
                         authToken,
                         Profile(givenName = updatedGivenName, familyName = updatedFamilyName),
                         { updatedProfile ->
-                            run {
-                                assertNotNull(updatedProfile)
-                                assertEquals(updatedProfile.email, profile.email)
-                                assertEquals(updatedProfile.givenName, updatedGivenName)
-                                assertEquals(updatedProfile.familyName, updatedFamilyName)
-                                assertEquals(updatedProfile.gender, profile.gender!!)
-                            }
+                            assertNotNull(updatedProfile)
+                            assertEquals(theProfile.email, updatedProfile.email)
+                            assertEquals(updatedGivenName, updatedProfile.givenName)
+                            assertEquals(updatedFamilyName, updatedProfile.familyName)
+                            assertEquals(theProfile.gender!!, updatedProfile.gender)
                         },
                         { failWithReachFiveError(it) }
                     )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedProfileUpdateWithMissingScope() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedProfileUpdateWithMissingScope() = clientTest { client ->
         val profile = aProfile()
 
         client.signup(
             profile,
+            openId,
             success = { authToken ->
                 client
                     .updateProfile(
@@ -602,33 +512,28 @@ class MainActivityTest {
                         Profile(givenName = "Peter"),
                         { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
                         { error ->
-                            run {
-                                assertEquals(error.message, "Technical Error")
-                                assertEquals(error.data?.error, "insufficient_scope")
-                                assertEquals(
-                                    error.data?.errorDescription,
-                                    "The token does not contain the required scope: full_write"
-                                )
-                            }
+                            assertEquals("Technical Error", error.message)
+                            assertEquals("insufficient_scope", error.data?.error)
+                            assertEquals(
+                                "The token does not contain the required scope: full_write",
+                                error.data?.errorDescription
+                            )
                         }
                     )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulPasswordUpdateWithFreshAccessToken() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulPasswordUpdateWithFreshAccessToken() = clientTest { client ->
         val profile = aProfile()
         val newPassword = "ZPf7LFtc"
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -646,20 +551,17 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(2000)
     }
 
     @Test
-    fun testSuccessfulPasswordUpdateWithAccessToken() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulPasswordUpdateWithAccessToken() = clientTest { client ->
         val profile = aProfile()
         val newPassword = "XLpYXz7z"
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updatePassword(
                     authToken,
@@ -677,110 +579,94 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(2000)
     }
 
     @Test
-    fun testFailedPasswordUpdateWithAccessTokenWithSamePassword() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedPasswordUpdateWithAccessTokenWithSamePassword() = clientTest { client ->
         val profile = aProfile()
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updatePassword(
                     authToken,
                     UpdatePasswordRequest.AccessTokenParams(profile.password!!, profile.password!!),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Bad Request")
-                            assertEquals(error.data?.error, "invalid_request")
-                            assertEquals(
-                                error.data?.errorDescription,
-                                "New password should be different from the old password"
-                            )
-                        }
+                        assertEquals(error.message, "Bad Request")
+                        assertEquals(error.data?.error, "invalid_request")
+                        assertEquals(
+                            "New password should be different from the old password",
+                            error.data?.errorDescription
+
+                        )
                     }
                 )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedPasswordUpdateWithEmailAndWrongCode() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedPasswordUpdateWithEmailAndWrongCode() = clientTest { client ->
         val profile = aProfile()
         val incorrectVerificationCode = "234"
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updatePassword(
                     authToken,
                     UpdatePasswordRequest.EmailParams(profile.email!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Technical Error")
-                            assertEquals(error.data?.error, "invalid_grant")
-                            assertEquals(error.data?.errorDescription, "Invalid verification code")
-                        }
+                        assertEquals("Technical Error", error.message)
+                        assertEquals("invalid_grant", error.data?.error)
+                        assertEquals("Invalid verification code", error.data?.errorDescription)
                     }
                 )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedPasswordUpdateWithPhoneNumberAndWrongCode() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedPasswordUpdateWithPhoneNumberAndWrongCode() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "234"
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
-            fullWriteScope,
+            scope,
             { authToken ->
                 client.updatePassword(
                     authToken,
                     UpdatePasswordRequest.SmsParams(profile.phoneNumber!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Technical Error")
-                            assertEquals(error.data?.error, "invalid_grant")
-                            assertEquals(error.data?.errorDescription, "Invalid verification code")
-                        }
+                        assertEquals("Technical Error", error.message)
+                        assertEquals("invalid_grant", error.data?.error)
+                        assertEquals("Invalid verification code", error.data?.errorDescription)
                     }
                 )
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulRequestPasswordResetWithEmail() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulRequestPasswordResetWithEmail() = clientTest { client ->
         val profile = aProfile()
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
+            scope,
             success = { authToken ->
                 client.requestPasswordReset(
                     authToken,
@@ -791,18 +677,16 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulRequestPasswordResetWithPhoneNumber() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulRequestPasswordResetWithPhoneNumber() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
+            scope,
             success = { authToken ->
                 client.requestPasswordReset(
                     authToken,
@@ -813,18 +697,16 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testFailedRequestPasswordResetWithNoIdentifier() {
-        val client = instantiateReachFiveClient()
-
+    fun testFailedRequestPasswordResetWithNoIdentifier() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
+        val scope = fullWrite + openId
 
         client.signup(
             profile,
+            scope,
             success = { authToken ->
                 client.requestPasswordReset(
                     authToken,
@@ -832,56 +714,53 @@ class MainActivityTest {
                     phoneNumber = null,
                     successWithNoContent = { fail("This test should have failed because neither the email or the phone number were provided.") },
                     failure = { error ->
-                        run {
-                            assertEquals(error.message, "Technical Error")
-                            assertEquals(error.data?.error, "invalid_grant")
-                            assertEquals(error.data?.errorDescription, "Invalid credentials")
-                        }
+                        assertEquals("Technical Error", error.message)
+                        assertEquals("invalid_grant", error.data?.error)
+                        assertEquals("Invalid credentials", error.data?.errorDescription)
                     }
                 )
             },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
     @Test
-    fun testSuccessfulLogout() {
-        val client = instantiateReachFiveClient()
-
+    fun testSuccessfulLogout() = clientTest { client ->
         val profile = aProfile()
 
         client.signup(
             profile,
+            openId,
             success = { client.logout(successWithNoContent = {}, failure = { failWithReachFiveError(it) }) },
             failure = { failWithReachFiveError(it) }
         )
-
-        sleep(1000)
     }
 
-    private fun clientTest(initialize: Boolean = true, f: (ReachFive) -> Unit) =
+    private fun clientTest(
+        initialize: Boolean = true,
+        sdkConfig: SdkConfig = defaultSdkConfig,
+        block: (ReachFive) -> Unit
+    ) {
         ReachFive(
-            activity = activityRule.activity,
-            sdkConfig = SdkConfig(DOMAIN, CLIENT_ID),
-            providersCreators = listOf()
-        ).also {
-            if (initialize) it.initialize()
-            else it
-        }.run(f)
-
-    private fun instantiateReachFiveClient(domain: String = DOMAIN, clientId: String = CLIENT_ID): ReachFive {
-        val sdkConfig = SdkConfig(domain = domain, clientId = clientId)
-
-        return ReachFive(
             activity = activityRule.activity,
             sdkConfig = sdkConfig,
             providersCreators = listOf()
-        ).initialize()
+        ).also { client ->
+            if (initialize) client.initialize(
+                success = { block(client) },
+                failure = { failWithReachFiveError(it) }
+            )
+            else block(client)
+        }
+
+        Unit
     }
 
-    private val fullWriteScope = setOf("full_write")
+    private val fullWrite = setOf("full_write")
+    private val openId = setOf("openid")
+    private val email = setOf("email")
+    private val profile = setOf("profile")
+    private val phone = setOf("phone")
 
     private fun aProfile() =
         Profile(
@@ -895,12 +774,16 @@ class MainActivityTest {
     private fun anEmail(): String = UUID.randomUUID().let { uuid -> "$uuid@testaccount.io" }
 
     private fun aPhoneNumber(international: Boolean = true): String =
-        random
-            .nextInt(10000000, 99999999)
+        generateString(8, "0123456789")
             .let {
                 if (international) "+336$it"
-                else "07$it"
+                else "06$it"
             }
+
+    private fun generateString(length: Int, charset: String): String =
+        (1..length)
+            .map { charset[Random.nextInt(charset.length)] }
+            .joinToString("")
 
     private fun failWithReachFiveError(e: ReachFiveError) {
         val maybeData = e.data?.let { data ->
@@ -922,4 +805,3 @@ class MainActivityTest {
     private val NO_ID_TOKEN =
         "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 }
-
