@@ -88,7 +88,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun testSuccessfulSignupWithEmail() =clientTest { client ->
+    fun testSuccessfulSignupWithEmail() = clientTest { client ->
         val profile = aProfile()
 
         client.signup(
