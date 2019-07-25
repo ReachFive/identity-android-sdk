@@ -13,7 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import java.lang.Thread.sleep
 import java.util.*
 import kotlin.random.Random
 
@@ -22,9 +21,6 @@ import kotlin.random.Random
  * - the SMS feature enabled
  * - the country set to "France"
  * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile']
- *
- * TODO:
- * - replace sleep(1000) with a better mechanism to wait for tests
  */
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -36,9 +32,6 @@ class MainActivityTest {
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
     private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID)
-
-    private fun getRandomSeed() = dotenv["RANDOM_SEED"]?.toInt() ?: Random.nextInt(1000)
-    private val random: Random = Random(getRandomSeed())
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -92,12 +85,10 @@ class MainActivityTest {
                     )
             }
         )
-
     }
 
     @Test
-    fun testSuccessfulSignupWithEmail() = clientTest { client ->
-
+    fun testSuccessfulSignupWithEmail() =clientTest { client ->
         val profile = aProfile()
 
         client.signup(
@@ -106,12 +97,10 @@ class MainActivityTest {
             success = { authToken -> assertNotNull(authToken) },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedSignupWithAlreadyUsedEmail() = clientTest { client ->
-
         val profile = aProfile()
 
         client.signup(
@@ -134,12 +123,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedSignupWithEmptyEmail() = clientTest { client ->
-
         val profileWithNoEmail = aProfile().copy(email = "")
 
         client.signup(
@@ -154,12 +141,10 @@ class MainActivityTest {
                 assertEquals("Must be a valid email", error.data?.errorDetails?.get(0)?.message)
             }
         )
-
     }
 
     @Test
     fun testSuccessfulSignupWithPhoneNumber() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
@@ -168,12 +153,10 @@ class MainActivityTest {
             success = { authToken -> assertNotNull(authToken) },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulSignupWithLocalPhoneNumber() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber(international = false))
 
         client.signup(
@@ -182,12 +165,10 @@ class MainActivityTest {
             success = { authToken -> assertNotNull(authToken) },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedSignupWeakPassword() = clientTest { client ->
-
         val weakPassword = "toto"
         val profile = aProfile().copy(password = weakPassword)
 
@@ -201,12 +182,10 @@ class MainActivityTest {
                 assertEquals("Password too weak", error.data?.errorDetails?.get(0)?.message)
             }
         )
-
     }
 
     @Test
     fun testFailedSignupAuthTokenRetrievalWithMissingScope() = clientTest { client ->
-
         val profile = aProfile()
 
         client.signup(
@@ -215,12 +194,10 @@ class MainActivityTest {
             success = { fail("This test should have failed because no 'id_token' was found.") },
             failure = { error -> assertEquals(NO_ID_TOKEN, error.message) }
         )
-
     }
 
     @Test
     fun testSuccessfulLoginWithEmail() = clientTest { client ->
-
         val profile = aProfile()
 
         client.signup(
@@ -237,12 +214,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulLoginWithPhoneNumber() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
@@ -259,12 +234,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedLoginWithNonExistingIdentifier() = clientTest { client ->
-
         client.loginWithPassword(
             "satoshi.nakamoto@testaccount.io",
             "buybitcoin",
@@ -276,12 +249,10 @@ class MainActivityTest {
                 assertEquals("Invalid email or password", error.data?.errorDescription)
             }
         )
-
     }
 
     @Test
     fun testFailedLoginWithWrongPassword() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
@@ -302,12 +273,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedLoginAuthTokenRetrievalWithMissingScope() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
 
         client.signup(
@@ -324,12 +293,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedVerifyPhoneNumberWithWrongCode() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "500"
 
@@ -351,12 +318,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulEmailUpdate() = clientTest { client ->
-
         val profile = aProfile()
         val newEmail = anEmail()
         val scope = fullWrite + openId + email
@@ -377,12 +342,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedEmailUpdateWithSameEmail() = clientTest { client ->
-
         val profile = aProfile()
         val scope = fullWrite + openId
 
@@ -403,12 +366,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedEmailUpdateWithMissingScope() = clientTest { client ->
-
         val profile = aProfile()
         val newEmail = anEmail()
 
@@ -432,12 +393,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulPhoneNumberUpdate() = clientTest { client ->
-
         val profile = aProfile()
         val newNumber = aPhoneNumber()
         val scope = fullWrite + openId + phone
@@ -458,12 +417,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulPhoneNumberUpdateWithSameNumber() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val scope = fullWrite + openId + phone
 
@@ -483,12 +440,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedPhoneNumberUpdateWithMissingScope() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val newNumber = aPhoneNumber()
 
@@ -512,12 +467,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulProfileUpdate() = clientTest { client ->
-
         val theProfile = aProfile()
         val updatedGivenName = "Christelle"
         val updatedFamilyName = "Couet"
@@ -543,12 +496,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedProfileUpdateWithMissingScope() = clientTest { client ->
-
         val profile = aProfile()
 
         client.signup(
@@ -572,12 +523,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulPasswordUpdateWithFreshAccessToken() = clientTest { client ->
-
         val profile = aProfile()
         val newPassword = "ZPf7LFtc"
         val scope = fullWrite + openId
@@ -602,13 +551,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(2000)
     }
 
     @Test
     fun testSuccessfulPasswordUpdateWithAccessToken() = clientTest { client ->
-
         val profile = aProfile()
         val newPassword = "XLpYXz7z"
         val scope = fullWrite + openId
@@ -633,13 +579,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
-        sleep(2000)
     }
 
     @Test
     fun testFailedPasswordUpdateWithAccessTokenWithSamePassword() = clientTest { client ->
-
         val profile = aProfile()
         val scope = fullWrite + openId
 
@@ -664,12 +607,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedPasswordUpdateWithEmailAndWrongCode() = clientTest { client ->
-
         val profile = aProfile()
         val incorrectVerificationCode = "234"
         val scope = fullWrite + openId
@@ -691,12 +632,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedPasswordUpdateWithPhoneNumberAndWrongCode() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "234"
         val scope = fullWrite + openId
@@ -718,12 +657,10 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulRequestPasswordResetWithEmail() = clientTest { client ->
-
         val profile = aProfile()
         val scope = fullWrite + openId
 
@@ -740,12 +677,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulRequestPasswordResetWithPhoneNumber() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val scope = fullWrite + openId
 
@@ -762,12 +697,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testFailedRequestPasswordResetWithNoIdentifier() = clientTest { client ->
-
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val scope = fullWrite + openId
 
@@ -789,12 +722,10 @@ class MainActivityTest {
             },
             failure = { failWithReachFiveError(it) }
         )
-
     }
 
     @Test
     fun testSuccessfulLogout() = clientTest { client ->
-
         val profile = aProfile()
 
         client.signup(
