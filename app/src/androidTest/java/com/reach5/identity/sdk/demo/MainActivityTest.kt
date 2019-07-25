@@ -395,9 +395,9 @@ class MainActivityTest {
                     profile.email!!,
                     success = { fail("This test should have failed because the email has not changed.") },
                     failure = { error ->
-                        assertEquals(error.message, "Bad Request")
-                        assertEquals(error.data?.error, "email_already_exists")
-                        assertEquals(error.data?.errorDescription, "Email already in use")
+                        assertEquals("Bad Request", error.message)
+                        assertEquals("email_already_exists", error.data?.error)
+                        assertEquals("Email already in use", error.data?.errorDescription)
                     }
                 )
             },
@@ -424,8 +424,8 @@ class MainActivityTest {
                         assertEquals(error.message, "Technical Error")
                         assertEquals(error.data?.error, "insufficient_scope")
                         assertEquals(
-                            error.data?.errorDescription,
-                            "The token does not contain the required scope: full_write"
+                            "The token does not contain the required scope: full_write",
+                            error.data?.errorDescription
                         )
                     }
                 )
