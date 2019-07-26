@@ -3,6 +3,8 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
+import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import com.reach5.identity.sdk.core.utils.Callback
 
 class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
@@ -28,7 +30,7 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
      * Sign-up with required scopes
      */
     fun signup(
-        profile: Profile,
+        profile: ProfileSignupRequest,
         scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
@@ -40,7 +42,7 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
      * Sign-up with no required scopes (needed by the Java API)
      */
     fun signup(
-        profile: Profile,
+        profile: ProfileSignupRequest,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
