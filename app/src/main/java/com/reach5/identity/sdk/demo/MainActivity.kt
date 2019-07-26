@@ -9,8 +9,8 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.AuthToken
-import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         passwordSignup.setOnClickListener {
             this.reach5.signup(
-                Profile(
+                ProfileSignupRequest(
                     email = username.text.toString(),
                     password = password.text.toString()
                 ),

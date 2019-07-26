@@ -75,7 +75,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun signup(
-        profile: Profile,
+        profile: ProfileSignupRequest,
         scope: Collection<String> = this.scope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>

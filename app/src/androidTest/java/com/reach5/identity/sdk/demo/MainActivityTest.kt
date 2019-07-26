@@ -6,6 +6,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
 import junit.framework.TestCase.*
@@ -111,7 +112,7 @@ class MainActivityTest {
                 assertNotNull(authToken)
 
                 client.signup(
-                    Profile(email = profile.email, password = profile.email),
+                    ProfileSignupRequest(email = profile.email, password = profile.password),
                     scope = openId,
                     success = { fail("This test should have failed because the email should be already used.") },
                     failure = { error ->
@@ -763,7 +764,7 @@ class MainActivityTest {
     private val phone = setOf("phone")
 
     private fun aProfile() =
-        Profile(
+        ProfileSignupRequest(
             givenName = "John",
             familyName = "Doe",
             gender = "male",

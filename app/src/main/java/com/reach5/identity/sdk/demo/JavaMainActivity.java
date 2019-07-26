@@ -13,9 +13,9 @@ import android.widget.Toast;
 import com.reach5.identity.sdk.core.JavaReachFive;
 import com.reach5.identity.sdk.core.Provider;
 import com.reach5.identity.sdk.core.models.AuthToken;
-import com.reach5.identity.sdk.core.models.Profile;
 import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.User;
+import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest;
 import com.reach5.identity.sdk.google.GoogleProvider;
 import com.reach5.identity.sdk.webview.WebViewProvider;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -71,7 +71,7 @@ public class JavaMainActivity extends AppCompatActivity {
 
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
             reach5.signup(
-                    new Profile(
+                    new ProfileSignupRequest(
                             usernameEditText.getText().toString(),
                             passwordEditText.getText().toString()
                     ),
