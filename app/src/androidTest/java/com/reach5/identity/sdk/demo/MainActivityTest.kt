@@ -1,7 +1,7 @@
 package com.reach5.identity.sdk.demo
 
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.ReachFiveError
@@ -9,12 +9,12 @@ import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
-import junit.framework.TestCase.*
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import java.util.*
+import java.util.UUID
 import kotlin.random.Random
 
 /**
@@ -746,13 +746,14 @@ class MainActivityTest {
             activity = activityRule.activity,
             sdkConfig = sdkConfig,
             providersCreators = listOf()
-        ).also { client ->
-            if (initialize) client.initialize(
-                success = { block(client) },
-                failure = { failWithReachFiveError(it) }
-            )
-            else block(client)
-        }
+        )
+            .also { client ->
+                if (initialize) client.initialize(
+                    success = { block(client) },
+                    failure = { failWithReachFiveError(it) }
+                )
+                else block(client)
+            }
 
         Unit
     }

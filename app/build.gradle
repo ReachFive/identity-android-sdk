@@ -8,13 +8,23 @@ version = lib_version
 android {
     compileSdkVersion compile_sdk_version
 
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
+
     defaultConfig {
         applicationId "com.reach5.identity.sdk.demo"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode version_code
         versionName this.version
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
     }
 
     buildTypes {
@@ -42,6 +52,11 @@ android {
         targetCompatibility = "1.8"
     }
 
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = false
+    }
+
     tasks.withType(Test) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
@@ -52,25 +67,22 @@ dependencies {
     implementation project(":sdk-facebook")
     implementation project(":sdk-google")
     implementation project(":sdk-webview")
-    // implementation "com.reach5.identity:sdk-core:${version}"
-    // implementation "com.reach5.identity:sdk-webview:${version}"
-    // implementation "com.reach5.identity:sdk-facebook:${version}"
-    // implementation "com.reach5.identity:sdk-google:${version}"
 
     implementation "com.google.firebase:firebase-core:16.0.9"
     implementation "com.facebook.android:facebook-login:5.0.3"
-    implementation "com.android.support:support-v4:28.0.0"
-    implementation "com.android.support:cardview-v7:28.0.0"
-    implementation "com.android.support:customtabs:28.0.0"
-    implementation "com.android.support.constraint:constraint-layout:1.1.3"
-    implementation "io.github.cdimascio:java-dotenv:5.1.0"
+    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation group: 'androidx.cardview', name: 'cardview', version: '1.0.0'
+    implementation "io.github.cdimascio:java-dotenv:5.1.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    testImplementation "junit:junit:4.12"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.3.41"
+    androidTestImplementation group: 'androidx.test.ext', name: 'junit-ktx', version: '1.1.1'
 
-    androidTestImplementation "com.android.support.test:runner:1.0.2"
-    androidTestImplementation "com.android.support.test:rules:1.0.2"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:3.0.2"
+    androidTestImplementation 'androidx.test:core:1.2.0'
+    androidTestImplementation 'androidx.test:core-ktx:1.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+
     androidTestImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0", {
         exclude group: "org.mockito", module: "mockito-core"
     })
