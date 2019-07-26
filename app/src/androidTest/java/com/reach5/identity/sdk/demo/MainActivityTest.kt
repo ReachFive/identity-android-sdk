@@ -6,7 +6,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
-import com.reach5.identity.sdk.core.models.UpdatePasswordRequest
+import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
 import junit.framework.TestCase.*
 import org.junit.Rule

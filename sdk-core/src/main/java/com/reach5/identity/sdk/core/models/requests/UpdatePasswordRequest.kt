@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core.models
+package com.reach5.identity.sdk.core.models.requests
 
 import android.os.Parcelable
 import com.google.gson.Gson
@@ -61,9 +61,19 @@ sealed class UpdatePasswordRequest {
         fun <T : UpdatePasswordRequest> enrichWithClientId(params: T, clientId: String): UpdatePasswordRequest {
             return when (params) {
                 is EmailParams ->
-                    EmailWithClientIdParams(params.email, params.verificationCode, params.password, clientId)
+                    EmailWithClientIdParams(
+                        params.email,
+                        params.verificationCode,
+                        params.password,
+                        clientId
+                    )
                 is SmsParams ->
-                    SmsWithClientIdParams(params.phoneNumber, params.verificationCode, params.password, clientId)
+                    SmsWithClientIdParams(
+                        params.phoneNumber,
+                        params.verificationCode,
+                        params.password,
+                        clientId
+                    )
                 else -> params
             }
         }

@@ -6,7 +6,8 @@ import android.util.Log
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
-import com.reach5.identity.sdk.core.models.UpdatePasswordRequest.Companion.enrichWithClientId
+import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
+import com.reach5.identity.sdk.core.models.requests.*
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
@@ -147,7 +148,8 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
-            .updateEmail(formatAuthorization(authToken), UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries())
+            .updateEmail(formatAuthorization(authToken),
+                UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
@@ -203,7 +205,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         reachFiveApi
             .requestPasswordReset(
                 formatAuthorization(authToken),
-                RequestPasswordResetRequest(sdkConfig.clientId, email, redirectUrl, phoneNumber),
+                RequestPasswordResetRequest(
+                    sdkConfig.clientId,
+                    email,
+                    redirectUrl,
+                    phoneNumber
+                ),
                 SdkInfos.getQueries()
             )
             .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
