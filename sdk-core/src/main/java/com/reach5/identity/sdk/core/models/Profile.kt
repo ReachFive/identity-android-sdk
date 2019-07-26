@@ -5,33 +5,71 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 
-/**
- * This class is used for sign-up and update, that's why some parameters are optional while there are required for some actions
- * Example: the `password` field is optional while it's required for sign-up
- */
 @Parcelize
 data class Profile(
-    val email: String? = null,
-    val password: String? = null,
-    @SerializedName("phone_number")
-    val phoneNumber: String? = null,
-    val gender: String? = null,
-    val name: String? = null,
+    val uid: String? = null,
+    @SerializedName("signed_uid")
+    val signedUid: String? = null,
     @SerializedName("given_name")
     val givenName: String? = null,
     @SerializedName("middle_name")
     val middleName: String? = null,
     @SerializedName("family_name")
     val familyName: String? = null,
+    val name: String? = null,
     val nickname: String? = null,
-    val username: String? = null,
     val birthdate: String? = null,
+    @SerializedName("profile_url")
+    val profileURL: String? = null,
     val picture: String? = null,
-    val company: String? = null,
-    val locale: String? = null,
+    @SerializedName("external_id")
+    val externalId: String? = null,
+    @SerializedName("auth_types")
+    val authTypes: List<String>? = null,
+    @SerializedName("login_summary")
+    val loginSummary: LoginSummary? = null,
+    val username: String? = null,
+    val gender: String? = null,
+    val email: String? = null,
+    @SerializedName("email_verified")
+    val emailVerified: Boolean? = null,
+    val emails: Emails? = null,
+    @SerializedName("phone_number")
+    val phoneNumber: String? = null,
+    @SerializedName("phone_number_verified")
+    val phoneNumberVerified: Boolean? = null,
     val addresses: List<ProfileAddress>? = null,
+    val locale: String? = null,
+    val bio: String? = null,
     @SerializedName("custom_fields")
-    val customFields: Map<String, @RawValue Any>? = null
-) : Parcelable {
-    constructor(email: String, password: String) : this(email, password, null)
-}
+    val customFields: Map<String, @RawValue Any>? = null,
+    val consents: Map<String, Consent>? = null,
+    @SerializedName("tos_accepted_at")
+    val tosAcceptedAt: String? = null,
+    @SerializedName("created_at")
+    val createdAt: String? = null,
+    @SerializedName("updated_at")
+    val updatedAt: String? = null,
+    @SerializedName("lite_only")
+    val liteOnly: Boolean? = null,
+    val company: String? = null
+) : Parcelable
+
+@Parcelize
+data class LoginSummary(
+    @SerializedName("first_login")
+    val firstLogin: Int?,
+    @SerializedName("last_login")
+    val lastLogin: Int?,
+    val total: Int?,
+    val origins: List<String>?,
+    val devices: List<String>?,
+    @SerializedName("last_provider")
+    val lastProvider: String?
+) : Parcelable
+
+@Parcelize
+data class Emails(
+    val verified: List<String>?,
+    val unverified: List<String>?
+) : Parcelable
