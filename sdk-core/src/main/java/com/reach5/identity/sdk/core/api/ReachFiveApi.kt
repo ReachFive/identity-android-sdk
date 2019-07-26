@@ -3,6 +3,7 @@ package com.reach5.identity.sdk.core.api
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.requests.*
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
@@ -87,7 +88,10 @@ interface ReachFiveApi {
             val client = OkHttpClient.Builder().addInterceptor(logging).build()
 
             val gson = GsonBuilder()
-                .registerTypeAdapter(UpdatePasswordRequest::class.java, UpdatePasswordRequestSerializer())
+                .registerTypeAdapter(
+                    UpdatePasswordRequest::class.java,
+                    UpdatePasswordRequestSerializer()
+                )
                 .create()
 
             val retrofit = Retrofit.Builder()

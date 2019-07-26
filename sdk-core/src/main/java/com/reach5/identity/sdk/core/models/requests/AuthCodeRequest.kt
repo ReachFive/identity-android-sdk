@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core.models
+package com.reach5.identity.sdk.core.models.requests
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName

@@ -7,6 +7,7 @@ import com.reach5.identity.sdk.core.ProviderCreator
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.requests.AuthCodeRequest
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success
