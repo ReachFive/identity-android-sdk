@@ -58,9 +58,9 @@ data class Profile(
 @Parcelize
 data class LoginSummary(
     @SerializedName("first_login")
-    val firstLogin: Int?,
+    val firstLogin: Long?,
     @SerializedName("last_login")
-    val lastLogin: Int?,
+    val lastLogin: Long?,
     val total: Int?,
     val origins: List<String>?,
     val devices: List<String>?,
