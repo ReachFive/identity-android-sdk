@@ -34,6 +34,12 @@ Finally install the dependencies with [Gradle](https://gradle.org/) (it will be 
 
 You'll find the documentation of the methods exposed on https://developer.reach5.co/api/identity-android.
 
+## Testing
+
+To launch integration tests, configure your domain and client ID as described above, start your Android emulator, and then run:
+
+`./gradlew connectedAndroidTest`
+
 ## Changelog
 
 Please refer to [changelog](CHANGELOG.md) to see the descriptions of each release.
