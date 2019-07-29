@@ -8,10 +8,6 @@ version = lib_version
 android {
     compileSdkVersion compile_sdk_version
 
-    useLibrary 'android.test.runner'
-    useLibrary 'android.test.base'
-    useLibrary 'android.test.mock'
-
     defaultConfig {
         applicationId "com.reach5.identity.sdk.demo"
         minSdkVersion min_sdk_version
@@ -19,12 +15,6 @@ android {
         versionCode version_code
         versionName this.version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                includeCompileClasspath true
-            }
-        }
     }
 
     buildTypes {
@@ -54,7 +44,6 @@ android {
 
     testOptions {
         unitTests.includeAndroidResources = true
-        unitTests.returnDefaultValues = false
     }
 
     tasks.withType(Test) {

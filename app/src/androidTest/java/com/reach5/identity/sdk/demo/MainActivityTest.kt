@@ -207,7 +207,7 @@ class MainActivityTest {
             success = {
                 client.loginWithPassword(
                     profile.email!!,
-                    profile.password!!,
+                    profile.password,
                     scope = openId,
                     success = { authToken -> assertNotNull(authToken) },
                     failure = { failWithReachFiveError(it) }
@@ -227,7 +227,7 @@ class MainActivityTest {
             success = {
                 client.loginWithPassword(
                     profile.phoneNumber!!,
-                    profile.password!!,
+                    profile.password,
                     scope = openId,
                     success = { authToken -> assertNotNull(authToken) },
                     failure = { failWithReachFiveError(it) }
@@ -286,7 +286,7 @@ class MainActivityTest {
             success = {
                 client.loginWithPassword(
                     profile.phoneNumber!!,
-                    profile.password!!,
+                    profile.password,
                     scope = emptyList(),
                     success = { fail("This test should have failed because no 'id_token' was found.") },
                     failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
@@ -566,7 +566,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.AccessTokenParams(profile.password!!, newPassword),
+                    UpdatePasswordRequest.AccessTokenParams(profile.password, newPassword),
                     successWithNoContent = {
                         client.loginWithPassword(
                             profile.email!!,
@@ -593,7 +593,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.AccessTokenParams(profile.password!!, profile.password!!),
+                    UpdatePasswordRequest.AccessTokenParams(profile.password, profile.password),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
                     failure = { error ->
                         assertEquals(error.message, "Bad Request")
