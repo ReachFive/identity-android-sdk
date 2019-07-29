@@ -195,7 +195,6 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun requestPasswordReset(
-        authToken: AuthToken,
         email: String? = null,
         redirectUrl: String? = null,
         phoneNumber: String? = null,
@@ -204,7 +203,6 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     ) {
         reachFiveApi
             .requestPasswordReset(
-                formatAuthorization(authToken),
                 RequestPasswordResetRequest(
                     sdkConfig.clientId,
                     email,

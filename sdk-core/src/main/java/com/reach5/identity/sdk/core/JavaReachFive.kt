@@ -143,7 +143,6 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     }
 
     fun requestPasswordReset(
-        authToken: AuthToken,
         email: String?,
         redirectUrl: String?,
         phoneNumber: String?,
@@ -151,7 +150,6 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         failure: Callback<ReachFiveError>
     ) {
         return reach5.requestPasswordReset(
-            authToken,
             email,
             redirectUrl,
             phoneNumber,
