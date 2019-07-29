@@ -76,7 +76,6 @@ interface ReachFiveApi {
 
     @POST("/identity/v1/forgot-password")
     fun requestPasswordReset(
-        @Header("Authorization") authorization: String,
         @Body requestPasswordResetRequest: RequestPasswordResetRequest,
         @QueryMap options: Map<String, String>
     ): Call<Unit>

@@ -668,10 +668,9 @@ class MainActivityTest {
         client.signup(
             profile,
             scope,
-            success = { authToken ->
+            success = {
                 client.requestPasswordReset(
-                    authToken,
-                    email = profile.email!!,
+                    email = "roxane@reach5.co",
                     successWithNoContent = {},
                     failure = { failWithReachFiveError(it) }
                 )
@@ -688,9 +687,8 @@ class MainActivityTest {
         client.signup(
             profile,
             scope,
-            success = { authToken ->
+            success = {
                 client.requestPasswordReset(
-                    authToken,
                     phoneNumber = profile.phoneNumber!!,
                     successWithNoContent = {},
                     failure = { failWithReachFiveError(it) }
@@ -708,9 +706,8 @@ class MainActivityTest {
         client.signup(
             profile,
             scope,
-            success = { authToken ->
+            success = {
                 client.requestPasswordReset(
-                    authToken,
                     email = null,
                     phoneNumber = null,
                     successWithNoContent = { fail("This test should have failed because neither the email or the phone number were provided.") },
