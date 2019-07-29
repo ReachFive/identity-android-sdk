@@ -26,11 +26,6 @@ android {
         freeCompilerArgs = ["-Xallow-result-return-type"]
     }
 
-    // TODO remove
-    lintOptions {
-        abortOnError false
-    }
-
     androidExtensions {
         /**
          *  Used to create automatically the @Parcelize methods

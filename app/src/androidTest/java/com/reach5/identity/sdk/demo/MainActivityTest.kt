@@ -746,14 +746,13 @@ class MainActivityTest {
             activity = activityRule.activity,
             sdkConfig = sdkConfig,
             providersCreators = listOf()
-        )
-            .also { client ->
-                if (initialize) client.initialize(
-                    success = { block(client) },
-                    failure = { failWithReachFiveError(it) }
-                )
-                else block(client)
-            }
+        ).also { client ->
+            if (initialize) client.initialize(
+                success = { block(client) },
+                failure = { failWithReachFiveError(it) }
+            )
+            else block(client)
+        }
 
         Unit
     }
