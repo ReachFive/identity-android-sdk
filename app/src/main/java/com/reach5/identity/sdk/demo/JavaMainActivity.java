@@ -14,7 +14,7 @@ import com.reach5.identity.sdk.core.JavaReachFive;
 import com.reach5.identity.sdk.core.Provider;
 import com.reach5.identity.sdk.core.models.AuthToken;
 import com.reach5.identity.sdk.core.models.SdkConfig;
-import com.reach5.identity.sdk.core.models.User;
+import com.reach5.identity.sdk.core.models.OpenIdUser;
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest;
 import com.reach5.identity.sdk.google.GoogleProvider;
 import com.reach5.identity.sdk.webview.WebViewProvider;
@@ -102,7 +102,7 @@ public class JavaMainActivity extends AppCompatActivity {
     }
 
     private void handleLoginSuccess(AuthToken authToken) {
-        User user = authToken.getUser();
+        OpenIdUser user = authToken.getUser();
         Objects.requireNonNull(getSupportActionBar()).setTitle(user.getEmail());
         showToast("Login success " + authToken.getAccessToken());
     }
