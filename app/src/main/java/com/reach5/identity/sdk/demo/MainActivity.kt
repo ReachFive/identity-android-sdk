@@ -138,8 +138,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_logout -> {
-                reach5.logoutWithProviders {
-                    // TODO
+                reach5.logout(successWithNoContent = { showToast("Logout success") }) {
+                    Log.d(TAG, "logout error=" + it.message)
+                    showToast("Logout Error " + it.message)
                 }
                 true
             }

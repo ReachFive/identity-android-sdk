@@ -6,6 +6,8 @@ import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import com.reach5.identity.sdk.core.utils.Callback
+import com.reach5.identity.sdk.core.utils.Failure
+import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 
 class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
     private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
@@ -174,10 +176,6 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         failure: Callback<ReachFiveError>
     ) {
         return reach5.onActivityResult(requestCode, resultCode, data, success::call, failure::call)
-    }
-
-    fun logoutWithProviders() {
-        reach5.logoutWithProviders {}
     }
 
     fun onStop() {
