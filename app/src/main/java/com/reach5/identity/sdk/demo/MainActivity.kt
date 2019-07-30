@@ -139,8 +139,8 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_logout -> {
                 reach5.logout(successWithNoContent = { showToast("Logout success") }) {
-                    Log.d(TAG, "logout error=" + it.message)
-                    showToast("Logout Error " + it.message)
+                    Log.d(TAG, "logout error=${it.message}")
+                    showToast("Logout Error ${it.message}")
                 }
                 true
             }

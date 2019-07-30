@@ -120,7 +120,7 @@ public class JavaMainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_logout:
-                reach5.logout("",
+                reach5.logout(null,
                         success -> showToast("Logout success"), failure -> {
                             Log.d(TAG, "logout error=" + failure.getMessage());
                             showToast("Logout Error " + failure.getMessage());
