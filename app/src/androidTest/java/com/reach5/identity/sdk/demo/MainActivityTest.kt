@@ -1,7 +1,7 @@
 package com.reach5.identity.sdk.demo
 
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.Profile
 import com.reach5.identity.sdk.core.models.ReachFiveError
@@ -9,12 +9,12 @@ import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
-import junit.framework.TestCase.*
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import java.util.*
+import java.util.UUID
 import kotlin.random.Random
 
 /**
@@ -207,7 +207,7 @@ class MainActivityTest {
             success = {
                 client.loginWithPassword(
                     profile.email!!,
-                    profile.password!!,
+                    profile.password,
                     scope = openId,
                     success = { authToken -> assertNotNull(authToken) },
                     failure = { failWithReachFiveError(it) }
@@ -227,7 +227,7 @@ class MainActivityTest {
             success = {
                 client.loginWithPassword(
                     profile.phoneNumber!!,
-                    profile.password!!,
+                    profile.password,
                     scope = openId,
                     success = { authToken -> assertNotNull(authToken) },
                     failure = { failWithReachFiveError(it) }
@@ -286,7 +286,7 @@ class MainActivityTest {
             success = {
                 client.loginWithPassword(
                     profile.phoneNumber!!,
-                    profile.password!!,
+                    profile.password,
                     scope = emptyList(),
                     success = { fail("This test should have failed because no 'id_token' was found.") },
                     failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
@@ -590,7 +590,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.AccessTokenParams(profile.password!!, newPassword),
+                    UpdatePasswordRequest.AccessTokenParams(profile.password, newPassword),
                     successWithNoContent = {
                         client.loginWithPassword(
                             profile.email!!,
@@ -617,7 +617,7 @@ class MainActivityTest {
             { authToken ->
                 client.updatePassword(
                     authToken,
-                    UpdatePasswordRequest.AccessTokenParams(profile.password!!, profile.password!!),
+                    UpdatePasswordRequest.AccessTokenParams(profile.password, profile.password),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
                     failure = { error ->
                         assertEquals(error.message, "Bad Request")
