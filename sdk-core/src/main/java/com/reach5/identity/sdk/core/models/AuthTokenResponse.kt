@@ -9,13 +9,14 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class AuthToken(
-    val idToken: String,
+    // If the `openid` scope is not provided, the `idToken` is not returned
+    val idToken: String? = null,
     val accessToken: String,
     val code: String?,
     val tokenType: String?,
     val expiresIn: Int?,
-    // The `user` field is optional because if the `openid` scope is not provided, the `idToken` is not returned
-    val user: User?
+    // The `user` field is optional because if the `openid` scope is not provided, the `user` is not retrieved
+    val user: OpenIdUser? = null
 ) : Parcelable
 
 @Parcelize
@@ -42,8 +43,8 @@ data class AuthTokenResponse(
     val errorDescription: String? = null
 ) : Parcelable {
     fun toAuthToken(): Result<AuthToken, ReachFiveError> {
-        if (idToken != null) {
-            return if (accessToken != null) {
+        return if (accessToken != null) {
+            if (idToken != null) {
                 getUser().map {
                     AuthToken(
                         idToken = idToken,
@@ -55,17 +56,24 @@ data class AuthTokenResponse(
                     )
                 }
             } else {
-                Result.error(ReachFiveError.from("No access_token returned"))
+                Result.of {
+                    AuthToken(
+                        accessToken = accessToken,
+                        code = code,
+                        tokenType = tokenType,
+                        expiresIn = expiresIn
+                    )
+                }
             }
         } else {
-            return Result.error(ReachFiveError.from("No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."))
+            Result.error(ReachFiveError.from("No access_token returned"))
         }
     }
 
-    private fun getUser(): Result<User, ReachFiveError> {
+    private fun getUser(): Result<OpenIdUser, ReachFiveError> {
         return Result.of {
             if (idToken != null) {
-                Jwt.decode(idToken, User::class.java)
+                Jwt.decode(idToken, OpenIdUser::class.java)
             } else {
                 throw ReachFiveError.from("Invalid id_token")
             }

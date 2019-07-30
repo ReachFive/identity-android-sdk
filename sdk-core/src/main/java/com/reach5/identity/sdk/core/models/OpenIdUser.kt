@@ -5,13 +5,13 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class User(
+data class OpenIdUser(
     // Corresponds to the `sub` field in the JSON
     @SerializedName("sub")
     val id: String?,
+    val name: String?,
     @SerializedName("preferred_username")
     val preferredUsername: String?,
-    val name: String?,
     @SerializedName("given_name")
     val givenName: String?,
     @SerializedName("family_name")

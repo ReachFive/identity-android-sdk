@@ -64,13 +64,9 @@ class MainActivityTest {
         client.signup(
             profile,
             /*scope = setOf("openid"),*/ // WHEN INITIALIZED: becomes setOf('email', 'full_write', 'openid', 'phone', 'profile')
-            success = { fail("This test should have failed because the `openid` scope should be missing prior to client initialization, causing auth token parsing to fail.") },
-            failure = { expectedError ->
+            success = { authToken ->
                 // Signup success but no id_token returned
-                assertEquals(
-                    NO_ID_TOKEN,
-                    expectedError.message
-                )
+                assertNull(authToken.idToken)
 
                 client
                     .initialize()
@@ -84,7 +80,8 @@ class MainActivityTest {
                             )
                         }
                     )
-            }
+            },
+            failure = { failWithReachFiveError(it) }
         )
     }
 
@@ -186,18 +183,6 @@ class MainActivityTest {
     }
 
     @Test
-    fun testFailedSignupAuthTokenRetrievalWithMissingScope() = clientTest { client ->
-        val profile = aProfile()
-
-        client.signup(
-            profile,
-            scope = emptyList(),
-            success = { fail("This test should have failed because no 'id_token' was found.") },
-            failure = { error -> assertEquals(NO_ID_TOKEN, error.message) }
-        )
-    }
-
-    @Test
     fun testSuccessfulLoginWithEmail() = clientTest { client ->
         val profile = aProfile()
 
@@ -277,29 +262,9 @@ class MainActivityTest {
     }
 
     @Test
-    fun testFailedLoginAuthTokenRetrievalWithMissingScope() = clientTest { client ->
-        val profile = aProfile().copy(phoneNumber = aPhoneNumber())
-
-        client.signup(
-            profile,
-            scope = openId,
-            success = {
-                client.loginWithPassword(
-                    profile.phoneNumber!!,
-                    profile.password,
-                    scope = emptyList(),
-                    success = { fail("This test should have failed because no 'id_token' was found.") },
-                    failure = { error -> assertEquals(error.message, NO_ID_TOKEN) }
-                )
-            },
-            failure = { failWithReachFiveError(it) }
-        )
-    }
-
-    @Test
     fun testSuccessfulGetProfile() = clientTest { client ->
         val theProfile = aProfile()
-        val scope =  openId + email + profile
+        val scope = openId + email + profile
 
         client.signup(
             theProfile,
@@ -824,6 +789,4 @@ class MainActivityTest {
 
     private val TEST_SHOULD_FAIL_SCOPE_MISSING =
         "This test should have failed because the 'full_write' scope is missing."
-    private val NO_ID_TOKEN =
-        "No id_token returned, verify that you have the `openid` scope configured in your API Client Settings."
 }

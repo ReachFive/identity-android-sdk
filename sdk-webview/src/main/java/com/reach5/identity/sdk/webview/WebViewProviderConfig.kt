@@ -15,7 +15,7 @@ internal data class WebViewProviderConfig(
 ) : Parcelable {
 
     fun buildUrl(pkce: Pkce): String {
-        val scope = (providerConfig.scope ?: setOf()).plus("openid")
+        val scope = (providerConfig.scope)
         val params = mapOf(
             "client_id" to sdkConfig.clientId,
             "provider" to providerConfig.provider,
