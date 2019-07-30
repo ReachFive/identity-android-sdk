@@ -304,9 +304,9 @@ class MainActivityTest {
         client.signup(
             theProfile,
             scope,
-            success = {
+            success = { authToken ->
                 client.getProfile(
-                    it,
+                    authToken,
                     { fetchedProfile ->
                         assertEquals(theProfile.givenName, fetchedProfile.givenName)
                         assertEquals(theProfile.familyName, fetchedProfile.familyName)
@@ -347,8 +347,8 @@ class MainActivityTest {
 
     @Test
     fun testSuccessfulEmailUpdate() = clientTest { client ->
-        val profile = ProfileSignupRequest(givenName = "Burrich", email = "burrich@gmail.com", password = "tatetutito")
-        val newEmail = "xi.mace@outlook.com"
+        val profile = aProfile()
+        val newEmail = anEmail()
         val scope = fullWrite + openId + email
 
         client.signup(
@@ -786,7 +786,7 @@ class MainActivityTest {
 
     private fun aProfile() =
         ProfileSignupRequest(
-            givenName = "Danny",
+            givenName = "John",
             familyName = "Doe",
             gender = "male",
             email = anEmail(),
