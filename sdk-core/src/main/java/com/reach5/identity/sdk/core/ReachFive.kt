@@ -27,12 +27,14 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     fun initialize(success: Success<List<Provider>> = {}, failure: Failure<ReachFiveError> = {}): ReachFive {
         reachFiveApi
             .clientConfig(mapOf("client_id" to sdkConfig.clientId))
-            .enqueue(ReachFiveApiCallback<ClientConfigResponse>(
-                success = { clientConfig ->
-                    scope = clientConfig.scope.split(" ").toSet()
-                    providersConfigs(success, failure)
-                },
-                failure = failure)
+            .enqueue(
+                ReachFiveApiCallback<ClientConfigResponse>(
+                    success = { clientConfig ->
+                        scope = clientConfig.scope.split(" ").toSet()
+                        providersConfigs(success, failure)
+                    },
+                    failure = failure
+                )
             )
 
         return this
@@ -124,6 +126,16 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
     }
 
+    fun getProfile(
+        authToken: AuthToken,
+        success: Success<Profile>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .getProfile(formatAuthorization(authToken), SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+    }
+
     fun verifyPhoneNumber(
         authToken: AuthToken,
         phoneNumber: String,
@@ -148,8 +160,10 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
-            .updateEmail(formatAuthorization(authToken),
-                UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries())
+            .updateEmail(
+                formatAuthorization(authToken),
+                UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries()
+            )
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
