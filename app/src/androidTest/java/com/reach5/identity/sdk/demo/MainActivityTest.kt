@@ -297,6 +297,30 @@ class MainActivityTest {
     }
 
     @Test
+    fun testSuccessfulGetProfile() = clientTest { client ->
+        val theProfile = aProfile()
+        val scope =  openId + email + profile
+
+        client.signup(
+            theProfile,
+            scope,
+            success = { authToken ->
+                client.getProfile(
+                    authToken,
+                    { fetchedProfile ->
+                        assertEquals(theProfile.givenName, fetchedProfile.givenName)
+                        assertEquals(theProfile.familyName, fetchedProfile.familyName)
+                        assertEquals(theProfile.gender, fetchedProfile.gender)
+                        assertEquals(theProfile.email, fetchedProfile.email)
+                    },
+                    { error -> failWithReachFiveError(error) }
+                )
+            },
+            failure = { failWithReachFiveError(it) }
+        )
+    }
+
+    @Test
     fun testFailedVerifyPhoneNumberWithWrongCode() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "500"
@@ -670,7 +694,7 @@ class MainActivityTest {
             scope,
             success = {
                 client.requestPasswordReset(
-                    email = "roxane@reach5.co",
+                    email = profile.email!!,
                     successWithNoContent = {},
                     failure = { failWithReachFiveError(it) }
                 )
