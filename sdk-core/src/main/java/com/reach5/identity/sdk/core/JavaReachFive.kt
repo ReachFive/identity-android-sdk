@@ -84,6 +84,14 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.logout(redirectTo, { successWithNoContent.call(Unit) }, failure::call)
     }
 
+    fun getProfile(
+        authToken: AuthToken,
+        success: Callback<Profile>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.getProfile(authToken, success::call, failure::call)
+    }
+
     fun verifyPhoneNumber(
         authToken: AuthToken,
         phoneNumber: String,

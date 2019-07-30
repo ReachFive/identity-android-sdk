@@ -39,6 +39,12 @@ interface ReachFiveApi {
     @GET("/identity/v1/logout")
     fun logout(@QueryMap options: Map<String, String>): Call<Unit>
 
+    @GET("/identity/v1/me")
+    fun getProfile(
+        @Header("Authorization") authorization: String,
+        @QueryMap options: Map<String, String>
+    ): Call<Profile>
+
     @POST("/identity/v1/verify-phone-number")
     fun verifyPhoneNumber(
         @Header("Authorization") authorization: String,

@@ -297,6 +297,30 @@ class MainActivityTest {
     }
 
     @Test
+    fun testSuccessfulGetProfile() = clientTest { client ->
+        val theProfile = aProfile()
+        val scope =  openId + email + profile
+
+        client.signup(
+            theProfile,
+            scope,
+            success = {
+                client.getProfile(
+                    it,
+                    { fetchedProfile ->
+                        assertEquals(theProfile.givenName, fetchedProfile.givenName)
+                        assertEquals(theProfile.familyName, fetchedProfile.familyName)
+                        assertEquals(theProfile.gender, fetchedProfile.gender)
+                        assertEquals(theProfile.email, fetchedProfile.email)
+                    },
+                    { error -> failWithReachFiveError(error) }
+                )
+            },
+            failure = { failWithReachFiveError(it) }
+        )
+    }
+
+    @Test
     fun testFailedVerifyPhoneNumberWithWrongCode() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "500"
@@ -323,8 +347,8 @@ class MainActivityTest {
 
     @Test
     fun testSuccessfulEmailUpdate() = clientTest { client ->
-        val profile = aProfile()
-        val newEmail = anEmail()
+        val profile = ProfileSignupRequest(givenName = "Burrich", email = "burrich@gmail.com", password = "tatetutito")
+        val newEmail = "xi.mace@outlook.com"
         val scope = fullWrite + openId + email
 
         client.signup(
@@ -670,7 +694,7 @@ class MainActivityTest {
             scope,
             success = {
                 client.requestPasswordReset(
-                    email = "roxane@reach5.co",
+                    email = profile.email!!,
                     successWithNoContent = {},
                     failure = { failWithReachFiveError(it) }
                 )
@@ -762,7 +786,7 @@ class MainActivityTest {
 
     private fun aProfile() =
         ProfileSignupRequest(
-            givenName = "John",
+            givenName = "Danny",
             familyName = "Doe",
             gender = "male",
             email = anEmail(),
