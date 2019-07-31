@@ -286,6 +286,32 @@ class MainActivityTest {
     }
 
     @Test
+    fun testFailedGetProfileWithMissingScopes() = clientTest { client ->
+        val theProfile = aProfile()
+        val scope = openId + email
+
+        client.signup(
+            theProfile,
+            scope,
+            success = { authToken ->
+                client.getProfile(
+                    authToken,
+                    { fetchedProfile ->
+                        // Since the `profile` scope is missing, the personal data is not returned
+                        assertNull(fetchedProfile.givenName)
+                        assertNull(fetchedProfile.familyName)
+                        assertNull(fetchedProfile.gender)
+
+                        assertEquals(theProfile.email, fetchedProfile.email)
+                    },
+                    { error -> failWithReachFiveError(error) }
+                )
+            },
+            failure = { failWithReachFiveError(it) }
+        )
+    }
+
+    @Test
     fun testFailedVerifyPhoneNumberWithWrongCode() = clientTest { client ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "500"
