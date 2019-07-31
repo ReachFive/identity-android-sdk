@@ -119,6 +119,8 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
+        providers.forEach { it.logout() }
+
         val queries = SdkInfos.getQueries()
         val options = if (redirectTo != null) queries.plus(Pair("redirect_to", redirectTo)) else queries
         reachFiveApi
@@ -255,10 +257,6 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         } else {
             failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
         }
-    }
-
-    fun logoutWithProviders(callback: () -> Unit) {
-        providers.forEach { it.logout() }.also { callback() }
     }
 
     fun onStop() {
