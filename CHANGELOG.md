@@ -12,7 +12,7 @@ Thus `ProfileSignupRequest` provides the same attributes than `Profile` without 
 - The `User` data model was renamed to [`OpenIdUser`](https://developer.reach5.co/api/identity-android/#openid-user).
 - The `AuthToken.idToken` field became optional since it's not returned if the `openid` scope is not provided.
 - The `openid` scope is no longer provided by default to the `loginWithProvider` method through the `WebViewProvider`.
-- The `logout` method can now also be used to disconnect sessions created with a provider.
+- The `logout` method now disconnects all sessions including those created with a provider.
 
 ### Features
 
