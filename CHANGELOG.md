@@ -4,11 +4,11 @@
 
 ### Breaking changes
 
-- The default scopes for the `signup` and `loginWithPassword` methods used to be `openid`, `email`, `phone` and `profile`.
-They are now the allowed scopes set up in your client's configuration through the console.
+- The new default is to use the scopes defined for your client via the ReachFive console.
+Keep in mind that you must initialize the client through the `initialize` method for the scopes to be set, or an empty value will be used.
 - All the data models used for requests were moved in a sub-folder named `requests` (`com.reach5.identity.sdk.core.models` -> `com.reach5.identity.sdk.core.models.requests`).
 - The profile's data passed as an argument to the `signup` method is no longer a `Profile` but a [`ProfileSignupRequest`](https://developer.reach5.co/api/identity-android/#profile-signup-request).
-Thus `ProfileSignupRequest` provides the same attributes than `Profile` without the identifiers and authentication details and with the `password` field.
+Note that `ProfileSignupRequest` contains the same attributes as `Profile` plus the `password` field and minus the identifiers and authentication details.
 - The `User` data model was renamed to [`OpenIdUser`](https://developer.reach5.co/api/identity-android/#openid-user).
 - The `AuthToken.idToken` field became optional since it isn't returned when the `openid` scope is not provided.
 - The `openid` scope is no longer provided by default to the `loginWithProvider` method through the `WebViewProvider`.
