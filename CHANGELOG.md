@@ -10,7 +10,7 @@ They are now the allowed scopes set up in your client's configuration through th
 - The profile's data passed as an argument to the `signup` method is no longer a `Profile` but a [`ProfileSignupRequest`](https://developer.reach5.co/api/identity-android/#profile-signup-request).
 Thus `ProfileSignupRequest` provides the same attributes than `Profile` without the identifiers and authentication details and with the `password` field.
 - The `User` data model was renamed to [`OpenIdUser`](https://developer.reach5.co/api/identity-android/#openid-user).
-- The `AuthToken.idToken` field became optional since it's not returned if the `openid` scope is not provided.
+- The `AuthToken.idToken` field became optional since it isn't returned when the `openid` scope is not provided.
 - The `openid` scope is no longer provided by default to the `loginWithProvider` method through the `WebViewProvider`.
 - The `logout` method now disconnects all sessions including those created with a provider.
 
