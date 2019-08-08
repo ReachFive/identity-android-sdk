@@ -139,14 +139,12 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     }
 
     fun updatePassword(
-        authToken: AuthToken,
-        updatePhoneNumberRequest: UpdatePasswordRequest,
+        updatePasswordRequest: UpdatePasswordRequest,
         successWithNoContent: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.updatePassword(
-            authToken,
-            updatePhoneNumberRequest,
+            updatePasswordRequest,
             { successWithNoContent.call(Unit) },
             failure::call
         )

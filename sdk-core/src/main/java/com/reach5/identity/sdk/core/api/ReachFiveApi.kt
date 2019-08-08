@@ -75,7 +75,7 @@ interface ReachFiveApi {
 
     @POST("/identity/v1/update-password")
     fun updatePassword(
-        @Header("Authorization") authorization: String,
+        @HeaderMap headers: Map<String, String>,
         @Body updatePhoneNumberRequest: UpdatePasswordRequest,
         @QueryMap options: Map<String, String>
     ): Call<Unit>
