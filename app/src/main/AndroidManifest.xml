@@ -21,7 +21,7 @@
         </activity>
 
         <activity
-                android:name="com.reach5.identity.sdk.customtab.ReachFiveLoginActivity"
+                android:name="com.reach5.identity.sdk.customTab.ReachFiveLoginActivity"
                 android:screenOrientation="portrait"/>
         <activity
                 android:name=".JavaMainActivity"

@@ -47,9 +47,9 @@ jobs:
     working_directory: ~/repo/sdk-core
     <<: *default_build_steps
 
-  build_webview:
+  build_web:
     <<: *defaults
-    working_directory: ~/repo/sdk-webview
+    working_directory: ~/repo/sdk-web
     <<: *default_build_steps
 
   build_google:
@@ -67,9 +67,9 @@ jobs:
     working_directory: ~/repo/sdk-core
     <<: *default_upload_steps
 
-  upload_webview:
+  upload_web:
     <<: *defaults
-    working_directory: ~/repo/sdk-webview
+    working_directory: ~/repo/sdk-web
     <<: *default_upload_steps
 
   upload_google:
@@ -99,7 +99,7 @@ workflows:
     jobs:
       - build_core:
           <<: *default_workflows_tags
-      - build_webview:
+      - build_web:
           <<: *default_workflows_tags
       - build_google:
           <<: *default_workflows_tags
@@ -109,10 +109,10 @@ workflows:
           requires:
             - build_core
           <<: *default_workflows_filters
-      - upload_webview:
+      - upload_web:
           requires:
             - build_core
-            - build_webview
+            - build_web
           <<: *default_workflows_filters
       - upload_google:
           requires:
