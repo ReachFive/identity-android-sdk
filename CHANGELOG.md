@@ -1,5 +1,13 @@
 # Changelog
 
+## v5.0.1 (09/08/2019)
+
+### Fixes
+
+- The `authToken` argument of the [`updatePassword`](https://developer.reach5.co/api/identity-android/#update-password) method was deleted since it is not required when the user provides his email or phone number with a verification code.
+Nevertheless, the `freshAuthToken` argument was added to [`FreshAccessTokenParams`](https://developer.reach5.co/api/identity-android/#update-password-request-fresh-access-token-params) and `authToken` to [`AccessTokenParams`](https://developer.reach5.co/api/identity-android/#update-password-request-access-token-params).
+- The `updatePhoneNumberRequest` argument of the `updatePassword` method was renamed to `updatePasswordRequest`.
+
 ## v5.0.0 (01/08/2019)
 
 ### Breaking changes
