@@ -6,8 +6,9 @@ import android.util.Log
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
-import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
 import com.reach5.identity.sdk.core.models.requests.*
+import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
+import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
@@ -196,15 +197,18 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun updatePassword(
-        authToken: AuthToken,
-        updatePhoneNumberRequest: UpdatePasswordRequest,
+        updatePasswordRequest: UpdatePasswordRequest,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
+        val headers = getAccessToken(updatePasswordRequest)
+            ?.let { mapOf("Authorization" to formatAuthorization(it)) }
+            ?: emptyMap()
+
         reachFiveApi
             .updatePassword(
-                formatAuthorization(authToken),
-                enrichWithClientId(updatePhoneNumberRequest, sdkConfig.clientId),
+                headers,
+                enrichWithClientId(updatePasswordRequest, sdkConfig.clientId),
                 SdkInfos.getQueries()
             )
             .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
