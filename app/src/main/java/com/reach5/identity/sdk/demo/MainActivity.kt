@@ -11,9 +11,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
-import com.reach5.identity.sdk.facebook.FacebookProvider
-import com.reach5.identity.sdk.google.GoogleProvider
-import com.reach5.identity.sdk.webview.WebViewProvider
+import com.reach5.identity.sdk.customTab.CustomTabProvider
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -44,9 +42,9 @@ class MainActivity : AppCompatActivity() {
         val sdkConfig = SdkConfig(domain, clientId)
 
         val providersCreators = listOf(
-            GoogleProvider(),
-            FacebookProvider(),
-            WebViewProvider()
+//            GoogleProvider(),
+//            FacebookProvider(),
+            CustomTabProvider()
         )
 
         this.reach5 = ReachFive(

@@ -17,7 +17,7 @@ import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.OpenIdUser;
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest;
 import com.reach5.identity.sdk.google.GoogleProvider;
-import com.reach5.identity.sdk.webview.WebViewProvider;
+import com.reach5.identity.sdk.customTab.CustomTabProvider;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public class JavaMainActivity extends AppCompatActivity {
         reach5 = new JavaReachFive(
                 this,
                 sdkConfig,
-                Arrays.asList(new GoogleProvider(), new WebViewProvider())
+                Arrays.asList(new GoogleProvider(), new CustomTabProvider())
         );
 
         reach5.initialize(providers ->

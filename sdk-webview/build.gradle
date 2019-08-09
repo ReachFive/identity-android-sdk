@@ -26,11 +26,20 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    androidExtensions {
+        /**
+         *  Used to create automatically the @Parcelize methods
+         *  Link: https://kotlinlang.org/docs/tutorials/android-plugin.html#parcelable-implementations-generator
+         */
+        experimental = true
+    }
 }
 
 dependencies {
     implementation project(":sdk-core")
     implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "com.android.support:customtabs:28.0.0"
     implementation "com.squareup.retrofit2:retrofit:2.6.0"
     implementation "com.squareup.retrofit2:converter-gson:2.6.0"
     implementation "com.github.kittinunf.result:result:2.2.0"

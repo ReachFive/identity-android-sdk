@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.webview
+package com.reach5.identity.sdk.customTab
 
 import android.app.Activity
 import android.content.Intent
@@ -12,8 +12,8 @@ import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success
 
-class WebViewProvider : ProviderCreator {
-    override val name: String = "webview"
+class CustomTabProvider : ProviderCreator {
+    override val name: String = "customtab"
 
     override fun create(
         providerConfig: ProviderConfig,
@@ -21,31 +21,32 @@ class WebViewProvider : ProviderCreator {
         reachFiveApi: ReachFiveApi,
         activity: Activity
     ): Provider {
-        return ConfiguredWebViewProvider(providerConfig, sdkConfig, reachFiveApi)
+        return ConfiguredCustomTabProvider(providerConfig, sdkConfig, reachFiveApi)
     }
 }
 
-class ConfiguredWebViewProvider(
+class ConfiguredCustomTabProvider(
     private val providerConfig: ProviderConfig,
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi
 ) : Provider {
 
     override val name: String = providerConfig.provider
-    override val requestCode: Int = RequestCode
+    override val requestCode: Int = REQUEST_CODE
 
     companion object {
         const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
-        const val AuthCode = "AuthCode"
         const val PKCE = "PKCE"
-        const val RequestCode = 52558
+        const val AUTH_CODE = "AUTH_CODE"
+
+        const val REQUEST_CODE = 52558
         const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
 
     override fun login(origin: String, activity: Activity) {
         val intent = Intent(activity, ReachFiveLoginActivity::class.java)
         intent.putExtra(
-            BUNDLE_ID, WebViewProviderConfig(
+            BUNDLE_ID, CustomTabProviderConfig(
                 providerConfig = providerConfig,
                 sdkConfig = sdkConfig,
                 origin = origin
@@ -62,7 +63,7 @@ class ConfiguredWebViewProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        val authCode = data?.getStringExtra(AuthCode)
+        val authCode = data?.getStringExtra(AUTH_CODE)
         val pkce = data?.getParcelableExtra<Pkce>(PKCE)
         return if (authCode != null && pkce != null) {
             val authCodeRequest = AuthCodeRequest(

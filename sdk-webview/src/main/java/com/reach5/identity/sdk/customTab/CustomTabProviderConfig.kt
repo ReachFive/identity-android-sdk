@@ -1,19 +1,19 @@
-package com.reach5.identity.sdk.webview
+package com.reach5.identity.sdk.customTab
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.reach5.identity.sdk.core.models.ProviderConfig
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.SdkInfos
 import com.reach5.identity.sdk.core.utils.Pkce
+import kotlinx.android.parcel.Parcelize
 import java.net.URLEncoder
 
-internal data class WebViewProviderConfig(
+@Parcelize
+internal data class CustomTabProviderConfig(
     val providerConfig: ProviderConfig,
     val sdkConfig: SdkConfig,
     val origin: String
 ) : Parcelable {
-
     fun buildUrl(pkce: Pkce): String {
         val scope = (providerConfig.scope)
         val params = mapOf(
@@ -30,31 +30,5 @@ internal data class WebViewProviderConfig(
             "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
         }
         return "https://${sdkConfig.domain}/oauth/authorize?$query"
-    }
-
-    constructor(parcel: Parcel) : this(
-        parcel.readParcelable(ProviderConfig::class.java.classLoader)!!,
-        parcel.readParcelable(SdkConfig::class.java.classLoader)!!,
-        parcel.readString()!!
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeParcelable(providerConfig, flags)
-        parcel.writeParcelable(sdkConfig, flags)
-        parcel.writeString(origin)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<WebViewProviderConfig> {
-        override fun createFromParcel(parcel: Parcel): WebViewProviderConfig {
-            return WebViewProviderConfig(parcel)
-        }
-
-        override fun newArray(size: Int): Array<WebViewProviderConfig?> {
-            return arrayOfNulls(size)
-        }
     }
 }
