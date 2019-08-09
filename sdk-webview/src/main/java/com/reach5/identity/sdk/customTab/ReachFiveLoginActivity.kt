@@ -47,7 +47,7 @@ class ReachFiveLoginActivity : Activity() {
         val pkce = getPkceFromIntent(intent)
         val url = config.buildUrl(pkce)
 
-        Log.d(TAG, "ReachFiveLoginActivity onCreated : $url")
+        Log.d(TAG, "ReachFiveLoginActivity onCreated launch url : $url")
         CustomTabsIntent.Builder(mCustomTabsSession)
             .build()
             .launchUrl(this, Uri.parse(url))
@@ -73,6 +73,17 @@ class ReachFiveLoginActivity : Activity() {
 
         setResult(ConfiguredCustomTabProvider.REQUEST_CODE, newIntent)
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (mCustomTabsServiceConnection == null) return
+
+        Log.d(TAG, "ReachFiveLoginActivity onDestroy")
+        this.unbindService(mCustomTabsServiceConnection)
+        mClient = null
+        mCustomTabsSession = null
     }
 
     private fun getPkceFromIntent(intent: Intent) = intent.getParcelableExtra<Pkce>(PKCE)
