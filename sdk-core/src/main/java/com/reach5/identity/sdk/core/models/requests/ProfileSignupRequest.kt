@@ -39,5 +39,5 @@ data class ProfileSignupRequest(
     @SerializedName("lite_only")
     val liteOnly: Boolean? = null
 ) : Parcelable {
-    constructor(email: String, password: String) : this(email, password, null)
+    constructor(password: String, email: String) : this(password, email, null)
 }
