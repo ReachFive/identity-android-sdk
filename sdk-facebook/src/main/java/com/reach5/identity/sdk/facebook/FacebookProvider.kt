@@ -75,7 +75,7 @@ class ConfiguredFacebookProvider(
                         providerToken = accessToken,
                         clientId = sdkConfig.clientId,
                         origin = origin,
-                        scope = (providerConfig.scope ?: setOf()).joinToString { " " }.plus("openid")
+                        scope = providerConfig.scope.joinToString { " " }.plus("openid")
                     )
                     reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(
                         ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure)
