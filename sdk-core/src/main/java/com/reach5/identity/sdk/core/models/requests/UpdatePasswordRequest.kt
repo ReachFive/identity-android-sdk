@@ -6,17 +6,21 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
+import com.reach5.identity.sdk.core.models.AuthToken
+import com.reach5.identity.sdk.core.models.ReachFiveError
 import kotlinx.android.parcel.Parcelize
 import java.lang.reflect.Type
 
 sealed class UpdatePasswordRequest {
     @Parcelize
     data class FreshAccessTokenParams(
+        val freshAuthToken: AuthToken,
         val password: String
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
     data class AccessTokenParams(
+        val authToken: AuthToken,
         @SerializedName("old_password")
         val oldPassword: String,
         val password: String
@@ -30,7 +34,14 @@ sealed class UpdatePasswordRequest {
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
-    data class EmailWithClientIdParams(
+    data class SmsParams(
+        val phoneNumber: String,
+        val verificationCode: String,
+        val password: String
+    ) : UpdatePasswordRequest(), Parcelable
+
+    @Parcelize
+    private data class EmailWithClientIdParams(
         val email: String,
         @SerializedName("verification_code")
         val verificationCode: String,
@@ -40,14 +51,7 @@ sealed class UpdatePasswordRequest {
     ) : UpdatePasswordRequest(), Parcelable
 
     @Parcelize
-    data class SmsParams(
-        val phoneNumber: String,
-        val verificationCode: String,
-        val password: String
-    ) : UpdatePasswordRequest(), Parcelable
-
-    @Parcelize
-    data class SmsWithClientIdParams(
+    private data class SmsWithClientIdParams(
         @SerializedName("phone_number")
         val phoneNumber: String,
         @SerializedName("verification_code")
@@ -75,6 +79,14 @@ sealed class UpdatePasswordRequest {
                         clientId
                     )
                 else -> params
+            }
+        }
+
+        fun <T : UpdatePasswordRequest> getAccessToken(params: T): AuthToken? {
+            return when(params) {
+                is FreshAccessTokenParams -> params.freshAuthToken
+                is AccessTokenParams -> params.authToken
+                else -> null
             }
         }
     }

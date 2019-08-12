@@ -552,8 +552,7 @@ class MainActivityTest {
             scope,
             { authToken ->
                 client.updatePassword(
-                    authToken,
-                    UpdatePasswordRequest.FreshAccessTokenParams(newPassword),
+                    UpdatePasswordRequest.FreshAccessTokenParams(authToken, newPassword),
                     successWithNoContent = {
                         client.loginWithPassword(
                             profile.email!!,
@@ -580,8 +579,7 @@ class MainActivityTest {
             scope,
             { authToken ->
                 client.updatePassword(
-                    authToken,
-                    UpdatePasswordRequest.AccessTokenParams(profile.password, newPassword),
+                    UpdatePasswordRequest.AccessTokenParams(authToken, profile.password, newPassword),
                     successWithNoContent = {
                         client.loginWithPassword(
                             profile.email!!,
@@ -607,8 +605,7 @@ class MainActivityTest {
             scope,
             { authToken ->
                 client.updatePassword(
-                    authToken,
-                    UpdatePasswordRequest.AccessTokenParams(profile.password, profile.password),
+                    UpdatePasswordRequest.AccessTokenParams(authToken, profile.password, profile.password),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
                     failure = { error ->
                         assertEquals(error.message, "Bad Request")
@@ -634,9 +631,8 @@ class MainActivityTest {
         client.signup(
             profile,
             scope,
-            { authToken ->
+            {
                 client.updatePassword(
-                    authToken,
                     UpdatePasswordRequest.EmailParams(profile.email!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
@@ -659,9 +655,8 @@ class MainActivityTest {
         client.signup(
             profile,
             scope,
-            { authToken ->
+            {
                 client.updatePassword(
-                    authToken,
                     UpdatePasswordRequest.SmsParams(profile.phoneNumber!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
