@@ -9,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
 import java.net.URLEncoder
 
 @Parcelize
-internal data class CustomTabProviderConfig(
+internal data class WebProviderConfig(
     val providerConfig: ProviderConfig,
     val sdkConfig: SdkConfig,
     val origin: String

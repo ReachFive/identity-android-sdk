@@ -12,7 +12,7 @@ import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success
 
-class CustomTabProvider : ProviderCreator {
+class WebProvider : ProviderCreator {
     override val name: String = "customtab"
 
     override fun create(
@@ -21,11 +21,11 @@ class CustomTabProvider : ProviderCreator {
         reachFiveApi: ReachFiveApi,
         activity: Activity
     ): Provider {
-        return ConfiguredCustomTabProvider(providerConfig, sdkConfig, reachFiveApi)
+        return ConfiguredWebProvider(providerConfig, sdkConfig, reachFiveApi)
     }
 }
 
-class ConfiguredCustomTabProvider(
+class ConfiguredWebProvider(
     private val providerConfig: ProviderConfig,
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi
@@ -46,7 +46,7 @@ class ConfiguredCustomTabProvider(
     override fun login(origin: String, activity: Activity) {
         val intent = Intent(activity, ReachFiveLoginActivity::class.java)
         intent.putExtra(
-            BUNDLE_ID, CustomTabProviderConfig(
+            BUNDLE_ID, WebProviderConfig(
                 providerConfig = providerConfig,
                 sdkConfig = sdkConfig,
                 origin = origin

@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.browser.customtabs.*
 import com.reach5.identity.sdk.core.utils.Pkce
-import com.reach5.identity.sdk.web.ConfiguredCustomTabProvider.Companion.PKCE
+import com.reach5.identity.sdk.web.ConfiguredWebProvider.Companion.PKCE
 
 
 class ReachFiveLoginActivity : Activity() {
@@ -43,7 +43,7 @@ class ReachFiveLoginActivity : Activity() {
 
         CustomTabsClient.bindCustomTabsService(this, CUSTOM_TAB_PACKAGE_NAME, customTabsConnection)
 
-        val config = intent.getParcelableExtra<CustomTabProviderConfig>(ConfiguredCustomTabProvider.BUNDLE_ID)
+        val config = intent.getParcelableExtra<WebProviderConfig>(ConfiguredWebProvider.BUNDLE_ID)
         val pkce = getPkceFromIntent(intent)
         val url = config.buildUrl(pkce)
 
@@ -62,16 +62,16 @@ class ReachFiveLoginActivity : Activity() {
         if (Intent.ACTION_VIEW == appLinkAction && appLinkData!= null) {
             // Get the authorization code
             authCode = appLinkData.getQueryParameter("code")
-            newIntent.putExtra(ConfiguredCustomTabProvider.AUTH_CODE, authCode)
+            newIntent.putExtra(ConfiguredWebProvider.AUTH_CODE, authCode)
         }
         else {
-            newIntent?.putExtra(ConfiguredCustomTabProvider.RESULT_INTENT_ERROR, "No authorization core retrieved.")
+            newIntent?.putExtra(ConfiguredWebProvider.RESULT_INTENT_ERROR, "No authorization core retrieved.")
         }
 
         // Put the PKCE in the new intent
         newIntent?.putExtra(PKCE, getPkceFromIntent(intent))
 
-        setResult(ConfiguredCustomTabProvider.REQUEST_CODE, newIntent)
+        setResult(ConfiguredWebProvider.REQUEST_CODE, newIntent)
         finish()
     }
 
