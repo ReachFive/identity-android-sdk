@@ -55,7 +55,7 @@ dependencies {
     implementation project(":sdk-core")
     implementation project(":sdk-facebook")
     implementation project(":sdk-google")
-    implementation project(':sdk-web')
+    implementation project(":sdk-web")
 
     implementation "com.facebook.android:facebook-login:5.0.3"
     implementation "androidx.appcompat:appcompat:1.0.2"

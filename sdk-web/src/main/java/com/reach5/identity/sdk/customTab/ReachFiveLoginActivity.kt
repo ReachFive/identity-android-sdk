@@ -17,38 +17,38 @@ class ReachFiveLoginActivity : Activity() {
 
     private var authCode: String? = null
 
-    private var mCustomTabsServiceConnection: CustomTabsServiceConnection? = null
-    private var mClient: CustomTabsClient? = null
-    private var mCustomTabsSession: CustomTabsSession? = null
+    private var customTabsConnection: CustomTabsServiceConnection? = null
+    private var customTabsClient: CustomTabsClient? = null
+    private var customTabsSession: CustomTabsSession? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mCustomTabsServiceConnection = object : CustomTabsServiceConnection() {
+        customTabsConnection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(
                 componentName: ComponentName,
-                customTabsClient: CustomTabsClient
+                newCustomTabsClient: CustomTabsClient
             ) {
                 //Pre-warming
-                mClient = customTabsClient
-                mClient?.warmup(0L)
-                mCustomTabsSession = mClient?.newSession(object : CustomTabsCallback() {})
+                customTabsClient = newCustomTabsClient
+                customTabsClient?.warmup(0L)
+                customTabsSession = customTabsClient?.newSession(object : CustomTabsCallback() {})
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
-                mClient = null
-                mCustomTabsServiceConnection = null
+                customTabsClient = null
+                customTabsConnection = null
             }
         }
 
-        CustomTabsClient.bindCustomTabsService(this, CUSTOM_TAB_PACKAGE_NAME, mCustomTabsServiceConnection)
+        CustomTabsClient.bindCustomTabsService(this, CUSTOM_TAB_PACKAGE_NAME, customTabsConnection)
 
         val config = intent.getParcelableExtra<CustomTabProviderConfig>(ConfiguredCustomTabProvider.BUNDLE_ID)
         val pkce = getPkceFromIntent(intent)
         val url = config.buildUrl(pkce)
 
         Log.d(TAG, "ReachFiveLoginActivity onCreated launch url : $url")
-        CustomTabsIntent.Builder(mCustomTabsSession)
+        CustomTabsIntent.Builder(customTabsSession)
             .build()
             .launchUrl(this, Uri.parse(url))
     }
@@ -78,12 +78,12 @@ class ReachFiveLoginActivity : Activity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        if (mCustomTabsServiceConnection == null) return
+        if (customTabsConnection == null) return
 
         Log.d(TAG, "ReachFiveLoginActivity onDestroy")
-        this.unbindService(mCustomTabsServiceConnection)
-        mClient = null
-        mCustomTabsSession = null
+        this.unbindService(customTabsConnection)
+        customTabsClient = null
+        customTabsSession = null
     }
 
     private fun getPkceFromIntent(intent: Intent) = intent.getParcelableExtra<Pkce>(PKCE)
