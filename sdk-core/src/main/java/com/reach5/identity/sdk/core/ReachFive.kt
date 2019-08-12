@@ -51,12 +51,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     private fun createProviders(providersConfigsResult: ProvidersConfigsResult): List<Provider> {
-        val customTabProvider = providersCreators.find { it.name == "customtab" }
+        val webProvider = providersCreators.find { it.name == "customtab" }
         return providersConfigsResult.items?.mapNotNull { config ->
             val nativeProvider = providersCreators.find { it.name == config.provider }
             when {
                 nativeProvider != null -> nativeProvider.create(config, sdkConfig, reachFiveApi, activity)
-                customTabProvider != null -> customTabProvider.create(config, sdkConfig, reachFiveApi, activity)
+                webProvider != null -> webProvider.create(config, sdkConfig, reachFiveApi, activity)
                 else -> {
                     Log.w(TAG, "Non supported provider found, please add customtab or native provider")
                     null

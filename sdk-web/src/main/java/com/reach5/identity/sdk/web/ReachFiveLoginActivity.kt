@@ -12,7 +12,7 @@ import com.reach5.identity.sdk.web.ConfiguredWebProvider.Companion.PKCE
 
 
 class ReachFiveLoginActivity : Activity() {
-    private val CUSTOM_TAB_PACKAGE_NAME = "com.reach5.identity.sdk.customtab"
+    private val WEB_PACKAGE_NAME = "com.reach5.identity.sdk.web"
     private val TAG = "Reach5"
 
     private var authCode: String? = null
@@ -41,7 +41,7 @@ class ReachFiveLoginActivity : Activity() {
             }
         }
 
-        CustomTabsClient.bindCustomTabsService(this, CUSTOM_TAB_PACKAGE_NAME, customTabsConnection)
+        CustomTabsClient.bindCustomTabsService(this, WEB_PACKAGE_NAME, customTabsConnection)
 
         val config = intent.getParcelableExtra<WebProviderConfig>(ConfiguredWebProvider.BUNDLE_ID)
         val pkce = getPkceFromIntent(intent)
