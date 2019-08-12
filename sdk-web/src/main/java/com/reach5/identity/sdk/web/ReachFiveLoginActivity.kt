@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.customTab
+package com.reach5.identity.sdk.web
 
 import android.app.Activity
 import android.content.ComponentName
@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.browser.customtabs.*
 import com.reach5.identity.sdk.core.utils.Pkce
-import com.reach5.identity.sdk.customTab.ConfiguredCustomTabProvider.Companion.PKCE
+import com.reach5.identity.sdk.web.ConfiguredCustomTabProvider.Companion.PKCE
 
 
 class ReachFiveLoginActivity : Activity() {

@@ -17,7 +17,7 @@ import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.OpenIdUser;
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest;
 import com.reach5.identity.sdk.google.GoogleProvider;
-import com.reach5.identity.sdk.customTab.CustomTabProvider;
+import com.reach5.identity.sdk.web.CustomTabProvider;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.util.Arrays;

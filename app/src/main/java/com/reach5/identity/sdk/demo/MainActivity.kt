@@ -11,7 +11,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
-import com.reach5.identity.sdk.customTab.CustomTabProvider
+import com.reach5.identity.sdk.web.CustomTabProvider
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import io.github.cdimascio.dotenv.dotenv

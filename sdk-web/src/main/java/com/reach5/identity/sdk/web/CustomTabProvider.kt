@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.customTab
+package com.reach5.identity.sdk.web
 
 import android.app.Activity
 import android.content.Intent
