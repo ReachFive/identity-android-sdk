@@ -79,11 +79,10 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     }
 
     fun logout(
-        redirectTo: String? = null,
         successWithNoContent: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.logout(redirectTo, { successWithNoContent.call(Unit) }, failure::call)
+        return reach5.logout({ successWithNoContent.call(Unit) }, failure::call)
     }
 
     fun getProfile(

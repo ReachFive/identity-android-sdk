@@ -116,16 +116,13 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun logout(
-        redirectTo: String? = null,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         providers.forEach { it.logout() }
 
-        val queries = SdkInfos.getQueries()
-        val options = if (redirectTo != null) queries.plus(Pair("redirect_to", redirectTo)) else queries
         reachFiveApi
-            .logout(options)
+            .logout(SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
     }
 
