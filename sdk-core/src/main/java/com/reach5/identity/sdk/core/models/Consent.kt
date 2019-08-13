@@ -8,6 +8,6 @@ import kotlinx.android.parcel.Parcelize
 data class Consent(
     val granted: Boolean,
     @SerializedName("consent_type")
-    val consentType: Boolean?,
+    val consentType: String?,
     val date: String
 ) : Parcelable
