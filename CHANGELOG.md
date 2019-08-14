@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.1.0 (14/08/2019)
+
+### Fixes
+
+- Fix the sign-up on the demo application.
+- The type of the [`consentType`](https://developer.reach5.co/api/identity-android/#consent) property was changed to `String`.
+
+### Changes
+
+- The `code` parameter was deleted from the [`AuthToken`](https://developer.reach5.co/api/identity-android/#auth-token) model since it was unused.
+- The `redirectUrl` argument was deleted from the [`logout`](https://developer.reach5.co/api/identity-android/#logout) method since it wasn't pertinent for mobile.
+
 ## v5.0.1 (09/08/2019)
 
 ### Fixes
