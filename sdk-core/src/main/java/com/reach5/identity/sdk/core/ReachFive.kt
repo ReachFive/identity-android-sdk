@@ -6,9 +6,12 @@ import android.util.Log
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
-import com.reach5.identity.sdk.core.models.requests.*
-import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
-import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
+import com.reach5.identity.sdk.core.api.requests.*
+import com.reach5.identity.sdk.core.models.UpdatePasswordRequest.Companion.enrichWithClientId
+import com.reach5.identity.sdk.core.models.UpdatePasswordRequest.Companion.getAccessToken
+import com.reach5.identity.sdk.core.api.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.api.responses.ProvidersConfigsResponse
+import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
@@ -44,15 +47,15 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     private fun providersConfigs(success: Success<List<Provider>>, failure: Failure<ReachFiveError>) {
         reachFiveApi
             .providersConfigs(SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
+            .enqueue(ReachFiveApiCallback<ProvidersConfigsResponse>({
                 providers = createProviders(it)
                 success(providers)
             }, failure = failure))
     }
 
-    private fun createProviders(providersConfigsResult: ProvidersConfigsResult): List<Provider> {
+    private fun createProviders(providersConfigsResponse: ProvidersConfigsResponse): List<Provider> {
         val webViewProvider = providersCreators.find { it.name == "webview" }
-        return providersConfigsResult.items?.mapNotNull { config ->
+        return providersConfigsResponse.items?.mapNotNull { config ->
             val nativeProvider = providersCreators.find { it.name == config.provider }
             when {
                 nativeProvider != null -> nativeProvider.create(config, sdkConfig, reachFiveApi, activity)

@@ -3,11 +3,11 @@ package com.reach5.identity.sdk.demo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.reach5.identity.sdk.core.ReachFive
+import com.reach5.identity.sdk.core.SdkConfig
 import com.reach5.identity.sdk.core.models.Profile
+import com.reach5.identity.sdk.core.models.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.models.SdkConfig
-import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
-import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
+import com.reach5.identity.sdk.core.models.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
 import org.junit.Assert.*
 import org.junit.Rule

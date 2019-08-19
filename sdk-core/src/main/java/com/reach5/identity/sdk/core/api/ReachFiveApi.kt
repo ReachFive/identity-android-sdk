@@ -1,17 +1,13 @@
 package com.reach5.identity.sdk.core.api
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.reach5.identity.sdk.core.SdkConfig
 import com.reach5.identity.sdk.core.models.*
-import com.reach5.identity.sdk.core.models.requests.*
-import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.Success
-import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
+import com.reach5.identity.sdk.core.api.requests.*
+import com.reach5.identity.sdk.core.api.responses.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
@@ -22,7 +18,7 @@ interface ReachFiveApi {
     fun clientConfig(@QueryMap options: Map<String, String>): Call<ClientConfigResponse>
 
     @GET("/api/v1/providers")
-    fun providersConfigs(@QueryMap options: Map<String, String>): Call<ProvidersConfigsResult>
+    fun providersConfigs(@QueryMap options: Map<String, String>): Call<ProvidersConfigsResponse>
 
     @POST("/identity/v1/signup-token")
     fun signup(@Body signupRequest: SignupRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
@@ -113,43 +109,4 @@ interface ReachFiveApi {
     }
 }
 
-class ReachFiveApiCallback<T>(
-    val success: Success<T> = { Unit },
-    val successWithNoContent: SuccessWithNoContent<Unit> = { Unit },
-    val failure: Failure<ReachFiveError>
-) : Callback<T> {
-    override fun onFailure(call: Call<T>, t: Throwable) {
-        failure(ReachFiveError.from(t))
-    }
 
-    override fun onResponse(call: Call<T>, response: Response<T>) {
-        val status = response.code()
-        if (response.isSuccessful) {
-            val body = response.body()
-            if (body != null) success(body)
-            else successWithNoContent(Unit)
-        } else if (status in 300..400) {
-            failure(ReachFiveError(
-                message = "Bad Request",
-                data = tryOrNull { parseErrorBody(response) }
-            ))
-        } else if (status in 400..600) {
-            failure(ReachFiveError(
-                message = "Technical Error",
-                data = tryOrNull { parseErrorBody(response) }
-            ))
-        }
-    }
-
-    private fun <T> tryOrNull(callback: () -> T): T? {
-        return try {
-            callback()
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    private fun <T> parseErrorBody(response: Response<T>): ReachFiveApiError {
-        return Gson().fromJson(response.errorBody()?.string(), ReachFiveApiError::class.java)
-    }
-}

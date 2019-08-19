@@ -1,23 +1,14 @@
-package com.reach5.identity.sdk.core.models
+package com.reach5.identity.sdk.core.api.responses
 
 import android.os.Parcelable
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.map
 import com.google.gson.annotations.SerializedName
+import com.reach5.identity.sdk.core.models.AuthToken
+import com.reach5.identity.sdk.core.models.OpenIdUser
+import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.utils.Jwt
 import kotlinx.android.parcel.Parcelize
-
-@Parcelize
-data class AuthToken(
-    // If the `openid` scope is not provided, the `idToken` is not returned
-    val idToken: String? = null,
-    val accessToken: String,
-    val refreshToken: String?,
-    val tokenType: String?,
-    val expiresIn: Int?,
-    // The `user` field is optional because if the `openid` scope is not provided, the `user` is not retrieved
-    val user: OpenIdUser? = null
-) : Parcelable
 
 @Parcelize
 data class AuthTokenResponse(

@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import com.reach5.identity.sdk.core.Provider
 import com.reach5.identity.sdk.core.ProviderCreator
+import com.reach5.identity.sdk.core.SdkConfig
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
-import com.reach5.identity.sdk.core.models.requests.AuthCodeRequest
+import com.reach5.identity.sdk.core.api.requests.AuthCodeRequest
+import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success

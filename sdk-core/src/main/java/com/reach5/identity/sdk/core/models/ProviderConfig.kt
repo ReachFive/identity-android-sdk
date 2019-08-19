@@ -10,9 +10,3 @@ data class ProviderConfig(
     val clientSecret: String?,
     val scope: Set<String> = emptySet()
 ) : Parcelable
-
-@Parcelize
-data class ProvidersConfigsResult(
-    val items: Array<ProviderConfig>?,
-    val status: String
-) : Parcelable
