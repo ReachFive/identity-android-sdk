@@ -5,15 +5,14 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AuthCodeRequest(
+data class RefreshRequest(
     @SerializedName("client_id")
     val clientId: String,
-    val code: String,
+    @SerializedName("refresh_token")
+    val refreshToken: String,
     @SerializedName("redirect_uri")
-    val redirectUri: String,
-    @SerializedName("code_verifier")
-    val codeVerifier: String
+    val redirectUri: String
 ) : Parcelable {
     @SerializedName("grant_type")
-    val grantType: String = "authorization_code"
+    val grantType: String = "refresh_token"
 }
