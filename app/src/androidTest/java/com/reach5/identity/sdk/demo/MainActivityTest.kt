@@ -744,6 +744,32 @@ class MainActivityTest {
         )
     }
 
+    @Test
+    fun testSuccessfulRefresh() = clientTest { client ->
+        val profile = aProfile()
+
+        client.signup(
+            profile,
+            scope = email + offline,
+            success = { authToken ->
+                assertNotNull(authToken.refreshToken)
+
+                // wait 1 second to avoid regenerating the same access token
+                Thread.sleep(1000)
+
+                client.refreshAccessToken(
+                    refreshToken = authToken.refreshToken!!,
+                    success = { newAuthToken ->
+                        assertNotNull(newAuthToken.refreshToken)
+                        assertNotEquals("Server should have generated a new access token", authToken.accessToken, newAuthToken.accessToken)
+                    },
+                    failure = { failWithReachFiveError(it) }
+                )
+            },
+            failure = { failWithReachFiveError(it) }
+        )
+    }
+
     private fun clientTest(
         initialize: Boolean = true,
         sdkConfig: SdkConfig = defaultSdkConfig,
@@ -769,6 +795,7 @@ class MainActivityTest {
     private val email = setOf("email")
     private val profile = setOf("profile")
     private val phone = setOf("phone")
+    private val offline = setOf("offline_access")
 
     private fun aProfile() =
         ProfileSignupRequest(

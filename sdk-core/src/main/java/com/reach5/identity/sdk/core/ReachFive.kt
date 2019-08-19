@@ -126,6 +126,22 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
             .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
     }
 
+    fun refreshAccessToken(
+        refreshToken: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val refreshRequest = RefreshRequest(
+            clientId  = sdkConfig.clientId,
+            refreshToken = refreshToken,
+            redirectUri = SdkConfig.REDIRECT_URI
+        )
+
+        reachFiveApi
+            .refreshAccessToken(refreshRequest, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+    }
+
     fun getProfile(
         authToken: AuthToken,
         success: Success<Profile>,

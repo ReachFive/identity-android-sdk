@@ -57,7 +57,6 @@ dependencies {
     implementation project(":sdk-google")
     implementation project(":sdk-webview")
 
-    implementation "com.google.firebase:firebase-core:16.0.9"
     implementation "com.facebook.android:facebook-login:5.0.3"
     implementation "androidx.appcompat:appcompat:1.0.2"
     implementation "androidx.cardview:cardview:1.0.0"
@@ -66,8 +65,8 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
-    androidTestImplementation 'androidx.test:core-ktx:1.2.0'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation "androidx.test:core-ktx:1.2.0"
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test:rules:1.2.0"
     androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
 }

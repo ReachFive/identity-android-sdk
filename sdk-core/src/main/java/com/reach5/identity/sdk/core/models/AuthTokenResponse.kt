@@ -12,6 +12,7 @@ data class AuthToken(
     // If the `openid` scope is not provided, the `idToken` is not returned
     val idToken: String? = null,
     val accessToken: String,
+    val refreshToken: String?,
     val tokenType: String?,
     val expiresIn: Int?,
     // The `user` field is optional because if the `openid` scope is not provided, the `user` is not retrieved
@@ -25,6 +26,9 @@ data class AuthTokenResponse(
 
     @SerializedName("access_token")
     val accessToken: String? = null,
+
+    @SerializedName("refresh_token")
+    val refreshToken: String? = null,
 
     @SerializedName("token_type")
     val tokenType: String? = null,
@@ -45,6 +49,7 @@ data class AuthTokenResponse(
                     AuthToken(
                         idToken = idToken,
                         accessToken = accessToken,
+                        refreshToken = refreshToken,
                         tokenType = tokenType,
                         expiresIn = expiresIn,
                         user = it
@@ -54,6 +59,7 @@ data class AuthTokenResponse(
                 Result.of {
                     AuthToken(
                         accessToken = accessToken,
+                        refreshToken = refreshToken,
                         tokenType = tokenType,
                         expiresIn = expiresIn
                     )
