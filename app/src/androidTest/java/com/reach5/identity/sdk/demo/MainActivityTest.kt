@@ -758,7 +758,7 @@ class MainActivityTest {
                 Thread.sleep(1000)
 
                 client.refreshAccessToken(
-                    refreshToken = authToken.refreshToken!!,
+                    authToken = authToken,
                     success = { newAuthToken ->
                         assertNotNull(newAuthToken.refreshToken)
                         assertNotEquals("Server should have generated a new access token", authToken.accessToken, newAuthToken.accessToken)

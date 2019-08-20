@@ -127,13 +127,13 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun refreshAccessToken(
-        refreshToken: String,
+        authToken: AuthToken,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val refreshRequest = RefreshRequest(
             clientId  = sdkConfig.clientId,
-            refreshToken = refreshToken,
+            refreshToken = authToken.refreshToken ?: "",
             redirectUri = SdkConfig.REDIRECT_URI
         )
 
