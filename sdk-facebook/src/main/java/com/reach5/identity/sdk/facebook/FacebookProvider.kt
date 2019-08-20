@@ -13,9 +13,11 @@ import com.reach5.identity.sdk.core.ProviderCreator
 import com.reach5.identity.sdk.core.SdkConfig
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
-import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.api.requests.LoginProviderRequest
+import com.reach5.identity.sdk.core.models.AuthToken
+import com.reach5.identity.sdk.core.models.ProviderConfig
 import com.reach5.identity.sdk.core.models.ReachFiveError
+import com.reach5.identity.sdk.core.models.SdkInfos
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
 

@@ -8,8 +8,8 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.SdkConfig
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.ProfileSignupRequest
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             WebViewProvider()
         )
 
-        this.reach5 = ReachFive(
+        reach5 = ReachFive(
             sdkConfig = sdkConfig,
             providersCreators = providersCreators,
             activity = this

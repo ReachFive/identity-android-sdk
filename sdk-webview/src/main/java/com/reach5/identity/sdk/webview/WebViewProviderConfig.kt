@@ -2,8 +2,8 @@ package com.reach5.identity.sdk.webview
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.reach5.identity.sdk.core.models.ProviderConfig
 import com.reach5.identity.sdk.core.SdkConfig
+import com.reach5.identity.sdk.core.models.ProviderConfig
 import com.reach5.identity.sdk.core.models.SdkInfos
 import com.reach5.identity.sdk.core.utils.Pkce
 import java.net.URLEncoder

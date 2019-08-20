@@ -2,9 +2,13 @@ package com.reach5.identity.sdk.core.api
 
 import com.google.gson.GsonBuilder
 import com.reach5.identity.sdk.core.SdkConfig
-import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.api.requests.*
-import com.reach5.identity.sdk.core.api.responses.*
+import com.reach5.identity.sdk.core.api.responses.AuthTokenResponse
+import com.reach5.identity.sdk.core.api.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.api.responses.ProvidersConfigsResponse
+import com.reach5.identity.sdk.core.models.Profile
+import com.reach5.identity.sdk.core.models.UpdatePasswordRequest
+import com.reach5.identity.sdk.core.models.UpdatePasswordRequestSerializer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
