@@ -6,8 +6,6 @@ import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import com.reach5.identity.sdk.core.utils.Callback
-import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 
 class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
     private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
@@ -161,6 +159,18 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
             redirectUrl,
             phoneNumber,
             { successWithNoContent.call(Unit) },
+            failure::call
+        )
+    }
+
+    fun refreshAccessToken(
+        authToken: AuthToken,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.refreshAccessToken(
+            authToken,
+            success::call,
             failure::call
         )
     }

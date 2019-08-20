@@ -21,7 +21,7 @@ import kotlin.random.Random
  * These tests use an account with:
  * - the SMS feature enabled
  * - the country set to "France"
- * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile']
+ * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile', 'offline_access"]
  */
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -758,7 +758,7 @@ class MainActivityTest {
                 Thread.sleep(1000)
 
                 client.refreshAccessToken(
-                    refreshToken = authToken.refreshToken!!,
+                    authToken = authToken,
                     success = { newAuthToken ->
                         assertNotNull(newAuthToken.refreshToken)
                         assertNotEquals("Server should have generated a new access token", authToken.accessToken, newAuthToken.accessToken)
