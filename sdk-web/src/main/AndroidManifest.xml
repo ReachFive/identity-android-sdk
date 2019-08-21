@@ -4,8 +4,8 @@
 
     <application>
         <activity
-                android:name="com.reach5.identity.sdk.web.ReachFiveLoginActivity"
-                android:launchMode="singleTask">
+                android:name=".LoginActivity"
+                android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 

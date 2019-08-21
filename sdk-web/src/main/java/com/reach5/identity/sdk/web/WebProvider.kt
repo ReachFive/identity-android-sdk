@@ -13,6 +13,8 @@ import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success
 
+const val LOG_TAG = "ReachFive"
+
 class WebProvider : ProviderCreator {
     override val name: String = "customtab"
 
@@ -51,7 +53,7 @@ class ConfiguredWebProvider(
     }
 
     override fun login(origin: String, activity: Activity) {
-        val intent = Intent(activity, ReachFiveLoginActivity::class.java)
+        val intent = Intent(activity, LoginActivity::class.java)
 
         intent.putExtra(
             CONFIG_KEY, WebProviderConfig(
@@ -61,6 +63,7 @@ class ConfiguredWebProvider(
             )
         )
         intent.putExtra(PKCE_KEY, Pkce.generate())
+
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -94,14 +97,14 @@ class ConfiguredWebProvider(
                         )
                 }
                 ABORT_CODE -> {
-                    Log.d("ReachFive", "The custom tab has been closed.")
+                    Log.d(LOG_TAG, "The custom tab has been closed.")
                     Unit
                 }
                 NO_AUTH_ERROR_CODE -> {
                     failure(ReachFiveError.from("No authorization code found in activity result."))
                 }
                 else -> {
-                    Log.e("ReachFive", "Unexpected event.")
+                    Log.e(LOG_TAG, "Unexpected event.")
                     Unit
                 }
             }

@@ -8,10 +8,13 @@ import android.util.Log
 import androidx.browser.customtabs.*
 import com.reach5.identity.sdk.core.utils.Pkce
 
-const val LOG_TAG = "ReachFive"
-const val REQUEST_CODE = 100
+class LoginActivity : Activity() {
 
-class ReachFiveLoginActivity : Activity() {
+    companion object {
+        const val REQUEST_CODE = 100
+    }
+
+    private var hasResult: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,15 +31,16 @@ class ReachFiveLoginActivity : Activity() {
         startActivityForResult(customTabsIntent, REQUEST_CODE)
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        val newResultCode = when (requestCode) {
-//            REQUEST_CODE -> ConfiguredWebProvider.ABORT_CODE
-//            else -> ConfiguredWebProvider.UNEXPECTED_ERROR_CODE
-//        }
-//
-//        setResult(newResultCode, intent)
-//        finish()
-//    }
+    override fun onResume() {
+        super.onResume()
+
+        if (hasResult) {
+            setResult(ConfiguredWebProvider.ABORT_CODE, intent)
+            finish()
+        } else {
+            hasResult = true
+        }
+    }
 
     override fun onNewIntent(newIntent: Intent) {
         val data = newIntent.data
