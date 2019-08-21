@@ -1,91 +1,61 @@
 package com.reach5.identity.sdk.web
 
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.browser.customtabs.*
 import com.reach5.identity.sdk.core.utils.Pkce
-import com.reach5.identity.sdk.web.ConfiguredWebProvider.Companion.PKCE
 
+const val LOG_TAG = "ReachFive"
+const val REQUEST_CODE = 100
 
 class ReachFiveLoginActivity : Activity() {
-    private val WEB_PACKAGE_NAME = "com.reach5.identity.sdk.web"
-    private val TAG = "Reach5"
-
-    private var authCode: String? = null
-
-    private var customTabsConnection: CustomTabsServiceConnection? = null
-    private var customTabsClient: CustomTabsClient? = null
-    private var customTabsSession: CustomTabsSession? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        customTabsConnection = object : CustomTabsServiceConnection() {
-            override fun onCustomTabsServiceConnected(
-                componentName: ComponentName,
-                newCustomTabsClient: CustomTabsClient
-            ) {
-                //Pre-warming
-                customTabsClient = newCustomTabsClient
-                customTabsClient?.warmup(0L)
-                customTabsSession = customTabsClient?.newSession(object : CustomTabsCallback() {})
-            }
-
-            override fun onServiceDisconnected(name: ComponentName) {
-                customTabsClient = null
-                customTabsConnection = null
-            }
-        }
-
-        CustomTabsClient.bindCustomTabsService(this, WEB_PACKAGE_NAME, customTabsConnection)
-
-        val config = intent.getParcelableExtra<WebProviderConfig>(ConfiguredWebProvider.BUNDLE_ID)
-        val pkce = getPkceFromIntent(intent)
+        val config = intent.getParcelableExtra<WebProviderConfig>(ConfiguredWebProvider.CONFIG_KEY)
+        val pkce = intent.getParcelableExtra<Pkce>(ConfiguredWebProvider.PKCE_KEY)
         val url = config.buildUrl(pkce)
 
-        Log.d(TAG, "ReachFiveLoginActivity onCreated launch url : $url")
-        CustomTabsIntent.Builder(customTabsSession)
-            .build()
-            .launchUrl(this, Uri.parse(url))
+        Log.d(LOG_TAG, "ReachFiveLoginActivity onCreated launch url : $url")
+
+        val customTabsIntent = CustomTabsIntent.Builder().build().intent
+
+        customTabsIntent.data = Uri.parse(url)
+        startActivityForResult(customTabsIntent, REQUEST_CODE)
     }
 
-    override fun onNewIntent(newIntent: Intent?) {
-        super.onNewIntent(newIntent)
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        val newResultCode = when (requestCode) {
+//            REQUEST_CODE -> ConfiguredWebProvider.ABORT_CODE
+//            else -> ConfiguredWebProvider.UNEXPECTED_ERROR_CODE
+//        }
+//
+//        setResult(newResultCode, intent)
+//        finish()
+//    }
 
-        val appLinkAction = newIntent?.action
-        val appLinkData: Uri? = newIntent?.data
+    override fun onNewIntent(newIntent: Intent) {
+        val data = newIntent.data
 
-        if (Intent.ACTION_VIEW == appLinkAction && appLinkData!= null) {
-            // Get the authorization code
-            authCode = appLinkData.getQueryParameter("code")
-            newIntent.putExtra(ConfiguredWebProvider.AUTH_CODE, authCode)
+        val newResultCode = if (newIntent.action != Intent.ACTION_VIEW || data == null) {
+            ConfiguredWebProvider.UNEXPECTED_ERROR_CODE
+        } else {
+            val authCode = data.getQueryParameter("code")
+
+            if (authCode == null) {
+                ConfiguredWebProvider.NO_AUTH_ERROR_CODE
+            } else {
+                intent.putExtra(ConfiguredWebProvider.AUTH_CODE_KEY, authCode)
+                ConfiguredWebProvider.SUCCESS_CODE
+            }
         }
-        else {
-            newIntent?.putExtra(ConfiguredWebProvider.RESULT_INTENT_ERROR, "No authorization core retrieved.")
-        }
 
-        // Put the PKCE in the new intent
-        newIntent?.putExtra(PKCE, getPkceFromIntent(intent))
-
-        setResult(ConfiguredWebProvider.REQUEST_CODE, newIntent)
+        setResult(newResultCode, intent)
         finish()
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        if (customTabsConnection == null) return
-
-        Log.d(TAG, "ReachFiveLoginActivity onDestroy")
-        this.unbindService(customTabsConnection)
-        customTabsClient = null
-        customTabsSession = null
-    }
-
-    private fun getPkceFromIntent(intent: Intent) = intent.getParcelableExtra<Pkce>(PKCE)
 
 }
