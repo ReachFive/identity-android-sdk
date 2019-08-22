@@ -841,7 +841,6 @@ class MainActivityTest {
                     GlobalScope.launch(
                         CoroutineExceptionHandler { _, exception ->
                             continuation.resumeWithException(exception)
-                            //                    fail(exception.message)
                         }
                     ) {
                         ReachFive(
