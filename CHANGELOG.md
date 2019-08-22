@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.2.0 (22/08/2019)
+
+### Features
+
+A new method [`refreshAccessToken`](https://developer.reach5.co/api/identity-android/#refresh-access-token) was implemented to refresh a profile's access token.
+
 ## v5.1.0 (14/08/2019)
 
 ### Fixes
@@ -66,7 +72,7 @@ Note that `ProfileSignupRequest` contains the same attributes as `Profile` plus 
 ### Features
 
 - All the SDK core models are now serialized for an Android implementation.
-- The authorization flow with code and the PKCE are implemented for a login with the `WebViewProvider`.
+- The authorization flow with code and the PKCE are implemented for login with the `WebViewProvider`.
 
 ## v4.1.0 (12/07/2019)
 
