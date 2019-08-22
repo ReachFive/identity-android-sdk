@@ -7,12 +7,18 @@ import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
-import org.junit.Assert.*
+import kotlinx.coroutines.*
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import java.util.UUID
+import java.util.*
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlin.random.Random
 
 /**
@@ -22,6 +28,7 @@ import kotlin.random.Random
  * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile', 'offline_access', 'address']
  */
 @RunWith(AndroidJUnit4::class)
+//@RunWith(AndroidJUnit4ClassRunner::class) remove
 class MainActivityTest {
     private val dotenv = dotenv {
         directory = "/assets"
@@ -801,25 +808,44 @@ class MainActivityTest {
         )
     }
 
+    @Test
+    fun test() = clientTest(false) { client, continuation ->
+
+        try {
+            assert(false)
+        } catch (e: AssertionError) {
+            continuation.resumeWithException(e)
+        }
+        continuation.resume(Unit)
+    }
+
     private fun clientTest(
         initialize: Boolean = true,
         sdkConfig: SdkConfig = defaultSdkConfig,
-        block: (ReachFive) -> Unit
-    ) {
-        ReachFive(
-            activity = activityRule.activity,
-            sdkConfig = sdkConfig,
-            providersCreators = listOf()
-        ).also { client ->
-            if (initialize) client.initialize(
-                success = { block(client) },
-                failure = { failWithReachFiveError(it) }
-            )
-            else block(client)
+        block: (ReachFive, Continuation<Unit>) -> Unit
+    ) =
+        runBlocking {
+            suspendCoroutine<Unit> { continuation ->
+                ReachFive(
+                    activity = activityRule.activity,
+                    sdkConfig = sdkConfig,
+                    providersCreators = listOf()
+                ).also { client ->
+                    if (initialize) client.initialize(
+                        success = { block(client, continuation) },
+                        failure = { error ->
+                            continuation.resumeWithException(error)
+                        }
+//                    failure = defaultFailWithReachFiveError
+                    )
+                    else block(client, continuation)
+                }
+
+                Unit
+            }
         }
 
-        Unit
-    }
+    private val defaultFailWithReachFiveError : (error: ReachFiveError) -> Unit = { failWithReachFiveError(it) }
 
     private val fullWrite = setOf("full_write")
     private val openId = setOf("openid")
