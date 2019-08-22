@@ -73,11 +73,9 @@ class MainActivityTest {
                     .signup(
                         profile,
                         success = { fail("This test should have failed because the email is now already used.") },
-                        failure = { emailAlreadyExists ->
-                            assertEquals(
-                                "Bad Request",
-                                emailAlreadyExists.message
-                            )
+                        failure = { error ->
+                            assertEquals("email_already_exists", error.data?.error)
+                            assertEquals("Email already in use", error.data?.errorDescription)
                         }
                     )
             },
@@ -113,7 +111,6 @@ class MainActivityTest {
                     scope = openId,
                     success = { fail("This test should have failed because the email should be already used.") },
                     failure = { error ->
-                        assertEquals("Bad Request", error.message)
                         assertEquals("email_already_exists", error.data?.error)
                         assertEquals("Email already in use", error.data?.errorDescription)
                     }
@@ -132,7 +129,6 @@ class MainActivityTest {
             scope = openId,
             success = { fail("This test should have failed because the email is empty.") },
             failure = { error ->
-                assertEquals("Bad Request", error.message)
                 assertEquals("invalid_request", error.data?.error)
                 assertEquals("Validation failed", error.data?.errorDescription)
                 assertEquals("data.email", error.data?.errorDetails?.get(0)?.field)
@@ -175,7 +171,6 @@ class MainActivityTest {
             scope = openId,
             success = { fail("This test should have failed because the password is too weak.") },
             failure = { error ->
-                assertEquals("Bad Request", error.message)
                 assertEquals("Validation failed", error.data?.errorDescription)
                 assertEquals("Password too weak", error.data?.errorDetails?.get(0)?.message)
             }
@@ -230,7 +225,6 @@ class MainActivityTest {
             scope = openId,
             success = { fail("This test should have failed because the profile is not registered.") },
             failure = { error ->
-                assertEquals("Bad Request", error.message)
                 assertEquals("invalid_grant", error.data?.error)
                 assertEquals("Invalid email or password", error.data?.errorDescription)
             }
@@ -251,7 +245,6 @@ class MainActivityTest {
                     scope = openId,
                     success = { fail("This test should have failed because the password is incorrect.") },
                     failure = { error ->
-                        assertEquals("Bad Request", error.message)
                         assertEquals("invalid_grant", error.data?.error)
                         assertEquals("Invalid phone number or password", error.data?.errorDescription)
                     }
@@ -326,7 +319,6 @@ class MainActivityTest {
                     incorrectVerificationCode,
                     { fail("This test should have failed because the verification code is incorrect.") },
                     { error ->
-                        assertEquals("Technical Error", error.message)
                         assertEquals("invalid_grant", error.data?.error)
                         assertEquals("Invalid verification code", error.data?.errorDescription)
                     }
@@ -374,7 +366,6 @@ class MainActivityTest {
                     profile.email!!,
                     success = { fail("This test should have failed because the email has not changed.") },
                     failure = { error ->
-                        assertEquals("Bad Request", error.message)
                         assertEquals("email_already_exists", error.data?.error)
                         assertEquals("Email already in use", error.data?.errorDescription)
                     }
@@ -398,8 +389,7 @@ class MainActivityTest {
                     newEmail,
                     success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
                     failure = { error ->
-                        assertEquals(error.message, "Technical Error")
-                        assertEquals(error.data?.error, "insufficient_scope")
+                        assertEquals("insufficient_scope", error.data?.error)
                         assertEquals(
                             "The token does not contain the required scope: full_write",
                             error.data?.errorDescription
@@ -472,7 +462,6 @@ class MainActivityTest {
                     newNumber,
                     success = { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
                     failure = { error ->
-                        assertEquals("Technical Error", error.message)
                         assertEquals("insufficient_scope", error.data?.error)
                         assertEquals(
                             "The token does not contain the required scope: full_write",
@@ -528,7 +517,6 @@ class MainActivityTest {
                         Profile(givenName = "Peter"),
                         { fail(TEST_SHOULD_FAIL_SCOPE_MISSING) },
                         { error ->
-                            assertEquals("Technical Error", error.message)
                             assertEquals("insufficient_scope", error.data?.error)
                             assertEquals(
                                 "The token does not contain the required scope: full_write",
@@ -608,8 +596,7 @@ class MainActivityTest {
                     UpdatePasswordRequest.AccessTokenParams(authToken, profile.password, profile.password),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
                     failure = { error ->
-                        assertEquals(error.message, "Bad Request")
-                        assertEquals(error.data?.error, "invalid_request")
+                        assertEquals("invalid_request", error.data?.error)
                         assertEquals(
                             "New password should be different from the old password",
                             error.data?.errorDescription
@@ -636,7 +623,6 @@ class MainActivityTest {
                     UpdatePasswordRequest.EmailParams(profile.email!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
-                        assertEquals("Technical Error", error.message)
                         assertEquals("invalid_grant", error.data?.error)
                         assertEquals("Invalid verification code", error.data?.errorDescription)
                     }
@@ -660,7 +646,6 @@ class MainActivityTest {
                     UpdatePasswordRequest.SmsParams(profile.phoneNumber!!, incorrectVerificationCode, "NEW-PASSWORD"),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
-                        assertEquals("Technical Error", error.message)
                         assertEquals("invalid_grant", error.data?.error)
                         assertEquals("Invalid verification code", error.data?.errorDescription)
                     }
@@ -722,7 +707,6 @@ class MainActivityTest {
                     phoneNumber = null,
                     successWithNoContent = { fail("This test should have failed because neither the email or the phone number were provided.") },
                     failure = { error ->
-                        assertEquals("Technical Error", error.message)
                         assertEquals("invalid_grant", error.data?.error)
                         assertEquals("Invalid credentials", error.data?.errorDescription)
                     }
