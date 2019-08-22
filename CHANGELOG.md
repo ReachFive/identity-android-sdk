@@ -1,5 +1,13 @@
 # Changelog
 
+## v5.3.0 (22/08/2019)
+
+### Features
+
+The ReachFive error models were improved:
+- the `code` attribute was added to the [`ReachFiveError`](https://developer.reach5.co/api/identity-android/#reach5-error) model to specify the HTTP code response.
+- the `errorId` and the `errorUserMsg` attributes were added to the [`ReachFiveApiError`](https://developer.reach5.co/api/identity-android/#reach5-api-error) model to specify the identifier and the user-friendly message of the error.
+
 ## v5.2.0 (22/08/2019)
 
 ### Features
