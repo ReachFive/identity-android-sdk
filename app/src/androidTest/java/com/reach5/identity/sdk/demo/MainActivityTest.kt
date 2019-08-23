@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.Profile
+import com.reach5.identity.sdk.core.models.ProfileAddress
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
@@ -21,7 +22,7 @@ import kotlin.random.Random
  * These tests use an account with:
  * - the SMS feature enabled
  * - the country set to "France"
- * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile', 'offline_access"]
+ * - the following ENFORCED scope: ['email', 'full_write', 'openid', 'phone', 'profile', 'offline_access', 'address']
  */
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -157,6 +158,55 @@ class MainActivityTest {
             profile,
             scope = openId,
             success = { authToken -> assertNotNull(authToken) },
+            failure = { failWithReachFiveError(it) }
+        )
+    }
+
+    @Test
+    fun testSuccessfulSignupWithAddress() = clientTest { client ->
+        val addresses = listOf(
+            ProfileAddress(title = "Home", isDefault = true, addressType = null, streetAddress = null, locality = null,
+                region = null, postalCode = null, country = null, raw = null, deliveryNote = null, recipient = null, company = null,
+                phoneNumber = null),
+            ProfileAddress(title = "Work", isDefault = false, addressType = null, streetAddress = null, locality = null,
+                region = null, postalCode = null, country = null, raw = null, deliveryNote = null, recipient = null, company = null,
+                phoneNumber = null)
+        )
+        val theProfile = aProfile().copy(givenName = "Titti", addresses = addresses)
+        val scope = openId + email + profile + address
+
+        client.signup(
+            theProfile,
+            scope = scope,
+            success = { authToken ->
+                assertNotNull(authToken)
+
+                client.getProfile(
+                    authToken,
+                    success = {
+                        val addressesIterator = addresses.listIterator()
+                        for ((index, _) in addressesIterator.withIndex()) {
+                            val expectedAddress = addresses[index]
+                            val actualAddress = it.addresses?.get(index)
+
+                            assertEquals(expectedAddress.title, actualAddress?.title)
+                            assertEquals(expectedAddress.isDefault, actualAddress?.isDefault)
+                            assertEquals(expectedAddress.addressType, actualAddress?.addressType)
+                            assertEquals(expectedAddress.streetAddress, actualAddress?.streetAddress)
+                            assertEquals(expectedAddress.locality, actualAddress?.locality)
+                            assertEquals(expectedAddress.region, actualAddress?.region)
+                            assertEquals(expectedAddress.postalCode, actualAddress?.postalCode)
+                            assertEquals(expectedAddress.country, actualAddress?.country)
+                            assertEquals(expectedAddress.raw, actualAddress?.raw)
+                            assertEquals(expectedAddress.deliveryNote, actualAddress?.deliveryNote)
+                            assertEquals(expectedAddress.recipient, actualAddress?.recipient)
+                            assertEquals(expectedAddress.company, actualAddress?.company)
+                            assertEquals(expectedAddress.phoneNumber, actualAddress?.phoneNumber)
+                        }
+                    },
+                    failure = { failWithReachFiveError(it) }
+                )
+            },
             failure = { failWithReachFiveError(it) }
         )
     }
@@ -778,6 +828,7 @@ class MainActivityTest {
     private val openId = setOf("openid")
     private val email = setOf("email")
     private val profile = setOf("profile")
+    private val address = setOf("address")
     private val phone = setOf("phone")
     private val offline = setOf("offline_access")
 

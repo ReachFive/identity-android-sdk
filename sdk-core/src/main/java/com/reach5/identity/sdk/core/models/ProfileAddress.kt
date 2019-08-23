@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class ProfileAddress(
     val title: String?,
-    @SerializedName("is_default")
+    @SerializedName("default")
     val isDefault: Boolean?,
     @SerializedName("address_type")
     val addressType: String?,
