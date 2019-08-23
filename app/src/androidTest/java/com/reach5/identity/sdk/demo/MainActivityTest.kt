@@ -3,10 +3,7 @@ package com.reach5.identity.sdk.demo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.models.Profile
-import com.reach5.identity.sdk.core.models.ProfileAddress
-import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import io.github.cdimascio.dotenv.dotenv
@@ -165,7 +162,7 @@ class MainActivityTest {
     @Test
     fun testSuccessfulSignupWithAddress() = clientTest { client ->
         val addresses = listOf(
-            ProfileAddress(title = "Home", isDefault = true),
+            ProfileAddress(title = "Home", isDefault = true, addressType = ProfileAddressType.billing),
             ProfileAddress(title = "Work", isDefault = false)
         )
         val theProfile = aProfile().copy(addresses = addresses)
@@ -791,7 +788,11 @@ class MainActivityTest {
                     authToken = authToken,
                     success = { newAuthToken ->
                         assertNotNull(newAuthToken.refreshToken)
-                        assertNotEquals("Server should have generated a new access token", authToken.accessToken, newAuthToken.accessToken)
+                        assertNotEquals(
+                            "Server should have generated a new access token",
+                            authToken.accessToken,
+                            newAuthToken.accessToken
+                        )
                     },
                     failure = { failWithReachFiveError(it) }
                 )

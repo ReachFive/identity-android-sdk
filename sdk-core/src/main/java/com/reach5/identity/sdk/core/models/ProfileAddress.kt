@@ -4,13 +4,17 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+enum class ProfileAddressType {
+    billing, delivery
+}
+
 @Parcelize
 data class ProfileAddress(
     val title: String? = null,
     @SerializedName("default")
     val isDefault: Boolean?,
     @SerializedName("address_type")
-    val addressType: String? = null,
+    val addressType: ProfileAddressType? = null,
     @SerializedName("street_address")
     val streetAddress: String? = null,
     val locality: String? = null,
