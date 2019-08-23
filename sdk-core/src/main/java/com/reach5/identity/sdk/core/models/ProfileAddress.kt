@@ -6,23 +6,23 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ProfileAddress(
-    val title: String?,
+    val title: String? = null,
     @SerializedName("default")
     val isDefault: Boolean?,
     @SerializedName("address_type")
-    val addressType: String?,
+    val addressType: String? = null,
     @SerializedName("street_address")
-    val streetAddress: String?,
-    val locality: String?,
-    val region: String?,
+    val streetAddress: String? = null,
+    val locality: String? = null,
+    val region: String? = null,
     @SerializedName("postal_code")
-    val postalCode: String?,
-    val country: String?,
-    val raw: String?,
+    val postalCode: String? = null,
+    val country: String? = null,
+    val raw: String? = null,
     @SerializedName("delivery_note")
-    val deliveryNote: String?,
-    val recipient: String?,
-    val company: String?,
+    val deliveryNote: String? = null,
+    val recipient: String? = null,
+    val company: String? = null,
     @SerializedName("phone_number")
-    val phoneNumber: String?
+    val phoneNumber: String? = null
 ) : Parcelable

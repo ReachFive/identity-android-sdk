@@ -165,14 +165,10 @@ class MainActivityTest {
     @Test
     fun testSuccessfulSignupWithAddress() = clientTest { client ->
         val addresses = listOf(
-            ProfileAddress(title = "Home", isDefault = true, addressType = null, streetAddress = null, locality = null,
-                region = null, postalCode = null, country = null, raw = null, deliveryNote = null, recipient = null, company = null,
-                phoneNumber = null),
-            ProfileAddress(title = "Work", isDefault = false, addressType = null, streetAddress = null, locality = null,
-                region = null, postalCode = null, country = null, raw = null, deliveryNote = null, recipient = null, company = null,
-                phoneNumber = null)
+            ProfileAddress(title = "Home", isDefault = true),
+            ProfileAddress(title = "Work", isDefault = false)
         )
-        val theProfile = aProfile().copy(givenName = "Titti", addresses = addresses)
+        val theProfile = aProfile().copy(addresses = addresses)
         val scope = openId + email + profile + address
 
         client.signup(
