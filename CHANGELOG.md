@@ -1,5 +1,13 @@
 # Changelog
 
+## v5.3.1 (23/08/2019)
+
+### Fixes
+
+- The `ProfileAddress` model's `isDefault` attribute is now correctly serialized.
+- All the string attributes of the `ProfileAddress` model are now null by default.
+- The `addressType` attribute of the `ProfileAddress` model is no longer a `String` but a `ProfileAddressType`.
+
 ## v5.3.0 (22/08/2019)
 
 ### Features
