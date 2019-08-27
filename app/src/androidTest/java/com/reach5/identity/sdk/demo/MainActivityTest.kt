@@ -836,7 +836,7 @@ class MainActivityTest {
         runBlocking {
             withTimeout(10000) {
                 suspendCancellableCoroutine<Unit> { continuation ->
-                    val successLatch: () -> Unit = { -> continuation.resume(Unit) }
+                    val successLatch: () -> Unit = { continuation.resume(Unit) }
 
                     GlobalScope.launch(
                         CoroutineExceptionHandler { _, exception ->
