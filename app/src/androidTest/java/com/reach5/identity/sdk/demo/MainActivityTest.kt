@@ -61,7 +61,7 @@ class MainActivityTest {
         // given an uninitialized client
         client.signup(
             profile,
-            /*scope = setOf("openid"),*/ // WHEN INITIALIZED: becomes setOf('email', 'full_write', 'openid', 'phone', 'profile')
+            /*scope = setOf("openid"),*/ // WHEN INITIALIZED: becomes setOf('email', 'full_write', 'openid', 'phone', 'profile', 'offline_access', 'address')
             success = { authToken ->
                 // Signup success but no id_token returned
                 assertNull(authToken.idToken)
@@ -157,7 +157,6 @@ class MainActivityTest {
         client.signup(
             profile,
             scope = openId,
-            success = { passTest() },
             success = { passTest() },
             failure = { failWithReachFiveError(it) }
         )
@@ -835,7 +834,7 @@ class MainActivityTest {
         block: (ReachFive, () -> Unit) -> Unit
     ) =
         runBlocking {
-            withTimeout(5000) {
+            withTimeout(10000) {
                 suspendCancellableCoroutine<Unit> { continuation ->
                     val successLatch: () -> Unit = { -> continuation.resume(Unit) }
 
