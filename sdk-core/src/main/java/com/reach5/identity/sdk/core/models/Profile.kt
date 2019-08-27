@@ -8,8 +8,6 @@ import kotlinx.android.parcel.RawValue
 @Parcelize
 data class Profile(
     val uid: String? = null,
-    @SerializedName("signed_uid")
-    val signedUid: String? = null,
     @SerializedName("given_name")
     val givenName: String? = null,
     @SerializedName("middle_name")
