@@ -100,8 +100,8 @@ class ConfiguredGoogleProvider(
     ) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
-            val account = task.getResult(ApiException::class.java)
-            val authCode = account?.serverAuthCode
+            val googleSigninAccount = task.getResult(ApiException::class.java)
+            val authCode = googleSigninAccount?.serverAuthCode
             if (authCode != null) {
                 loginWithProvider(authCode, origin, success, failure)
             } else {
