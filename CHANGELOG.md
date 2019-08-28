@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.3.2 (28/08/2019)
+
+### Fixes
+
+- The `signedUid` attribute of the `Profile` model was removed.
+- Login with the Facebook social account was fixed.
+
 ## v5.3.1 (23/08/2019)
 
 ### Fixes
