@@ -129,13 +129,13 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
     }
 
     fun refreshAccessToken(
-        refreshToken: String,
+        authToken: AuthToken,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val refreshRequest = RefreshRequest(
             clientId  = sdkConfig.clientId,
-            refreshToken = refreshToken,
+            refreshToken = authToken.refreshToken ?: "",
             redirectUri = SdkConfig.REDIRECT_URI
         )
 
@@ -271,11 +271,7 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         failure: Failure<ReachFiveError>
     ) {
         val provider = providers.find { p -> p.requestCode == requestCode }
-        if (provider != null) {
-            provider.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
-        } else {
-            failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
-        }
+        provider?.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
     }
 
     fun onStop() {

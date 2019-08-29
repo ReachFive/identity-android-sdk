@@ -161,6 +161,18 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         )
     }
 
+    fun refreshAccessToken(
+        authToken: AuthToken,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.refreshAccessToken(
+            authToken,
+            success::call,
+            failure::call
+        )
+    }
+
     fun onActivityResult(
         requestCode: Int,
         resultCode: Int,

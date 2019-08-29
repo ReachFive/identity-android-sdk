@@ -8,8 +8,14 @@ import kotlinx.android.parcel.Parcelize
 data class ReachFiveApiError(
     val error: String,
 
+    @SerializedName("error_id")
+    val errorId: String?,
+
+    @SerializedName("error_user_msg")
+    val errorUserMsg: String?,
+
     @SerializedName("error_description")
-    val errorDescription: String?,
+    val errorDescription: String? ,
 
     @SerializedName("error_details")
     val errorDetails: List<ReachFiveApiErrorDetail>?

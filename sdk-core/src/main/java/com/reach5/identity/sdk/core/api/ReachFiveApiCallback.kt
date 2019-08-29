@@ -20,29 +20,19 @@ class ReachFiveApiCallback<T>(
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
-        val status = response.code()
         if (response.isSuccessful) {
             val body = response.body()
+
             if (body != null) success(body)
             else successWithNoContent(Unit)
-        } else if (status in 300..400) {
-            failure(ReachFiveError(
-                message = "Bad Request",
-                data = tryOrNull { parseErrorBody(response) }
-            ))
-        } else if (status in 400..600) {
-            failure(ReachFiveError(
-                message = "Technical Error",
-                data = tryOrNull { parseErrorBody(response) }
-            ))
-        }
-    }
+        } else  {
+            val data = try { parseErrorBody(response) } catch (e: Exception) { null }
 
-    private fun <T> tryOrNull(callback: () -> T): T? {
-        return try {
-            callback()
-        } catch (e: Exception) {
-            null
+            failure(ReachFiveError(
+                message = data?.error ?: "ReachFive API response error",
+                code = response.code(),
+                data = data
+            ))
         }
     }
 

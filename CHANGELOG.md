@@ -1,5 +1,34 @@
 # Changelog
 
+## v5.3.2 (28/08/2019)
+
+### Fixes
+
+- The `signedUid` attribute of the `Profile` model was removed.
+- Login with the Facebook social account was fixed.
+
+## v5.3.1 (23/08/2019)
+
+### Fixes
+
+- The `ProfileAddress` model's `isDefault` attribute is now correctly serialized.
+- All the string attributes of the `ProfileAddress` model are now null by default.
+- The `addressType` attribute of the `ProfileAddress` model is no longer a `String` but a `ProfileAddressType`.
+
+## v5.3.0 (22/08/2019)
+
+### Features
+
+The ReachFive error models were improved:
+- the `code` attribute was added to the [`ReachFiveError`](https://developer.reach5.co/api/identity-android/#reach5-error) model to specify the HTTP code response.
+- the `errorId` and the `errorUserMsg` attributes were added to the [`ReachFiveApiError`](https://developer.reach5.co/api/identity-android/#reach5-api-error) model to specify the identifier and the user-friendly message of the error.
+
+## v5.2.0 (22/08/2019)
+
+### Features
+
+A new method [`refreshAccessToken`](https://developer.reach5.co/api/identity-android/#refresh-access-token) was implemented to refresh a profile's access token.
+
 ## v5.1.0 (14/08/2019)
 
 ### Fixes
@@ -66,7 +95,7 @@ Note that `ProfileSignupRequest` contains the same attributes as `Profile` plus 
 ### Features
 
 - All the SDK core models are now serialized for an Android implementation.
-- The authorization flow with code and the PKCE are implemented for a login with the `WebViewProvider`.
+- The authorization flow with code and the PKCE are implemented for login with the `WebViewProvider`.
 
 ## v4.1.0 (12/07/2019)
 
