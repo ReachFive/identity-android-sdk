@@ -2,7 +2,7 @@ package com.reach5.identity.sdk.core.models.requests
 
 import com.reach5.identity.sdk.core.models.PasswordlessAuthType
 
-data class PasswordlessVerificationRequest(
+data class PasswordlessAuthorizationCodeRequest(
     val clientId: String,
     val phoneNumber: String,
     val authType: PasswordlessAuthType = PasswordlessAuthType.SMS,

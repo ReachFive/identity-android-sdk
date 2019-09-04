@@ -6,7 +6,7 @@ import com.reach5.identity.sdk.core.models.PasswordlessAuthType
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class PasswordlessRequest(
+data class PasswordlessStartRequest(
     @SerializedName("client_id")
     val clientId: String,
     val email: String?,
