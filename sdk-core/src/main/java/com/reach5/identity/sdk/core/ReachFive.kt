@@ -340,7 +340,7 @@ class ReachFive(
         Pkce.storeCodeVerifier(pkce, activity)
         reachFiveApi
             .requestPasswordlessStart(
-                PasswordlessRequest(
+                PasswordlessStartRequest(
                     clientId = sdkConfig.clientId,
                     email = email,
                     phoneNumber = phoneNumber,
@@ -377,7 +377,7 @@ class ReachFive(
             ReachFiveApiCallback(
                 successWithNoContent = {
                     reachFiveApi.requestPasswordlessVerification(
-                        PasswordlessVerificationRequest(
+                        PasswordlessAuthorizationCodeRequest(
                             clientId = sdkConfig.clientId,
                             phoneNumber = phoneNumber,
                             verificationCode = verificationCode,

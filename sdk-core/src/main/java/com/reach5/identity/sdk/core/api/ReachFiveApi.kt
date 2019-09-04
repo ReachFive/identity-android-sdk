@@ -91,7 +91,7 @@ interface ReachFiveApi {
 
     @POST("/identity/v1/passwordless/start")
     fun requestPasswordlessStart(
-        @Body passwordlessRequest: PasswordlessRequest,
+        @Body passwordlessStartRequest: PasswordlessStartRequest,
         @QueryMap options: Map<String, String>
     ): Call<Unit>
 
