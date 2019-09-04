@@ -50,6 +50,27 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     }
 
     /**
+     * Passwordless
+     */
+    fun startPasswordless(
+        email: String? = null,
+        phoneNumber: String? = null,
+        successWithNoContent: Callback<Unit>,
+        failure: Callback<ReachFiveError>
+    ) {
+        reach5.startPasswordless(email, phoneNumber, { successWithNoContent.call(Unit) }, failure::call)
+    }
+
+    fun verifyPasswordless(
+        phoneNumber: String,
+        verificationCode: String,
+        redirectUri: String,
+        failure: Callback<ReachFiveError>
+    ) {
+        reach5.verifyPasswordless(phoneNumber, verificationCode, redirectUri, failure::call)
+    }
+
+    /**
      * Login with required scopes
      * @param username You can use email or phone number
      */
