@@ -4,9 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.*
-import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.Success
-import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -15,6 +12,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import android.content.Intent
+import android.net.Uri
+import com.reach5.identity.sdk.core.utils.*
 
 
 interface ReachFiveApi {
@@ -89,11 +89,29 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<Unit>
 
+    @POST("/identity/v1/passwordless/start")
+    fun requestPasswordlessStart(
+        @Body passwordlessRequest: PasswordlessRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
+    @POST("/identity/v1/verify-auth-code")
+    fun requestPasswordlessCodeVerification(
+        @Body verificationCodeRequest: PasswordlessCodeVerificationRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
+    @GET("/identity/v1/passwordless/verify")
+    fun requestPasswordlessVerification(
+        @QueryMap options: Map<String, String>
+    ): Call<AuthTokenResponse>
+
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
             logging.apply { logging.level = HttpLoggingInterceptor.Level.BASIC }
-            val client = OkHttpClient.Builder().addInterceptor(logging).build()
+            val client = OkHttpClient.Builder().addInterceptor(logging)
+                .build()
 
             val gson = GsonBuilder()
                 .registerTypeAdapter(
@@ -116,6 +134,7 @@ interface ReachFiveApi {
 class ReachFiveApiCallback<T>(
     val success: Success<T> = { Unit },
     val successWithNoContent: SuccessWithNoContent<Unit> = { Unit },
+    val redirect: Redirect = { Unit },
     val failure: Failure<ReachFiveError>
 ) : Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
@@ -123,19 +142,30 @@ class ReachFiveApiCallback<T>(
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
-        if (response.isSuccessful) {
-            val body = response.body()
-
-            if (body != null) success(body)
-            else successWithNoContent(Unit)
-        } else  {
-            val data = tryOrNull { parseErrorBody(response) }
-
-            failure(ReachFiveError(
-                message = data?.error ?: "ReachFive API response error",
-                code = response.code(),
-                data = data
-            ))
+        val statusCode = response.code()
+        when {
+            response.isSuccessful -> {
+                val body = response.body()
+                if (body != null) success(body)
+                else successWithNoContent(Unit)
+            }
+            statusCode in 300..399 -> {
+                response.headers()["Location"]
+                val redirectUri = response.headers()["Location"]
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(redirectUri)
+                redirect(i)
+            }
+            else -> {
+                val data = tryOrNull { parseErrorBody(response) }
+                failure(
+                    ReachFiveError(
+                        message = data?.error ?: "ReachFive API response error",
+                        code = response.code(),
+                        data = data
+                    )
+                )
+            }
         }
     }
 

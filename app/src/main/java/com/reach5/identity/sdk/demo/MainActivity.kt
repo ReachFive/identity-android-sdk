@@ -70,11 +70,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         passwordSignup.setOnClickListener {
-            this.reach5.signup(
+            val signupRequest = if (email.text.toString().isNotEmpty()) {
                 ProfileSignupRequest(
-                    email = username.text.toString(),
+                    email = email.text.toString(),
                     password = password.text.toString()
-                ),
+                )
+            } else {
+                ProfileSignupRequest(
+                    phoneNumber = phoneNumber.text.toString(),
+                    password = password.text.toString()
+                )
+            }
+
+            this.reach5.signup(
+                signupRequest,
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "signup error=$it")
@@ -84,9 +93,58 @@ class MainActivity : AppCompatActivity() {
         }
 
         passwordLogin.setOnClickListener {
+            val username =
+                if (email.text.toString().isNotEmpty()) email.text.toString() else phoneNumber.text.toString()
             this.reach5.loginWithPassword(
-                username = username.text.toString(),
+                username = username,
                 password = password.text.toString(),
+                success = { handleLoginSuccess(it) },
+                failure = {
+                    Log.d(TAG, "loginWithPassword error=$it")
+                    showToast("Login error=${it.message}")
+                }
+            )
+        }
+
+        startPasswordless.setOnClickListener {
+            if (email.text.toString().isNotEmpty()) {
+                this.reach5.startPasswordless(
+                    email = email.text.toString(),
+                    successWithNoContent = { showToast("Email sent - Check your email box") },
+                    failure = {
+                        Log.d(TAG, "signup error=$it")
+                        showToast("Signup With Password Error ${it.message}")
+                    }
+                )
+            } else {
+                this.reach5.startPasswordless(
+                    phoneNumber = phoneNumber.text.toString(),
+                    successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
+                    failure = {
+                        Log.d(TAG, "signup error=$it")
+                        showToast("Signup With Password Error ${it.message}")
+                    }
+                )
+            }
+
+        }
+
+        phoneNumberPasswordless.setOnClickListener {
+            this.reach5.verifyPasswordless(
+                phoneNumber = phoneNumber.text.toString(),
+                verificationCode = verificationCode.text.toString(),
+                redirectUri = SdkConfig.REDIRECT_URI,
+                failure = {
+                    Log.d(TAG, "loginWithPassword error=$it")
+                    showToast("Login error=${it.message}")
+                }
+            )
+        }
+
+        val authorizationCode: String? = intent?.data?.getQueryParameter("code")
+        if (authorizationCode != null) {
+            this.reach5.exchangeCodeForToken(
+                authorizationCode,
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "loginWithPassword error=$it")
@@ -125,7 +183,11 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         Log.d(
             "ReachFive",
             "MainActivity.onRequestPermissionsResult requestCode=$requestCode permissions=$permissions grantResults=$grantResults"
