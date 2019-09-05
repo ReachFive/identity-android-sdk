@@ -93,10 +93,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         passwordLogin.setOnClickListener {
-            val username =
-                if (email.text.toString().isNotEmpty()) email.text.toString() else phoneNumber.text.toString()
             this.reach5.loginWithPassword(
-                username = username,
+                username = email.text.toString().ifEmpty { phoneNumber.text.toString() },
                 password = password.text.toString(),
                 success = { handleLoginSuccess(it) },
                 failure = {
