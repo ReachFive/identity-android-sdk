@@ -9,5 +9,5 @@ interface Callback<T> {
 
 typealias Success<T> = (data: T) -> Unit
 typealias SuccessWithNoContent<Unit> = Success<Unit>
-typealias Redirect = (i: Intent) -> Unit
+typealias Redirect = (intent: Intent) -> Unit
 typealias Failure<E> = (error: E) -> Unit

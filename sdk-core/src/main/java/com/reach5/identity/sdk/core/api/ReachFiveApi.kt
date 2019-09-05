@@ -110,8 +110,7 @@ interface ReachFiveApi {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
             logging.apply { logging.level = HttpLoggingInterceptor.Level.BASIC }
-            val client = OkHttpClient.Builder().addInterceptor(logging)
-                .build()
+            val client = OkHttpClient.Builder().addInterceptor(logging).build()
 
             val gson = GsonBuilder()
                 .registerTypeAdapter(
@@ -145,16 +144,14 @@ class ReachFiveApiCallback<T>(
         val statusCode = response.code()
         when {
             response.isSuccessful -> {
-                val body = response.body()
-                if (body != null) success(body)
-                else successWithNoContent(Unit)
+                response.body()?.let { success(it) } ?: successWithNoContent(Unit)
             }
             statusCode in 300..399 -> {
-                response.headers()["Location"]
-                val redirectUri = response.headers()["Location"]
-                val i = Intent(Intent.ACTION_VIEW)
-                i.data = Uri.parse(redirectUri)
-                redirect(i)
+                Intent(Intent.ACTION_VIEW).run {
+                    val redirectUri = response.headers()["Location"]
+                    this.data = Uri.parse(redirectUri)
+                    redirect(this)
+                }
             }
             else -> {
                 val data = tryOrNull { parseErrorBody(response) }

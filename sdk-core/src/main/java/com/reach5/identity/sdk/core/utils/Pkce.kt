@@ -39,17 +39,19 @@ class Pkce(val codeVerifier: String) : Parcelable {
                     Base64.encodeToString(code, BASE64_FLAGS)
                 }
 
-        fun storeCodeVerifier(pkce: Pkce, activity: Activity) {
-            val preferences = activity.getSharedPreferences("pkce", Context.MODE_PRIVATE)
-            val editor = preferences.edit()
-            editor.putString("code_verifier", pkce.codeVerifier)
-            editor.apply()
-        }
+        fun storeCodeVerifier(pkce: Pkce, activity: Activity): Unit =
+            activity
+                .getSharedPreferences("pkce", Context.MODE_PRIVATE)
+                .edit()
+                .run {
+                    putString("code_verifier", pkce.codeVerifier)
+                    apply()
+                }
 
-        fun readCodeVerifier(activity: Activity): String? {
-            val preferences = activity.getSharedPreferences("pkce", Context.MODE_PRIVATE)
-            return preferences.getString("code_verifier", null)
-        }
+        fun readCodeVerifier(activity: Activity): String? =
+            activity
+                .getSharedPreferences("pkce", Context.MODE_PRIVATE)
+                .getString("code_verifier", null)
     }
 
     private fun generateCodeChallenge(codeVerifier: String): String =

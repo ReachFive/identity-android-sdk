@@ -333,18 +333,15 @@ class ReachFive(
         phoneNumber: String? = null,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
-    ) {
-        val authType =
-            if (email != null) PasswordlessAuthType.MAGIC_LINK else PasswordlessAuthType.SMS
-        val pkce = Pkce.generate()
-        Pkce.storeCodeVerifier(pkce, activity)
-        reachFiveApi
-            .requestPasswordlessStart(
+    ) =
+        Pkce.generate().let { pkce ->
+            Pkce.storeCodeVerifier(pkce, activity)
+            reachFiveApi.requestPasswordlessStart(
                 PasswordlessStartRequest(
                     clientId = sdkConfig.clientId,
                     email = email,
                     phoneNumber = phoneNumber,
-                    authType = authType,
+                    authType = if (email != null) PasswordlessAuthType.MAGIC_LINK else PasswordlessAuthType.SMS,
                     codeChallenge = pkce.codeChallenge,
                     codeChallengeMethod = pkce.codeChallengeMethod,
                     responseType = codeResponseType,
@@ -357,14 +354,14 @@ class ReachFive(
                     failure = failure
                 )
             )
-    }
+        }
 
     fun verifyPasswordless(
         phoneNumber: String,
         verificationCode: String,
         redirectUri: String,
         failure: Failure<ReachFiveError>
-    ) {
+    ) =
         reachFiveApi.requestPasswordlessCodeVerification(
             PasswordlessCodeVerificationRequest(
                 sdkConfig.clientId,
@@ -395,7 +392,6 @@ class ReachFive(
                 failure = failure
             )
         )
-    }
 
     fun onActivityResult(
         requestCode: Int,
