@@ -23,6 +23,7 @@ class ReachFive(
     companion object {
         private const val TAG = "Reach5"
         private const val codeResponseType = "code"
+        private const val tokenResponseType = "token"
     }
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
@@ -359,7 +360,7 @@ class ReachFive(
     fun verifyPasswordless(
         phoneNumber: String,
         verificationCode: String,
-        redirectUri: String,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi.requestPasswordlessCodeVerification(
@@ -379,12 +380,12 @@ class ReachFive(
                             phoneNumber = phoneNumber,
                             verificationCode = verificationCode,
                             codeVerifier = Pkce.readCodeVerifier(activity).orEmpty(),
-                            responseType = codeResponseType,
-                            redirectUri = redirectUri
-                        ).getQueries()
+                            responseType = tokenResponseType
+                        ),
+                        SdkInfos.getQueries()
                     ).enqueue(
                         ReachFiveApiCallback(
-                            redirect = { activity.startActivity(it) },
+                            success = { it.toAuthToken().fold(success, failure) },
                             failure = failure
                         )
                     )

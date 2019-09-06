@@ -124,14 +124,13 @@ class MainActivity : AppCompatActivity() {
                     }
                 )
             }
-
         }
 
         phoneNumberPasswordless.setOnClickListener {
             this.reach5.verifyPasswordless(
                 phoneNumber = phoneNumber.text.toString(),
                 verificationCode = verificationCode.text.toString(),
-                redirectUri = SdkConfig.REDIRECT_URI,
+                success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "loginWithPassword error=$it")
                     showToast("Login error=${it.message}")

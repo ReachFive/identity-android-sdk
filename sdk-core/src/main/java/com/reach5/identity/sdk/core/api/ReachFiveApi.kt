@@ -14,6 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import com.reach5.identity.sdk.core.utils.*
 
 
@@ -101,8 +102,9 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<Unit>
 
-    @GET("/identity/v1/passwordless/verify")
+    @POST("/identity/v1/passwordless/verify")
     fun requestPasswordlessVerification(
+        @Body passwordlessAuthorizationCodeRequest: PasswordlessAuthorizationCodeRequest,
         @QueryMap options: Map<String, String>
     ): Call<AuthTokenResponse>
 
@@ -133,7 +135,6 @@ interface ReachFiveApi {
 class ReachFiveApiCallback<T>(
     val success: Success<T> = { Unit },
     val successWithNoContent: SuccessWithNoContent<Unit> = { Unit },
-    val redirect: Redirect = { Unit },
     val failure: Failure<ReachFiveError>
 ) : Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
@@ -141,28 +142,19 @@ class ReachFiveApiCallback<T>(
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
-        val statusCode = response.code()
-        when {
-            response.isSuccessful -> {
-                response.body()?.let { success(it) } ?: successWithNoContent(Unit)
-            }
-            statusCode in 300..399 -> {
-                Intent(Intent.ACTION_VIEW).run {
-                    val redirectUri = response.headers()["Location"]
-                    this.data = Uri.parse(redirectUri)
-                    redirect(this)
-                }
-            }
-            else -> {
-                val data = tryOrNull { parseErrorBody(response) }
-                failure(
-                    ReachFiveError(
-                        message = data?.error ?: "ReachFive API response error",
-                        code = response.code(),
-                        data = data
-                    )
+        if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) success(body)
+            else successWithNoContent(Unit)
+        } else {
+            val data = tryOrNull { parseErrorBody(response) }
+            failure(
+                ReachFiveError(
+                    message = data?.error ?: "ReachFive API response error",
+                    code = response.code(),
+                    data = data
                 )
-            }
+            )
         }
     }
 
