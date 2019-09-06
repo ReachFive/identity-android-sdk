@@ -1,25 +1,22 @@
 package com.reach5.identity.sdk.core.models.requests
 
+import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import com.reach5.identity.sdk.core.models.PasswordlessAuthType
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class PasswordlessAuthorizationCodeRequest(
+    @SerializedName("client_id")
     val clientId: String,
+    @SerializedName("phone_number")
     val phoneNumber: String,
+    @SerializedName("auth_type")
     val authType: PasswordlessAuthType = PasswordlessAuthType.SMS,
+    @SerializedName("verification_code")
     val verificationCode: String,
+    @SerializedName("code_verifier")
     val codeVerifier: String,
-    val responseType: String,
-    val redirectUri: String
-) {
-    fun getQueries(): Map<String, String> {
-        return mapOf(
-            "client_id" to clientId,
-            "phone_number" to phoneNumber,
-            "verification_code" to verificationCode,
-            "auth_type" to "sms",
-            "code_verifier" to codeVerifier,
-            "response_type" to responseType,
-            "redirect_uri" to redirectUri
-        )
-    }
-}
+    @SerializedName("response_type")
+    val responseType: String
+): Parcelable

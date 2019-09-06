@@ -64,10 +64,10 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     fun verifyPasswordless(
         phoneNumber: String,
         verificationCode: String,
-        redirectUri: String,
+        success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
-        reach5.verifyPasswordless(phoneNumber, verificationCode, redirectUri, failure::call)
+        reach5.verifyPasswordless(phoneNumber, verificationCode, success::call, failure::call)
     }
 
     /**
