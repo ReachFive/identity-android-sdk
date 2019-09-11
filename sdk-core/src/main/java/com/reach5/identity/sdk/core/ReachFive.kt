@@ -10,13 +10,20 @@ import com.reach5.identity.sdk.core.models.requests.*
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
 import com.reach5.identity.sdk.core.utils.Failure
+import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success
 import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 
-class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersCreators: List<ProviderCreator>) {
+class ReachFive(
+    val activity: Activity,
+    val sdkConfig: SdkConfig,
+    val providersCreators: List<ProviderCreator>
+) {
 
     companion object {
         private const val TAG = "Reach5"
+        private const val codeResponseType = "code"
+        private const val tokenResponseType = "token"
     }
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
@@ -25,7 +32,10 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
     private var providers: List<Provider> = emptyList()
 
-    fun initialize(success: Success<List<Provider>> = {}, failure: Failure<ReachFiveError> = {}): ReachFive {
+    fun initialize(
+        success: Success<List<Provider>> = {},
+        failure: Failure<ReachFiveError> = {}
+    ): ReachFive {
         reachFiveApi
             .clientConfig(mapOf("client_id" to sdkConfig.clientId))
             .enqueue(
@@ -41,7 +51,10 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         return this
     }
 
-    private fun providersConfigs(success: Success<List<Provider>>, failure: Failure<ReachFiveError>) {
+    private fun providersConfigs(
+        success: Success<List<Provider>>,
+        failure: Failure<ReachFiveError>
+    ) {
         reachFiveApi
             .providersConfigs(SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
@@ -55,10 +68,23 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         return providersConfigsResult.items?.mapNotNull { config ->
             val nativeProvider = providersCreators.find { it.name == config.provider }
             when {
-                nativeProvider != null -> nativeProvider.create(config, sdkConfig, reachFiveApi, activity)
-                webViewProvider != null -> webViewProvider.create(config, sdkConfig, reachFiveApi, activity)
+                nativeProvider != null -> nativeProvider.create(
+                    config,
+                    sdkConfig,
+                    reachFiveApi,
+                    activity
+                )
+                webViewProvider != null -> webViewProvider.create(
+                    config,
+                    sdkConfig,
+                    reachFiveApi,
+                    activity
+                )
                 else -> {
-                    Log.w(TAG, "Non supported provider found, please add webview or native provider")
+                    Log.w(
+                        TAG,
+                        "Non supported provider found, please add webview or native provider"
+                    )
                     null
                 }
             }
@@ -90,7 +116,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         )
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { it.toAuthToken().fold(success, failure) },
+                    failure = failure
+                )
+            )
     }
 
     /**
@@ -112,7 +143,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         )
         reachFiveApi
             .loginWithPassword(loginRequest, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { it.toAuthToken().fold(success, failure) },
+                    failure = failure
+                )
+            )
     }
 
     fun logout(
@@ -123,7 +159,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
 
         reachFiveApi
             .logout(SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
     }
 
     fun refreshAccessToken(
@@ -132,14 +173,19 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
         failure: Failure<ReachFiveError>
     ) {
         val refreshRequest = RefreshRequest(
-            clientId  = sdkConfig.clientId,
+            clientId = sdkConfig.clientId,
             refreshToken = authToken.refreshToken ?: "",
             redirectUri = SdkConfig.REDIRECT_URI
         )
 
         reachFiveApi
             .refreshAccessToken(refreshRequest, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { it.toAuthToken().fold(success, failure) },
+                    failure = failure
+                )
+            )
     }
 
     fun getProfile(
@@ -165,7 +211,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
                 VerifyPhoneNumberRequest(phoneNumber, verificationCode),
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
     }
 
     fun updateEmail(
@@ -224,7 +275,12 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
                 enrichWithClientId(updatePasswordRequest, sdkConfig.clientId),
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
     }
 
     fun requestPasswordReset(
@@ -244,8 +300,99 @@ class ReachFive(val activity: Activity, val sdkConfig: SdkConfig, val providersC
                 ),
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
     }
+
+    fun exchangeCodeForToken(
+        authorizationCode: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val codeVerifier = Pkce.readCodeVerifier(activity)
+        return if (codeVerifier != null) {
+            val authCodeRequest = AuthCodeRequest(
+                sdkConfig.clientId,
+                authorizationCode,
+                SdkConfig.REDIRECT_URI,
+                codeVerifier
+            )
+            reachFiveApi
+                .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+                .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+        } else {
+            failure(ReachFiveError.from("Empty PKCE or Authorization Code"))
+        }
+    }
+
+    fun startPasswordless(
+        email: String? = null,
+        phoneNumber: String? = null,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    ) =
+        Pkce.generate().let { pkce ->
+            Pkce.storeCodeVerifier(pkce, activity)
+            reachFiveApi.requestPasswordlessStart(
+                PasswordlessStartRequest(
+                    clientId = sdkConfig.clientId,
+                    email = email,
+                    phoneNumber = phoneNumber,
+                    authType = if (email != null) PasswordlessAuthType.MAGIC_LINK else PasswordlessAuthType.SMS,
+                    codeChallenge = pkce.codeChallenge,
+                    codeChallengeMethod = pkce.codeChallengeMethod,
+                    responseType = codeResponseType,
+                    redirectUri = SdkConfig.REDIRECT_URI
+                ),
+                SdkInfos.getQueries()
+            ).enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
+        }
+
+    fun verifyPasswordless(
+        phoneNumber: String,
+        verificationCode: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) =
+        reachFiveApi.requestPasswordlessCodeVerification(
+            PasswordlessCodeVerificationRequest(
+                sdkConfig.clientId,
+                phoneNumber,
+                verificationCode,
+                PasswordlessAuthType.SMS
+            ),
+            SdkInfos.getQueries()
+        ).enqueue(
+            ReachFiveApiCallback(
+                successWithNoContent = {
+                    reachFiveApi.requestPasswordlessVerification(
+                        PasswordlessAuthorizationCodeRequest(
+                            clientId = sdkConfig.clientId,
+                            phoneNumber = phoneNumber,
+                            verificationCode = verificationCode,
+                            codeVerifier = Pkce.readCodeVerifier(activity).orEmpty(),
+                            responseType = tokenResponseType
+                        ),
+                        SdkInfos.getQueries()
+                    ).enqueue(
+                        ReachFiveApiCallback(
+                            success = { it.toAuthToken().fold(success, failure) },
+                            failure = failure
+                        )
+                    )
+                },
+                failure = failure
+            )
+        )
 
     fun onActivityResult(
         requestCode: Int,

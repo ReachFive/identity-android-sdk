@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">identity sdk demo</string>
-    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone number</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
+    <string name="start_passwordless">Start Passwordless</string>
+    <string name="phone_number_passwordless">Sms Passwordless</string>
     <string name="signup">Signup</string>
+    <string name="verification_code">Verification code</string>
     <string name="logout">Logout</string>
     <string name="java">Java</string>
     <string name="facebook_app_id">2326266780745811</string>
