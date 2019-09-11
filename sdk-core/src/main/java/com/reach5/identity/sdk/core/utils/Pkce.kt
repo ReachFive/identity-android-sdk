@@ -1,5 +1,7 @@
 package com.reach5.identity.sdk.core.utils
 
+import android.app.Activity
+import android.content.Context
 import android.os.Parcelable
 import android.util.Base64
 import kotlinx.android.parcel.IgnoredOnParcel
@@ -36,6 +38,20 @@ class Pkce(val codeVerifier: String) : Parcelable {
                 .let { code ->
                     Base64.encodeToString(code, BASE64_FLAGS)
                 }
+
+        fun storeCodeVerifier(pkce: Pkce, activity: Activity): Unit =
+            activity
+                .getSharedPreferences("pkce", Context.MODE_PRIVATE)
+                .edit()
+                .run {
+                    putString("code_verifier", pkce.codeVerifier)
+                    apply()
+                }
+
+        fun readCodeVerifier(activity: Activity): String? =
+            activity
+                .getSharedPreferences("pkce", Context.MODE_PRIVATE)
+                .getString("code_verifier", null)
     }
 
     private fun generateCodeChallenge(codeVerifier: String): String =

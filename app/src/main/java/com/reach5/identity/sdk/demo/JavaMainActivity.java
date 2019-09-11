@@ -66,15 +66,21 @@ public class JavaMainActivity extends AppCompatActivity {
             reach5.loginWithNativeProvider(provider.getName(), "home", this);
         });
 
-        EditText usernameEditText = findViewById(R.id.username);
+        EditText emailEditText = findViewById(R.id.email);
+        EditText phoneNumberEditText = findViewById(R.id.phoneNumber);
         EditText passwordEditText = findViewById(R.id.password);
 
         findViewById(R.id.passwordSignup).setOnClickListener(view -> {
-            reach5.signup(
+            ProfileSignupRequest signupRequest = (!emailEditText.getText().toString().isEmpty()) ?
                     new ProfileSignupRequest(
-                            usernameEditText.getText().toString(),
+                            emailEditText.getText().toString(),
                             passwordEditText.getText().toString()
-                    ),
+                    ) : new ProfileSignupRequest(
+                            phoneNumberEditText.getText().toString(),
+                            passwordEditText.getText().toString()
+                    );
+            reach5.signup(
+                    signupRequest,
                     this::handleLoginSuccess,
                     failure -> {
                         Log.d(TAG, "signup error=" + failure.getMessage());
@@ -84,8 +90,10 @@ public class JavaMainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.passwordLogin).setOnClickListener(view -> {
+            String username = (!emailEditText.toString().isEmpty())
+                    ? emailEditText.getText().toString() : phoneNumberEditText.getText().toString();
             reach5.loginWithPassword(
-                    usernameEditText.getText().toString(),
+                    username,
                     passwordEditText.getText().toString(),
                     this::handleLoginSuccess,
                     failure -> {
