@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                     successWithNoContent = { showToast("Email sent - Check your email box") },
                     failure = {
                         Log.d(TAG, "signup error=$it")
-                        showToast("Signup With Password Error ${it.message}")
+                        showToast("Start passwordless with email Error ${it.message}")
                     }
                 )
             } else {
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
                     successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
                     failure = {
                         Log.d(TAG, "signup error=$it")
-                        showToast("Signup With Password Error ${it.message}")
+                        showToast("Start passwordless with sms Error ${it.message}")
                     }
                 )
             }
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                 verificationCode = verificationCode.text.toString(),
                 success = { handleLoginSuccess(it) },
                 failure = {
-                    Log.d(TAG, "loginWithPassword error=$it")
+                    Log.d(TAG, "verifyPasswordless error=$it")
                     showToast("Login error=${it.message}")
                 }
             )
