@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.4.0 (18/09/2019)
+- Passwordless support
+
 ## v5.3.2 (28/08/2019)
 
 ### Fixes
