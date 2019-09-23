@@ -108,6 +108,7 @@ class MainActivity : AppCompatActivity() {
             if (email.text.toString().isNotEmpty()) {
                 this.reach5.startPasswordless(
                     email = email.text.toString(),
+                    redirectUri = SdkConfig.REDIRECT_URI,
                     successWithNoContent = { showToast("Email sent - Check your email box") },
                     failure = {
                         Log.d(TAG, "signup error=$it")
@@ -117,6 +118,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 this.reach5.startPasswordless(
                     phoneNumber = phoneNumber.text.toString(),
+                    redirectUri = SdkConfig.REDIRECT_URI,
                     successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
                     failure = {
                         Log.d(TAG, "signup error=$it")
