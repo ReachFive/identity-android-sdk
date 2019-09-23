@@ -55,10 +55,11 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
     fun startPasswordless(
         email: String? = null,
         phoneNumber: String? = null,
+        redirectUri: String,
         successWithNoContent: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        reach5.startPasswordless(email, phoneNumber, { successWithNoContent.call(Unit) }, failure::call)
+        reach5.startPasswordless(email, phoneNumber, redirectUri, { successWithNoContent.call(Unit) }, failure::call)
     }
 
     fun verifyPasswordless(
