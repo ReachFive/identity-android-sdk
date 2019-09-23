@@ -4,7 +4,7 @@
 
 ### Changes
 
-- The `redirectUri` is configurable for the method [`startPasswordless`](https://developer.reach5.co/api/identity-android/#refresh-access-token).
+- The `redirectUri` is configurable for the method [`startPasswordless`](https://developer.reach5.co/api/identity-android/#start-passwordless).
 
 ## v5.4.0 (18/09/2019)
 
