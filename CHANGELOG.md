@@ -1,7 +1,18 @@
 # Changelog
 
+## v5.4.1 (23/09/2019)
+
+### Changes
+
+- The `redirectUri` is configurable for the method [`startPasswordless`](https://developer.reach5.co/api/identity-android/#refresh-access-token).
+
 ## v5.4.0 (18/09/2019)
-- Passwordless support
+
+### Features
+
+- A new method [`startPasswordless`](https://developer.reach5.co/api/identity-android/#start-passwordless) was implemented to trigger an email/sms sending for a passwordless flow.
+- A new method [`verifyPasswordless`](https://developer.reach5.co/api/identity-android/#verify-passwordless) was implemented to verify a passwordless sms verification code.
+- A new method [`exchangeCodeForToken`](https://developer.reach5.co/api/identity-android/#exchange-code-for-token) was implemented to exchange an authorization code for an access token.
 
 ## v5.3.2 (28/08/2019)
 
