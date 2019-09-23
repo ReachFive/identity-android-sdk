@@ -332,6 +332,7 @@ class ReachFive(
     fun startPasswordless(
         email: String? = null,
         phoneNumber: String? = null,
+        redirectUri: String,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =
@@ -346,7 +347,7 @@ class ReachFive(
                     codeChallenge = pkce.codeChallenge,
                     codeChallengeMethod = pkce.codeChallengeMethod,
                     responseType = codeResponseType,
-                    redirectUri = SdkConfig.REDIRECT_URI
+                    redirectUri = redirectUri
                 ),
                 SdkInfos.getQueries()
             ).enqueue(
