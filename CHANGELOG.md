@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.4.2 (26/09/2019)
+
+### Fixes
+
+The custom fields are now returned by the [`getProfile`](https://developer.reach5.co/api/identity-android/#get-profile) method.
+
 ## v5.4.1 (23/09/2019)
 
 ### Changes
