@@ -193,8 +193,9 @@ class ReachFive(
         success: Success<Profile>,
         failure: Failure<ReachFiveError>
     ) {
+        val fields = "addresses,auth_types,created_at,custom_fields,devices,email,family_name,first_login,first_name,full_name,gender,given_name,has_managed_profile,has_password,id,identities,last_login,last_login_provider,last_login_type,last_name,likes_friends_ratio,lite_only,local_friends_count,login_summary,logins_count,name,origins,provider_details,providers,social_identities,sub,uid,updated_at"
         reachFiveApi
-            .getProfile(formatAuthorization(authToken), SdkInfos.getQueries())
+            .getProfile(formatAuthorization(authToken), SdkInfos.getQueries().plus(Pair("fields", fields)))
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 

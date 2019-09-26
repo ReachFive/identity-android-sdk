@@ -208,7 +208,6 @@ class MainActivityTest {
         )
     }
 
-
     @Test
     fun testFailedSignupWeakPassword() = clientTest { client, passTest ->
         val weakPassword = "toto"
@@ -324,6 +323,36 @@ class MainActivityTest {
                         passTest()
                     },
                     { error -> failWithReachFiveError(error) }
+                )
+            },
+            failure = { failWithReachFiveError(it) }
+        )
+    }
+
+    @Test
+    fun testSuccessfulGetProfileWithCustomFields() = clientTest { client, passTest ->
+        val customFields = mapOf<String, Any>(
+            Pair("test_string", "toto"),
+            Pair("mobile_number1", "0678236342")
+        )
+        val theProfile = aProfile().copy(customFields = customFields)
+        val scope = openId + email + profile
+
+        client.signup(
+            theProfile,
+            scope = scope,
+            success = { authToken ->
+                assertNotNull(authToken)
+
+                client.getProfile(
+                    authToken,
+                    success = {
+                        assertNotNull(it.customFields)
+                        assertEquals(customFields["test_string"], it.customFields?.get("test_string"))
+                        assertEquals(customFields["mobile_number1"], it.customFields?.get("mobile_number1"))
+                        passTest()
+                    },
+                    failure = { failWithReachFiveError(it) }
                 )
             },
             failure = { failWithReachFiveError(it) }
