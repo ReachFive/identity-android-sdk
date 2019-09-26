@@ -333,7 +333,7 @@ class MainActivityTest {
     fun testSuccessfulGetProfileWithCustomFields() = clientTest { client, passTest ->
         val customFields = mapOf<String, Any>(
             Pair("test_string", "toto"),
-            Pair("mobile_number1", "0678236342")
+            Pair("mobile_number1", aPhoneNumber())
         )
         val theProfile = aProfile().copy(customFields = customFields)
         val scope = openId + email + profile
