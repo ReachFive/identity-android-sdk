@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.4.3 (27/09/2019)
+
+### Fixes
+
+The `consents`, `emails`, `email_verified`, `phone_number` and `phone_number_verified` fields are returned again by the [`getProfile`](https://developer.reach5.co/api/identity-android/#get-profile) method.
+
 ## v5.4.2 (26/09/2019)
 
 ### Fixes
