@@ -193,9 +193,57 @@ class ReachFive(
         success: Success<Profile>,
         failure: Failure<ReachFiveError>
     ) {
-        val fields = "addresses,auth_types,consents,created_at,custom_fields,devices,email,emails,email_verified,family_name,first_login,first_name,full_name,gender,given_name,has_managed_profile,has_password,id,identities,last_login,last_login_provider,last_login_type,last_name,likes_friends_ratio,lite_only,local_friends_count,login_summary,logins_count,name,origins,phone_number,phone_number_verified,provider_details,providers,social_identities,sub,uid,updated_at"
+        val fields = arrayOf(
+            "addresses",
+            "auth_types",
+            "bio",
+            "birthdate",
+            "company",
+            "consents",
+            "created_at",
+            "custom_fields",
+            "devices",
+            "email",
+            "emails",
+            "email_verified",
+            "external_id",
+            "family_name",
+            "first_login",
+            "first_name",
+            "full_name",
+            "gender",
+            "given_name",
+            "has_managed_profile",
+            "has_password",
+            "id",
+            "identities",
+            "last_login",
+            "last_login_provider",
+            "last_login_type",
+            "last_name",
+            "likes_friends_ratio",
+            "lite_only",
+            "locale",
+            "local_friends_count",
+            "login_summary",
+            "logins_count",
+            "middle_name",
+            "name",
+            "nickname",
+            "origins",
+            "phone_number",
+            "phone_number_verified",
+            "picture",
+            "provider_details",
+            "providers",
+            "social_identities",
+            "sub",
+            "tos_accepted_at",
+            "uid",
+            "updated_at"
+        )
         reachFiveApi
-            .getProfile(formatAuthorization(authToken), SdkInfos.getQueries().plus(Pair("fields", fields)))
+            .getProfile(formatAuthorization(authToken), SdkInfos.getQueries().plus(Pair("fields", fields.joinToString(","))))
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
