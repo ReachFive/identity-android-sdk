@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.4.4 (08/11/2019)
+
+### Fixes
+
+The following fields are now returned by the [`getProfile`](https://developer.reach5.co/api/identity-android/#get-profile) method: `bio`, `birthdate`, `company`, `external_id`, `locale`, `middle_name`, `nickname`, `picture` and `tos_accepted_at`.
+
 ## v5.4.3 (27/09/2019)
 
 ### Fixes
