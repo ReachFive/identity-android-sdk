@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/redirect_uri"
+            android:text="@string/default_redirect_uri"
             android:lines="1" />
 
         <EditText
