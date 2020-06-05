@@ -27,8 +27,10 @@ class MainActivity : AppCompatActivity() {
     }
     private val domain =
         dotenv["DOMAIN"] ?: throw IllegalArgumentException("The ReachFive domain is undefined! Check your `env` file.")
-    private val clientId = dotenv["CLIENT_ID"]
-        ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
+    private val clientId =
+        dotenv["CLIENT_ID"] ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
+    private val redirectUri =
+        dotenv["REDIRECT_URI"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
 
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        val sdkConfig = SdkConfig(domain, clientId)
+        val sdkConfig = SdkConfig(domain, clientId, redirectUri)
 
         val providersCreators = listOf(
             GoogleProvider(),
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             if (email.text.toString().isNotEmpty()) {
                 this.reach5.startPasswordless(
                     email = email.text.toString(),
-                    redirectUrl = SdkConfig.REDIRECT_URI,
+                    redirectUrl = redirectUriInput.text.toString(),
                     successWithNoContent = { showToast("Email sent - Check your email box") },
                     failure = {
                         Log.d(TAG, "signup error=$it")
@@ -118,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 this.reach5.startPasswordless(
                     phoneNumber = phoneNumber.text.toString(),
-                    redirectUrl = SdkConfig.REDIRECT_URI,
+                    redirectUrl = redirectUriInput.text.toString(),
                     successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
                     failure = {
                         Log.d(TAG, "signup error=$it")

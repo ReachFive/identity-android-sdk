@@ -21,6 +21,14 @@
         android:padding="12dp">
 
         <EditText
+            android:id="@+id/redirectUriInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/redirect_uri"
+            android:lines="1" />
+
+        <EditText
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -94,8 +102,9 @@
             android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/verification_code"
-            android:lines="1" />
+            android:hint="@string/code"
+            android:lines="1"
+            android:paddingTop="0dp" />
 
         <Button
             android:id="@+id/phoneNumberPasswordless"

@@ -175,7 +175,7 @@ class ReachFive(
         val refreshRequest = RefreshRequest(
             clientId = sdkConfig.clientId,
             refreshToken = authToken.refreshToken ?: "",
-            redirectUri = SdkConfig.REDIRECT_URI
+            redirectUri = sdkConfig.redirectUri
         )
 
         reachFiveApi
@@ -367,7 +367,7 @@ class ReachFive(
             val authCodeRequest = AuthCodeRequest(
                 sdkConfig.clientId,
                 authorizationCode,
-                SdkConfig.REDIRECT_URI,
+                sdkConfig.redirectUri,
                 codeVerifier
             )
             reachFiveApi

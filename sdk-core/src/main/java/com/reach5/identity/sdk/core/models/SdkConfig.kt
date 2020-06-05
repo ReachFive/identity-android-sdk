@@ -6,9 +6,6 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class SdkConfig(
     val domain: String,
-    val clientId: String
-) : Parcelable {
-    companion object {
-        val REDIRECT_URI: String = "reachfive://callback"
-    }
-}
+    val clientId: String,
+    val redirectUri: String
+): Parcelable

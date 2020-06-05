@@ -72,7 +72,7 @@ class ReachFiveLoginActivity : Activity() {
 
     inner class ReachFiveWebViewClient : WebViewClient() {
 
-        private val PATTERN = Pattern.compile("^(reachfive:\\/\\/callback)(.*)$")
+        private val PATTERN = Pattern.compile("^(reachfive-\\w+:\\/\\/callback)(.*)$")
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)

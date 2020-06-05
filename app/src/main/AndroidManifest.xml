@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.reach5.identity.sdk.demo">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.reach5.identity.sdk.demo">
 
     <application
             android:allowBackup="true"
@@ -26,8 +27,9 @@
 
                 <data
                     android:host="callback"
-                    android:scheme="reachfive"
-                    android:pathPattern=".*" />
+                    android:scheme="reachfive-sg48CdAYohRPeRWZ9j1H"
+                    android:pathPattern=".*"
+                    tools:ignore="AppLinkUrlError" />
             </intent-filter>
         </activity>
 
