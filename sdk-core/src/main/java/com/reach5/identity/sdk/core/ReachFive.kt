@@ -381,7 +381,7 @@ class ReachFive(
     fun startPasswordless(
         email: String? = null,
         phoneNumber: String? = null,
-        redirectUrl: String,
+        redirectUrl: String = sdkConfig.redirectUri,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =

@@ -12,6 +12,5 @@
     <string name="facebook_app_id">2326266780745811</string>
     <string name="fb_login_protocol_scheme">fb2326266780745811</string>
     <string name="code">Code</string>
-    <string name="redirect_uri">Redirect URI</string>
-    <string name="default_redirect_uri">reachfive://callback</string>
+    <string name="redirect_uri">Redirect URI for Passwordless</string>
 </resources>

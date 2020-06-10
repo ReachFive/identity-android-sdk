@@ -107,26 +107,51 @@ class MainActivity : AppCompatActivity() {
         }
 
         startPasswordless.setOnClickListener {
+
+            val redirectUri = redirectUriInput.text.toString()
+
             if (email.text.toString().isNotEmpty()) {
-                this.reach5.startPasswordless(
-                    email = email.text.toString(),
-                    redirectUrl = redirectUriInput.text.toString(),
-                    successWithNoContent = { showToast("Email sent - Check your email box") },
-                    failure = {
-                        Log.d(TAG, "signup error=$it")
-                        showToast("Start passwordless with email Error ${it.message}")
-                    }
-                )
+                if (redirectUri != "") {
+                    this.reach5.startPasswordless(
+                        email = email.text.toString(),
+                        redirectUrl = redirectUri,
+                        successWithNoContent = { showToast("Email sent - Check your email box") },
+                        failure = {
+                            Log.d(TAG, "signup error=$it")
+                            showToast("Start passwordless with email Error ${it.message}")
+                        }
+                    )
+                } else {
+                    this.reach5.startPasswordless(
+                        email = email.text.toString(),
+                        successWithNoContent = { showToast("Email sent - Check your email box") },
+                        failure = {
+                            Log.d(TAG, "signup error=$it")
+                            showToast("Start passwordless with email Error ${it.message}")
+                        }
+                    )
+                }
             } else {
-                this.reach5.startPasswordless(
-                    phoneNumber = phoneNumber.text.toString(),
-                    redirectUrl = redirectUriInput.text.toString(),
-                    successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
-                    failure = {
-                        Log.d(TAG, "signup error=$it")
-                        showToast("Start passwordless with sms Error ${it.message}")
-                    }
-                )
+                if (redirectUri != "") {
+                    this.reach5.startPasswordless(
+                        phoneNumber = phoneNumber.text.toString(),
+                        redirectUrl = redirectUri,
+                        successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
+                        failure = {
+                            Log.d(TAG, "signup error=$it")
+                            showToast("Start passwordless with sms Error ${it.message}")
+                        }
+                    )
+                } else {
+                    this.reach5.startPasswordless(
+                        phoneNumber = phoneNumber.text.toString(),
+                        successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
+                        failure = {
+                            Log.d(TAG, "signup error=$it")
+                            showToast("Start passwordless with sms Error ${it.message}")
+                        }
+                    )
+                }
             }
         }
 
