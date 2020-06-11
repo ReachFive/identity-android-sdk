@@ -26,7 +26,7 @@ You also need to set the ReachFive client configuration in the `/app/src/main/as
 # formatted as key=value
 DOMAIN=my-reachfive-url
 CLIENT_ID=my-reachfive-client-id
-REDIRECT_URI=my-reachfive-url-scheme
+SCHEME=my-reachfive-url-scheme
 ```
 
 The URL scheme must follow this pattern: `reachfive-${clientId}://callback`.

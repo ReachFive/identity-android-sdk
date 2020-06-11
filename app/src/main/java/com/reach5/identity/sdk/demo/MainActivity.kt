@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity() {
         dotenv["DOMAIN"] ?: throw IllegalArgumentException("The ReachFive domain is undefined! Check your `env` file.")
     private val clientId =
         dotenv["CLIENT_ID"] ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
-    private val redirectUri =
-        dotenv["REDIRECT_URI"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
+    private val scheme =
+        dotenv["SCHEME"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        val sdkConfig = SdkConfig(domain, clientId, redirectUri)
+        val sdkConfig = SdkConfig(domain, clientId, scheme)
 
         val providersCreators = listOf(
             GoogleProvider(),
