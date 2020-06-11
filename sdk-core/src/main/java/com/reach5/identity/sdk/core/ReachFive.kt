@@ -175,7 +175,7 @@ class ReachFive(
         val refreshRequest = RefreshRequest(
             clientId = sdkConfig.clientId,
             refreshToken = authToken.refreshToken ?: "",
-            redirectUri = sdkConfig.redirectUri
+            redirectUri = sdkConfig.scheme
         )
 
         reachFiveApi
@@ -367,7 +367,7 @@ class ReachFive(
             val authCodeRequest = AuthCodeRequest(
                 sdkConfig.clientId,
                 authorizationCode,
-                sdkConfig.redirectUri,
+                sdkConfig.scheme,
                 codeVerifier
             )
             reachFiveApi
@@ -381,7 +381,7 @@ class ReachFive(
     fun startPasswordless(
         email: String? = null,
         phoneNumber: String? = null,
-        redirectUrl: String = sdkConfig.redirectUri,
+        redirectUrl: String = sdkConfig.scheme,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =

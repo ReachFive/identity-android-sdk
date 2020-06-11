@@ -20,7 +20,7 @@ internal data class WebViewProviderConfig(
             "client_id" to sdkConfig.clientId,
             "provider" to providerConfig.provider,
             "origin" to origin,
-            "redirect_uri" to sdkConfig.redirectUri,
+            "redirect_uri" to sdkConfig.scheme,
             "response_type" to "code",
             "scope" to scope.joinToString(" "),
             "code_challenge" to pkce.codeChallenge,

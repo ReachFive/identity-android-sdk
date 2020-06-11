@@ -7,5 +7,5 @@ import kotlinx.android.parcel.Parcelize
 data class SdkConfig(
     val domain: String,
     val clientId: String,
-    val redirectUri: String
+    val scheme: String
 ): Parcelable
