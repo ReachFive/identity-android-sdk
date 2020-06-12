@@ -68,7 +68,7 @@ class ConfiguredWebViewProvider(
             val authCodeRequest = AuthCodeRequest(
                 sdkConfig.clientId,
                 authCode,
-                SdkConfig.REDIRECT_URI,
+                sdkConfig.scheme,
                 pkce.codeVerifier
             )
             reachFiveApi

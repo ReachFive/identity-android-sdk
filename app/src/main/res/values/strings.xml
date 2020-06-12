@@ -7,9 +7,10 @@
     <string name="start_passwordless">Start Passwordless</string>
     <string name="phone_number_passwordless">Sms Passwordless</string>
     <string name="signup">Signup</string>
-    <string name="verification_code">Verification code</string>
     <string name="logout">Logout</string>
     <string name="java">Java</string>
     <string name="facebook_app_id">2326266780745811</string>
     <string name="fb_login_protocol_scheme">fb2326266780745811</string>
+    <string name="code">Code</string>
+    <string name="redirect_uri">Redirect URI for Passwordless</string>
 </resources>

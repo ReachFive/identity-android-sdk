@@ -9,7 +9,7 @@
 
 ## Installation
 
-Refer to the [public documentation](https://developer.reach5.co/guides/installation/android/) to install the SDKs and to initialize your ReachFive client.
+Refer to the [public documentation](https://developer.reachfive.com/sdk-android/index.html) to install the SDKs and to initialize your ReachFive client.
 
 ## Demo application
 
@@ -20,13 +20,16 @@ Clone the repository and import it in your favorite IDE (we advise you to use [A
 Since the demo application uses Google services, you need to create a new [Firebase](https://firebase.google.com/) project.
 Download the `google-services.json` file associated and put it at the root of the `/app` directory.
 
-You also need to set the ReachFive client's domain and client ID in the `/app/src/main/assets/env` file as follow:
+You also need to set the ReachFive client configuration in the `/app/src/main/assets/env` file as below:
 
 ```
 # formatted as key=value
 DOMAIN=my-reachfive-url
 CLIENT_ID=my-reachfive-client-id
+SCHEME=my-reachfive-url-scheme
 ```
+
+The URL scheme must follow this pattern: `reachfive-${clientId}://callback`.
 
 Finally install the dependencies with [Gradle](https://gradle.org/) (it will be done automatically with Android Studio), select a virtual device and run the application.
 
