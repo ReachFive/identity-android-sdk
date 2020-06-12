@@ -9,7 +9,7 @@
 
 ## Installation
 
-Refer to the [public documentation](https://developer.reach5.co/guides/installation/android/) to install the SDKs and to initialize your ReachFive client.
+Refer to the [public documentation](https://developer.reachfive.com/sdk-android/index.html) to install the SDKs and to initialize your ReachFive client.
 
 ## Demo application
 
