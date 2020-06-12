@@ -15,3 +15,5 @@ captures
 .externalNativeBuild
 .project
 app/src/main/assets/
+.vscode
+hosts
