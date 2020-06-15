@@ -1,5 +1,26 @@
 # Changelog
 
+## v5.5.0 (15/06/2020)
+
+### Changes
+
+- App-specific scheme handling (pattern `reachfive-${clientId}://callback`). This custom scheme has to be specified in `AndroidManifest.xml` application and passed during SDK configuration in `SdkConfig` object:
+```
+DOMAIN=my-reachfive-url
+CLIENT_ID=my-reachfive-client-id
+SCHEME=my-reachfive-url-scheme
+```
+
+```kotlin
+val sdkConfig = SdkConfig(
+  domain = DOMAIN,
+  clientId = CLIENT_ID,
+  scheme = SCHEME
+)
+```
+
+- This custom scheme will be used as a redirect URL by default in payload of Start Passwordless call.
+
 ## v5.4.6 (10/12/2019)
 
 ## v5.4.5 (09/12/2019)
