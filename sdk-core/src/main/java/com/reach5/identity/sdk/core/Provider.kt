@@ -35,7 +35,7 @@ interface Provider {
     /**
      * Initiate login action
      */
-    fun login(origin: String, scope: Collection<String>?, activity: Activity)
+    fun login(origin: String, scope: Collection<String>, activity: Activity)
 
     /**
      * Handle activity result of login action

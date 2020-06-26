@@ -99,7 +99,7 @@ class ReachFive(
         return providers
     }
 
-    fun loginWithProvider(name: String, scope: Collection<String>?, origin: String, activity: Activity) {
+    fun loginWithProvider(name: String, scope: Collection<String>, origin: String, activity: Activity) {
         getProvider(name)?.login(origin, scope, activity)
     }
 
