@@ -33,7 +33,8 @@ class MainActivityTest {
 
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
-    private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID)
+    private val SCHEME = dotenv["SCHEME"] ?: ""
+    private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID, SCHEME)
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -48,7 +49,7 @@ class MainActivityTest {
 
         clientTest(
             initialize = false,
-            sdkConfig = SdkConfig("", CLIENT_ID)
+            sdkConfig = SdkConfig("", CLIENT_ID, SCHEME)
         ) { client, _ ->
             client.initialize()
         }

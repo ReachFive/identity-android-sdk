@@ -68,7 +68,8 @@ class MainActivity : AppCompatActivity() {
 
         providers.setOnItemClickListener { _, _, position, _ ->
             val provider = reach5.getProviders()[position]
-            this.reach5.loginWithProvider(provider.name, "home", this)
+            val scope = setOf("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write")
+            this.reach5.loginWithProvider(name = provider.name, origin = "home", scope = scope, activity = this)
         }
 
         passwordSignup.setOnClickListener {
