@@ -34,6 +34,7 @@ class MainActivityTest {
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
     private val SCHEME = dotenv["SCHEME"] ?: ""
+
     private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID, SCHEME)
 
     @get:Rule
@@ -166,7 +167,11 @@ class MainActivityTest {
     @Test
     fun testSuccessfulSignupWithAddress() = clientTest { client, passTest ->
         val addresses = listOf(
-            ProfileAddress(title = "Home", isDefault = true, addressType = ProfileAddressType.billing),
+            ProfileAddress(
+                title = "Home",
+                isDefault = true,
+                addressType = ProfileAddressType.billing
+            ),
             ProfileAddress(title = "Work", isDefault = false)
         )
         val theProfile = aProfile().copy(addresses = addresses)
@@ -189,7 +194,10 @@ class MainActivityTest {
                             assertEquals(expectedAddress.title, actualAddress?.title)
                             assertEquals(expectedAddress.isDefault, actualAddress?.isDefault)
                             assertEquals(expectedAddress.addressType, actualAddress?.addressType)
-                            assertEquals(expectedAddress.streetAddress, actualAddress?.streetAddress)
+                            assertEquals(
+                                expectedAddress.streetAddress,
+                                actualAddress?.streetAddress
+                            )
                             assertEquals(expectedAddress.locality, actualAddress?.locality)
                             assertEquals(expectedAddress.region, actualAddress?.region)
                             assertEquals(expectedAddress.postalCode, actualAddress?.postalCode)
@@ -296,7 +304,10 @@ class MainActivityTest {
                     success = { fail("This test should have failed because the password is incorrect.") },
                     failure = { error ->
                         assertEquals("invalid_grant", error.data?.error)
-                        assertEquals("Invalid phone number or password", error.data?.errorDescription)
+                        assertEquals(
+                            "Invalid phone number or password",
+                            error.data?.errorDescription
+                        )
                         passTest()
                     }
                 )
@@ -349,8 +360,14 @@ class MainActivityTest {
                     authToken,
                     success = {
                         assertNotNull(it.customFields)
-                        assertEquals(customFields["test_string"], it.customFields?.get("test_string"))
-                        assertEquals(customFields["mobile_number1"], it.customFields?.get("mobile_number1"))
+                        assertEquals(
+                            customFields["test_string"],
+                            it.customFields?.get("test_string")
+                        )
+                        assertEquals(
+                            customFields["mobile_number1"],
+                            it.customFields?.get("mobile_number1")
+                        )
                         passTest()
                     },
                     failure = { failWithReachFiveError(it) }
@@ -452,6 +469,7 @@ class MainActivityTest {
                     failure = { error ->
                         assertEquals("email_already_exists", error.data?.error)
                         assertEquals("Email already in use", error.data?.errorDescription)
+                        assertEquals("error.email.alreadyInUse", error.data?.errorMessageKey)
                         passTest()
                     }
                 )
@@ -658,7 +676,11 @@ class MainActivityTest {
             scope,
             { authToken ->
                 client.updatePassword(
-                    UpdatePasswordRequest.AccessTokenParams(authToken, profile.password, newPassword),
+                    UpdatePasswordRequest.AccessTokenParams(
+                        authToken,
+                        profile.password,
+                        newPassword
+                    ),
                     successWithNoContent = {
                         client.loginWithPassword(
                             profile.email!!,
@@ -684,7 +706,11 @@ class MainActivityTest {
             scope,
             { authToken ->
                 client.updatePassword(
-                    UpdatePasswordRequest.AccessTokenParams(authToken, profile.password, profile.password),
+                    UpdatePasswordRequest.AccessTokenParams(
+                        authToken,
+                        profile.password,
+                        profile.password
+                    ),
                     successWithNoContent = { fail("This test should have failed because the password has not changed.") },
                     failure = { error ->
                         assertEquals("invalid_request", error.data?.error)
@@ -711,7 +737,11 @@ class MainActivityTest {
             scope,
             {
                 client.updatePassword(
-                    UpdatePasswordRequest.EmailParams(profile.email!!, incorrectVerificationCode, "NEW-PASSWORD"),
+                    UpdatePasswordRequest.EmailParams(
+                        profile.email!!,
+                        incorrectVerificationCode,
+                        "NEW-PASSWORD"
+                    ),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
                         assertEquals("invalid_grant", error.data?.error)
@@ -735,7 +765,11 @@ class MainActivityTest {
             scope,
             {
                 client.updatePassword(
-                    UpdatePasswordRequest.SmsParams(profile.phoneNumber!!, incorrectVerificationCode, "NEW-PASSWORD"),
+                    UpdatePasswordRequest.SmsParams(
+                        profile.phoneNumber!!,
+                        incorrectVerificationCode,
+                        "NEW-PASSWORD"
+                    ),
                     successWithNoContent = { fail("This test should have failed because the verification code is incorrect.") },
                     failure = { error ->
                         assertEquals("invalid_grant", error.data?.error)
@@ -905,7 +939,7 @@ class MainActivityTest {
             familyName = "Doe",
             gender = "male",
             email = anEmail(),
-            password = "!Password123!"
+            password = "IAMNOTAWEAKPASSWORD!!!"
         )
 
     private fun anEmail(): String = UUID.randomUUID().let { uuid -> "$uuid@testaccount.io" }
@@ -927,6 +961,7 @@ class MainActivityTest {
             """
                 Error: ${data.error}
                 Description: ${data.errorDescription}
+                Error message key: ${data.errorMessageKey}
                 Details: ${data.errorDetails
                 ?.joinToString("\n", "> ") { (f, m) -> "'$f': $m" }
                 ?.let { "\n$it" } ?: "N/A"
@@ -934,7 +969,7 @@ class MainActivityTest {
             """.trimIndent()
         }
 
-        fail("\nReason: ${e.message} $maybeData￿")
+        fail("\nReason: ${e.message} \n$maybeData￿")
     }
 
     private val TEST_SHOULD_FAIL_SCOPE_MISSING =
