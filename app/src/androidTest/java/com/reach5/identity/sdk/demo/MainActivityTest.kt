@@ -33,7 +33,9 @@ class MainActivityTest {
 
     private val DOMAIN = dotenv["DOMAIN"] ?: ""
     private val CLIENT_ID = dotenv["CLIENT_ID"] ?: ""
-    private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID)
+    private val SCHEME = dotenv["SCHEME"] ?: ""
+
+    private val defaultSdkConfig: SdkConfig = SdkConfig(DOMAIN, CLIENT_ID, SCHEME)
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -48,7 +50,7 @@ class MainActivityTest {
 
         clientTest(
             initialize = false,
-            sdkConfig = SdkConfig("", CLIENT_ID)
+            sdkConfig = SdkConfig("", CLIENT_ID, SCHEME)
         ) { client, _ ->
             client.initialize()
         }
@@ -451,6 +453,7 @@ class MainActivityTest {
                     failure = { error ->
                         assertEquals("email_already_exists", error.data?.error)
                         assertEquals("Email already in use", error.data?.errorDescription)
+                        assertEquals("error.email.alreadyInUse", error.data?.errorMessageKey)
                         passTest()
                     }
                 )
@@ -904,7 +907,7 @@ class MainActivityTest {
             familyName = "Doe",
             gender = "male",
             email = anEmail(),
-            password = "!Password123!"
+            password = "IAMNOTAWEAKPASSWORD!!!"
         )
 
     private fun anEmail(): String = UUID.randomUUID().let { uuid -> "$uuid@testaccount.io" }
@@ -926,6 +929,7 @@ class MainActivityTest {
             """
                 Error: ${data.error}
                 Description: ${data.errorDescription}
+                Error message key: ${data.errorMessageKey}
                 Details: ${data.errorDetails
                 ?.joinToString("\n", "> ") { (f, m) -> "'$f': $m" }
                 ?.let { "\n$it" } ?: "N/A"
@@ -933,7 +937,7 @@ class MainActivityTest {
             """.trimIndent()
         }
 
-        fail("\nReason: ${e.message} $maybeData￿")
+        fail("\nReason: ${e.message} \n$maybeData￿")
     }
 
     private val TEST_SHOULD_FAIL_SCOPE_MISSING =
