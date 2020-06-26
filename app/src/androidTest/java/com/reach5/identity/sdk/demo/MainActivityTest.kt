@@ -468,7 +468,7 @@ class MainActivityTest {
                     success = { fail("This test should have failed because the email has not changed.") },
                     failure = { error ->
                         assertEquals("email_already_exists", error.data?.error)
-                        assertEquals("Toto", error.data?.errorDescription)
+                        assertEquals("Email already in use", error.data?.errorDescription)
                         assertEquals("error.email.alreadyInUse", error.data?.errorMessageKey)
                         passTest()
                     }
