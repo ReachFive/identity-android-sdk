@@ -22,8 +22,12 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.getProviders()
     }
 
+    fun loginWithNativeProvider(name: String, scope: Collection<String>, origin: String, activity: Activity) {
+        return reach5.loginWithProvider(name, scope, origin, activity)
+    }
+
     fun loginWithNativeProvider(name: String, origin: String, activity: Activity) {
-        return reach5.loginWithProvider(name, origin, activity)
+        return reach5.loginWithProvider(name, emptySet(), origin, activity)
     }
 
     /**

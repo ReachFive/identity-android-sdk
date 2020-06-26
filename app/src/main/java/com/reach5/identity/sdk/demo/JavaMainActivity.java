@@ -21,7 +21,11 @@ import com.reach5.identity.sdk.webview.WebViewProvider;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class JavaMainActivity extends AppCompatActivity {
     private Dotenv dotenv = Dotenv.configure().directory("/assets").filename("env").load();
@@ -64,7 +68,8 @@ public class JavaMainActivity extends AppCompatActivity {
 
         providers.setOnItemClickListener((parent, view, position, id) -> {
             Provider provider = reach5.getProviders().get(position);
-            reach5.loginWithNativeProvider(provider.getName(), "home", this);
+            Set<String> scope = new HashSet<>(Arrays.asList("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write"));
+            reach5.loginWithNativeProvider(provider.getName(), scope, "home", this);
         });
 
         EditText emailEditText = findViewById(R.id.email);
