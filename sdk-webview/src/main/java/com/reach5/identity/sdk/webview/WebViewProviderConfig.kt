@@ -11,18 +11,18 @@ import java.net.URLEncoder
 internal data class WebViewProviderConfig(
     val providerConfig: ProviderConfig,
     val sdkConfig: SdkConfig,
-    val origin: String
+    val origin: String,
+    val scope: String
 ) : Parcelable {
 
     fun buildUrl(pkce: Pkce): String {
-        val scope = (providerConfig.scope)
         val params = mapOf(
             "client_id" to sdkConfig.clientId,
             "provider" to providerConfig.provider,
             "origin" to origin,
             "redirect_uri" to sdkConfig.scheme,
             "response_type" to "code",
-            "scope" to scope.joinToString(" "),
+            "scope" to scope,
             "code_challenge" to pkce.codeChallenge,
             "code_challenge_method" to pkce.codeChallengeMethod
         ) + SdkInfos.getQueries()
@@ -35,6 +35,7 @@ internal data class WebViewProviderConfig(
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(ProviderConfig::class.java.classLoader)!!,
         parcel.readParcelable(SdkConfig::class.java.classLoader)!!,
+        parcel.readString()!!,
         parcel.readString()!!
     )
 
@@ -42,6 +43,7 @@ internal data class WebViewProviderConfig(
         parcel.writeParcelable(providerConfig, flags)
         parcel.writeParcelable(sdkConfig, flags)
         parcel.writeString(origin)
+        parcel.writeString(scope)
     }
 
     override fun describeContents(): Int {
