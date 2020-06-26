@@ -49,7 +49,7 @@ class ConfiguredWebViewProvider(
                 providerConfig = providerConfig,
                 sdkConfig = sdkConfig,
                 origin = origin,
-                scope = providerConfig.scope.plus(scope ?: emptySet()).joinToString(" ")
+                scope = (scope ?: emptySet()).joinToString(" ")
             )
         )
         intent.putExtra(PKCE, Pkce.generate())
