@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.6.0 (26/06/2020)
+
+### Features
+
+- Add the `scope` parameter to the [`loginWithProvider`](https://developer.reachfive.com/sdk-android/loginWithProvider.html) method.
+
 ## v5.5.0 (15/06/2020)
 
 ### Changes
