@@ -54,7 +54,7 @@ class ConfiguredFacebookProvider(
         FacebookSdk.sdkInitialize(activity.applicationContext)
     }
 
-    override fun login(origin: String, activity: Activity) {
+    override fun login(origin: String, scope: Collection<String>?, activity: Activity) {
         this.origin = origin
         LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)
     }

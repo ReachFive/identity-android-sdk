@@ -85,7 +85,7 @@ class ConfiguredGoogleProvider(
             .build()
     }
 
-    override fun login(origin: String, activity: Activity) {
+    override fun login(origin: String, scope: Collection<String>?, activity: Activity) {
         this.origin = origin
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
         activity.startActivityForResult(signInIntent, REQUEST_CODE)
@@ -120,7 +120,7 @@ class ConfiguredGoogleProvider(
     ) {
         if (PERMISSIONS_REQUEST_GET_ACCOUNTS == requestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                login(origin, activity)
+                login(origin = origin, scope = emptySet(), activity = activity)
             } else {
                 failure(ReachFiveError.from("permission denied"))
             }

@@ -42,13 +42,14 @@ class ConfiguredWebViewProvider(
         const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
 
-    override fun login(origin: String, activity: Activity) {
+    override fun login(origin: String, scope: Collection<String>?, activity: Activity) {
         val intent = Intent(activity, ReachFiveLoginActivity::class.java)
         intent.putExtra(
             BUNDLE_ID, WebViewProviderConfig(
                 providerConfig = providerConfig,
                 sdkConfig = sdkConfig,
-                origin = origin
+                origin = origin,
+                scope = providerConfig.scope.plus(scope ?: emptySet()).joinToString(" ")
             )
         )
         intent.putExtra(PKCE, Pkce.generate())
