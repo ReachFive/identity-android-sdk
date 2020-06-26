@@ -68,7 +68,7 @@ public class JavaMainActivity extends AppCompatActivity {
 
         providers.setOnItemClickListener((parent, view, position, id) -> {
             Provider provider = reach5.getProviders().get(position);
-            Set<String> scope = new HashSet(Arrays.asList("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write"));
+            Set<String> scope = new HashSet<>(Arrays.asList("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write"));
             reach5.loginWithNativeProvider(provider.getName(), scope, "home", this);
         });
 
