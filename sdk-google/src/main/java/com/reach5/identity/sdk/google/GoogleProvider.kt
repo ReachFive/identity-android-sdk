@@ -46,6 +46,7 @@ class ConfiguredGoogleProvider(
     private val activity: Activity
 ) : Provider {
     private lateinit var origin: String
+    private lateinit var scope: Collection<String>
 
     private val googleApiClient: GoogleApiClient
 
@@ -85,8 +86,9 @@ class ConfiguredGoogleProvider(
             .build()
     }
 
-    override fun login(origin: String, scope: Collection<String>?, activity: Activity) {
+    override fun login(origin: String, scope: Collection<String>, activity: Activity) {
         this.origin = origin
+        this.scope = scope
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
         activity.startActivityForResult(signInIntent, REQUEST_CODE)
     }
@@ -103,7 +105,7 @@ class ConfiguredGoogleProvider(
             val googleSigninAccount = task.getResult(ApiException::class.java)
             val authCode = googleSigninAccount?.serverAuthCode
             if (authCode != null) {
-                loginWithProvider(authCode, origin, success, failure)
+                loginWithProvider(authCode, origin, scope, success, failure)
             } else {
                 failure(ReachFiveError.from("No auth code"))
             }
@@ -120,7 +122,7 @@ class ConfiguredGoogleProvider(
     ) {
         if (PERMISSIONS_REQUEST_GET_ACCOUNTS == requestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                login(origin = origin, scope = emptySet(), activity = activity)
+                login(origin = origin, scope = scope, activity = activity)
             } else {
                 failure(ReachFiveError.from("permission denied"))
             }
@@ -130,6 +132,7 @@ class ConfiguredGoogleProvider(
     private fun loginWithProvider(
         code: String,
         origin: String,
+        scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -138,7 +141,7 @@ class ConfiguredGoogleProvider(
             clientId = sdkConfig.clientId,
             code = code,
             origin = origin,
-            scope = (providerConfig.scope ?: setOf("openid")).joinToString(" ")
+            scope = scope.joinToString(" ")
         )
         reachFiveApi
             .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())

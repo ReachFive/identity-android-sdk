@@ -44,6 +44,7 @@ class ConfiguredFacebookProvider(
     override val name: String = FacebookProvider.NAME
 
     private lateinit var origin: String
+    private lateinit var scope: Collection<String>
 
     private val callbackManager = CallbackManager.Factory.create()
 
@@ -54,8 +55,9 @@ class ConfiguredFacebookProvider(
         FacebookSdk.sdkInitialize(activity.applicationContext)
     }
 
-    override fun login(origin: String, scope: Collection<String>?, activity: Activity) {
+    override fun login(origin: String, scope: Collection<String>, activity: Activity) {
         this.origin = origin
+        this.scope = scope
         LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)
     }
 
@@ -75,7 +77,7 @@ class ConfiguredFacebookProvider(
                         providerToken = accessToken,
                         clientId = sdkConfig.clientId,
                         origin = origin,
-                        scope = providerConfig.scope.joinToString { " " }.plus("openid")
+                        scope = scope.joinToString(" ")
                     )
                     reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(
                         ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure)
