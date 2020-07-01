@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.7.0 (01/07/2020)
+
+### Features
+
+- The field `errorMessageKey` is now returned in the error response object. See for example  [`updateEmail`](https://developer.reachfive.com/sdk-android/updateEmail.html#reachfiveerror) to view the documentation of the new field.
+
 ## v5.6.0 (26/06/2020)
 
 ### Features
