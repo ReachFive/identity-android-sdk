@@ -20,7 +20,7 @@ Clone the repository and import it in your favorite IDE (we advise you to use [A
 Since the demo application uses Google services, you need to create a new [Firebase](https://firebase.google.com/) project.
 Download the `google-services.json` file associated and put it at the root of the `/app` directory.
 
-You also need to set the ReachFive client configuration in the `/app/src/main/assets/env` file as below:
+You also need to set the ReachFive client configuration in the `/app/src/main/assets/env` file as below (create the `assets` folder if necessary):
 
 ```
 # formatted as key=value
