@@ -34,6 +34,10 @@
         </activity>
 
         <activity
+                android:name="com.reach5.identity.sdk.demo.AuthenticatedActivity"
+                android:screenOrientation="portrait"/>
+
+        <activity
                 android:name="com.reach5.identity.sdk.webview.ReachFiveLoginActivity"
                 android:screenOrientation="portrait"/>
         <activity

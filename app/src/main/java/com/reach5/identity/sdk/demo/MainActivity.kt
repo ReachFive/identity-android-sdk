@@ -11,6 +11,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
+import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.AUTH_TOKEN
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
@@ -33,8 +34,6 @@ class MainActivity : AppCompatActivity() {
         dotenv["SCHEME"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
-
-    private lateinit var authToken: AuthToken
 
     private lateinit var providerAdapter: ProvidersAdapter
 
@@ -183,11 +182,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleLoginSuccess(authToken: AuthToken) {
         try {
-            this.authToken = authToken
-            val user = authToken.user
-            Log.d(TAG, "login user= success=$authToken")
-            supportActionBar?.title = user?.email
-            showToast("Login success= token=${authToken.accessToken}")
+            val intent = Intent(this, AuthenticatedActivity::class.java)
+            intent.putExtra(AUTH_TOKEN, authToken)
+
+            startActivity(intent)
         } catch (e: Exception) {
             Log.d(TAG, "Login error=$authToken")
             showToast("Login error=$authToken")
