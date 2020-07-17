@@ -50,6 +50,7 @@ class AuthenticatedActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
+        menu?.findItem(R.id.menu_java)?.isVisible = false
         return super.onCreateOptionsMenu(menu)
     }
 }

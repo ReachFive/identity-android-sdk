@@ -224,13 +224,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_logout -> {
-                reach5.logout(successWithNoContent = { showToast("Logout success") }) {
-                    Log.d(TAG, "logout error=${it.message}")
-                    showToast("Logout Error ${it.message}")
-                }
-                true
-            }
             R.id.menu_java -> {
                 this.startActivity(Intent(this, JavaMainActivity::class.java))
                 true
@@ -243,6 +236,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
+        menu?.findItem(R.id.menu_logout)?.isVisible = false
         return super.onCreateOptionsMenu(menu)
     }
 
