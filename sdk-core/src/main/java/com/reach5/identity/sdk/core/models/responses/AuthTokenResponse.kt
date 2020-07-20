@@ -1,9 +1,11 @@
-package com.reach5.identity.sdk.core.models
+package com.reach5.identity.sdk.core.models.responses
 
 import android.os.Parcelable
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.map
 import com.google.gson.annotations.SerializedName
+import com.reach5.identity.sdk.core.models.OpenIdUser
+import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.utils.Jwt
 import kotlinx.android.parcel.Parcelize
 
@@ -66,7 +68,11 @@ data class AuthTokenResponse(
                 }
             }
         } else {
-            Result.error(ReachFiveError.from("No access_token returned"))
+            Result.error(
+                ReachFiveError.from(
+                    "No access_token returned"
+                )
+            )
         }
     }
 
@@ -75,7 +81,9 @@ data class AuthTokenResponse(
             if (idToken != null) {
                 Jwt.decode(idToken, OpenIdUser::class.java)
             } else {
-                throw ReachFiveError.from("Invalid id_token")
+                throw ReachFiveError.from(
+                    "Invalid id_token"
+                )
             }
         }
     }

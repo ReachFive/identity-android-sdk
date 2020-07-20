@@ -42,6 +42,7 @@ dependencies {
     implementation "com.github.kittinunf.result:result:2.2.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.squareup.okhttp3:logging-interceptor:4.0.0"
+    implementation "com.google.android.gms:play-services-fido:18.1.0"
 }
 
 apply from: rootProject.file("bintray.gradle")

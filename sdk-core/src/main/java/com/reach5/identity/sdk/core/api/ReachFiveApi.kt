@@ -12,9 +12,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
-import android.content.Intent
-import android.net.Uri
-import android.util.Log
+import com.reach5.identity.sdk.core.models.responses.AuthTokenResponse
+import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.models.responses.RegistrationOptions
 import com.reach5.identity.sdk.core.utils.*
 
 
@@ -107,6 +107,12 @@ interface ReachFiveApi {
         @Body passwordlessAuthorizationCodeRequest: PasswordlessAuthorizationCodeRequest,
         @QueryMap options: Map<String, String>
     ): Call<AuthTokenResponse>
+
+    @POST("/identity/v1/webauthn/registration-options")
+    fun createNewWebAuthnRegistrationOptions(
+        @Header("Authorization") authorization: String,
+        @Body webAuthnRegistrationRequest: WebAuthnRegistrationRequest
+    ): Call<RegistrationOptions>
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {

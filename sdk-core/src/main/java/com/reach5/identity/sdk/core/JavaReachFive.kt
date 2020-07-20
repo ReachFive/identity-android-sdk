@@ -5,6 +5,7 @@ import android.content.Intent
 import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
+import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.utils.Callback
 
 class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
