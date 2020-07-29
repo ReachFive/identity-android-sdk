@@ -2,17 +2,17 @@ package com.reach5.identity.sdk.facebook
 
 import android.app.Activity
 import android.content.Intent
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.FacebookSdk
+import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.reach5.identity.sdk.core.Provider
 import com.reach5.identity.sdk.core.ProviderCreator
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
-import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.ProviderConfig
+import com.reach5.identity.sdk.core.models.ReachFiveError
+import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.SdkInfos
 import com.reach5.identity.sdk.core.models.requests.LoginProviderRequest
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.utils.Failure
@@ -94,7 +94,12 @@ class ConfiguredFacebookProvider(
 
             override fun onError(error: FacebookException?) {
                 if (error != null) {
-                    failure(ReachFiveError.from(error))
+                    if (error is FacebookAuthorizationException) {
+                        if (AccessToken.getCurrentAccessToken() != null) {
+                            LoginManager.getInstance().logOut()
+                        }
+                    } else
+                        failure(ReachFiveError.from(error))
                 } else {
                     failure(ReachFiveError.from("Technical error"))
                 }
