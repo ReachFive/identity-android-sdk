@@ -52,7 +52,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         phoneNumberTextView.text = this.authToken.user?.phoneNumber
 
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, "Android") {
+            this.reach5.addNewWebAuthnDevice(this.authToken, "Android", "https://dev-sandbox-268508.web.app") {
                 Log.d(TAG, "addNewDevice error=$it")
                 showToast("Login error=${it.message}")
             }

@@ -451,12 +451,13 @@ class ReachFive (
     fun addNewWebAuthnDevice(
         authToken: AuthToken,
         friendlyName: String,
+        origin: String,
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
             .createNewWebAuthnRegistrationOptions(
                 formatAuthorization(authToken),
-                WebAuthnRegistrationRequest("http://sdk-mobile-sandbox.reach5.net", friendlyName)
+                WebAuthnRegistrationRequest(origin, friendlyName)
             )
             .enqueue(ReachFiveApiCallback(
                 success = {
