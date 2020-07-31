@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
@@ -12,6 +13,8 @@ import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Compan
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationPublicKeyCredential
+import com.reach5.identity.sdk.core.models.responses.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Pkce
 import com.reach5.identity.sdk.core.utils.Success
@@ -25,7 +28,8 @@ class ReachFive (
 
     companion object {
         private const val TAG = "Reach5"
-        private const val REGISTER_REQUEST_CODE = 1
+        const val FIDO2_REGISTER_REQUEST_CODE = 1
+
         private const val codeResponseType = "code"
         private const val tokenResponseType = "token"
     }
@@ -453,9 +457,9 @@ class ReachFive (
         friendlyName: String,
         origin: String,
         failure: Failure<ReachFiveError>
-    ) =
+    ): Unit =
         reachFiveApi
-            .createNewWebAuthnRegistrationOptions(
+            .createWebAuthnRegistrationOptions(
                 formatAuthorization(authToken),
                 WebAuthnRegistrationRequest(origin, friendlyName)
             )
@@ -466,7 +470,7 @@ class ReachFive (
                     fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
                         if (fido2PendingIntent != null) {
                             Log.d(TAG, "Launching Fido2 Pending Intent")
-                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, REGISTER_REQUEST_CODE, null, 0, 0, 0)
+                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, FIDO2_REGISTER_REQUEST_CODE, null, 0, 0, 0)
                         }
                     }
                   fido2PendingIntentTask.addOnFailureListener {
@@ -475,6 +479,23 @@ class ReachFive (
                 },
                 failure = failure
             ))
+
+    fun onAddNewWebAuthnDeviceResult(
+        authToken: AuthToken,
+        fido2Response: ByteArray,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val authenticatorAttestationResponse: AuthenticatorAttestationResponse = AuthenticatorAttestationResponse.deserializeFromBytes(fido2Response)
+        val registrationPublicKeyCredential: RegistrationPublicKeyCredential = createRegistrationPublicKeyCredential(authenticatorAttestationResponse)
+
+        return reachFiveApi
+            .registrateWithWebAuthn(formatAuthorization(authToken), registrationPublicKeyCredential)
+            .enqueue(ReachFiveApiCallback(
+                successWithNoContent = successWithNoContent,
+                failure = failure
+            ))
+    }
 
     fun onActivityResult(
         requestCode: Int,

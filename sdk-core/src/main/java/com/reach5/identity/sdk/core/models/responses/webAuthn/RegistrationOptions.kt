@@ -1,10 +1,11 @@
-package com.reach5.identity.sdk.core.models.responses
+package com.reach5.identity.sdk.core.models.responses.webAuthn
 
 import android.os.Parcelable
+import android.util.Base64
 import com.google.android.gms.fido.common.Transport
+import com.google.android.gms.fido.fido2.api.common.*
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
-import com.google.android.gms.fido.fido2.api.common.*
 
 @Parcelize
 data class RegistrationOptions(
@@ -28,7 +29,7 @@ data class RegistrationOptions(
                 null,
                 publicKey.user.displayName
             ))
-            .setChallenge(publicKey.challenge.toByteArray())
+            .setChallenge(Base64.decode(publicKey.challenge, Base64.DEFAULT))
             .setParameters(publicKey.pubKeyCredParams.map {
                 PublicKeyCredentialParameters(it.type, it.alg)
             })

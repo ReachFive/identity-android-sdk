@@ -10,8 +10,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.ReachFive
+import com.reach5.identity.sdk.core.ReachFive.Companion.FIDO2_REGISTER_REQUEST_CODE
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import kotlinx.android.synthetic.main.webauthn.*
@@ -54,7 +56,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         phoneNumberTextView.text = this.authToken.user?.phoneNumber
 
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, "Android", "https://dev-sandbox-268508.web.app") {
+            this.reach5.addNewWebAuthnDevice(this.authToken, "Android3", "https://dev-sandbox-268508.web.app") {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
                 showToast("Login error=${it.message}")
             }
@@ -70,6 +72,11 @@ class AuthenticatedActivity : AppCompatActivity() {
                 data?.let {
                     if (it.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
                         handleErrorResponse(data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
+                    } else if (it.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+                        val fido2Response = data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+                        when (requestCode) {
+                            FIDO2_REGISTER_REQUEST_CODE -> handleRegisterResponse(fido2Response)
+                        }
                     }
                 }
             }
@@ -113,5 +120,18 @@ class AuthenticatedActivity : AppCompatActivity() {
 
         Log.e(TAG, "errorCode.name: $errorName")
         Log.e(TAG, "errorMessage: $errorMessage")
+    }
+
+    private fun handleRegisterResponse(fido2Response: ByteArray) {
+        reach5.onAddNewWebAuthnDeviceResult(
+            authToken = this.authToken,
+            fido2Response = fido2Response,
+            successWithNoContent = { showToast("New FIDO2 device registered") },
+            failure = {
+                Log.d(TAG, "onAddNewWebAuthnDeviceResult error=$it")
+                showToast("Login error=${it.message}")
+            }
+        )
+
     }
 }
