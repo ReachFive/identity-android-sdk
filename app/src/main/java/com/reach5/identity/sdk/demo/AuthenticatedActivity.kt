@@ -32,6 +32,8 @@ class AuthenticatedActivity : AppCompatActivity() {
     private lateinit var reach5: ReachFive
     private lateinit var authToken: AuthToken
 
+    private lateinit var deviceAdapter: DevicesAdapter
+
     companion object {
         const val AUTH_TOKEN = "AUTH_TOKEN"
         const val SDK_CONFIG = "SDK_CONFIG"
@@ -68,6 +70,20 @@ class AuthenticatedActivity : AppCompatActivity() {
                 showToast("Login error=${it.message}")
             }
         }
+
+        reach5.listWebAuthnDevices(
+            authToken,
+            success = {
+                deviceAdapter = DevicesAdapter(applicationContext, it)
+                deviceAdapter.refresh(it)
+
+                devices.adapter = deviceAdapter
+            },
+            failure = {
+                Log.d(TAG,"listWebAuthnDevices error=$it")
+                showToast("Login error=${it.message}")
+            }
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

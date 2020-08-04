@@ -29,4 +29,17 @@
                 android:text="@string/add_new_fido2_device" />
     </LinearLayout>
 
+    <TextView
+            android:id="@+id/devicesTitle"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/devices_title" />
+
+    <ListView
+            android:id="@+id/devices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" />
 </LinearLayout>
