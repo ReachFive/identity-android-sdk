@@ -16,11 +16,19 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.ReachFive.Companion.FIDO2_REGISTER_REQUEST_CODE
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.responses.AuthToken
+import io.github.cdimascio.dotenv.dotenv
 import kotlinx.android.synthetic.main.webauthn.*
 
 
 class AuthenticatedActivity : AppCompatActivity() {
     private val TAG = "Reach5_AuthActivity"
+
+    private val dotenv = dotenv {
+        directory = "/assets"
+        filename = "env"
+    }
+    private val origin =
+        dotenv["RP_ID"] ?: throw IllegalArgumentException("The relying server ID is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
     private lateinit var authToken: AuthToken
@@ -56,7 +64,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         phoneNumberTextView.text = this.authToken.user?.phoneNumber
 
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, "Android3", "https://dev-sandbox-268508.web.app") {
+            this.reach5.addNewWebAuthnDevice(this.authToken, "Android3", origin) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
                 showToast("Login error=${it.message}")
             }
