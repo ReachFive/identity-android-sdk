@@ -10,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.fido.Fido
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.ReachFive.Companion.FIDO2_REGISTER_REQUEST_CODE
@@ -64,7 +63,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         phoneNumberTextView.text = this.authToken.user?.phoneNumber
 
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, "Android3", origin) {
+            this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.toString()) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
                 showToast("Login error=${it.message}")
             }

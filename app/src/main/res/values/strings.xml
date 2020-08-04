@@ -13,5 +13,6 @@
     <string name="fb_login_protocol_scheme">fb2326266780745811</string>
     <string name="code">Code</string>
     <string name="redirect_uri">Redirect URI for Passwordless</string>
+    <string name="friendly_name">Device name</string>
     <string name="add_new_fido2_device">Add new FIDO2 device</string>
 </resources>

@@ -454,14 +454,16 @@ class ReachFive (
 
     fun addNewWebAuthnDevice(
         authToken: AuthToken,
-        friendlyName: String,
         origin: String,
+        friendlyName: String?,
         failure: Failure<ReachFiveError>
-    ): Unit =
+    ) {
+        val newFriendlyName = if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
+
         reachFiveApi
             .createWebAuthnRegistrationOptions(
                 formatAuthorization(authToken),
-                WebAuthnRegistrationRequest(origin, friendlyName)
+                WebAuthnRegistrationRequest(origin, newFriendlyName)
             )
             .enqueue(ReachFiveApiCallback(
                 success = {
@@ -479,6 +481,7 @@ class ReachFive (
                 },
                 failure = failure
             ))
+    }
 
     fun onAddNewWebAuthnDeviceResult(
         authToken: AuthToken,
