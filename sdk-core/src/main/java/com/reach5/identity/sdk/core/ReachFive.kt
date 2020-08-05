@@ -493,7 +493,7 @@ class ReachFive (
         val registrationPublicKeyCredential: RegistrationPublicKeyCredential = createRegistrationPublicKeyCredential(authenticatorAttestationResponse)
 
         return reachFiveApi
-            .registrateWithWebAuthn(formatAuthorization(authToken), registrationPublicKeyCredential)
+            .registerWithWebAuthn(formatAuthorization(authToken), registrationPublicKeyCredential)
             .enqueue(ReachFiveApiCallback(
                 successWithNoContent = successWithNoContent,
                 failure = failure

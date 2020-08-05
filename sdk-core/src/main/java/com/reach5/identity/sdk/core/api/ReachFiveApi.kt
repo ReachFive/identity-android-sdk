@@ -116,7 +116,7 @@ interface ReachFiveApi {
     ): Call<RegistrationOptions>
 
     @POST("/identity/v1/webauthn/registration")
-    fun registrateWithWebAuthn(
+    fun registerWithWebAuthn(
         @Header("Authorization") authorization: String,
         @Body registrationPublicKeyCredential: RegistrationPublicKeyCredential
     ): Call<Unit>
