@@ -64,8 +64,10 @@ class AuthenticatedActivity : AppCompatActivity() {
         val phoneNumberTextView = findViewById<View>(R.id.user_phone_number) as TextView
         phoneNumberTextView.text = this.authToken.user?.phoneNumber
 
+        newFriendlyName.setText(android.os.Build.MODEL)
+
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.toString()) {
+            this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.trim().toString()) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
                 showToast("Login error=${it.message}")
             }
