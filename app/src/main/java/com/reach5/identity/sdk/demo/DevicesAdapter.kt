@@ -1,14 +1,20 @@
 package com.reach5.identity.sdk.demo
 
 import android.content.Context
+import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.TextView
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 
-class DevicesAdapter(private val context: Context, private var devices: List<DeviceCredential>) : BaseAdapter() {
+interface ButtonCallbacks {
+    fun removeDeviceCallback(position: Int)
+}
+
+class DevicesAdapter(private val context: Context, private var devices: List<DeviceCredential>, var callbacks: ButtonCallbacks) : BaseAdapter() {
     fun refresh(devices: List<DeviceCredential>) {
         this.devices = devices
         notifyDataSetChanged()
@@ -51,6 +57,12 @@ class DevicesAdapter(private val context: Context, private var devices: List<Dev
 
         viewHolder.friendlyName?.text = device.friendlyName
 
-        return view as View
+        val deleteDeviceButton = view?.findViewById(R.id.removeDevice) as Button
+        deleteDeviceButton.setOnClickListener {
+            devices.drop(position)
+            callbacks.removeDeviceCallback(position)
+        }
+
+        return view
     }
 }

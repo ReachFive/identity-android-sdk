@@ -510,6 +510,16 @@ class ReachFive (
             .getRegistrations(formatAuthorization(authToken), SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
 
+    fun removeWebAuthnDevice(
+        authToken: AuthToken,
+        deviceId: String,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    ) =
+        reachFiveApi
+            .deleteRegistration(formatAuthorization(authToken), deviceId, SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
+
     fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
