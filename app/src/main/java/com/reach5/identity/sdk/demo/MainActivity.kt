@@ -8,10 +8,11 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.models.AuthToken
+import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.AUTH_TOKEN
+import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.SDK_CONFIG
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
@@ -33,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private val scheme =
         dotenv["SCHEME"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
 
+    private val sdkConfig = SdkConfig(domain, clientId, scheme)
+
     private lateinit var reach5: ReachFive
 
     private lateinit var providerAdapter: ProvidersAdapter
@@ -41,8 +44,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
-
-        val sdkConfig = SdkConfig(domain, clientId, scheme)
 
         val providersCreators = listOf(
             GoogleProvider(),
@@ -184,6 +185,7 @@ class MainActivity : AppCompatActivity() {
         try {
             val intent = Intent(this, AuthenticatedActivity::class.java)
             intent.putExtra(AUTH_TOKEN, authToken)
+            intent.putExtra(SDK_CONFIG, sdkConfig)
 
             startActivity(intent)
         } catch (e: Exception) {
@@ -237,6 +239,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         menu?.findItem(R.id.menu_logout)?.isVisible = false
+
         return super.onCreateOptionsMenu(menu)
     }
 

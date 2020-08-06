@@ -17,23 +17,29 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("keystore.jks")
+            storePassword "reachfive"
+            keyAlias "reachfive"
+            keyPassword "reachfive"
+        }
+        debug {
+            storeFile file("debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
         debug {
-            signingConfig signingConfigs.debug
-        }
-    }
-
-    signingConfigs {
-        debug {
-            storeFile file("debug.keystore")
-            storePassword "android"
-            keyAlias = "androiddebugkey"
-            keyPassword "android"
+            signingConfig signingConfigs.release
         }
     }
 
@@ -58,7 +64,8 @@ dependencies {
     implementation project(":sdk-webview")
 
     implementation "com.facebook.android:facebook-login:5.0.3"
-    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "com.google.android.gms:play-services-fido:18.1.0"
+    implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "io.github.cdimascio:java-dotenv:5.1.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
