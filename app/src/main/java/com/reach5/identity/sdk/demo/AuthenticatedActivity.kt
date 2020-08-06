@@ -15,6 +15,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.ReachFive.Companion.FIDO2_REGISTER_REQUEST_CODE
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.responses.AuthToken
+import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.android.synthetic.main.webauthn.*
 
@@ -32,6 +33,9 @@ class AuthenticatedActivity : AppCompatActivity() {
     private lateinit var reach5: ReachFive
     private lateinit var authToken: AuthToken
 
+    private lateinit var deviceAdapter: DevicesAdapter
+    private lateinit var devicesDisplayed: List<DeviceCredential>
+
     companion object {
         const val AUTH_TOKEN = "AUTH_TOKEN"
         const val SDK_CONFIG = "SDK_CONFIG"
@@ -42,6 +46,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         setContentView(R.layout.activity_authenticated)
 
         this.authToken = intent.getParcelableExtra(AUTH_TOKEN)
+        this.devicesDisplayed = listOf()
 
         val sdkConfig = intent.getParcelableExtra<SdkConfig>(SDK_CONFIG)
         this.reach5 = ReachFive(
@@ -62,12 +67,18 @@ class AuthenticatedActivity : AppCompatActivity() {
         val phoneNumberTextView = findViewById<View>(R.id.user_phone_number) as TextView
         phoneNumberTextView.text = this.authToken.user?.phoneNumber
 
+        newFriendlyName.setText(android.os.Build.MODEL)
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.toString()) {
+            this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.trim().toString()) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
                 showToast("Login error=${it.message}")
             }
         }
+
+        deviceAdapter = DevicesAdapter(applicationContext, this.devicesDisplayed)
+        devices.adapter = deviceAdapter
+
+        refreshDevicesDisplayed()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -120,6 +131,25 @@ class AuthenticatedActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
+    private fun showDevicesTitle() {
+        devicesTitle.visibility = if (this.devicesDisplayed.isEmpty()) View.INVISIBLE else View.VISIBLE
+    }
+
+    private fun refreshDevicesDisplayed() {
+        reach5.listWebAuthnDevices(
+            authToken,
+            success = {
+                this.devicesDisplayed = it
+                this.deviceAdapter.refresh(this.devicesDisplayed)
+                showDevicesTitle()
+            },
+            failure = {
+                Log.d(TAG,"listWebAuthnDevices error=$it")
+                showToast("Login error=${it.message}")
+            }
+        )
+    }
+
     private fun handleErrorResponse(errorBytes: ByteArray) {
         val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
         val errorName = authenticatorErrorResponse.errorCode.name
@@ -133,12 +163,14 @@ class AuthenticatedActivity : AppCompatActivity() {
         reach5.onAddNewWebAuthnDeviceResult(
             authToken = this.authToken,
             fido2Response = fido2Response,
-            successWithNoContent = { showToast("New FIDO2 device registered") },
+            successWithNoContent = {
+                showToast("New FIDO2 device registered")
+                refreshDevicesDisplayed()
+            },
             failure = {
                 Log.d(TAG, "onAddNewWebAuthnDeviceResult error=$it")
                 showToast("Login error=${it.message}")
             }
         )
-
     }
 }

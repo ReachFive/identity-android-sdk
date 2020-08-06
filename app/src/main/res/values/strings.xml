@@ -15,4 +15,5 @@
     <string name="redirect_uri">Redirect URI for Passwordless</string>
     <string name="friendly_name">Device name</string>
     <string name="add_new_fido2_device">Add new FIDO2 device</string>
+    <string name="devices_title">List of devices</string>
 </resources>
