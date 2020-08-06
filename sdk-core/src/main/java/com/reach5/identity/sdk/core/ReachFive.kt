@@ -13,6 +13,7 @@ import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Compan
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.responses.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.utils.Failure
@@ -499,6 +500,15 @@ class ReachFive (
                 failure = failure
             ))
     }
+
+    fun listWebAuthnDevices(
+        authToken: AuthToken,
+        success: Success<List<DeviceCredential>>,
+        failure: Failure<ReachFiveError>
+    ) =
+        reachFiveApi
+            .getRegistrations(formatAuthorization(authToken), SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
 
     fun onActivityResult(
         requestCode: Int,

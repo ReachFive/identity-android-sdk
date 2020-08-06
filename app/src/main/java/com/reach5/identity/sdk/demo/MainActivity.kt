@@ -97,8 +97,8 @@ class MainActivity : AppCompatActivity() {
 
         passwordLogin.setOnClickListener {
             this.reach5.loginWithPassword(
-                username = email.text.toString().ifEmpty { phoneNumber.text.toString() },
-                password = password.text.toString(),
+                username = email.text.trim().toString().ifEmpty { phoneNumber.text.trim().toString() },
+                password = password.text.trim().toString(),
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "loginWithPassword error=$it")

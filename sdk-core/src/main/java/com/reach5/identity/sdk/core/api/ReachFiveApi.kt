@@ -14,6 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import com.reach5.identity.sdk.core.models.responses.AuthTokenResponse
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.utils.*
@@ -120,6 +121,12 @@ interface ReachFiveApi {
         @Header("Authorization") authorization: String,
         @Body registrationPublicKeyCredential: RegistrationPublicKeyCredential
     ): Call<Unit>
+
+    @GET("/identity/v1/webauthn/registration")
+    fun getRegistrations(
+        @Header("Authorization") authorization: String,
+        @QueryMap options: Map<String, String>
+    ): Call<List<DeviceCredential>>
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
