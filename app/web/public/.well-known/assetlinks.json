@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls","delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.reach5.identity.sdk.demo",
+      "sha256_cert_fingerprints": [
+        "AF:C8:F2:4C:AF:46:AA:5B:74:7B:8D:47:4D:82:A6:D1:FF:98:BF:A6:16:D0:D0:82:E8:9A:D0:8C:13:EB:B9:CE"
+      ]
+    }
+  }
+]

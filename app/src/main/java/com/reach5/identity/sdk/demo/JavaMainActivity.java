@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.reach5.identity.sdk.core.JavaReachFive;
 import com.reach5.identity.sdk.core.Provider;
-import com.reach5.identity.sdk.core.models.AuthToken;
+import com.reach5.identity.sdk.core.models.responses.AuthToken;
 import com.reach5.identity.sdk.core.models.SdkConfig;
 import com.reach5.identity.sdk.core.models.OpenIdUser;
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest;
@@ -21,8 +21,6 @@ import com.reach5.identity.sdk.webview.WebViewProvider;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

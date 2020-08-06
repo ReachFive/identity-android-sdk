@@ -36,4 +36,7 @@
             android:layout_height="wrap_content"
             android:padding="10dip" />
 
+
+    <include layout="@layout/webauthn" />
+
 </LinearLayout>
