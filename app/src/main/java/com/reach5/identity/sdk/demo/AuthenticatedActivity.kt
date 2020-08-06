@@ -65,7 +65,6 @@ class AuthenticatedActivity : AppCompatActivity() {
         phoneNumberTextView.text = this.authToken.user?.phoneNumber
 
         newFriendlyName.setText(android.os.Build.MODEL)
-
         addNewDevice.setOnClickListener {
             this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.trim().toString()) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
@@ -77,9 +76,9 @@ class AuthenticatedActivity : AppCompatActivity() {
             authToken,
             success = {
                 deviceAdapter = DevicesAdapter(applicationContext, it)
-                deviceAdapter.refresh(it)
-
                 devices.adapter = deviceAdapter
+
+                devicesTitle.visibility = View.VISIBLE
             },
             failure = {
                 Log.d(TAG,"listWebAuthnDevices error=$it")
@@ -157,6 +156,5 @@ class AuthenticatedActivity : AppCompatActivity() {
                 showToast("Login error=${it.message}")
             }
         )
-
     }
 }
