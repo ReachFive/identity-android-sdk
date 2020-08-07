@@ -8,6 +8,5 @@ import kotlinx.android.parcel.Parcelize
 data class DeviceCredential(
     @SerializedName("friendly_name")
     val friendlyName: String,
-    @SerializedName("id")
     val id: String
 ) : Parcelable

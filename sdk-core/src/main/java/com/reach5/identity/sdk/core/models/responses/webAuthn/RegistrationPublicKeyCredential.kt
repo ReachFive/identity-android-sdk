@@ -36,13 +36,10 @@ object WebAuthnRegistration {
 
 @Parcelize
 data class RegistrationPublicKeyCredential(
-    @SerializedName("id")
     val id: String,
     @SerializedName("raw_id")
     val rawId: String,
-    @SerializedName("type")
     val type: String,
-    @SerializedName("response")
     val response: R5AuthenticatorAttestationResponse
 ): Parcelable
 

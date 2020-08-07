@@ -11,7 +11,6 @@ import kotlinx.android.parcel.Parcelize
 data class RegistrationOptions(
     @SerializedName("friendly_name")
     val friendlyName: String,
-    @SerializedName("options")
     val options: CredentialCreationOptions
 ): Parcelable {
     fun toFido2Model(): PublicKeyCredentialCreationOptions {
@@ -55,47 +54,36 @@ data class CredentialCreationOptions(
 
 @Parcelize
 data class R5PublicKeyCredentialCreationOptions(
-    @SerializedName("rp")
     val rp: R5PublicKeyCredentialRpEntity,
-    @SerializedName("user")
     val user: R5PublicKeyCredentialUserEntity,
-    @SerializedName("challenge")
     val challenge: String,
     @SerializedName("pub_key_cred_params")
     val pubKeyCredParams: List<R5PublicKeyCredentialParameter>,
-    @SerializedName("timeout")
     val timeout: Int? = null,
     @SerializedName("exclude_credentials")
     val excludeCredentials: List<R5PublicKeyCredentialDescriptor>? = null,
     @SerializedName("authenticator_selection")
     val authenticatorSelection: R5AuthenticatorSelectionCriteria? = null,
-    @SerializedName("attestation")
     val attestation: String
 ): Parcelable
 
 @Parcelize
 data class R5PublicKeyCredentialRpEntity(
-    @SerializedName("id")
     val id: String,
-    @SerializedName("name")
     val name: String
 ): Parcelable
 
 @Parcelize
 data class R5PublicKeyCredentialUserEntity(
-    @SerializedName("id")
     val id: String,
     @SerializedName("display_name")
     val displayName: String,
-    @SerializedName("name")
     val name: String
 ): Parcelable
 
 @Parcelize
 data class R5PublicKeyCredentialParameter(
-    @SerializedName("alg")
     val alg: Int,
-    @SerializedName("type")
     val type: String
 ): Parcelable
 
