@@ -71,11 +71,28 @@ class AuthenticatedActivity : AppCompatActivity() {
         addNewDevice.setOnClickListener {
             this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.trim().toString()) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
-                showToast("Login error=${it.message}")
+                showToast("Add new FIDO2 device error=${it.message}")
             }
         }
 
-        deviceAdapter = DevicesAdapter(applicationContext, this.devicesDisplayed)
+        deviceAdapter = DevicesAdapter(applicationContext, this.devicesDisplayed, object : ButtonCallbacks {
+            override fun removeDeviceCallback(position: Int) {
+                val device = deviceAdapter.getItem(position)
+
+                reach5.removeWebAuthnDevice(
+                    authToken = authToken,
+                    deviceId = device.id,
+                    successWithNoContent = {
+                        showToast("The FIDO2 device '${device.friendlyName}' is removed")
+                        refreshDevicesDisplayed()
+                    },
+                    failure = {
+                        Log.d(TAG, "removeWebAuthnDevice error=$it")
+                        showToast("Delete FIDO2 device error=${it.message}")
+                    }
+                )
+            }
+        })
         devices.adapter = deviceAdapter
 
         refreshDevicesDisplayed()
@@ -145,7 +162,7 @@ class AuthenticatedActivity : AppCompatActivity() {
             },
             failure = {
                 Log.d(TAG,"listWebAuthnDevices error=$it")
-                showToast("Login error=${it.message}")
+                showToast("List FIDO2 devices error=${it.message}")
             }
         )
     }
@@ -169,7 +186,7 @@ class AuthenticatedActivity : AppCompatActivity() {
             },
             failure = {
                 Log.d(TAG, "onAddNewWebAuthnDeviceResult error=$it")
-                showToast("Login error=${it.message}")
+                showToast("Add new FIDO2 device error=${it.message}")
             }
         )
     }
