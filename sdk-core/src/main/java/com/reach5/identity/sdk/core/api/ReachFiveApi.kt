@@ -16,6 +16,7 @@ import com.reach5.identity.sdk.core.models.responses.AuthTokenResponse
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequestSerializer
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
 import com.reach5.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
@@ -153,6 +154,10 @@ interface ReachFiveApi {
                 .registerTypeAdapter(
                     UpdatePasswordRequest::class.java,
                     UpdatePasswordRequestSerializer()
+                )
+                .registerTypeAdapter(
+                    WebAuthnLoginRequest::class.java,
+                    WebAuthnLoginRequestSerializer()
                 )
                 .create()
 

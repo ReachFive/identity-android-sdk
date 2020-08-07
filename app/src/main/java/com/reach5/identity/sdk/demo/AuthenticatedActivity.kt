@@ -17,7 +17,7 @@ import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import io.github.cdimascio.dotenv.dotenv
-import kotlinx.android.synthetic.main.webauthn.*
+import kotlinx.android.synthetic.main.webauthn_devices.*
 
 
 class AuthenticatedActivity : AppCompatActivity() {
@@ -28,7 +28,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         filename = "env"
     }
     private val origin =
-        dotenv["RP_ID"] ?: throw IllegalArgumentException("The relying server ID is undefined! Check your `env` file.")
+        dotenv["ORIGIN"] ?: throw IllegalArgumentException("The origin is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
     private lateinit var authToken: AuthToken

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
+
+    <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login_with_fido2"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+
+    <TextView
+            android:id="@+id/instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fill_email_or_phone" />
+
+    <EditText
+            android:id="@+id/webAuthnEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/email"
+            android:lines="1"
+            android:inputType="textEmailAddress"
+            android:importantForAutofill="no" />
+
+    <EditText
+            android:id="@+id/webAuthnPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/phone_number"
+            android:lines="1"
+            android:importantForAutofill="no"
+            android:inputType="phone" />
+
+    <Button
+            android:id="@+id/loginWithWebAuthn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/login" />
+</LinearLayout>

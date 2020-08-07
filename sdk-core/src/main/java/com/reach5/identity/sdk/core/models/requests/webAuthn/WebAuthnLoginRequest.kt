@@ -1,15 +1,21 @@
 package com.reach5.identity.sdk.core.models.requests.webAuthn
 
 import android.os.Parcelable
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
+import com.reach5.identity.sdk.core.utils.formatScope
 import kotlinx.android.parcel.Parcelize
+import java.lang.reflect.Type
 
 sealed class WebAuthnLoginRequest {
     @Parcelize
     data class EmailWebAuthnLoginRequest(
         val origin: String,
         val email: String,
-        val scope: String? = null
+        val scope: Set<String>? = null
     ) : WebAuthnLoginRequest(), Parcelable
 
     @Parcelize
@@ -17,7 +23,7 @@ sealed class WebAuthnLoginRequest {
         val origin: String,
         @SerializedName("phone_number")
         val phoneNumber: String,
-        val scope: String? = null
+        val scope: Set<String>? = null
     ) : WebAuthnLoginRequest(), Parcelable
 
     @Parcelize
@@ -47,17 +53,27 @@ sealed class WebAuthnLoginRequest {
                         clientId,
                         request.origin,
                         request.email,
-                        request.scope
+                        formatScope(request.scope as Collection<String>)
                     )
                 is PhoneNumberWebAuthnLoginRequest ->
                     PhoneNumberWithClientIdLoginRequest(
                         clientId,
                         request.origin,
                         request.phoneNumber,
-                        request.scope
+                        formatScope(request.scope as Collection<String>)
                     )
                 else -> request
             }
         }
+    }
+}
+
+internal class WebAuthnLoginRequestSerializer : JsonSerializer<WebAuthnLoginRequest> {
+    override fun serialize(
+        src: WebAuthnLoginRequest?,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
+        return Gson().toJsonTree(src)
     }
 }

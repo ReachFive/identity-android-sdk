@@ -19,10 +19,7 @@ import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.responses.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
-import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.Pkce
-import com.reach5.identity.sdk.core.utils.Success
-import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
+import com.reach5.identity.sdk.core.utils.*
 
 class ReachFive (
     val activity: Activity,
@@ -579,9 +576,5 @@ class ReachFive (
 
     private fun formatAuthorization(authToken: AuthToken): String {
         return "${authToken.tokenType} ${authToken.accessToken}"
-    }
-
-    private fun formatScope(scope: Collection<String>): String {
-        return scope.toSet().joinToString(" ")
     }
 }

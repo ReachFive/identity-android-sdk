@@ -11,6 +11,7 @@ import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.AUTH_TOKEN
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.SDK_CONFIG
 import com.reach5.identity.sdk.facebook.FacebookProvider
@@ -18,6 +19,9 @@ import com.reach5.identity.sdk.google.GoogleProvider
 import com.reach5.identity.sdk.webview.WebViewProvider
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.email
+import kotlinx.android.synthetic.main.activity_main.phoneNumber
+import kotlinx.android.synthetic.main.webauthn_login.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         dotenv["CLIENT_ID"] ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
     private val scheme =
         dotenv["SCHEME"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
+    private val origin =
+        dotenv["ORIGIN"] ?: throw IllegalArgumentException("The origin is undefined! Check your `env` file.")
 
     private val sdkConfig = SdkConfig(domain, clientId, scheme)
 
@@ -51,6 +57,8 @@ class MainActivity : AppCompatActivity() {
             WebViewProvider()
         )
 
+        val scope = setOf("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write")
+
         this.reach5 = ReachFive(
             sdkConfig = sdkConfig,
             providersCreators = providersCreators,
@@ -68,7 +76,6 @@ class MainActivity : AppCompatActivity() {
 
         providers.setOnItemClickListener { _, _, position, _ ->
             val provider = reach5.getProviders()[position]
-            val scope = setOf("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write")
             this.reach5.loginWithProvider(name = provider.name, origin = "home", scope = scope, activity = this)
         }
 
@@ -108,7 +115,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         startPasswordless.setOnClickListener {
-
             val redirectUri = redirectUriInput.text.toString()
 
             if (email.text.toString().isNotEmpty()) {
@@ -166,6 +172,25 @@ class MainActivity : AppCompatActivity() {
                     showToast("Login error=${it.message}")
                 }
             )
+        }
+
+        loginWithWebAuthn.setOnClickListener {
+            val email = webAuthnEmail.text.toString()
+
+            val webAuthnLoginRequest: WebAuthnLoginRequest =
+                if (email.isNotEmpty())
+                    WebAuthnLoginRequest.EmailWebAuthnLoginRequest(origin, email, scope)
+                else
+                    WebAuthnLoginRequest.PhoneNumberWebAuthnLoginRequest(origin, webAuthnPhoneNumber.text.toString(), scope)
+
+            this.reach5
+                .loginWithWebAuthn(
+                    webAuthnLoginRequest,
+                    failure = {
+                        Log.d(TAG, "loginWithWebAuthn error=$it")
+                        showToast("Login with FIDO2 error=${it.message}")
+                    }
+                )
         }
 
         val authorizationCode: String? = intent?.data?.getQueryParameter("code")
