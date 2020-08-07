@@ -128,6 +128,13 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<List<DeviceCredential>>
 
+    @DELETE("/identity/v1/webauthn/registration/{id}")
+    fun deleteRegistration(
+        @Header("Authorization") authorization: String,
+        @Path("id") id: String,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
