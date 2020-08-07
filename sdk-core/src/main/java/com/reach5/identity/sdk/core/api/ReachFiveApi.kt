@@ -15,6 +15,9 @@ import retrofit2.http.*
 import com.reach5.identity.sdk.core.models.responses.AuthTokenResponse
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
+import com.reach5.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.utils.*
@@ -134,6 +137,11 @@ interface ReachFiveApi {
         @Path("id") id: String,
         @QueryMap options: Map<String, String>
     ): Call<Unit>
+
+    @POST("/identity/v1/webauthn/authentication-options")
+    fun createWebAuthnAuthenticationOptions(
+        @Body webAuthnLoginRequest: WebAuthnLoginRequest
+    ): Call<AuthenticationOptions>
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {

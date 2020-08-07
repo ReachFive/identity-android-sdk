@@ -2,6 +2,7 @@ package com.reach5.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
@@ -11,6 +12,8 @@ import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.*
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
@@ -30,6 +33,7 @@ class ReachFive (
     companion object {
         private const val TAG = "Reach5"
         const val FIDO2_REGISTER_REQUEST_CODE = 1
+        const val FIDO2_LOGIN_REQUEST_CODE = 2
 
         private const val codeResponseType = "code"
         private const val tokenResponseType = "token"
@@ -500,6 +504,30 @@ class ReachFive (
                 failure = failure
             ))
     }
+
+    fun loginWithWebAuthn(
+        loginRequest: WebAuthnLoginRequest,
+        failure: Failure<ReachFiveError>
+    ) =
+        reachFiveApi
+            .createWebAuthnAuthenticationOptions(WebAuthnLoginRequest.enrichWithClientId(loginRequest, sdkConfig.clientId))
+            .enqueue(ReachFiveApiCallback(
+                success = {
+                    val fido2ApiClient = Fido.getFido2ApiClient(activity)
+                    val fido2PendingIntentTask = fido2ApiClient.getSignPendingIntent(it.toFido2Model())
+                    fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
+                        if (fido2PendingIntent != null) {
+                            try {
+                                Log.d(TAG, "Launching Fido2 Pending Intent")
+                                activity.startIntentSenderForResult(fido2PendingIntent.intentSender, FIDO2_LOGIN_REQUEST_CODE, null, 0, 0, 0)
+                            } catch (e: IntentSender.SendIntentException) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                },
+                failure = failure
+            ))
 
     fun listWebAuthnDevices(
         authToken: AuthToken,

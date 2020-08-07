@@ -2,7 +2,6 @@ package com.reach5.identity.sdk.core.models.responses.webAuthn
 
 import android.os.Parcelable
 import android.util.Base64
-import com.google.android.gms.fido.common.Transport
 import com.google.android.gms.fido.fido2.api.common.*
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
@@ -33,9 +32,7 @@ data class RegistrationOptions(
                 PublicKeyCredentialParameters(it.type, it.alg)
             })
             .setTimeoutSeconds(publicKey.timeout?.toDouble()?.div(1000))
-            .setExcludeList(publicKey.excludeCredentials?.map {
-                PublicKeyCredentialDescriptor(it.type, it.id.toByteArray(), it.transports?.map { it -> Transport.valueOf(it) })
-            })
+            .setExcludeList(publicKey.excludeCredentials?.map { it.toPublicKeyCredentialDescriptor() })
             .setAuthenticatorSelection(
                 AuthenticatorSelectionCriteria.Builder()
                     .setAttachment(publicKey.authenticatorSelection?.authenticatorAttachment?.let { Attachment.valueOf(it) })
@@ -85,16 +82,6 @@ data class R5PublicKeyCredentialUserEntity(
 data class R5PublicKeyCredentialParameter(
     val alg: Int,
     val type: String
-): Parcelable
-
-@Parcelize
-data class R5PublicKeyCredentialDescriptor(
-    @SerializedName("type")
-    val type: String,
-    @SerializedName("id")
-    val id: String,
-    @SerializedName("transports")
-    val transports: List<String>? = null
 ): Parcelable
 
 @Parcelize
