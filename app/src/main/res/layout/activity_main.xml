@@ -26,15 +26,19 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/redirect_uri"
-            android:lines="1" />
+            android:lines="1"
+            android:importantForAutofill="no"
+            android:inputType="textUri" />
 
-        <EditText
+    <EditText
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/email"
-            android:lines="1" />
+            android:lines="1"
+            android:inputType="textEmailAddress"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/phoneNumber"
@@ -42,7 +46,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/phone_number"
-            android:lines="1" />
+            android:lines="1"
+            android:importantForAutofill="no"
+            android:inputType="phone" />
 
         <EditText
             android:id="@+id/password"
@@ -51,7 +57,8 @@
             android:layout_weight="1"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:lines="1" />
+            android:lines="1"
+            android:importantForAutofill="no" />
     </LinearLayout>
 
     <LinearLayout
@@ -65,14 +72,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/login" />
+            android:text="@string/login"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/passwordSignup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/signup" />
+            android:text="@string/signup"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 
@@ -104,7 +113,9 @@
             android:layout_weight="1"
             android:hint="@string/code"
             android:lines="1"
-            android:paddingTop="0dp" />
+            android:paddingTop="0dp"
+            android:importantForAutofill="no"
+            android:inputType="text" />
 
         <Button
             android:id="@+id/phoneNumberPasswordless"
