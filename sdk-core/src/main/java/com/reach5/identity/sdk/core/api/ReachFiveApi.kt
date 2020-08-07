@@ -123,13 +123,13 @@ interface ReachFiveApi {
     ): Call<Unit>
 
     @GET("/identity/v1/webauthn/registration")
-    fun getRegistrations(
+    fun getWebAuthnRegistrations(
         @Header("Authorization") authorization: String,
         @QueryMap options: Map<String, String>
     ): Call<List<DeviceCredential>>
 
     @DELETE("/identity/v1/webauthn/registration/{id}")
-    fun deleteRegistration(
+    fun deleteWebAuthnRegistration(
         @Header("Authorization") authorization: String,
         @Path("id") id: String,
         @QueryMap options: Map<String, String>
