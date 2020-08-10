@@ -3,26 +3,26 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
-import android.util.Base64
 import android.util.Log
 import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.*
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
+import com.reach5.identity.sdk.core.models.requests.webAuthn.AuthenticationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
-import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationPublicKeyCredential
-import com.reach5.identity.sdk.core.models.responses.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
+import com.reach5.identity.sdk.core.models.requests.webAuthn.RegistrationPublicKeyCredential
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthentication.createAuthenticationPublicKeyCredential
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
+import com.reach5.identity.sdk.core.models.responses.ReachFiveToken
 import com.reach5.identity.sdk.core.utils.*
 
 class ReachFive (
@@ -529,6 +529,19 @@ class ReachFive (
                 },
                 failure = failure
             ))
+
+    fun onLoginWithWebAuthnResult(
+        fido2Response: ByteArray,
+        success: Success<ReachFiveToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val authenticatorAssertionResponse: AuthenticatorAssertionResponse = AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
+        val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential = createAuthenticationPublicKeyCredential(authenticatorAssertionResponse)
+
+        return reachFiveApi
+            .authenticateWithWebAuthn(authenticationPublicKeyCredential)
+            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+    }
 
     fun listWebAuthnDevices(
         authToken: AuthToken,

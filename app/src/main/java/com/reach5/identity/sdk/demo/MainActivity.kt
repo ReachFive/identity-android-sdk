@@ -10,10 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
+import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.AUTH_TOKEN
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.SDK_CONFIG
 import com.reach5.identity.sdk.facebook.FacebookProvider
@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity() {
                         it.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA) -> {
                             if (requestCode == LOGIN_REQUEST_CODE) {
                                 val fido2Response = data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-                                Log.d(TAG, "Login with WebAuth SUCCESS")
+                                handleWebAuthnLoginSuccess(fido2Response)
                             }
                         }
                         else -> {
@@ -308,6 +308,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun handleWebAuthnLoginSuccess(fido2Response: ByteArray) {
+        reach5.onLoginWithWebAuthnResult(
+            fido2Response = fido2Response,
+            success = { showToast("Login success $it") },
+            failure = {
+                Log.d(TAG, "onLoginWithWebAuthnResult error=$it")
+                showToast("Login with FIDO2 device error=${it.message}")
+            }
+        )
+    }
+
     private fun handleWebAuthnErrorResponse(errorBytes: ByteArray) {
         val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
         val errorName = authenticatorErrorResponse.errorCode.name
@@ -316,5 +327,4 @@ class MainActivity : AppCompatActivity() {
         Log.e(TAG, "errorCode.name: $errorName")
         Log.e(TAG, "errorMessage: $errorMessage")
     }
-
 }

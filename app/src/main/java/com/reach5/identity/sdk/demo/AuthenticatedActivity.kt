@@ -111,11 +111,11 @@ class AuthenticatedActivity : AppCompatActivity() {
             RESULT_OK -> {
                 data?.let {
                     if (it.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-                        handleErrorResponse(data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
+                        handleWebAuthnErrorResponse(data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
                     } else if (it.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
                         val fido2Response = data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
                         when (requestCode) {
-                            REGISTER_REQUEST_CODE -> handleRegisterResponse(fido2Response)
+                            REGISTER_REQUEST_CODE -> handleWebAuthnRegisterResponse(fido2Response)
                         }
                     }
                 }
@@ -172,16 +172,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         )
     }
 
-    private fun handleErrorResponse(errorBytes: ByteArray) {
-        val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
-        val errorName = authenticatorErrorResponse.errorCode.name
-        val errorMessage = authenticatorErrorResponse.errorMessage
-
-        Log.e(TAG, "errorCode.name: $errorName")
-        Log.e(TAG, "errorMessage: $errorMessage")
-    }
-
-    private fun handleRegisterResponse(fido2Response: ByteArray) {
+    private fun handleWebAuthnRegisterResponse(fido2Response: ByteArray) {
         reach5.onAddNewWebAuthnDeviceResult(
             authToken = this.authToken,
             fido2Response = fido2Response,
@@ -194,5 +185,14 @@ class AuthenticatedActivity : AppCompatActivity() {
                 showToast("Add new FIDO2 device error=${it.message}")
             }
         )
+    }
+
+    private fun handleWebAuthnErrorResponse(errorBytes: ByteArray) {
+        val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
+        val errorName = authenticatorErrorResponse.errorCode.name
+        val errorMessage = authenticatorErrorResponse.errorMessage
+
+        Log.e(TAG, "errorCode.name: $errorName")
+        Log.e(TAG, "errorMessage: $errorMessage")
     }
 }
