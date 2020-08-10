@@ -3,9 +3,13 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Base64
 import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
@@ -29,8 +33,6 @@ class ReachFive (
 
     companion object {
         private const val TAG = "Reach5"
-        const val FIDO2_REGISTER_REQUEST_CODE = 1
-        const val FIDO2_LOGIN_REQUEST_CODE = 2
 
         private const val codeResponseType = "code"
         private const val tokenResponseType = "token"
@@ -458,6 +460,7 @@ class ReachFive (
         authToken: AuthToken,
         origin: String,
         friendlyName: String?,
+        registerRequestCode: Int,
         failure: Failure<ReachFiveError>
     ) {
         val newFriendlyName = if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
@@ -474,7 +477,7 @@ class ReachFive (
                     fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
                         if (fido2PendingIntent != null) {
                             Log.d(TAG, "Launching Fido2 Pending Intent")
-                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, FIDO2_REGISTER_REQUEST_CODE, null, 0, 0, 0)
+                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, registerRequestCode, null, 0, 0, 0)
                         }
                     }
                   fido2PendingIntentTask.addOnFailureListener {
@@ -504,6 +507,7 @@ class ReachFive (
 
     fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
+        loginRequestCode: Int,
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
@@ -516,7 +520,7 @@ class ReachFive (
                         if (fido2PendingIntent != null) {
                             try {
                                 Log.d(TAG, "Launching Fido2 Pending Intent")
-                                activity.startIntentSenderForResult(fido2PendingIntent.intentSender, FIDO2_LOGIN_REQUEST_CODE, null, 0, 0, 0)
+                                activity.startIntentSenderForResult(fido2PendingIntent.intentSender, loginRequestCode, null, 0, 0, 0)
                             } catch (e: IntentSender.SendIntentException) {
                                 e.printStackTrace()
                             }

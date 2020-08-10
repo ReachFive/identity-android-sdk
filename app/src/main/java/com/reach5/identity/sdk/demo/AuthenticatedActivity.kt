@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.ReachFive.Companion.FIDO2_REGISTER_REQUEST_CODE
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
@@ -39,6 +38,7 @@ class AuthenticatedActivity : AppCompatActivity() {
     companion object {
         const val AUTH_TOKEN = "AUTH_TOKEN"
         const val SDK_CONFIG = "SDK_CONFIG"
+        const val REGISTER_REQUEST_CODE = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +69,12 @@ class AuthenticatedActivity : AppCompatActivity() {
 
         newFriendlyName.setText(android.os.Build.MODEL)
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.trim().toString()) {
+            this.reach5.addNewWebAuthnDevice(
+                authToken = this.authToken,
+                origin = origin,
+                friendlyName = newFriendlyName.text.trim().toString(),
+                registerRequestCode = REGISTER_REQUEST_CODE
+            ) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
                 showToast("Add new FIDO2 device error=${it.message}")
             }
@@ -110,7 +115,7 @@ class AuthenticatedActivity : AppCompatActivity() {
                     } else if (it.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
                         val fido2Response = data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
                         when (requestCode) {
-                            FIDO2_REGISTER_REQUEST_CODE -> handleRegisterResponse(fido2Response)
+                            REGISTER_REQUEST_CODE -> handleRegisterResponse(fido2Response)
                         }
                     }
                 }

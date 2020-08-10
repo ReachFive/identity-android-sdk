@@ -7,6 +7,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.SdkConfig
@@ -45,6 +47,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var reach5: ReachFive
 
     private lateinit var providerAdapter: ProvidersAdapter
+
+    companion object {
+        const val LOGIN_REQUEST_CODE = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,7 +152,7 @@ class MainActivity : AppCompatActivity() {
                         successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
                         failure = {
                             Log.d(TAG, "signup error=$it")
-                            showToast("Start passwordless with sms Error ${it.message}")
+                            showToast("Start passwordless with SMS Error ${it.message}")
                         }
                     )
                 } else {
@@ -176,7 +182,6 @@ class MainActivity : AppCompatActivity() {
 
         loginWithWebAuthn.setOnClickListener {
             val email = webAuthnEmail.text.toString()
-
             val webAuthnLoginRequest: WebAuthnLoginRequest =
                 if (email.isNotEmpty())
                     WebAuthnLoginRequest.EmailWebAuthnLoginRequest(origin, email, scope)
@@ -186,6 +191,7 @@ class MainActivity : AppCompatActivity() {
             this.reach5
                 .loginWithWebAuthn(
                     webAuthnLoginRequest,
+                    LOGIN_REQUEST_CODE,
                     failure = {
                         Log.d(TAG, "loginWithWebAuthn error=$it")
                         showToast("Login with FIDO2 error=${it.message}")
@@ -206,47 +212,59 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleLoginSuccess(authToken: AuthToken) {
-        try {
-            val intent = Intent(this, AuthenticatedActivity::class.java)
-            intent.putExtra(AUTH_TOKEN, authToken)
-            intent.putExtra(SDK_CONFIG, sdkConfig)
-
-            startActivity(intent)
-        } catch (e: Exception) {
-            Log.d(TAG, "Login error=$authToken")
-            showToast("Login error=$authToken")
-        }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("ReachFive", "MainActivity.onActivityResult requestCode=$requestCode resultCode=$resultCode")
-        this.reach5.onActivityResult(requestCode, resultCode, data, success = {
-            handleLoginSuccess(it)
-        }, failure = {
-            Log.d(TAG, "onActivityResult error=$it")
-            it.exception?.printStackTrace()
-            showToast("LoginProvider error=${it.message}")
-        })
+        Log.d(TAG, "MainActivity.onActivityResult requestCode=$requestCode resultCode=$resultCode")
+
+        when (resultCode) {
+            RESULT_OK -> {
+                data?.let {
+                    when {
+                        it.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA) -> {
+                            handleWebAuthnErrorResponse(data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
+                        }
+                        it.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA) -> {
+                            if (requestCode == LOGIN_REQUEST_CODE) {
+                                val fido2Response = data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+                                Log.d(TAG, "Login with WebAuth SUCCESS")
+                            }
+                        }
+                        else -> {
+                            // Handle provider login
+                            this.reach5.onActivityResult(
+                                requestCode = requestCode,
+                                resultCode = resultCode,
+                                data = data,
+                                success = { authToken -> handleLoginSuccess(authToken) },
+                                failure = { error ->
+                                    Log.d(TAG, "onActivityResult error=$error")
+                                    error.exception?.printStackTrace()
+                                    showToast("LoginProvider error=${error.message}")
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            RESULT_CANCELED -> {
+                val result = "Operation is cancelled"
+                Log.d(TAG, result)
+            }
+            else -> {
+                val result = "Operation failed, with resultCode: $resultCode"
+                Log.e(TAG, result)
+            }
+        }
+
+
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.d(
-            "ReachFive",
+            TAG,
             "MainActivity.onRequestPermissionsResult requestCode=$requestCode permissions=$permissions grantResults=$grantResults"
         )
-        reach5.onRequestPermissionsResult(requestCode, permissions, grantResults, failure = {
-
-        })
+        reach5.onRequestPermissionsResult(requestCode, permissions, grantResults, failure = {})
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -272,4 +290,31 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         reach5.onStop()
     }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun handleLoginSuccess(authToken: AuthToken) {
+        try {
+            val intent = Intent(this, AuthenticatedActivity::class.java)
+            intent.putExtra(AUTH_TOKEN, authToken)
+            intent.putExtra(SDK_CONFIG, sdkConfig)
+
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.d(TAG, "Login error=$authToken")
+            showToast("Login error=$authToken")
+        }
+    }
+
+    private fun handleWebAuthnErrorResponse(errorBytes: ByteArray) {
+        val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
+        val errorName = authenticatorErrorResponse.errorCode.name
+        val errorMessage = authenticatorErrorResponse.errorMessage
+
+        Log.e(TAG, "errorCode.name: $errorName")
+        Log.e(TAG, "errorMessage: $errorMessage")
+    }
+
 }

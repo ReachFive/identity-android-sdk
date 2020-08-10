@@ -11,20 +11,12 @@ object WebAuthnRegistration {
 
     fun createRegistrationPublicKeyCredential(authenticatorAttestationResponse: AuthenticatorAttestationResponse): RegistrationPublicKeyCredential {
         return RegistrationPublicKeyCredential(
-            id = encodeToBase64(
-                authenticatorAttestationResponse.keyHandle
-            ),
-            rawId = encodeToBase64(
-                authenticatorAttestationResponse.keyHandle
-            ),
+            id = encodeToBase64(authenticatorAttestationResponse.keyHandle),
+            rawId = encodeToBase64(authenticatorAttestationResponse.keyHandle),
             type = publicKeyCredentialType,
             response = R5AuthenticatorAttestationResponse(
-                attestationObject = encodeToBase64(
-                    authenticatorAttestationResponse.attestationObject
-                ),
-                clientDataJSON = encodeToBase64(
-                    authenticatorAttestationResponse.clientDataJSON
-                )
+                attestationObject = encodeToBase64(authenticatorAttestationResponse.attestationObject),
+                clientDataJSON = encodeToBase64(authenticatorAttestationResponse.clientDataJSON)
             )
         )
     }
