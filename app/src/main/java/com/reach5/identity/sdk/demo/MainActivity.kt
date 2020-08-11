@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.ReachFive
+import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
@@ -103,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "signup error=$it")
-                    showToast("Signup With Password Error ${it.message}")
+                    showErrorToast(it)
                 }
             )
         }
@@ -115,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "loginWithPassword error=$it")
-                    showToast("Login error=${it.message}")
+                    showErrorToast(it)
                 }
             )
         }
@@ -131,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                         successWithNoContent = { showToast("Email sent - Check your email box") },
                         failure = {
                             Log.d(TAG, "signup error=$it")
-                            showToast("Start passwordless with email Error ${it.message}")
+                            showErrorToast(it)
                         }
                     )
                 } else {
@@ -140,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                         successWithNoContent = { showToast("Email sent - Check your email box") },
                         failure = {
                             Log.d(TAG, "signup error=$it")
-                            showToast("Start passwordless with email Error ${it.message}")
+                            showErrorToast(it)
                         }
                     )
                 }
@@ -152,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                         successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
                         failure = {
                             Log.d(TAG, "signup error=$it")
-                            showToast("Start passwordless with SMS Error ${it.message}")
+                            showErrorToast(it)
                         }
                     )
                 } else {
@@ -161,7 +162,7 @@ class MainActivity : AppCompatActivity() {
                         successWithNoContent = { showToast("Sms sent - Please enter the validation code below") },
                         failure = {
                             Log.d(TAG, "signup error=$it")
-                            showToast("Start passwordless with sms Error ${it.message}")
+                            showErrorToast(it)
                         }
                     )
                 }
@@ -175,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "verifyPasswordless error=$it")
-                    showToast("Login error=${it.message}")
+                    showErrorToast(it)
                 }
             )
         }
@@ -194,7 +195,7 @@ class MainActivity : AppCompatActivity() {
                     LOGIN_REQUEST_CODE,
                     failure = {
                         Log.d(TAG, "loginWithWebAuthn error=$it")
-                        showToast("Login with FIDO2 error=${it.message}")
+                        showErrorToast(it)
                     }
                 )
         }
@@ -206,7 +207,7 @@ class MainActivity : AppCompatActivity() {
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "loginWithPassword error=$it")
-                    showToast("Login error=${it.message}")
+                    showErrorToast(it)
                 }
             )
         }
@@ -236,10 +237,10 @@ class MainActivity : AppCompatActivity() {
                                 resultCode = resultCode,
                                 data = data,
                                 success = { authToken -> handleLoginSuccess(authToken) },
-                                failure = { error ->
-                                    Log.d(TAG, "onActivityResult error=$error")
-                                    error.exception?.printStackTrace()
-                                    showToast("LoginProvider error=${error.message}")
+                                failure = { it ->
+                                    Log.d(TAG, "onActivityResult error=$it")
+                                    it.exception?.printStackTrace()
+                                    showErrorToast(it)
                                 }
                             )
                         }
@@ -291,10 +292,6 @@ class MainActivity : AppCompatActivity() {
         reach5.onStop()
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
     private fun handleLoginSuccess(authToken: AuthToken) {
         try {
             val intent = Intent(this, AuthenticatedActivity::class.java)
@@ -314,7 +311,7 @@ class MainActivity : AppCompatActivity() {
             success = { showToast("Login success $it") },
             failure = {
                 Log.d(TAG, "onLoginWithWebAuthnResult error=$it")
-                showToast("Login with FIDO2 device error=${it.message}")
+                showErrorToast(it)
             }
         )
     }
@@ -326,5 +323,16 @@ class MainActivity : AppCompatActivity() {
 
         Log.e(TAG, "errorCode.name: $errorName")
         Log.e(TAG, "errorMessage: $errorMessage")
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun showErrorToast(error: ReachFiveError) {
+        showToast(error.data?.errorUserMsg ?:
+            (error.data?.errorDetails?.get(0)?.message
+                ?: (error.data?.errorDescription
+                    ?: error.message)))
     }
 }

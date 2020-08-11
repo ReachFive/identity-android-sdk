@@ -191,7 +191,7 @@ class AuthenticatedActivity : AppCompatActivity() {
                 },
                 failure = {
                     Log.d(TAG, "onAddNewWebAuthnDeviceResult error=$it")
-                    showToast("Add new FIDO2 device error=${it.message}")
+                showErrorToast(it)
                 }
             )
         }
@@ -202,6 +202,9 @@ class AuthenticatedActivity : AppCompatActivity() {
     }
 
     private fun showErrorToast(error: ReachFiveError) {
-        showToast(error.data?.errorUserMsg ?: error.message)
+        showToast(error.data?.errorUserMsg ?:
+            (error.data?.errorDetails?.get(0)?.message
+                ?: (error.data?.errorDescription
+                    ?: error.message)))
     }
 }
