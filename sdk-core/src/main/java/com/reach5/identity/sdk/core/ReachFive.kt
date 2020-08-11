@@ -7,6 +7,7 @@ import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
@@ -14,15 +15,14 @@ import com.reach5.identity.sdk.core.models.requests.*
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
 import com.reach5.identity.sdk.core.models.requests.webAuthn.AuthenticationPublicKeyCredential
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthentication.createAuthenticationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
-import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
-import com.reach5.identity.sdk.core.models.requests.webAuthn.RegistrationPublicKeyCredential
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthentication.createAuthenticationPublicKeyCredential
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.responses.ReachFiveToken
+import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import com.reach5.identity.sdk.core.utils.*
 
 class ReachFive (
@@ -490,19 +490,32 @@ class ReachFive (
 
     fun onAddNewWebAuthnDeviceResult(
         authToken: AuthToken,
-        fido2Response: ByteArray,
+        intent: Intent,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
-        val authenticatorAttestationResponse: AuthenticatorAttestationResponse = AuthenticatorAttestationResponse.deserializeFromBytes(fido2Response)
-        val registrationPublicKeyCredential: RegistrationPublicKeyCredential = createRegistrationPublicKeyCredential(authenticatorAttestationResponse)
+        if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
+            val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
+            val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
+            val reachFiveError = ReachFiveError(
+                message = authenticatorErrorResponse.errorMessage ?: "Unexpected error during FIDO2 registration",
+                code = authenticatorErrorResponse.errorCodeAsInt
+            )
 
-        return reachFiveApi
-            .registerWithWebAuthn(formatAuthorization(authToken), registrationPublicKeyCredential)
-            .enqueue(ReachFiveApiCallback(
-                successWithNoContent = successWithNoContent,
-                failure = failure
-            ))
+            failure(reachFiveError)
+        }
+        else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+            val authenticatorAttestationResponse = AuthenticatorAttestationResponse.deserializeFromBytes(fido2Response)
+            val registrationPublicKeyCredential = createRegistrationPublicKeyCredential(authenticatorAttestationResponse)
+
+            return reachFiveApi
+                .registerWithWebAuthn(formatAuthorization(authToken), registrationPublicKeyCredential)
+                .enqueue(ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                ))
+        }
     }
 
     fun loginWithWebAuthn(

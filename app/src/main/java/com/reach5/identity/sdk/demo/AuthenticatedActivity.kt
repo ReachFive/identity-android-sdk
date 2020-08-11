@@ -167,34 +167,18 @@ class AuthenticatedActivity : AppCompatActivity() {
     }
 
     private fun handleWebAuthnRegisterResponse(intent: Intent) {
-        if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
-            val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
-
-            val errorName = authenticatorErrorResponse.errorCode.name
-            val errorMessage = authenticatorErrorResponse.errorMessage
-
-            Log.e(TAG, "errorCode.name: $errorName")
-            Log.e(TAG, "errorMessage: $errorMessage")
-
-            showToast(errorMessage ?: "Unexpected error during FIDO2 registration")
-        }
-        else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-
-            reach5.onAddNewWebAuthnDeviceResult(
-                authToken = this.authToken,
-                fido2Response = fido2Response,
-                successWithNoContent = {
-                    showToast("New FIDO2 device registered")
-                    refreshDevicesDisplayed()
-                },
-                failure = {
-                    Log.d(TAG, "onAddNewWebAuthnDeviceResult error=$it")
+        reach5.onAddNewWebAuthnDeviceResult(
+            authToken = this.authToken,
+            intent = intent,
+            successWithNoContent = {
+                showToast("New FIDO2 device registered")
+                refreshDevicesDisplayed()
+            },
+            failure = {
+                Log.d(TAG, "onAddNewWebAuthnDeviceResult error=$it")
                 showErrorToast(it)
-                }
-            )
-        }
+            }
+        )
     }
 
     private fun showToast(message: String) {
