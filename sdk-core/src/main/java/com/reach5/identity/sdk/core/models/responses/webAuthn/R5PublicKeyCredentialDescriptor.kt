@@ -4,6 +4,7 @@ import android.os.Parcelable
 import android.util.Base64
 import com.google.android.gms.fido.common.Transport
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
+import com.reach5.identity.sdk.core.utils.WebAuthn
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -15,7 +16,7 @@ data class R5PublicKeyCredentialDescriptor(
     fun toPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor {
         return PublicKeyCredentialDescriptor(
             type,
-            Base64.decode(id.toByteArray(), Base64.NO_PADDING or Base64.NO_WRAP or Base64.URL_SAFE),
+            WebAuthn.decodeBase64(id),
             transports?.map { it -> Transport.valueOf(it) }
         )
     }
