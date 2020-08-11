@@ -518,13 +518,12 @@ class ReachFive (
                     val fido2PendingIntentTask = fido2ApiClient.getSignPendingIntent(it.toFido2Model())
                     fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
                         if (fido2PendingIntent != null) {
-                            try {
-                                Log.d(TAG, "Launching Fido2 Pending Intent")
-                                activity.startIntentSenderForResult(fido2PendingIntent.intentSender, loginRequestCode, null, 0, 0, 0)
-                            } catch (e: IntentSender.SendIntentException) {
-                                e.printStackTrace()
-                            }
+                            Log.d(TAG, "Launching Fido2 Pending Intent")
+                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, loginRequestCode, null, 0, 0, 0)
                         }
+                    }
+                    fido2PendingIntentTask.addOnFailureListener {
+                        throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
                     }
                 },
                 failure = failure
