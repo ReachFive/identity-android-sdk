@@ -4,6 +4,7 @@ import android.os.Parcelable
 import android.util.Base64
 import com.google.android.gms.fido.fido2.api.common.*
 import com.google.gson.annotations.SerializedName
+import com.reach5.identity.sdk.core.utils.WebAuthn
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -27,7 +28,7 @@ data class RegistrationOptions(
                 null,
                 publicKey.user.displayName
             ))
-            .setChallenge(Base64.decode(publicKey.challenge, Base64.DEFAULT))
+            .setChallenge(WebAuthn.decodeBase64(publicKey.challenge))
             .setParameters(publicKey.pubKeyCredParams.map {
                 PublicKeyCredentialParameters(it.type, it.alg)
             })

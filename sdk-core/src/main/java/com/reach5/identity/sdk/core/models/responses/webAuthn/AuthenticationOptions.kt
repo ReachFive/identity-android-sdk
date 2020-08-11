@@ -4,6 +4,7 @@ import android.os.Parcelable
 import android.util.Base64
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import com.google.gson.annotations.SerializedName
+import com.reach5.identity.sdk.core.utils.WebAuthn
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -13,7 +14,7 @@ data class AuthenticationOptions(
 ): Parcelable {
     fun toFido2Model() : PublicKeyCredentialRequestOptions {
         return PublicKeyCredentialRequestOptions.Builder()
-            .setChallenge(Base64.decode(publicKey.challenge, Base64.DEFAULT))
+            .setChallenge(WebAuthn.decodeBase64(publicKey.challenge))
             .setTimeoutSeconds(publicKey.timeout?.toDouble()?.div(1000))
             .setRpId(publicKey.rpId)
             .setAllowList(publicKey.allowCredentials.map { it.toPublicKeyCredentialDescriptor() })
