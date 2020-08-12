@@ -2,7 +2,6 @@ package com.reach5.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
-import android.content.IntentSender
 import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse

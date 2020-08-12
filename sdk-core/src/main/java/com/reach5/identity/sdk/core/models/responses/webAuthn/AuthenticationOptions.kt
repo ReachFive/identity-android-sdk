@@ -1,7 +1,6 @@
 package com.reach5.identity.sdk.core.models.responses.webAuthn
 
 import android.os.Parcelable
-import android.util.Base64
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import com.google.gson.annotations.SerializedName
 import com.reach5.identity.sdk.core.utils.WebAuthn
