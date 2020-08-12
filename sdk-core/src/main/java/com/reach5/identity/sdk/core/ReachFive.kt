@@ -543,16 +543,29 @@ class ReachFive (
             ))
 
     fun onLoginWithWebAuthnResult(
-        fido2Response: ByteArray,
+        intent: Intent,
         success: Success<ReachFiveToken>,
         failure: Failure<ReachFiveError>
     ) {
-        val authenticatorAssertionResponse: AuthenticatorAssertionResponse = AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
-        val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential = createAuthenticationPublicKeyCredential(authenticatorAssertionResponse)
+        if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
+            val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
+            val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
+            val reachFiveError = ReachFiveError(
+                message = authenticatorErrorResponse.errorMessage ?: "Unexpected error during FIDO2 authentication",
+                code = authenticatorErrorResponse.errorCodeAsInt
+            )
 
-        return reachFiveApi
-            .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+            failure(reachFiveError)
+        }
+        else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+            val authenticatorAssertionResponse: AuthenticatorAssertionResponse = AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
+            val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential = createAuthenticationPublicKeyCredential(authenticatorAssertionResponse)
+
+            return reachFiveApi
+                .authenticateWithWebAuthn(authenticationPublicKeyCredential)
+                .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+        }
     }
 
     fun listWebAuthnDevices(

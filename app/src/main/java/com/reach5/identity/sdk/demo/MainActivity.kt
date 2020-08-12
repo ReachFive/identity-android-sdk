@@ -220,16 +220,8 @@ class MainActivity : AppCompatActivity() {
         when (resultCode) {
             RESULT_OK -> {
                 data?.let {
-                    when {
-                        it.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA) -> {
-                            handleWebAuthnErrorResponse(data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
-                        }
-                        it.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA) -> {
-                            if (requestCode == LOGIN_REQUEST_CODE) {
-                                val fido2Response = data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-                                handleWebAuthnLoginSuccess(fido2Response)
-                            }
-                        }
+                    when (requestCode) {
+                        LOGIN_REQUEST_CODE -> handleWebAuthnLoginResponse(data)
                         else -> {
                             // Handle provider login
                             this.reach5.onActivityResult(
@@ -237,10 +229,10 @@ class MainActivity : AppCompatActivity() {
                                 resultCode = resultCode,
                                 data = data,
                                 success = { authToken -> handleLoginSuccess(authToken) },
-                                failure = { it ->
-                                    Log.d(TAG, "onActivityResult error=$it")
-                                    it.exception?.printStackTrace()
-                                    showErrorToast(it)
+                                failure = { error ->
+                                    Log.d(TAG, "onActivityResult error=$error")
+                                    error.exception?.printStackTrace()
+                                    showErrorToast(error)
                                 }
                             )
                         }
@@ -256,8 +248,6 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, result)
             }
         }
-
-
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -305,24 +295,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleWebAuthnLoginSuccess(fido2Response: ByteArray) {
+    private fun handleWebAuthnLoginResponse(intent: Intent) {
         reach5.onLoginWithWebAuthnResult(
-            fido2Response = fido2Response,
+            intent = intent,
             success = { showToast("Login success $it") },
             failure = {
                 Log.d(TAG, "onLoginWithWebAuthnResult error=$it")
                 showErrorToast(it)
             }
         )
-    }
-
-    private fun handleWebAuthnErrorResponse(errorBytes: ByteArray) {
-        val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
-        val errorName = authenticatorErrorResponse.errorCode.name
-        val errorMessage = authenticatorErrorResponse.errorMessage
-
-        Log.e(TAG, "errorCode.name: $errorName")
-        Log.e(TAG, "errorMessage: $errorMessage")
     }
 
     private fun showToast(message: String) {
