@@ -35,6 +35,7 @@ class ReachFive (
 
         private const val codeResponseType = "code"
         private const val tokenResponseType = "token"
+        private const val CALLBACK_REQUEST_CODE = 52559
     }
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
@@ -387,6 +388,31 @@ class ReachFive (
         } else {
             failure(ReachFiveError.from("Empty PKCE or Authorization Code"))
         }
+    }
+
+    fun loginWithCallback(
+        tkn: String,
+        scope: Collection<String>,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val intent = Intent(activity, AuthenticationActivity::class.java)
+
+        val pkce = Pkce.generate()
+        val options: Map<String, String> = mapOf(
+            "client_id" to sdkConfig.clientId,
+            "tkn" to tkn,
+            "response_type" to codeResponseType,
+            "redirect_uri" to sdkConfig.scheme,
+            "scope" to formatScope(scope),
+            "code_challenge" to pkce.codeChallenge,
+            "code_challenge_method" to pkce.codeChallengeMethod
+        ) + SdkInfos.getQueries()
+
+        val url = reachFiveApi.passwordCallback(options).request().url.toString()
+        intent.putExtra("URL", url)
+
+        activity.startActivityForResult(intent, CALLBACK_REQUEST_CODE)
     }
 
     fun startPasswordless(

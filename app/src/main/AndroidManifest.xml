@@ -27,19 +27,24 @@
 
                 <data
                     android:host="callback"
-                    android:scheme="reachfive-sg48CdAYohRPeRWZ9j1H"
+                    android:scheme="reachfive-LSCdhBOtrPeh8RFLz6bb"
                     android:pathPattern=".*"
                     tools:ignore="AppLinkUrlError" />
             </intent-filter>
         </activity>
 
         <activity
-                android:name="com.reach5.identity.sdk.demo.AuthenticatedActivity"
+            android:name="com.reach5.identity.sdk.demo.AuthenticatedActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+                android:name="com.reach5.identity.sdk.core.AuthenticationActivity"
                 android:screenOrientation="portrait"/>
 
         <activity
                 android:name="com.reach5.identity.sdk.webview.ReachFiveLoginActivity"
                 android:screenOrientation="portrait"/>
+
         <activity
                 android:name=".JavaMainActivity"
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>

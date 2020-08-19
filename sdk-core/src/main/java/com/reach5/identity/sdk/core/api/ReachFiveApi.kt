@@ -45,6 +45,9 @@ interface ReachFiveApi {
     @POST("/oauth/token")
     fun refreshAccessToken(@Body authCodeRequest: RefreshRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
 
+    @GET("/identity/v1/password/callback")
+    fun passwordCallback(@QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+
     @GET("/identity/v1/logout")
     fun logout(@QueryMap options: Map<String, String>): Call<Unit>
 

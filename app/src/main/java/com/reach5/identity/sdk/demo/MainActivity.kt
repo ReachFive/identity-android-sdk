@@ -22,6 +22,7 @@ import io.github.cdimascio.dotenv.dotenv
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.email
 import kotlinx.android.synthetic.main.activity_main.phoneNumber
+import kotlinx.android.synthetic.main.callback_login.*
 import kotlinx.android.synthetic.main.webauthn_login.*
 
 class MainActivity : AppCompatActivity() {
@@ -43,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     private val sdkConfig = SdkConfig(domain, clientId, scheme)
 
+    private val assignedScope = setOf("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write")
+
     private lateinit var reach5: ReachFive
 
     private lateinit var providerAdapter: ProvidersAdapter
@@ -62,8 +65,6 @@ class MainActivity : AppCompatActivity() {
             WebViewProvider()
         )
 
-        val scope = setOf("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write")
-
         this.reach5 = ReachFive(
             sdkConfig = sdkConfig,
             providersCreators = providersCreators,
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         providers.setOnItemClickListener { _, _, position, _ ->
             val provider = reach5.getProviders()[position]
-            this.reach5.loginWithProvider(name = provider.name, origin = "home", scope = scope, activity = this)
+            this.reach5.loginWithProvider(name = provider.name, origin = "home", scope = assignedScope, activity = this)
         }
 
         passwordSignup.setOnClickListener {
@@ -183,9 +184,9 @@ class MainActivity : AppCompatActivity() {
             val email = webAuthnEmail.text.toString()
             val webAuthnLoginRequest: WebAuthnLoginRequest =
                 if (email.isNotEmpty())
-                    WebAuthnLoginRequest.EmailWebAuthnLoginRequest(origin, email, scope)
+                    WebAuthnLoginRequest.EmailWebAuthnLoginRequest(origin, email, assignedScope)
                 else
-                    WebAuthnLoginRequest.PhoneNumberWebAuthnLoginRequest(origin, webAuthnPhoneNumber.text.toString(), scope)
+                    WebAuthnLoginRequest.PhoneNumberWebAuthnLoginRequest(origin, webAuthnPhoneNumber.text.toString(), assignedScope)
 
             this.reach5
                 .loginWithWebAuthn(
@@ -196,6 +197,18 @@ class MainActivity : AppCompatActivity() {
                         showErrorToast(it)
                     }
                 )
+        }
+
+        loginWithCallback.setOnClickListener{
+            reach5.loginWithCallback(
+                tkn = tkn.text.toString(),
+                scope = assignedScope,
+                success = { authToken -> handleLoginSuccess(authToken) },
+                failure = { error ->
+                    Log.d(TAG, "loginWithCallback error=$error")
+                    showErrorToast(error)
+                }
+            )
         }
 
         val authorizationCode: String? = intent?.data?.getQueryParameter("code")
@@ -296,7 +309,17 @@ class MainActivity : AppCompatActivity() {
     private fun handleWebAuthnLoginResponse(intent: Intent) {
         reach5.onLoginWithWebAuthnResult(
             intent = intent,
-            success = { showToast("Login success $it") },
+            success = {
+                reach5.loginWithCallback(
+                    tkn = it.tkn,
+                    scope = assignedScope,
+                    success = { authToken -> handleLoginSuccess(authToken) },
+                    failure = { error ->
+                        Log.d(TAG, "loginWithCallback error=$error")
+                        showErrorToast(error)
+                    }
+                )
+            },
             failure = {
                 Log.d(TAG, "onLoginWithWebAuthnResult error=$it")
                 showErrorToast(it)
