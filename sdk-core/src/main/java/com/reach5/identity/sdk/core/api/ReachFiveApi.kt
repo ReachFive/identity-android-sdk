@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.*
+import com.reach5.identity.sdk.core.models.requests.webAuthn.*
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequestSerializer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -14,9 +16,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import com.reach5.identity.sdk.core.models.responses.AuthTokenResponse
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.models.responses.ReachFiveToken
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
+import com.reach5.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
-import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.utils.*
 
 
@@ -123,17 +126,27 @@ interface ReachFiveApi {
     ): Call<Unit>
 
     @GET("/identity/v1/webauthn/registration")
-    fun getRegistrations(
+    fun getWebAuthnRegistrations(
         @Header("Authorization") authorization: String,
         @QueryMap options: Map<String, String>
     ): Call<List<DeviceCredential>>
 
     @DELETE("/identity/v1/webauthn/registration/{id}")
-    fun deleteRegistration(
+    fun deleteWebAuthnRegistration(
         @Header("Authorization") authorization: String,
         @Path("id") id: String,
         @QueryMap options: Map<String, String>
     ): Call<Unit>
+
+    @POST("/identity/v1/webauthn/authentication-options")
+    fun createWebAuthnAuthenticationOptions(
+        @Body webAuthnLoginRequest: WebAuthnLoginRequest
+    ): Call<AuthenticationOptions>
+
+    @POST("/identity/v1/webauthn/authentication")
+    fun authenticateWithWebAuthn(
+        @Body authenticationPublicKeyCredential: AuthenticationPublicKeyCredential
+    ): Call<ReachFiveToken>
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
@@ -145,6 +158,10 @@ interface ReachFiveApi {
                 .registerTypeAdapter(
                     UpdatePasswordRequest::class.java,
                     UpdatePasswordRequestSerializer()
+                )
+                .registerTypeAdapter(
+                    WebAuthnLoginRequest::class.java,
+                    WebAuthnLoginRequestSerializer()
                 )
                 .create()
 

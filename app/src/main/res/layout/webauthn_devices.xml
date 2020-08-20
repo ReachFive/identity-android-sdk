@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp"
+            android:layout_marginBottom="20dp"
             tools:ignore="UselessParent">
 
         <EditText
@@ -19,7 +21,7 @@
                 android:layout_weight="1"
                 android:hint="@string/friendly_name"
                 android:lines="1"
-                android:paddingTop="0dp" />
+                android:importantForAutofill="no" />
 
         <Button
                 android:id="@+id/addNewDevice"
@@ -34,13 +36,11 @@
             style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_marginStart="8dp"
             android:visibility="invisible"
             android:text="@string/devices_title" />
 
     <ListView
             android:id="@+id/devices"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp" />
+            android:layout_height="wrap_content" />
 </LinearLayout>

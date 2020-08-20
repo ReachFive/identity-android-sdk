@@ -9,15 +9,13 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.fido.Fido
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.ReachFive
-import com.reach5.identity.sdk.core.ReachFive.Companion.FIDO2_REGISTER_REQUEST_CODE
+import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import io.github.cdimascio.dotenv.dotenv
-import kotlinx.android.synthetic.main.webauthn.*
+import kotlinx.android.synthetic.main.webauthn_devices.*
 
 
 class AuthenticatedActivity : AppCompatActivity() {
@@ -28,7 +26,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         filename = "env"
     }
     private val origin =
-        dotenv["RP_ID"] ?: throw IllegalArgumentException("The relying server ID is undefined! Check your `env` file.")
+        dotenv["ORIGIN"] ?: throw IllegalArgumentException("The origin is undefined! Check your `env` file.")
 
     private lateinit var reach5: ReachFive
     private lateinit var authToken: AuthToken
@@ -39,6 +37,7 @@ class AuthenticatedActivity : AppCompatActivity() {
     companion object {
         const val AUTH_TOKEN = "AUTH_TOKEN"
         const val SDK_CONFIG = "SDK_CONFIG"
+        const val REGISTER_REQUEST_CODE = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,9 +68,14 @@ class AuthenticatedActivity : AppCompatActivity() {
 
         newFriendlyName.setText(android.os.Build.MODEL)
         addNewDevice.setOnClickListener {
-            this.reach5.addNewWebAuthnDevice(this.authToken, origin, newFriendlyName.text.trim().toString()) {
+            this.reach5.addNewWebAuthnDevice(
+                authToken = this.authToken,
+                origin = origin,
+                friendlyName = newFriendlyName.text.trim().toString(),
+                registerRequestCode = REGISTER_REQUEST_CODE
+            ) {
                 Log.d(TAG, "addNewWebAuthnDevice error=$it")
-                showToast("Add new FIDO2 device error=${it.message}")
+                showToast(it.data?.errorUserMsg ?: it.message)
             }
         }
 
@@ -88,7 +92,7 @@ class AuthenticatedActivity : AppCompatActivity() {
                     },
                     failure = {
                         Log.d(TAG, "removeWebAuthnDevice error=$it")
-                        showToast("Delete FIDO2 device error=${it.message}")
+                        showErrorToast(it)
                     }
                 )
             }
@@ -105,12 +109,9 @@ class AuthenticatedActivity : AppCompatActivity() {
         when (resultCode) {
             RESULT_OK -> {
                 data?.let {
-                    if (it.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-                        handleErrorResponse(data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
-                    } else if (it.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-                        val fido2Response = data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-                        when (requestCode) {
-                            FIDO2_REGISTER_REQUEST_CODE -> handleRegisterResponse(fido2Response)
+                    when (requestCode) {
+                        REGISTER_REQUEST_CODE -> {
+                            handleWebAuthnRegisterResponse(data)
                         }
                     }
                 }
@@ -144,10 +145,6 @@ class AuthenticatedActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
     private fun showDevicesTitle() {
         devicesTitle.visibility = if (this.devicesDisplayed.isEmpty()) View.INVISIBLE else View.VISIBLE
     }
@@ -162,32 +159,34 @@ class AuthenticatedActivity : AppCompatActivity() {
             },
             failure = {
                 Log.d(TAG,"listWebAuthnDevices error=$it")
-                showToast("List FIDO2 devices error=${it.message}")
+                showErrorToast(it)
             }
         )
     }
 
-    private fun handleErrorResponse(errorBytes: ByteArray) {
-        val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
-        val errorName = authenticatorErrorResponse.errorCode.name
-        val errorMessage = authenticatorErrorResponse.errorMessage
-
-        Log.e(TAG, "errorCode.name: $errorName")
-        Log.e(TAG, "errorMessage: $errorMessage")
-    }
-
-    private fun handleRegisterResponse(fido2Response: ByteArray) {
+    private fun handleWebAuthnRegisterResponse(intent: Intent) {
         reach5.onAddNewWebAuthnDeviceResult(
             authToken = this.authToken,
-            fido2Response = fido2Response,
+            intent = intent,
             successWithNoContent = {
                 showToast("New FIDO2 device registered")
                 refreshDevicesDisplayed()
             },
             failure = {
                 Log.d(TAG, "onAddNewWebAuthnDeviceResult error=$it")
-                showToast("Add new FIDO2 device error=${it.message}")
+                showErrorToast(it)
             }
         )
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun showErrorToast(error: ReachFiveError) {
+        showToast(error.data?.errorUserMsg ?:
+            (error.data?.errorDetails?.get(0)?.message
+                ?: (error.data?.errorDescription
+                    ?: error.message)))
     }
 }
