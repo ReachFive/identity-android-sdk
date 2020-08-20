@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.reach5.identity.sdk.core.ReachFive
+import com.reach5.identity.sdk.core.RedirectionActivity.Companion.REDIRECTION_REQUEST_CODE
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var providerAdapter: ProvidersAdapter
 
     companion object {
-        const val LOGIN_REQUEST_CODE = 2
+        const val WEBAUTHN_LOGIN_REQUEST_CODE = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -191,7 +192,7 @@ class MainActivity : AppCompatActivity() {
             this.reach5
                 .loginWithWebAuthn(
                     webAuthnLoginRequest,
-                    LOGIN_REQUEST_CODE,
+                    WEBAUTHN_LOGIN_REQUEST_CODE,
                     failure = {
                         Log.d(TAG, "loginWithWebAuthn error=$it")
                         showErrorToast(it)
@@ -202,12 +203,7 @@ class MainActivity : AppCompatActivity() {
         loginWithCallback.setOnClickListener{
             reach5.loginWithCallback(
                 tkn = tkn.text.toString(),
-                scope = assignedScope,
-                success = { authToken -> handleLoginSuccess(authToken) },
-                failure = { error ->
-                    Log.d(TAG, "loginWithCallback error=$error")
-                    showErrorToast(error)
-                }
+                scope = assignedScope
             )
         }
 
@@ -228,35 +224,36 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "MainActivity.onActivityResult requestCode=$requestCode resultCode=$resultCode")
 
-        when (resultCode) {
-            RESULT_OK -> {
-                data?.let {
-                    when (requestCode) {
-                        LOGIN_REQUEST_CODE -> handleWebAuthnLoginResponse(data)
-                        else -> {
-                            // Handle provider login
-                            this.reach5.onActivityResult(
-                                requestCode = requestCode,
-                                resultCode = resultCode,
-                                data = data,
-                                success = { authToken -> handleLoginSuccess(authToken) },
-                                failure = { error ->
-                                    Log.d(TAG, "onActivityResult error=$error")
-                                    error.exception?.printStackTrace()
-                                    showErrorToast(error)
-                                }
-                            )
-                        }
+        when (requestCode) {
+            WEBAUTHN_LOGIN_REQUEST_CODE -> {
+                when (resultCode) {
+                    RESULT_OK -> {
+                        if (data == null) Log.d(TAG, "The data is null")
+                        else handleWebAuthnLoginResponse(data)
                     }
+                    RESULT_CANCELED -> Log.d(TAG, "Operation is cancelled")
+                    else -> Log.e(TAG, "Operation failed, with resultCode: $resultCode")
                 }
             }
-            RESULT_CANCELED -> {
-                val result = "Operation is cancelled"
-                Log.d(TAG, result)
+
+            REDIRECTION_REQUEST_CODE -> {
+                if (data == null) Log.d(TAG, "The data is null")
+                else handleLoginCallbackResponse(data, resultCode)
             }
+
+            // Handle provider login
             else -> {
-                val result = "Operation failed, with resultCode: $resultCode"
-                Log.e(TAG, result)
+                this.reach5.onActivityResult(
+                    requestCode = requestCode,
+                    resultCode = resultCode,
+                    data = data,
+                    success = { authToken -> handleLoginSuccess(authToken) },
+                    failure = { error ->
+                        Log.d(TAG, "onActivityResult error=$error")
+                        error.exception?.printStackTrace()
+                        showErrorToast(error)
+                    }
+                )
             }
         }
     }
@@ -309,19 +306,20 @@ class MainActivity : AppCompatActivity() {
     private fun handleWebAuthnLoginResponse(intent: Intent) {
         reach5.onLoginWithWebAuthnResult(
             intent = intent,
-            success = {
-                reach5.loginWithCallback(
-                    tkn = it.tkn,
-                    scope = assignedScope,
-                    success = { authToken -> handleLoginSuccess(authToken) },
-                    failure = { error ->
-                        Log.d(TAG, "loginWithCallback error=$error")
-                        showErrorToast(error)
-                    }
-                )
-            },
             failure = {
                 Log.d(TAG, "onLoginWithWebAuthnResult error=$it")
+                showErrorToast(it)
+            }
+        )
+    }
+
+    private fun handleLoginCallbackResponse(intent: Intent, resultCode: Int) {
+        reach5.onLoginWithCallbackResult(
+            intent,
+            resultCode = resultCode,
+            success = { handleLoginSuccess(it) },
+            failure = {
+                Log.d(TAG, "onLoginWithCallbackResult error=$it")
                 showErrorToast(it)
             }
         )

@@ -4,7 +4,9 @@
         package="com.reach5.identity.sdk.core">
 
     <application>
-        <activity android:name=".AuthenticationActivity">
+        <activity
+                android:name=".RedirectionActivity"
+                android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -13,7 +15,6 @@
                     android:scheme="reachfive"
                         android:path="callback"
                         tools:ignore="AppLinkUrlError" />
-
             </intent-filter>
         </activity>
     </application>

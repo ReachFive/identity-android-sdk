@@ -38,7 +38,7 @@
             android:screenOrientation="portrait"/>
 
         <activity
-                android:name="com.reach5.identity.sdk.core.AuthenticationActivity"
+                android:name="com.reach5.identity.sdk.core.RedirectionActivity"
                 android:screenOrientation="portrait"/>
 
         <activity

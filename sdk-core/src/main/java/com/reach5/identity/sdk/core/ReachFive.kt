@@ -3,10 +3,16 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
+import com.reach5.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
+import com.reach5.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
+import com.reach5.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
+import com.reach5.identity.sdk.core.RedirectionActivity.Companion.NO_AUTH_ERROR_RESULT_CODE
+import com.reach5.identity.sdk.core.RedirectionActivity.Companion.URL_KEY
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
 import com.reach5.identity.sdk.core.models.*
@@ -33,9 +39,8 @@ class ReachFive (
     companion object {
         private const val TAG = "Reach5"
 
-        private const val codeResponseType = "code"
+        const val codeResponseType = "code"
         private const val tokenResponseType = "token"
-        private const val CALLBACK_REQUEST_CODE = 52559
     }
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
@@ -392,17 +397,15 @@ class ReachFive (
 
     fun loginWithCallback(
         tkn: String,
-        scope: Collection<String>,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        scope: Collection<String>
     ) {
-        val intent = Intent(activity, AuthenticationActivity::class.java)
+        val intent = Intent(activity, RedirectionActivity::class.java)
 
         val pkce = Pkce.generate()
         val options: Map<String, String> = mapOf(
             "client_id" to sdkConfig.clientId,
             "tkn" to tkn,
-            "response_type" to codeResponseType,
+            "response_type" to ReachFive.codeResponseType,
             "redirect_uri" to sdkConfig.scheme,
             "scope" to formatScope(scope),
             "code_challenge" to pkce.codeChallenge,
@@ -410,9 +413,44 @@ class ReachFive (
         ) + SdkInfos.getQueries()
 
         val url = reachFiveApi.passwordCallback(options).request().url.toString()
-        intent.putExtra("URL", url)
+        intent.putExtra(URL_KEY, url)
+        intent.putExtra(CODE_VERIFIER_KEY, pkce.codeVerifier)
 
-        activity.startActivityForResult(intent, CALLBACK_REQUEST_CODE)
+        activity.startActivityForResult(intent, RedirectionActivity.REDIRECTION_REQUEST_CODE)
+    }
+
+    fun onLoginWithCallbackResult(
+        intent: Intent,
+        resultCode: Int,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        when (resultCode) {
+            RedirectionActivity.SUCCESS_RESULT_CODE -> {
+                val code = intent.getStringExtra(CODE_KEY)!!
+                val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)!!
+
+                val authCodeRequest = AuthCodeRequest(sdkConfig.clientId, code, sdkConfig.scheme, codeVerifier)
+
+                reachFiveApi
+                    .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+                    .enqueue(ReachFiveApiCallback(
+                        success = { it.toAuthToken().fold(success, failure) },
+                        failure = failure
+                    ))
+            }
+            NO_AUTH_ERROR_RESULT_CODE -> {
+                failure(ReachFiveError("No authorization code found in activity result."))
+            }
+            ABORT_RESULT_CODE -> {
+                Log.d(TAG, "The custom tab has been closed.")
+                Unit
+            }
+            else -> {
+                Log.e(TAG, "Unexpected event.")
+                Unit
+            }
+        }
     }
 
     fun startPasswordless(
@@ -569,7 +607,7 @@ class ReachFive (
 
     fun onLoginWithWebAuthnResult(
         intent: Intent,
-        success: Success<ReachFiveToken>,
+        scope: Collection<String> = this.scope,
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
@@ -589,7 +627,10 @@ class ReachFive (
 
             return reachFiveApi
                 .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-                .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+                .enqueue(ReachFiveApiCallback(
+                    success = { loginWithCallback(it.tkn, scope) },
+                    failure = failure
+                ))
         }
     }
 
