@@ -25,8 +25,8 @@ class AuthenticatedActivity : AppCompatActivity() {
         directory = "/assets"
         filename = "env"
     }
-    private val origin =
-        dotenv["ORIGIN"] ?: throw IllegalArgumentException("The origin is undefined! Check your `env` file.")
+    // This variable is only mandatory for the FIDO2 login flow
+    private val origin = dotenv["ORIGIN"] ?: ""
 
     private lateinit var reach5: ReachFive
     private lateinit var authToken: AuthToken

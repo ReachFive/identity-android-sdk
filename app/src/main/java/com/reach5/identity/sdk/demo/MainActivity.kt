@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
         dotenv["CLIENT_ID"] ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
     private val scheme =
         dotenv["SCHEME"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
-    private val origin =
-        dotenv["ORIGIN"] ?: throw IllegalArgumentException("The origin is undefined! Check your `env` file.")
+    // This variable is only mandatory for the FIDO2 login flow
+    private val origin = dotenv["ORIGIN"] ?: ""
 
     private val sdkConfig = SdkConfig(domain, clientId, scheme)
 
