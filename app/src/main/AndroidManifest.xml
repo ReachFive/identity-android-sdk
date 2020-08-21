@@ -27,7 +27,7 @@
 
                 <data
                     android:host="callback"
-                    android:scheme="reachfive-LSCdhBOtrPeh8RFLz6bb"
+                    android:scheme="reachfive-sg48CdAYohRPeRWZ9j1H"
                     android:pathPattern=".*"
                     tools:ignore="AppLinkUrlError" />
             </intent-filter>
