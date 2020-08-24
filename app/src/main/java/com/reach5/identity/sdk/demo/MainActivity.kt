@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         loginWithCallback.setOnClickListener{
-            reach5.loginWithAuthenticationCallback(
+            reach5.loginCallback(
                 tkn = tkn.text.toString(),
                 scope = assignedScope
             )
@@ -314,7 +314,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleLoginCallbackResponse(intent: Intent, resultCode: Int) {
-        reach5.onLoginWithCallbackResult(
+        reach5.onLoginCallbackResult(
             intent,
             resultCode = resultCode,
             success = { handleLoginSuccess(it) },

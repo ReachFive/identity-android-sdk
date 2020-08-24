@@ -393,7 +393,7 @@ class ReachFive (
         }
     }
 
-    fun loginWithAuthenticationCallback(
+    fun loginCallback(
         tkn: String,
         scope: Collection<String>
     ) {
@@ -417,7 +417,7 @@ class ReachFive (
         activity.startActivityForResult(intent, RedirectionActivity.REDIRECTION_REQUEST_CODE)
     }
 
-    fun onLoginWithCallbackResult(
+    fun onLoginCallbackResult(
         intent: Intent,
         resultCode: Int,
         success: Success<AuthToken>,
@@ -626,7 +626,7 @@ class ReachFive (
             return reachFiveApi
                 .authenticateWithWebAuthn(authenticationPublicKeyCredential)
                 .enqueue(ReachFiveApiCallback(
-                    success = { loginWithAuthenticationCallback(it.tkn, scope) },
+                    success = { loginCallback(it.tkn, scope) },
                     failure = failure
                 ))
         }
