@@ -3,7 +3,6 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
@@ -26,7 +25,6 @@ import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistratio
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
-import com.reach5.identity.sdk.core.models.responses.ReachFiveToken
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import com.reach5.identity.sdk.core.utils.*
 
@@ -395,7 +393,7 @@ class ReachFive (
         }
     }
 
-    fun loginWithCallback(
+    fun loginWithAuthenticationCallback(
         tkn: String,
         scope: Collection<String>
     ) {
@@ -405,14 +403,14 @@ class ReachFive (
         val options: Map<String, String> = mapOf(
             "client_id" to sdkConfig.clientId,
             "tkn" to tkn,
-            "response_type" to ReachFive.codeResponseType,
+            "response_type" to codeResponseType,
             "redirect_uri" to sdkConfig.scheme,
             "scope" to formatScope(scope),
             "code_challenge" to pkce.codeChallenge,
             "code_challenge_method" to pkce.codeChallengeMethod
         ) + SdkInfos.getQueries()
 
-        val url = reachFiveApi.passwordCallback(options).request().url.toString()
+        val url = reachFiveApi.authorize(options).request().url.toString()
         intent.putExtra(URL_KEY, url)
         intent.putExtra(CODE_VERIFIER_KEY, pkce.codeVerifier)
 
@@ -628,7 +626,7 @@ class ReachFive (
             return reachFiveApi
                 .authenticateWithWebAuthn(authenticationPublicKeyCredential)
                 .enqueue(ReachFiveApiCallback(
-                    success = { loginWithCallback(it.tkn, scope) },
+                    success = { loginWithAuthenticationCallback(it.tkn, scope) },
                     failure = failure
                 ))
         }

@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         loginWithCallback.setOnClickListener{
-            reach5.loginWithCallback(
+            reach5.loginWithAuthenticationCallback(
                 tkn = tkn.text.toString(),
                 scope = assignedScope
             )
