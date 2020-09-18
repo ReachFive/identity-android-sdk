@@ -116,6 +116,11 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<AuthTokenResponse>
 
+    @POST("identity/v1/webauthn/signup-options")
+    fun createWebAuthnSignupOptions(
+        @Body webAuthnRegistrationRequest: WebAuthnRegistrationRequest
+    ): Call<RegistrationOptions>
+
     @POST("/identity/v1/webauthn/registration-options")
     fun createWebAuthnRegistrationOptions(
         @Header("Authorization") authorization: String,

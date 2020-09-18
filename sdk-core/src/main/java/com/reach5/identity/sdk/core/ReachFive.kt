@@ -26,7 +26,9 @@ import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistratio
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
+import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
 import com.reach5.identity.sdk.core.utils.*
+import retrofit2.Call
 
 class ReachFive (
     val activity: Activity,
@@ -517,6 +519,23 @@ class ReachFive (
             )
         )
 
+    fun signupWithWebAuthn(
+        profile: ProfileSignupRequest,
+        origin: String,
+        friendlyName: String?,
+        registerRequestCode: Int,
+        failure: Failure<ReachFiveError>
+    ) {
+        val newFriendlyName = formatFriendlyName(friendlyName)
+
+        reachFiveApi
+            .createWebAuthnSignupOptions(WebAuthnRegistrationRequest(origin, newFriendlyName, profile))
+            .enqueue(ReachFiveApiCallback(
+                success = { startFIDO2RegisterTask(it, registerRequestCode) },
+                failure = failure
+            ))
+    }
+
     fun addNewWebAuthnDevice(
         authToken: AuthToken,
         origin: String,
@@ -524,7 +543,7 @@ class ReachFive (
         registerRequestCode: Int,
         failure: Failure<ReachFiveError>
     ) {
-        val newFriendlyName = if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
+        val newFriendlyName = formatFriendlyName(friendlyName)
 
         reachFiveApi
             .createWebAuthnRegistrationOptions(
@@ -532,21 +551,28 @@ class ReachFive (
                 WebAuthnRegistrationRequest(origin, newFriendlyName)
             )
             .enqueue(ReachFiveApiCallback(
-                success = {
-                    val fido2ApiClient = Fido.getFido2ApiClient(activity)
-                    val fido2PendingIntentTask = fido2ApiClient.getRegisterPendingIntent(it.toFido2Model())
-                    fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
-                        if (fido2PendingIntent != null) {
-                            Log.d(TAG, "Launching Fido2 Pending Intent")
-                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, registerRequestCode, null, 0, 0, 0)
-                        }
-                    }
-                  fido2PendingIntentTask.addOnFailureListener {
-                      throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
-                  }
-                },
+                success = { startFIDO2RegisterTask(it, registerRequestCode) },
                 failure = failure
             ))
+    }
+
+    private fun startFIDO2RegisterTask(
+        registrationOptions: RegistrationOptions,
+        requestCode: Int
+    ) {
+        val fido2ApiClient = Fido.getFido2ApiClient(activity)
+        val fido2PendingIntentTask = fido2ApiClient.getRegisterPendingIntent(registrationOptions.toFido2Model())
+
+        fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
+            if (fido2PendingIntent != null) {
+                Log.d(TAG, "Launching Fido2 Pending Intent")
+                activity.startIntentSenderForResult(fido2PendingIntent.intentSender, requestCode, null, 0, 0, 0)
+            }
+        }
+
+        fido2PendingIntentTask.addOnFailureListener {
+            throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
+        }
     }
 
     fun onAddNewWebAuthnDeviceResult(
@@ -682,5 +708,9 @@ class ReachFive (
 
     private fun formatAuthorization(authToken: AuthToken): String {
         return "${authToken.tokenType} ${authToken.accessToken}"
+    }
+
+    private fun formatFriendlyName(friendlyName: String?): String {
+        return if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
     }
 }
