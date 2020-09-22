@@ -520,7 +520,7 @@ class ReachFive (
         )
 
     fun signupWithWebAuthn(
-        profile: ProfileSignupRequest,
+        profile: ProfileWebAuthnSignupRequest,
         origin: String,
         friendlyName: String?,
         registerRequestCode: Int,
