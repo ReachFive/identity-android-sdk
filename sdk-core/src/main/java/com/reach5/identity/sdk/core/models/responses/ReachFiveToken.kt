@@ -4,6 +4,6 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class ReachFiveToken(
+data class AuthenticationToken(
     val tkn: String
 ) : Parcelable
