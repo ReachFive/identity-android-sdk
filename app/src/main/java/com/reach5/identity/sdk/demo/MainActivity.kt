@@ -53,6 +53,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var providerAdapter: ProvidersAdapter
 
+    private lateinit var webAuthnId: String
+
     companion object {
         const val WEBAUTHN_LOGIN_REQUEST_CODE = 2
         const val WEBAUTHN_SIGNUP_REQUEST_CODE = 3
@@ -195,6 +197,7 @@ class MainActivity : AppCompatActivity() {
                     origin = origin,
                     friendlyName = signupWebAuthnNewFriendlyName.text.toString(),
                     signupRequestCode = WEBAUTHN_SIGNUP_REQUEST_CODE,
+                    successWithWebAuthnId = { this.webAuthnId = it },
                     failure = {
                         Log.d(TAG, "signupWithWebAuthn error=$it")
                         showErrorToast(it)
@@ -251,6 +254,17 @@ class MainActivity : AppCompatActivity() {
                     RESULT_OK -> {
                         if (data == null) Log.d(TAG, "The data is null")
                         else handleWebAuthnLoginResponse(data)
+                    }
+                    RESULT_CANCELED -> Log.d(TAG, "Operation is cancelled")
+                    else -> Log.e(TAG, "Operation failed, with resultCode: $resultCode")
+                }
+            }
+
+            WEBAUTHN_SIGNUP_REQUEST_CODE -> {
+                when (resultCode) {
+                    RESULT_OK -> {
+                        if (data == null) Log.d(TAG, "The data is null")
+                        else handleWebAuthnSignupResponse(data)
                     }
                     RESULT_CANCELED -> Log.d(TAG, "Operation is cancelled")
                     else -> Log.e(TAG, "Operation failed, with resultCode: $resultCode")
@@ -329,6 +343,18 @@ class MainActivity : AppCompatActivity() {
             intent = intent,
             failure = {
                 Log.d(TAG, "onLoginWithWebAuthnResult error=$it")
+                showErrorToast(it)
+            }
+        )
+    }
+
+    private fun handleWebAuthnSignupResponse(intent: Intent) {
+        reach5.onSignupWithWebAuthnResult(
+            intent = intent,
+            webAuthnId = this.webAuthnId,
+            scope = assignedScope,
+            failure = {
+                Log.d(TAG, "onSignupWithWebAuthnResult error=$it")
                 showErrorToast(it)
             }
         )
