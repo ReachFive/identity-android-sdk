@@ -523,15 +523,18 @@ class ReachFive (
         profile: ProfileWebAuthnSignupRequest,
         origin: String,
         friendlyName: String?,
-        registerRequestCode: Int,
+        signupRequestCode: Int,
         failure: Failure<ReachFiveError>
     ) {
         val newFriendlyName = formatFriendlyName(friendlyName)
 
         reachFiveApi
-            .createWebAuthnSignupOptions(WebAuthnRegistrationRequest(origin, newFriendlyName, profile))
+            .createWebAuthnSignupOptions(
+                WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
+                SdkInfos.getQueries()
+            )
             .enqueue(ReachFiveApiCallback(
-                success = { startFIDO2RegisterTask(it, registerRequestCode) },
+                success = { startFIDO2RegisterTask(it, signupRequestCode) },
                 failure = failure
             ))
     }
