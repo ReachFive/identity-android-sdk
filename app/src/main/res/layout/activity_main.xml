@@ -131,6 +131,8 @@
             </LinearLayout>
 
             <include layout="@layout/webauthn_login" />
+
+            <include layout="@layout/callback_login" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
