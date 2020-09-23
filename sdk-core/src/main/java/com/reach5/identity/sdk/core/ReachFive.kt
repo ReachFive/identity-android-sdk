@@ -5,7 +5,6 @@ import android.content.Intent
 import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.reach5.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
 import com.reach5.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
@@ -21,8 +20,8 @@ import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Compan
 import com.reach5.identity.sdk.core.models.requests.webAuthn.AuthenticationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthentication.createAuthenticationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistration.createRegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
+import com.reach5.identity.sdk.core.models.requests.webAuthn.WebauthnSignupCredential
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
@@ -42,6 +41,7 @@ class ReachFive (
     }
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
+    private val reachFiveWebAuthn = ReachFiveWebAuthn(activity)
 
     private var scope: Set<String> = emptySet()
 
@@ -517,6 +517,51 @@ class ReachFive (
             )
         )
 
+    fun signupWithWebAuthn(
+        profile: ProfileWebAuthnSignupRequest,
+        origin: String,
+        friendlyName: String?,
+        signupRequestCode: Int,
+        successWithWebAuthnId: Success<String>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val newFriendlyName = formatFriendlyName(friendlyName)
+
+        reachFiveApi
+            .createWebAuthnSignupOptions(
+                WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
+                SdkInfos.getQueries()
+            )
+            .enqueue(ReachFiveApiCallback(
+                success = {
+                    reachFiveWebAuthn.startFIDO2RegisterTask(it, signupRequestCode)
+                    successWithWebAuthnId(it.options.publicKey.user.id)
+                },
+                failure = failure
+            ))
+    }
+
+    fun onSignupWithWebAuthnResult(
+        intent: Intent,
+        webAuthnId: String,
+        scope: Collection<String> = this.scope,
+        failure: Failure<ReachFiveError>
+    ) {
+        if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
+            reachFiveWebAuthn.extractFIDO2Error(intent, failure)
+        }
+        else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            val registrationPublicKeyCredential = reachFiveWebAuthn.extractRegistrationPublicKeyCredential(intent)
+
+            return reachFiveApi
+                .signupWithWebAuthn(WebauthnSignupCredential(webauthnId = webAuthnId, publicKeyCredential = registrationPublicKeyCredential))
+                .enqueue(ReachFiveApiCallback(
+                    success = { loginCallback(it.tkn, scope) },
+                    failure = failure
+                ))
+        }
+    }
+
     fun addNewWebAuthnDevice(
         authToken: AuthToken,
         origin: String,
@@ -524,7 +569,7 @@ class ReachFive (
         registerRequestCode: Int,
         failure: Failure<ReachFiveError>
     ) {
-        val newFriendlyName = if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
+        val newFriendlyName = formatFriendlyName(friendlyName)
 
         reachFiveApi
             .createWebAuthnRegistrationOptions(
@@ -532,19 +577,7 @@ class ReachFive (
                 WebAuthnRegistrationRequest(origin, newFriendlyName)
             )
             .enqueue(ReachFiveApiCallback(
-                success = {
-                    val fido2ApiClient = Fido.getFido2ApiClient(activity)
-                    val fido2PendingIntentTask = fido2ApiClient.getRegisterPendingIntent(it.toFido2Model())
-                    fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
-                        if (fido2PendingIntent != null) {
-                            Log.d(TAG, "Launching Fido2 Pending Intent")
-                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, registerRequestCode, null, 0, 0, 0)
-                        }
-                    }
-                  fido2PendingIntentTask.addOnFailureListener {
-                      throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
-                  }
-                },
+                success = { reachFiveWebAuthn.startFIDO2RegisterTask(it, registerRequestCode) },
                 failure = failure
             ))
     }
@@ -556,19 +589,10 @@ class ReachFive (
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
-            val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
-            val reachFiveError = ReachFiveError(
-                message = authenticatorErrorResponse.errorMessage ?: "Unexpected error during FIDO2 registration",
-                code = authenticatorErrorResponse.errorCodeAsInt
-            )
-
-            failure(reachFiveError)
+            reachFiveWebAuthn.extractFIDO2Error(intent, failure)
         }
         else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-            val authenticatorAttestationResponse = AuthenticatorAttestationResponse.deserializeFromBytes(fido2Response)
-            val registrationPublicKeyCredential = createRegistrationPublicKeyCredential(authenticatorAttestationResponse)
+            val registrationPublicKeyCredential = reachFiveWebAuthn.extractRegistrationPublicKeyCredential(intent)
 
             return reachFiveApi
                 .registerWithWebAuthn(formatAuthorization(authToken), registrationPublicKeyCredential)
@@ -682,5 +706,9 @@ class ReachFive (
 
     private fun formatAuthorization(authToken: AuthToken): String {
         return "${authToken.tokenType} ${authToken.accessToken}"
+    }
+
+    private fun formatFriendlyName(friendlyName: String?): String {
+        return if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
     }
 }

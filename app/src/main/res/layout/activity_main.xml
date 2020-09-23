@@ -130,6 +130,8 @@
                         android:text="@string/phone_number_passwordless" />
             </LinearLayout>
 
+            <include layout="@layout/webauthn_signup" />
+
             <include layout="@layout/webauthn_login" />
 
             <include layout="@layout/callback_login" />
