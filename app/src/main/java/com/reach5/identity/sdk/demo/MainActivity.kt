@@ -12,6 +12,7 @@ import com.reach5.identity.sdk.core.RedirectionActivity.Companion.REDIRECTION_RE
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
+import com.reach5.identity.sdk.core.models.requests.ProfileWebAuthnSignupRequest
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.AUTH_TOKEN
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_main.email
 import kotlinx.android.synthetic.main.activity_main.phoneNumber
 import kotlinx.android.synthetic.main.callback_login.*
 import kotlinx.android.synthetic.main.webauthn_login.*
+import kotlinx.android.synthetic.main.webauthn_signup.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,8 +53,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var providerAdapter: ProvidersAdapter
 
+    private lateinit var webAuthnId: String
+
     companion object {
         const val WEBAUTHN_LOGIN_REQUEST_CODE = 2
+        const val WEBAUTHN_SIGNUP_REQUEST_CODE = 3
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -181,6 +186,25 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        signupWithWebAuthn.setOnClickListener {
+            this.reach5
+                .signupWithWebAuthn(
+                    profile = ProfileWebAuthnSignupRequest(
+                        email = signupWebAuthnEmail.text.toString(),
+                        givenName = signupWebAuthnGivenName.text.toString(),
+                        familyName = signupWebAuthnFamilyName.text.toString()
+                    ),
+                    origin = origin,
+                    friendlyName = signupWebAuthnNewFriendlyName.text.toString(),
+                    signupRequestCode = WEBAUTHN_SIGNUP_REQUEST_CODE,
+                    successWithWebAuthnId = { this.webAuthnId = it },
+                    failure = {
+                        Log.d(TAG, "signupWithWebAuthn error=$it")
+                        showErrorToast(it)
+                    }
+                )
+        }
+
         loginWithWebAuthn.setOnClickListener {
             val email = webAuthnEmail.text.toString()
             val webAuthnLoginRequest: WebAuthnLoginRequest =
@@ -191,8 +215,8 @@ class MainActivity : AppCompatActivity() {
 
             this.reach5
                 .loginWithWebAuthn(
-                    webAuthnLoginRequest,
-                    WEBAUTHN_LOGIN_REQUEST_CODE,
+                    loginRequest = webAuthnLoginRequest,
+                    loginRequestCode = WEBAUTHN_LOGIN_REQUEST_CODE,
                     failure = {
                         Log.d(TAG, "loginWithWebAuthn error=$it")
                         showErrorToast(it)
@@ -230,6 +254,17 @@ class MainActivity : AppCompatActivity() {
                     RESULT_OK -> {
                         if (data == null) Log.d(TAG, "The data is null")
                         else handleWebAuthnLoginResponse(data)
+                    }
+                    RESULT_CANCELED -> Log.d(TAG, "Operation is cancelled")
+                    else -> Log.e(TAG, "Operation failed, with resultCode: $resultCode")
+                }
+            }
+
+            WEBAUTHN_SIGNUP_REQUEST_CODE -> {
+                when (resultCode) {
+                    RESULT_OK -> {
+                        if (data == null) Log.d(TAG, "The data is null")
+                        else handleWebAuthnSignupResponse(data)
                     }
                     RESULT_CANCELED -> Log.d(TAG, "Operation is cancelled")
                     else -> Log.e(TAG, "Operation failed, with resultCode: $resultCode")
@@ -308,6 +343,18 @@ class MainActivity : AppCompatActivity() {
             intent = intent,
             failure = {
                 Log.d(TAG, "onLoginWithWebAuthnResult error=$it")
+                showErrorToast(it)
+            }
+        )
+    }
+
+    private fun handleWebAuthnSignupResponse(intent: Intent) {
+        reach5.onSignupWithWebAuthnResult(
+            intent = intent,
+            webAuthnId = this.webAuthnId,
+            scope = assignedScope,
+            failure = {
+                Log.d(TAG, "onSignupWithWebAuthnResult error=$it")
                 showErrorToast(it)
             }
         )
