@@ -31,6 +31,14 @@ SCHEME=my-reachfive-url-scheme
 
 The URL scheme must follow this pattern: `reachfive-${clientId}://callback`.
 
+To login with a WebView, the scheme's path must also be set in a resource file as below:
+
+```xml
+<resources>
+    <string name="reachfive_scheme">reachfive-${clientId}</string>
+</resources>
+```
+
 Finally install the dependencies with [Gradle](https://gradle.org/) (it will be done automatically with Android Studio), select a virtual device and run the application.
 
 ### Login with FIDO2
@@ -39,9 +47,9 @@ If you want to login with FIDO2, you need to set the domain of the origin in the
 
 ```
 # formatted as key=value
-DOMAIN=sdk-mobile-sandbox.reach5.net
-CLIENT_ID=LSCdhBOtrPeh8RFLz6bb
-SCHEME=reachfive://callback
+DOMAIN=my-reachfive-url
+CLIENT_ID=my-reachfive-client-id
+SCHEME=my-reachfive-url-scheme
 
 ORIGIN=https://dev-sandbox-268508.web.app
 ```
