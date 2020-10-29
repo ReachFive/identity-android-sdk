@@ -33,9 +33,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                        android:scheme="@string/reachfive_scheme"
-                        android:path="callback"
-                        tools:ignore="AppLinkUrlError" />
+                    android:scheme="@string/reachfive_scheme"
+                    android:host="callback"
+                    android:pathPrefix="/LSCdhBOtrPeh8RFLz6bb"
+                    tools:ignore="AppLinkUrlError" />
             </intent-filter>
         </activity>
 
