@@ -55,13 +55,13 @@ class ReachFiveLoginActivity : Activity() {
             ConfiguredWebViewProvider.RESULT_INTENT_ERROR,
             message
         )
-        setResult(ConfiguredWebViewProvider.RequestCode, intent)
+        setResult(ConfiguredWebViewProvider.PROVIDER_REDIRECTION_REQUEST_CODE, intent)
         finish()
     }
 
     fun loginSuccess(authCode: String?) {
         intent.putExtra(ConfiguredWebViewProvider.AuthCode, authCode)
-        setResult(ConfiguredWebViewProvider.RequestCode, intent)
+        setResult(ConfiguredWebViewProvider.PROVIDER_REDIRECTION_REQUEST_CODE, intent)
         finish()
     }
 

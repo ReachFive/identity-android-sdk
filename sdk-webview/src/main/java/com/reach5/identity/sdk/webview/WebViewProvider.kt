@@ -6,7 +6,10 @@ import com.reach5.identity.sdk.core.Provider
 import com.reach5.identity.sdk.core.ProviderCreator
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
-import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.ProviderConfig
+import com.reach5.identity.sdk.core.models.ReachFiveError
+import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.SdkInfos
 import com.reach5.identity.sdk.core.models.requests.AuthCodeRequest
 import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.utils.Failure
@@ -33,13 +36,13 @@ class ConfiguredWebViewProvider(
 ) : Provider {
 
     override val name: String = providerConfig.provider
-    override val requestCode: Int = RequestCode
+    override val requestCode: Int = PROVIDER_REDIRECTION_REQUEST_CODE
 
     companion object {
         const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
         const val AuthCode = "AuthCode"
         const val PKCE = "PKCE"
-        const val RequestCode = 52558
+        const val PROVIDER_REDIRECTION_REQUEST_CODE = 52559
         const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
 

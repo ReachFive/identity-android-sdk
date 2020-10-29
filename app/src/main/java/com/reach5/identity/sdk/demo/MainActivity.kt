@@ -19,6 +19,7 @@ import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.AUTH_TOKEN
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.SDK_CONFIG
 import com.reach5.identity.sdk.facebook.FacebookProvider
 import com.reach5.identity.sdk.google.GoogleProvider
+import com.reach5.identity.sdk.webview.ConfiguredWebViewProvider.Companion.PROVIDER_REDIRECTION_REQUEST_CODE
 import com.reach5.identity.sdk.webview.WebViewProvider
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.android.synthetic.main.activity_main.*
@@ -276,8 +277,7 @@ class MainActivity : AppCompatActivity() {
                 else handleLoginCallbackResponse(data, resultCode)
             }
 
-            // Handle provider login
-            else -> {
+            PROVIDER_REDIRECTION_REQUEST_CODE -> {
                 this.reach5.onActivityResult(
                     requestCode = requestCode,
                     resultCode = resultCode,
@@ -289,6 +289,11 @@ class MainActivity : AppCompatActivity() {
                         showErrorToast(error)
                     }
                 )
+            }
+
+            else -> {
+                Log.d(TAG, "onActivityResult Operation failed with unknown request code")
+                showToast("Operation failed")
             }
         }
     }
