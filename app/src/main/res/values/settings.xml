@@ -3,4 +3,6 @@
     <string name="facebook_app_id">2326266780745811</string>
     <string name="fb_login_protocol_scheme">fb2326266780745811</string>
     <string name="reachfive_scheme">reachfive</string>
+    <string name="reachfive_client_id">/LSCdhBOtrPeh8RFLz6bb</string>
+
 </resources>
