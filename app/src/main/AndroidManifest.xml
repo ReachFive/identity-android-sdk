@@ -35,7 +35,7 @@
                 <data
                     android:scheme="@string/reachfive_scheme"
                     android:host="callback"
-                    android:pathPrefix="/LSCdhBOtrPeh8RFLz6bb"
+                    android:pathPrefix="@string/reachfive_client_id"
                     tools:ignore="AppLinkUrlError" />
             </intent-filter>
         </activity>
