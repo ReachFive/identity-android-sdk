@@ -277,7 +277,8 @@ class MainActivity : AppCompatActivity() {
                 else handleLoginCallbackResponse(data, resultCode)
             }
 
-            PROVIDER_REDIRECTION_REQUEST_CODE -> {
+            // Handle webview and native provider login
+            else -> {
                 this.reach5.onActivityResult(
                     requestCode = requestCode,
                     resultCode = resultCode,
@@ -289,11 +290,6 @@ class MainActivity : AppCompatActivity() {
                         showErrorToast(error)
                     }
                 )
-            }
-
-            else -> {
-                Log.d(TAG, "onActivityResult Operation failed with unknown request code")
-                showToast("Operation failed")
             }
         }
     }
