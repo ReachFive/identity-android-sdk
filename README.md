@@ -38,8 +38,6 @@ To login with a WebView, the scheme's path must also be set in a resource file a
     <string name="reachfive_scheme">reachfive</string>
     <string name="reachfive_client_id">${clientId}</string>
     <string name="reachfive_path">/callback</string>
-
-
 </resources>
 ```
 
