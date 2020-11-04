@@ -6,9 +6,9 @@
 
 The format expected for your redirection scheme has changed into `reachfive://${clientId}/callback`.
 
-Some changes are required if you are using the [Webview SDK](https://developer.reachfive.com/sdk-android/index.html#sdk-webview):
-- Update the scheme required by the `SdkConfig` object for the [SDK initialization](https://developer.reachfive.com/sdk-android/index.html#initialization). In our example, the value is stored in the [`env`](app/src/main/assets/env) file.
-- Specify your ReachFive client ID at the host scheme in your [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) file
+Some updated are required if you are using the [Webview SDK](https://developer.reachfive.com/sdk-android/index.html#sdk-webview):
+- Update the scheme required by the `SdkConfig` object for the [SDK initialization](https://developer.reachfive.com/sdk-android/index.html#initialization). In our example, the value is stored in the `env` file.
+- Specify your ReachFive client ID at the host scheme in your [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) file as below.
 ```xml
 <activity
         android:name="com.reach5.identity.sdk.core.RedirectionActivity"
