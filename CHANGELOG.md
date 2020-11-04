@@ -8,7 +8,8 @@ The format expected for your redirection scheme has changed to `reachfive://${cl
 
 Some updates are required if you are using the [Webview SDK](https://developer.reachfive.com/sdk-android/index.html#sdk-webview):
 
-1. Update the scheme required by the `SdkConfig` object for the [SDK initialization](https://developer.reachfive.com/sdk-android/index.html#initialization). In our example, the value is stored in the `env` file.
+1. Update the scheme required by the `SdkConfig` object for the [SDK initialization](https://developer.reachfive.com/sdk-android/index.html#initialization). 
+In our example, the value is stored in the `env` file.
 
 2. Specify your ReachFive client ID at the host scheme in your [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) file as below.
 ```xml
@@ -28,7 +29,7 @@ Some updates are required if you are using the [Webview SDK](https://developer.r
 </activity>
 ```
 
-3. Update the schema in the *Allowed Callback URLs* section of your Identity client on the ReachFive console. 
+3. Update the scheme in the *Allowed Callback URLs* section of your Identity client on the ReachFive console. 
 
 ### Features
 
