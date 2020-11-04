@@ -1,16 +1,53 @@
 # Changelog
 
+## v6.0.0 (04/11/2020)
+
+### Latest changes
+
+The format expected for your redirection scheme has changed to `reachfive://${clientId}/callback`.
+
+Some updates are required if you are using the [Webview SDK](https://developer.reachfive.com/sdk-android/index.html#sdk-webview):
+
+1. Update the scheme required by the `SdkConfig` object for the [SDK initialization](https://developer.reachfive.com/sdk-android/index.html#initialization). 
+In our example, the value is stored in the `env` file.
+
+2. Specify your ReachFive client ID at the host scheme in your [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) file as below.
+```xml
+<activity
+        android:name="com.reach5.identity.sdk.core.RedirectionActivity"
+        android:screenOrientation="portrait">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+            android:scheme="@string/reachfive_scheme"
+            android:host="YOUR_REACHFIVE_CLIENT_ID"
+            android:pathPrefix="@string/reachfive_path"
+            tools:ignore="AppLinkUrlError" />
+    </intent-filter>
+</activity>
+```
+
+3. Update the scheme in the *Allowed Callback URLs* section of your Identity client on the ReachFive console. 
+
+### Features
+
+You can now implement a biometric authentication flow.
+
+> Follow our [FIDO2](https://developer.reachfive.com/sdk-android/fido2.html) guide for more information on the configuration and methods.
+
 ## v5.7.0 (01/07/2020)
 
 ### Features
 
-- The `errorMessageKey` field is now returned in the error response object. See for example [`updateEmail`](https://developer.reachfive.com/sdk-android/updateEmail.html#reachfiveerror) to view the documentation of the new field.
+The `errorMessageKey` field is now returned in the error response object. See for example [`updateEmail`](https://developer.reachfive.com/sdk-android/updateEmail.html#reachfiveerror) to view the documentation of the new field.
 
 ## v5.6.0 (26/06/2020)
 
 ### Features
 
-- Add the `scope` parameter to the [`loginWithProvider`](https://developer.reachfive.com/sdk-android/loginWithProvider.html) method.
+Add the `scope` parameter to the [`loginWithProvider`](https://developer.reachfive.com/sdk-android/loginWithProvider.html) method.
 
 ## v5.5.0 (15/06/2020)
 
@@ -157,7 +194,7 @@ Note that `ProfileSignupRequest` contains the same attributes as `Profile` plus 
 
 ### Fixes
 
-- The `requestPasswordReset` no longer needs the `authToken` argument.
+The `requestPasswordReset` no longer needs the `authToken` argument.
     
 ## v4.2.0 (22/07/2019)
 
@@ -175,7 +212,7 @@ Note that `ProfileSignupRequest` contains the same attributes as `Profile` plus 
 
 ### Fixes
 
-- The `success` parameter of the `requestPasswordReset` and `verifyPhoneNumber` methods was renamed into `successWithNoContent` and is now correctly called.
+The `success` parameter of the `requestPasswordReset` and `verifyPhoneNumber` methods was renamed into `successWithNoContent` and is now correctly called.
 
 ## v4.0.0 (07/07/2019)
 
