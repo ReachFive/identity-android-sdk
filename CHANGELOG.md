@@ -11,25 +11,7 @@ Some updates are required if you are using the [Webview SDK](https://developer.r
 1. Update the scheme required by the `SdkConfig` object for the [SDK initialization](https://developer.reachfive.com/sdk-android/index.html#initialization). 
 In our example, the value is stored in the `env` file.
 
-2. Specify your ReachFive client ID at the host scheme in your [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml) file as below.
-```xml
-<activity
-        android:name="com.reach5.identity.sdk.core.RedirectionActivity"
-        android:screenOrientation="portrait">
-    <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data
-            android:scheme="@string/reachfive_scheme"
-            android:host="YOUR_REACHFIVE_CLIENT_ID"
-            android:pathPrefix="@string/reachfive_path"
-            tools:ignore="AppLinkUrlError" />
-    </intent-filter>
-</activity>
-```
-
-3. Update the scheme in the *Allowed Callback URLs* section of your Identity client on the ReachFive console. 
+2. Update the scheme in the *Allowed Callback URLs* section of your Identity client on the ReachFive console. 
 
 ### Features
 
