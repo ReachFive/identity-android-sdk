@@ -53,7 +53,7 @@ DOMAIN=my-reachfive-url
 CLIENT_ID=my-reachfive-client-id
 SCHEME=my-reachfive-url-scheme
 
-ORIGIN=https://dev-sandbox-268508.web.app
+ORIGIN=my-webauthn-origin-domain
 ```
 
 ## Documentation
