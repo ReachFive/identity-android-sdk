@@ -32,6 +32,8 @@ class ReachFiveLoginActivity : Activity() {
         webview.settings.javaScriptEnabled = true
 
         webview.webViewClient = ReachFiveWebViewClient()
+        // Google does not allow default implementations of WebView to be used, so we need to differentiate the WebView by looking for the wv field
+        webview.settings.setUserAgentString(webview.getSettings().getUserAgentString().replace("wv",getString(R.string.app_name)));
 
         val pkce = intent.getParcelableExtra<Pkce>(ConfiguredWebViewProvider.PKCE)
         val url = config.buildUrl(pkce)
