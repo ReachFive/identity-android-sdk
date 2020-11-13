@@ -5,8 +5,8 @@ buildscript {
     ext.lib_version = "6.0.1"
     ext.lib_group = "com.reach5.identity"
     ext.min_sdk_version = 19
-    ext.target_sdk_version = 28
-    ext.compile_sdk_version = 28
+    ext.target_sdk_version = 29
+    ext.compile_sdk_version = 29
     ext.version_code = 1
     repositories {
         google()
