@@ -1,5 +1,12 @@
 # Changelog
 
+## v6.0.1 (13/11/2020)
+
+### Fixes
+
+- Fix the exchange of an authorization code with an access token at the end of a Webauthn workflow.
+- Fix the Google login through a Webview.
+
 ## v6.0.0 (04/11/2020)
 
 ### Latest changes
