@@ -255,7 +255,6 @@ class ReachFive (
             "providers",
             "social_identities",
             "sub",
-            "tos_accepted_at",
             "uid",
             "updated_at"
         )
