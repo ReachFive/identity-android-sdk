@@ -106,7 +106,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             this.reach5.signup(
-                signupRequest,
+                profile = signupRequest,
+                redirectUrl = redirectUrl.text.toString(),
                 success = { handleLoginSuccess(it) },
                 failure = {
                     Log.d(TAG, "signup error=$it")

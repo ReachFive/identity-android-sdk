@@ -121,12 +121,14 @@ class ReachFive (
     fun signup(
         profile: ProfileSignupRequest,
         scope: Collection<String> = this.scope,
+        redirectUrl: String? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val signupRequest = SignupRequest(
             clientId = sdkConfig.clientId,
             data = profile,
+            redirectUrl = redirectUrl,
             scope = formatScope(scope)
         )
         reachFiveApi
