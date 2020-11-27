@@ -42,8 +42,6 @@ data class Profile(
     @SerializedName("custom_fields")
     val customFields: Map<String, @RawValue Any>? = null,
     val consents: Map<String, Consent>? = null,
-    @SerializedName("tos_accepted_at")
-    val tosAcceptedAt: String? = null,
     @SerializedName("created_at")
     val createdAt: String? = null,
     @SerializedName("updated_at")

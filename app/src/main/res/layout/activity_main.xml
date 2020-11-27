@@ -37,6 +37,17 @@
                         android:importantForAutofill="no"
                         android:inputType="textUri" />
 
+
+                <EditText
+                        android:id="@+id/redirectUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/redirect_url"
+                        android:lines="1"
+                        android:importantForAutofill="no"
+                        android:inputType="textUri" />
+
                 <EditText
                         android:id="@+id/email"
                         android:layout_width="match_parent"

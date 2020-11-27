@@ -34,8 +34,6 @@ data class ProfileSignupRequest(
     @SerializedName("custom_fields")
     val customFields: Map<String, @RawValue Any>? = null,
     val consents: Map<String, Consent>? = null,
-    @SerializedName("tos_accepted_at")
-    val tosAcceptedAt: String? = null,
     @SerializedName("lite_only")
     val liteOnly: Boolean? = null
 ) : Parcelable {
@@ -69,8 +67,6 @@ data class ProfileWebAuthnSignupRequest(
     @SerializedName("custom_fields")
     val customFields: Map<String, @RawValue Any>? = null,
     val consents: Map<String, Consent>? = null,
-    @SerializedName("tos_accepted_at")
-    val tosAcceptedAt: String? = null,
     @SerializedName("lite_only")
     val liteOnly: Boolean? = null
 ) : Parcelable

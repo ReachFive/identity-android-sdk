@@ -10,6 +10,6 @@ data class SignupRequest(
     val clientId: String,
     val data: ProfileSignupRequest,
     val scope: String,
-    @SerializedName("accept_tos")
-    val acceptTos: Boolean? = null
+    @SerializedName("redirect_url")
+    val redirectUrl: String? = null
 ) : Parcelable
