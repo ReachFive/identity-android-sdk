@@ -20,6 +20,7 @@
     <string name="phone_number">Phone number</string>
     <string name="phone_number_passwordless">SMS Passwordless</string>
     <string name="redirect_uri">Redirect URI for Passwordless</string>
+    <string name="redirect_url">Redirect URL for signup template (optional)</string>
     <string name="remove">Remove</string>
     <string name="start_passwordless">Start Passwordless</string>
     <string name="signup">Signup</string>
