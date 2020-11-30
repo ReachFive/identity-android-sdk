@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.1.0 (30/11/2020)
+
+### Feature
+
+The `redirectUrl` was added to the [signup](https://developer.reachfive.com/sdk-android/signup.html) method to redirect the user after the email confirmation.
+
 ## v6.0.1 (13/11/2020)
 
 ### Fixes
