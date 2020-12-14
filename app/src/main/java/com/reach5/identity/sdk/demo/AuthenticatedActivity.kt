@@ -64,7 +64,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         emailTextView.text = this.authToken.user?.email
 
         val phoneNumberTextView = findViewById<View>(R.id.user_phone_number) as TextView
-        phoneNumberTextView.text = this.authToken.user?.phoneNumber
+        phoneNumberTextView.text = this.authToken.user?.phoneNumber.toString().trim()
 
         newFriendlyName.setText(android.os.Build.MODEL)
         addNewDevice.setOnClickListener {
