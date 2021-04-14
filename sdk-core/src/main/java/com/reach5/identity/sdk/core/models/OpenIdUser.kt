@@ -33,7 +33,9 @@ data class OpenIdUser(
     val phoneNumberVerified: Boolean?,
     val address: Address?,
     // DOB in ISO­-8601 format (ex: 1965-12-31)
-    var birthdate: String?
+    var birthdate: String?,
+    @SerializedName("external_id")
+    val externalId: String?
 ) : Parcelable
 
 @Parcelize
