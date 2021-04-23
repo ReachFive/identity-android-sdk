@@ -109,16 +109,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         passwordSignup.setOnClickListener {
-            val signupRequest = if (email.text.toString().isNotEmpty()) {
-                ProfileSignupRequest(
-                    email = email.text.toString(),
-                    password = password.text.toString()
+            val signupRequest = when {
+                ((email.text.toString().isNotEmpty()) &&(phoneNumber.text.toString().isEmpty()) ) -> ProfileSignupRequest (
+                        email = email.text.toString(),
+                        password = password.text.toString()
                 )
-            } else {
-                ProfileSignupRequest(
-                    phoneNumber = phoneNumber.text.toString(),
-                    password = password.text.toString()
+                ((email.text.toString().isEmpty()) &&(phoneNumber.text.toString().isNotEmpty()) ) -> ProfileSignupRequest(
+                        phoneNumber = phoneNumber.text.toString(),
+                        password = password.text.toString()
                 )
+
+                else ->
+                    ProfileSignupRequest(
+                            email = email.text.toString(),
+                            phoneNumber = phoneNumber.text.toString(),
+                            password = password.text.toString()
+                    )
             }
 
             this.reach5.signup(
