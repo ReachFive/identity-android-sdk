@@ -433,7 +433,7 @@ class MainActivityTest {
         val profile = aProfile()
         val newEmail = anEmail()
         val scope = fullWrite + openId + email
-
+/*
         client.signup(
             profile,
             scope,
@@ -451,13 +451,14 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
     fun testFailedEmailUpdateWithSameEmail() = clientTest { client, passTest ->
         val profile = aProfile()
         val scope = fullWrite + openId
-
+/*
         client.signup(
             profile,
             scope,
@@ -476,6 +477,7 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
@@ -510,7 +512,7 @@ class MainActivityTest {
         val profile = aProfile()
         val newNumber = aPhoneNumber()
         val scope = fullWrite + openId + phone
-
+/*
         client.signup(
             profile,
             scope,
@@ -528,13 +530,14 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
     fun testSuccessfulPhoneNumberUpdateWithSameNumber() = clientTest { client, passTest ->
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val scope = fullWrite + openId + phone
-
+/*
         client.signup(
             profile,
             scope,
@@ -552,6 +555,7 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
@@ -587,7 +591,7 @@ class MainActivityTest {
         val updatedGivenName = "Christelle"
         val updatedFamilyName = "Couet"
         val scope = fullWrite + openId + email + profile
-
+/*
         client.signup(
             theProfile,
             scope,
@@ -609,6 +613,7 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
@@ -643,7 +648,7 @@ class MainActivityTest {
         val profile = aProfile()
         val newPassword = "ZPf7LFtc"
         val scope = fullWrite + openId
-
+/*
         client.signup(
             profile,
             scope,
@@ -663,6 +668,7 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
@@ -670,7 +676,7 @@ class MainActivityTest {
         val profile = aProfile()
         val newPassword = "XLpYXz7z"
         val scope = fullWrite + openId
-
+/*
         client.signup(
             profile,
             scope,
@@ -694,13 +700,14 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
     fun testFailedPasswordUpdateWithAccessTokenWithSamePassword() = clientTest { client, passTest ->
         val profile = aProfile()
         val scope = fullWrite + openId
-
+/*
         client.signup(
             profile,
             scope,
@@ -724,6 +731,7 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
@@ -731,7 +739,7 @@ class MainActivityTest {
         val profile = aProfile()
         val incorrectVerificationCode = "234"
         val scope = fullWrite + openId
-
+/*
         client.signup(
             profile,
             scope,
@@ -752,6 +760,7 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
@@ -759,7 +768,7 @@ class MainActivityTest {
         val profile = aProfile().copy(phoneNumber = aPhoneNumber())
         val incorrectVerificationCode = "234"
         val scope = fullWrite + openId
-
+/*
         client.signup(
             profile,
             scope,
@@ -780,6 +789,7 @@ class MainActivityTest {
             },
             { failWithReachFiveError(it) }
         )
+ */
     }
 
     @Test
