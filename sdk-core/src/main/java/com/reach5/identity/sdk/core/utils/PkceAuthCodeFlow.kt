@@ -10,11 +10,11 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import kotlin.text.Charsets.UTF_8
 
-//@Parcelize
-data class PkceAuthCodeFlow(val codeVerifier: String, val redirectUri: String) {
-//    @IgnoredOnParcel
+@Parcelize
+data class PkceAuthCodeFlow(val codeVerifier: String, val redirectUri: String) : Parcelable {
+    @IgnoredOnParcel
     val codeChallenge: String
-//    @IgnoredOnParcel
+    @IgnoredOnParcel
     val codeChallengeMethod: String
 
     init {
