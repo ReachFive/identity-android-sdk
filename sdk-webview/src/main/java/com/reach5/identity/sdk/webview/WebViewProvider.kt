@@ -11,9 +11,9 @@ import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.SdkInfos
 import com.reach5.identity.sdk.core.models.requests.AuthCodeRequest
-import com.reach5.identity.sdk.core.models.responses.AuthToken
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.Pkce
+import com.reach5.identity.sdk.core.utils.PkceAuthCodeFlow
 import com.reach5.identity.sdk.core.utils.Success
 
 class WebViewProvider : ProviderCreator {
@@ -56,7 +56,7 @@ class ConfiguredWebViewProvider(
                 scope = scope.joinToString(" ")
             )
         )
-        intent.putExtra(PKCE, Pkce.generate())
+        intent.putExtra(PKCE, PkceAuthCodeFlow.generate())
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -68,7 +68,7 @@ class ConfiguredWebViewProvider(
         failure: Failure<ReachFiveError>
     ) {
         val authCode = data?.getStringExtra(AuthCode)
-        val pkce = data?.getParcelableExtra<Pkce>(PKCE)
+        val pkce = data?.getParcelableExtra<PkceAuthCodeFlow>(PKCE)
         return if (authCode != null && pkce != null) {
             val authCodeRequest = AuthCodeRequest(
                 sdkConfig.clientId,

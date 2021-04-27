@@ -10,11 +10,11 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import kotlin.text.Charsets.UTF_8
 
-@Parcelize
-class Pkce(val codeVerifier: String) : Parcelable {
-    @IgnoredOnParcel
+//@Parcelize
+data class PkceAuthCodeFlow(val codeVerifier: String, val redirectUri: String) {
+//    @IgnoredOnParcel
     val codeChallenge: String
-    @IgnoredOnParcel
+//    @IgnoredOnParcel
     val codeChallengeMethod: String
 
     init {
@@ -22,13 +22,12 @@ class Pkce(val codeVerifier: String) : Parcelable {
         this.codeChallengeMethod = "S256"
     }
 
-    override fun toString(): String =
-        "code_verifier=$codeVerifier, code_challenge=$codeChallenge, code_challenge_method=$codeChallengeMethod"
+    override fun toString(): String = ""
 
     companion object {
         private const val BASE64_FLAGS = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
 
-        fun generate(): Pkce = Pkce(generateCodeVerifier())
+        fun generate(redirectUri: String): PkceAuthCodeFlow = PkceAuthCodeFlow(generateCodeVerifier(), redirectUri)
 
         private fun generateCodeVerifier(): String =
             SecureRandom()
@@ -39,19 +38,31 @@ class Pkce(val codeVerifier: String) : Parcelable {
                     Base64.encodeToString(code, BASE64_FLAGS)
                 }
 
-        fun storeCodeVerifier(pkce: Pkce, activity: Activity): Unit =
+        fun storeAuthCodeFlow(pkceAuthCodeFlow: PkceAuthCodeFlow, activity: Activity): Unit =
             activity
                 .getSharedPreferences("pkce", Context.MODE_PRIVATE)
                 .edit()
                 .run {
-                    putString("code_verifier", pkce.codeVerifier)
+                    putString("code_verifier", pkceAuthCodeFlow.codeVerifier)
+                    putString("redirect_uri", pkceAuthCodeFlow.redirectUri)
                     apply()
                 }
 
-        fun readCodeVerifier(activity: Activity): String? =
-            activity
-                .getSharedPreferences("pkce", Context.MODE_PRIVATE)
-                .getString("code_verifier", null)
+        fun readAuthCodeFlow(activity: Activity): PkceAuthCodeFlow? {
+            val verifier =
+                activity
+                    .getSharedPreferences("pkce", Context.MODE_PRIVATE)
+                    .getString("code_verifier", "")
+
+            val redirectUri =
+                activity
+                    .getSharedPreferences("pkce", Context.MODE_PRIVATE)
+                    .getString("redirect_uri", "")
+
+            return if (verifier != null && redirectUri != null) {
+                PkceAuthCodeFlow(verifier, redirectUri)
+            } else null
+        }
     }
 
     private fun generateCodeChallenge(codeVerifier: String): String =

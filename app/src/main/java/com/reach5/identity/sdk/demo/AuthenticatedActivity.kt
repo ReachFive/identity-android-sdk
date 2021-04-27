@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.reach5.identity.sdk.core.ReachFive
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
-import com.reach5.identity.sdk.core.models.responses.AuthToken
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.android.synthetic.main.webauthn_devices.*
