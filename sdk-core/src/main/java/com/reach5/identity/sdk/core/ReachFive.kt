@@ -259,10 +259,7 @@ class ReachFive(
             "updated_at"
         )
         reachFiveApi
-            .getProfile(
-                formatAuthorization(authToken),
-                SdkInfos.getQueries().plus(Pair("fields", fields.joinToString(",")))
-            )
+            .getProfile(formatAuthorization(authToken), SdkInfos.getQueries().plus(Pair("fields", fields.joinToString(","))))
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
