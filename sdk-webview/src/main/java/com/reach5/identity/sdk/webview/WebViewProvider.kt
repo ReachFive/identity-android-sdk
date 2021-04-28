@@ -56,7 +56,7 @@ class ConfiguredWebViewProvider(
                 scope = scope.joinToString(" ")
             )
         )
-        intent.putExtra(PKCE, PkceAuthCodeFlow.generate())
+        intent.putExtra(PKCE, PkceAuthCodeFlow.generate(sdkConfig.scheme))
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -68,13 +68,13 @@ class ConfiguredWebViewProvider(
         failure: Failure<ReachFiveError>
     ) {
         val authCode = data?.getStringExtra(AuthCode)
-        val pkce = data?.getParcelableExtra<PkceAuthCodeFlow>(PKCE)
-        return if (authCode != null && pkce != null) {
+        val authCodeFlow = data?.getParcelableExtra<PkceAuthCodeFlow>(PKCE)
+        return if (authCode != null && authCodeFlow != null) {
             val authCodeRequest = AuthCodeRequest(
                 sdkConfig.clientId,
                 authCode,
-                sdkConfig.scheme,
-                pkce.codeVerifier
+                authCodeFlow.redirectUri,
+                authCodeFlow.codeVerifier
             )
             reachFiveApi
                 .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
