@@ -962,9 +962,10 @@ class MainActivityTest {
                 Error: ${data.error}
                 Description: ${data.errorDescription}
                 Error message key: ${data.errorMessageKey}
-                Details: ${data.errorDetails
-                ?.joinToString("\n", "> ") { (f, m) -> "'$f': $m" }
-                ?.let { "\n$it" } ?: "N/A"
+                Details: ${
+                data.errorDetails
+                    ?.joinToString("\n", "> ") { (f, m) -> "'$f': $m" }
+                    ?.let { "\n$it" } ?: "N/A"
             }
             """.trimIndent()
         }

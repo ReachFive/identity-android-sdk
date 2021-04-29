@@ -14,6 +14,7 @@ import kotlin.text.Charsets.UTF_8
 data class PkceAuthCodeFlow(val codeVerifier: String, val redirectUri: String) : Parcelable {
     @IgnoredOnParcel
     val codeChallenge: String
+
     @IgnoredOnParcel
     val codeChallengeMethod: String
 

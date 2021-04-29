@@ -114,7 +114,12 @@ class ReachFive(
         return providers
     }
 
-    fun loginWithProvider(name: String, scope: Collection<String> = emptySet(), origin: String, activity: Activity) {
+    fun loginWithProvider(
+        name: String,
+        scope: Collection<String> = emptySet(),
+        origin: String,
+        activity: Activity
+    ) {
         getProvider(name)?.login(origin, scope, activity)
     }
 
@@ -259,7 +264,10 @@ class ReachFive(
             "updated_at"
         )
         reachFiveApi
-            .getProfile(formatAuthorization(authToken), SdkInfos.getQueries().plus(Pair("fields", fields.joinToString(","))))
+            .getProfile(
+                formatAuthorization(authToken),
+                SdkInfos.getQueries().plus(Pair("fields", fields.joinToString(",")))
+            )
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
     }
 
@@ -388,7 +396,12 @@ class ReachFive(
             )
             reachFiveApi
                 .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+                .enqueue(
+                    ReachFiveApiCallback(
+                        success = { it.toAuthToken().fold(success, failure) },
+                        failure = failure
+                    )
+                )
         } else {
             failure(ReachFiveError.from("No PKCE challenge found in memory."))
         }
@@ -430,14 +443,17 @@ class ReachFive(
                 val code = intent.getStringExtra(CODE_KEY)!!
                 val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)!!
 
-                val authCodeRequest = AuthCodeRequest(sdkConfig.clientId, code, sdkConfig.scheme, codeVerifier)
+                val authCodeRequest =
+                    AuthCodeRequest(sdkConfig.clientId, code, sdkConfig.scheme, codeVerifier)
 
                 reachFiveApi
                     .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                    .enqueue(ReachFiveApiCallback(
-                        success = { it.toAuthToken().fold(success, failure) },
-                        failure = failure
-                    ))
+                    .enqueue(
+                        ReachFiveApiCallback(
+                            success = { it.toAuthToken().fold(success, failure) },
+                            failure = failure
+                        )
+                    )
             }
             NO_AUTH_ERROR_RESULT_CODE -> {
                 failure(ReachFiveError("No authorization code found in activity result."))
@@ -532,13 +548,15 @@ class ReachFive(
                 WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(
-                success = {
-                    reachFiveWebAuthn.startFIDO2RegisterTask(it, signupRequestCode)
-                    successWithWebAuthnId(it.options.publicKey.user.id)
-                },
-                failure = failure
-            ))
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = {
+                        reachFiveWebAuthn.startFIDO2RegisterTask(it, signupRequestCode)
+                        successWithWebAuthnId(it.options.publicKey.user.id)
+                    },
+                    failure = failure
+                )
+            )
     }
 
     fun onSignupWithWebAuthnResult(
@@ -549,16 +567,23 @@ class ReachFive(
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
             reachFiveWebAuthn.extractFIDO2Error(intent, failure)
-        }
-        else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            val registrationPublicKeyCredential = reachFiveWebAuthn.extractRegistrationPublicKeyCredential(intent)
+        } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            val registrationPublicKeyCredential =
+                reachFiveWebAuthn.extractRegistrationPublicKeyCredential(intent)
 
             return reachFiveApi
-                .signupWithWebAuthn(WebauthnSignupCredential(webauthnId = webAuthnId, publicKeyCredential = registrationPublicKeyCredential))
-                .enqueue(ReachFiveApiCallback(
-                    success = { loginCallback(it.tkn, scope) },
-                    failure = failure
-                ))
+                .signupWithWebAuthn(
+                    WebauthnSignupCredential(
+                        webauthnId = webAuthnId,
+                        publicKeyCredential = registrationPublicKeyCredential
+                    )
+                )
+                .enqueue(
+                    ReachFiveApiCallback(
+                        success = { loginCallback(it.tkn, scope) },
+                        failure = failure
+                    )
+                )
         }
     }
 
@@ -576,10 +601,12 @@ class ReachFive(
                 formatAuthorization(authToken),
                 WebAuthnRegistrationRequest(origin, newFriendlyName)
             )
-            .enqueue(ReachFiveApiCallback(
-                success = { reachFiveWebAuthn.startFIDO2RegisterTask(it, registerRequestCode) },
-                failure = failure
-            ))
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { reachFiveWebAuthn.startFIDO2RegisterTask(it, registerRequestCode) },
+                    failure = failure
+                )
+            )
     }
 
     fun onAddNewWebAuthnDeviceResult(
@@ -590,16 +617,21 @@ class ReachFive(
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
             reachFiveWebAuthn.extractFIDO2Error(intent, failure)
-        }
-        else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            val registrationPublicKeyCredential = reachFiveWebAuthn.extractRegistrationPublicKeyCredential(intent)
+        } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            val registrationPublicKeyCredential =
+                reachFiveWebAuthn.extractRegistrationPublicKeyCredential(intent)
 
             return reachFiveApi
-                .registerWithWebAuthn(formatAuthorization(authToken), registrationPublicKeyCredential)
-                .enqueue(ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
-                    failure = failure
-                ))
+                .registerWithWebAuthn(
+                    formatAuthorization(authToken),
+                    registrationPublicKeyCredential
+                )
+                .enqueue(
+                    ReachFiveApiCallback(
+                        successWithNoContent = successWithNoContent,
+                        failure = failure
+                    )
+                )
         }
     }
 
@@ -609,23 +641,38 @@ class ReachFive(
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
-            .createWebAuthnAuthenticationOptions(WebAuthnLoginRequest.enrichWithClientId(loginRequest, sdkConfig.clientId))
-            .enqueue(ReachFiveApiCallback(
-                success = {
-                    val fido2ApiClient = Fido.getFido2ApiClient(activity)
-                    val fido2PendingIntentTask = fido2ApiClient.getSignPendingIntent(it.toFido2Model())
-                    fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
-                        if (fido2PendingIntent != null) {
-                            Log.d(TAG, "Launching Fido2 Pending Intent")
-                            activity.startIntentSenderForResult(fido2PendingIntent.intentSender, loginRequestCode, null, 0, 0, 0)
+            .createWebAuthnAuthenticationOptions(
+                WebAuthnLoginRequest.enrichWithClientId(
+                    loginRequest,
+                    sdkConfig.clientId
+                )
+            )
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = {
+                        val fido2ApiClient = Fido.getFido2ApiClient(activity)
+                        val fido2PendingIntentTask =
+                            fido2ApiClient.getSignPendingIntent(it.toFido2Model())
+                        fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
+                            if (fido2PendingIntent != null) {
+                                Log.d(TAG, "Launching Fido2 Pending Intent")
+                                activity.startIntentSenderForResult(
+                                    fido2PendingIntent.intentSender,
+                                    loginRequestCode,
+                                    null,
+                                    0,
+                                    0,
+                                    0
+                                )
+                            }
                         }
-                    }
-                    fido2PendingIntentTask.addOnFailureListener {
-                        throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
-                    }
-                },
-                failure = failure
-            ))
+                        fido2PendingIntentTask.addOnFailureListener {
+                            throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
+                        }
+                    },
+                    failure = failure
+                )
+            )
 
     fun onLoginWithWebAuthnResult(
         intent: Intent,
@@ -634,25 +681,30 @@ class ReachFive(
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
             val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
-            val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
+            val authenticatorErrorResponse =
+                AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
             val reachFiveError = ReachFiveError(
-                message = authenticatorErrorResponse.errorMessage ?: "Unexpected error during FIDO2 authentication",
+                message = authenticatorErrorResponse.errorMessage
+                    ?: "Unexpected error during FIDO2 authentication",
                 code = authenticatorErrorResponse.errorCodeAsInt
             )
 
             failure(reachFiveError)
-        }
-        else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+        } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
             val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-            val authenticatorAssertionResponse: AuthenticatorAssertionResponse = AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
-            val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential = createAuthenticationPublicKeyCredential(authenticatorAssertionResponse)
+            val authenticatorAssertionResponse: AuthenticatorAssertionResponse =
+                AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
+            val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential =
+                createAuthenticationPublicKeyCredential(authenticatorAssertionResponse)
 
             return reachFiveApi
                 .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-                .enqueue(ReachFiveApiCallback(
-                    success = { loginCallback(it.tkn, scope) },
-                    failure = failure
-                ))
+                .enqueue(
+                    ReachFiveApiCallback(
+                        success = { loginCallback(it.tkn, scope) },
+                        failure = failure
+                    )
+                )
         }
     }
 
@@ -672,8 +724,17 @@ class ReachFive(
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
-            .deleteWebAuthnRegistration(formatAuthorization(authToken), deviceId, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(successWithNoContent = successWithNoContent, failure = failure))
+            .deleteWebAuthnRegistration(
+                formatAuthorization(authToken),
+                deviceId,
+                SdkInfos.getQueries()
+            )
+            .enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
 
     fun onActivityResult(
         requestCode: Int,

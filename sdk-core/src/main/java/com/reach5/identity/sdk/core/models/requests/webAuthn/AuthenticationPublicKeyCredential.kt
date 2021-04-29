@@ -7,7 +7,7 @@ import com.reach5.identity.sdk.core.utils.WebAuthn.encodeToBase64
 import com.reach5.identity.sdk.core.utils.WebAuthn.publicKeyCredentialType
 import kotlinx.android.parcel.Parcelize
 
-object WebAuthnAuthentication{
+object WebAuthnAuthentication {
     fun createAuthenticationPublicKeyCredential(authenticatorAssertionResponse: AuthenticatorAssertionResponse): AuthenticationPublicKeyCredential {
         return AuthenticationPublicKeyCredential(
             id = encodeToBase64(authenticatorAssertionResponse.keyHandle),
@@ -30,7 +30,7 @@ data class AuthenticationPublicKeyCredential(
     val rawId: String,
     val type: String,
     val response: R5AuthenticatorAssertionResponse
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class R5AuthenticatorAssertionResponse(
@@ -41,4 +41,4 @@ data class R5AuthenticatorAssertionResponse(
     val signature: String,
     @SerializedName("user_handle")
     val userHandle: String? = null
-): Parcelable
+) : Parcelable

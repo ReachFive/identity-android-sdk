@@ -78,7 +78,12 @@ class ConfiguredWebViewProvider(
             )
             reachFiveApi
                 .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+                .enqueue(
+                    ReachFiveApiCallback(
+                        success = { it.toAuthToken().fold(success, failure) },
+                        failure = failure
+                    )
+                )
         } else {
             failure(ReachFiveError.from("No authorization code or PKCE verifier code found in activity result"))
         }

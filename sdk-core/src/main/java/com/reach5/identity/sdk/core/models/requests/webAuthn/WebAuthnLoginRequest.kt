@@ -46,7 +46,10 @@ sealed class WebAuthnLoginRequest {
     ) : WebAuthnLoginRequest(), Parcelable
 
     companion object {
-        fun <T: WebAuthnLoginRequest> enrichWithClientId(request: T, clientId: String): WebAuthnLoginRequest {
+        fun <T : WebAuthnLoginRequest> enrichWithClientId(
+            request: T,
+            clientId: String
+        ): WebAuthnLoginRequest {
             return when (request) {
                 is EmailWebAuthnLoginRequest ->
                     EmailWithClientIdLoginRequest(

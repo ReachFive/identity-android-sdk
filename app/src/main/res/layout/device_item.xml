@@ -16,19 +16,19 @@
             tools:ignore="UselessParent">
 
         <TextView
-            android:id="@+id/friendlyName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="20dp"
-            android:textStyle="bold" />
+                android:id="@+id/friendlyName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="20dp"
+                android:textStyle="bold" />
 
         <Button
-            android:id="@+id/removeDevice"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="20dp"
-            android:text="@string/remove" />
+                android:id="@+id/removeDevice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="20dp"
+                android:text="@string/remove" />
     </LinearLayout>
 </RelativeLayout>

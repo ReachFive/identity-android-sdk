@@ -10,4 +10,4 @@ data class WebauthnSignupCredential(
     val webauthnId: String,
     @SerializedName("public_key_credential")
     val publicKeyCredential: RegistrationPublicKeyCredential
-): Parcelable
+) : Parcelable

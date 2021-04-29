@@ -17,7 +17,10 @@ import com.reach5.identity.sdk.core.Provider
 import com.reach5.identity.sdk.core.ProviderCreator
 import com.reach5.identity.sdk.core.api.ReachFiveApi
 import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
-import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.ProviderConfig
+import com.reach5.identity.sdk.core.models.ReachFiveError
+import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.SdkInfos
 import com.reach5.identity.sdk.core.models.requests.LoginProviderRequest
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.utils.Failure
@@ -146,7 +149,12 @@ class ConfiguredGoogleProvider(
         )
         reachFiveApi
             .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure))
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { it.toAuthToken().fold(success, failure) },
+                    failure = failure
+                )
+            )
     }
 
     override fun onStop() {

@@ -2,16 +2,25 @@ package com.reach5.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
-import com.reach5.identity.sdk.core.models.*
+import com.reach5.identity.sdk.core.models.Profile
+import com.reach5.identity.sdk.core.models.ReachFiveError
+import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
 import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.utils.Callback
 
-class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators: List<ProviderCreator>) {
+class JavaReachFive(
+    activity: Activity,
+    sdkConfig: SdkConfig,
+    providersCreators: List<ProviderCreator>
+) {
     private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
 
-    fun initialize(success: Callback<List<Provider>>, failure: Callback<ReachFiveError>): ReachFive {
+    fun initialize(
+        success: Callback<List<Provider>>,
+        failure: Callback<ReachFiveError>
+    ): ReachFive {
         return reach5.initialize(success::call, failure::call)
     }
 
@@ -23,7 +32,12 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         return reach5.getProviders()
     }
 
-    fun loginWithNativeProvider(name: String, scope: Collection<String>, origin: String, activity: Activity) {
+    fun loginWithNativeProvider(
+        name: String,
+        scope: Collection<String>,
+        origin: String,
+        activity: Activity
+    ) {
         return reach5.loginWithProvider(name, scope, origin, activity)
     }
 
@@ -65,7 +79,13 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         successWithNoContent: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        reach5.startPasswordless(email, phoneNumber, redirectUri, { successWithNoContent.call(Unit) }, failure::call)
+        reach5.startPasswordless(
+            email,
+            phoneNumber,
+            redirectUri,
+            { successWithNoContent.call(Unit) },
+            failure::call
+        )
     }
 
     fun verifyPasswordless(
@@ -101,7 +121,12 @@ class JavaReachFive(activity: Activity, sdkConfig: SdkConfig, providersCreators:
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.loginWithPassword(username, password, success = success::call, failure = failure::call)
+        return reach5.loginWithPassword(
+            username,
+            password,
+            success = success::call,
+            failure = failure::call
+        )
     }
 
     fun logout(

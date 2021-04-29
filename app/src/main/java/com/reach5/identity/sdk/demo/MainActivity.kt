@@ -37,17 +37,29 @@ class MainActivity : AppCompatActivity() {
         filename = "env"
     }
     private val domain =
-        dotenv["DOMAIN"] ?: throw IllegalArgumentException("The ReachFive domain is undefined! Check your `env` file.")
+        dotenv["DOMAIN"]
+            ?: throw IllegalArgumentException("The ReachFive domain is undefined! Check your `env` file.")
     private val clientId =
-        dotenv["CLIENT_ID"] ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
+        dotenv["CLIENT_ID"]
+            ?: throw IllegalArgumentException("The ReachFive client ID is undefined! Check your `env` file.")
     private val scheme =
-        dotenv["SCHEME"] ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
+        dotenv["SCHEME"]
+            ?: throw IllegalArgumentException("The ReachFive redirect URI is undefined! Check your `env` file.")
+
     // This variable is only mandatory for the FIDO2 login flow
     private val origin = dotenv["ORIGIN"] ?: ""
 
     private val sdkConfig = SdkConfig(domain, clientId, scheme)
 
-    private val assignedScope = setOf("openid", "email", "profile", "phone_number", "offline_access", "events", "full_write")
+    private val assignedScope = setOf(
+        "openid",
+        "email",
+        "profile",
+        "phone_number",
+        "offline_access",
+        "events",
+        "full_write"
+    )
 
     private lateinit var reach5: ReachFive
 
@@ -88,7 +100,12 @@ class MainActivity : AppCompatActivity() {
 
         providers.setOnItemClickListener { _, _, position, _ ->
             val provider = reach5.getProviders()[position]
-            this.reach5.loginWithProvider(name = provider.name, origin = "home", scope = assignedScope, activity = this)
+            this.reach5.loginWithProvider(
+                name = provider.name,
+                origin = "home",
+                scope = assignedScope,
+                activity = this
+            )
         }
 
         passwordSignup.setOnClickListener {
@@ -117,7 +134,8 @@ class MainActivity : AppCompatActivity() {
 
         passwordLogin.setOnClickListener {
             this.reach5.loginWithPassword(
-                username = email.text.trim().toString().ifEmpty { phoneNumber.text.trim().toString() },
+                username = email.text.trim().toString()
+                    .ifEmpty { phoneNumber.text.trim().toString() },
                 password = password.text.trim().toString(),
                 success = { handleLoginSuccess(it) },
                 failure = {
@@ -212,7 +230,11 @@ class MainActivity : AppCompatActivity() {
                 if (email.isNotEmpty())
                     WebAuthnLoginRequest.EmailWebAuthnLoginRequest(origin, email, assignedScope)
                 else
-                    WebAuthnLoginRequest.PhoneNumberWebAuthnLoginRequest(origin, webAuthnPhoneNumber.text.toString(), assignedScope)
+                    WebAuthnLoginRequest.PhoneNumberWebAuthnLoginRequest(
+                        origin,
+                        webAuthnPhoneNumber.text.toString(),
+                        assignedScope
+                    )
 
             this.reach5
                 .loginWithWebAuthn(
@@ -225,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                 )
         }
 
-        loginWithCallback.setOnClickListener{
+        loginWithCallback.setOnClickListener {
             reach5.loginCallback(
                 tkn = tkn.text.toString(),
                 scope = assignedScope
@@ -294,7 +316,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         Log.d(
             TAG,
             "MainActivity.onRequestPermissionsResult requestCode=$requestCode permissions=$permissions grantResults=$grantResults"
@@ -378,9 +404,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showErrorToast(error: ReachFiveError) {
-        showToast(error.data?.errorUserMsg ?:
-            (error.data?.errorDetails?.get(0)?.message
+        showToast(
+            error.data?.errorUserMsg ?: (error.data?.errorDetails?.get(0)?.message
                 ?: (error.data?.errorDescription
-                    ?: error.message)))
+                    ?: error.message))
+        )
     }
 }
