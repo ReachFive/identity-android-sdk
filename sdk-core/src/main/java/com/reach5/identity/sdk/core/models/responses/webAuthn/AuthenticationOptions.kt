@@ -10,8 +10,8 @@ import kotlinx.android.parcel.Parcelize
 data class AuthenticationOptions(
     @SerializedName("public_key")
     val publicKey: R5PublicKeyCredentialRequestOptions
-): Parcelable {
-    fun toFido2Model() : PublicKeyCredentialRequestOptions {
+) : Parcelable {
+    fun toFido2Model(): PublicKeyCredentialRequestOptions {
         return PublicKeyCredentialRequestOptions.Builder()
             .setChallenge(WebAuthn.decodeBase64(publicKey.challenge))
             .setTimeoutSeconds(publicKey.timeout?.toDouble()?.div(1000))
@@ -31,4 +31,4 @@ data class R5PublicKeyCredentialRequestOptions(
     val allowCredentials: List<R5PublicKeyCredentialDescriptor>,
     @SerializedName("user_verification")
     val userVerification: String
-): Parcelable
+) : Parcelable

@@ -8,4 +8,4 @@ data class SdkConfig(
     val domain: String,
     val clientId: String,
     val scheme: String
-): Parcelable
+) : Parcelable

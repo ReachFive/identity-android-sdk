@@ -28,7 +28,7 @@ data class RegistrationPublicKeyCredential(
     val rawId: String,
     val type: String,
     val response: R5AuthenticatorAttestationResponse
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class R5AuthenticatorAttestationResponse(
@@ -36,4 +36,4 @@ data class R5AuthenticatorAttestationResponse(
     val attestationObject: String,
     @SerializedName("client_data_json")
     val clientDataJSON: String
-): Parcelable
+) : Parcelable

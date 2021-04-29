@@ -5,7 +5,15 @@ import com.google.gson.GsonBuilder
 import com.reach5.identity.sdk.core.models.*
 import com.reach5.identity.sdk.core.models.requests.*
 import com.reach5.identity.sdk.core.models.requests.webAuthn.*
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequestSerializer
+import com.reach5.identity.sdk.core.models.responses.AuthTokenResponse
+import com.reach5.identity.sdk.core.models.responses.AuthenticationToken
+import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
+import com.reach5.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
+import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
+import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
+import com.reach5.identity.sdk.core.utils.Failure
+import com.reach5.identity.sdk.core.utils.Success
+import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -14,13 +22,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
-import com.reach5.identity.sdk.core.models.responses.AuthTokenResponse
-import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
-import com.reach5.identity.sdk.core.models.responses.AuthenticationToken
-import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
-import com.reach5.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
-import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
-import com.reach5.identity.sdk.core.utils.*
 
 
 interface ReachFiveApi {
@@ -31,19 +32,34 @@ interface ReachFiveApi {
     fun providersConfigs(@QueryMap options: Map<String, String>): Call<ProvidersConfigsResult>
 
     @POST("/identity/v1/signup-token")
-    fun signup(@Body signupRequest: SignupRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+    fun signup(
+        @Body signupRequest: SignupRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<AuthTokenResponse>
 
     @POST("/identity/v1/oauth/provider/token")
-    fun loginWithProvider(@Body loginProviderRequest: LoginProviderRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+    fun loginWithProvider(
+        @Body loginProviderRequest: LoginProviderRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<AuthTokenResponse>
 
     @POST("/oauth/token")
-    fun loginWithPassword(@Body loginRequest: LoginRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+    fun loginWithPassword(
+        @Body loginRequest: LoginRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<AuthTokenResponse>
 
     @POST("/oauth/token")
-    fun authenticateWithCode(@Body authCodeRequest: AuthCodeRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+    fun authenticateWithCode(
+        @Body authCodeRequest: AuthCodeRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<AuthTokenResponse>
 
     @POST("/oauth/token")
-    fun refreshAccessToken(@Body authCodeRequest: RefreshRequest, @QueryMap options: Map<String, String>): Call<AuthTokenResponse>
+    fun refreshAccessToken(
+        @Body authCodeRequest: RefreshRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<AuthTokenResponse>
 
     @GET("/oauth/authorize")
     fun authorize(@QueryMap options: Map<String, String>): Call<Unit>

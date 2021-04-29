@@ -11,7 +11,7 @@ data class R5PublicKeyCredentialDescriptor(
     val type: String,
     val id: String,
     val transports: List<String>? = null
-): Parcelable {
+) : Parcelable {
     fun toPublicKeyCredentialDescriptor(): PublicKeyCredentialDescriptor {
         return PublicKeyCredentialDescriptor(
             type,

@@ -5,6 +5,6 @@
     <application>
         <activity
                 android:name=".RedirectionActivity"
-                android:launchMode="singleTask"/>
+                android:launchMode="singleTask" />
     </application>
 </manifest>
