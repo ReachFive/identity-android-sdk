@@ -19,4 +19,4 @@ data class PasswordlessAuthorizationCodeRequest(
     val codeVerifier: String,
     @SerializedName("response_type")
     val responseType: String
-): Parcelable
+) : Parcelable

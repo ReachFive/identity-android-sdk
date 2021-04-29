@@ -26,14 +26,17 @@ class ReachFiveLoginActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reachfive_login_activity)
 
-        val config = intent.getParcelableExtra<WebViewProviderConfig>(ConfiguredWebViewProvider.BUNDLE_ID)
+        val config =
+            intent.getParcelableExtra<WebViewProviderConfig>(ConfiguredWebViewProvider.BUNDLE_ID)
 
         @SuppressLint("SetJavaScriptEnabled")
         webview.settings.javaScriptEnabled = true
 
         webview.webViewClient = ReachFiveWebViewClient()
         // Google does not allow default implementations of WebView to be used, so we need to differentiate the WebView by looking for the wv field
-        webview.settings.setUserAgentString(webview.getSettings().getUserAgentString().replace("wv",getString(R.string.app_name)));
+        webview.settings.setUserAgentString(
+            webview.getSettings().getUserAgentString().replace("wv", getString(R.string.app_name))
+        );
 
         val pkce = intent.getParcelableExtra<Pkce>(ConfiguredWebViewProvider.PKCE)
         val url = config.buildUrl(pkce)
@@ -85,7 +88,10 @@ class ReachFiveLoginActivity : Activity() {
         }
 
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        override fun shouldOverrideUrlLoading(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): Boolean {
             val url = request?.url.toString()
             val isHandled = handleUrlLoading(url)
             return if (isHandled) {

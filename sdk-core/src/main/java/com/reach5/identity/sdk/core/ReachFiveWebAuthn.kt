@@ -22,12 +22,20 @@ class ReachFiveWebAuthn(val activity: Activity) {
         requestCode: Int
     ) {
         val fido2ApiClient = Fido.getFido2ApiClient(activity)
-        val fido2PendingIntentTask = fido2ApiClient.getRegisterPendingIntent(registrationOptions.toFido2Model())
+        val fido2PendingIntentTask =
+            fido2ApiClient.getRegisterPendingIntent(registrationOptions.toFido2Model())
 
         fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
             if (fido2PendingIntent != null) {
                 Log.d(TAG, "Launching Fido2 Pending Intent")
-                activity.startIntentSenderForResult(fido2PendingIntent.intentSender, requestCode, null, 0, 0, 0)
+                activity.startIntentSenderForResult(
+                    fido2PendingIntent.intentSender,
+                    requestCode,
+                    null,
+                    0,
+                    0,
+                    0
+                )
             }
         }
 
@@ -40,7 +48,8 @@ class ReachFiveWebAuthn(val activity: Activity) {
         val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
         val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
         val reachFiveError = ReachFiveError(
-            message = authenticatorErrorResponse.errorMessage ?: "Unexpected error during FIDO2 registration",
+            message = authenticatorErrorResponse.errorMessage
+                ?: "Unexpected error during FIDO2 registration",
             code = authenticatorErrorResponse.errorCodeAsInt
         )
 
@@ -49,7 +58,8 @@ class ReachFiveWebAuthn(val activity: Activity) {
 
     fun extractRegistrationPublicKeyCredential(intent: Intent): RegistrationPublicKeyCredential {
         val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-        val authenticatorAttestationResponse = AuthenticatorAttestationResponse.deserializeFromBytes(fido2Response)
+        val authenticatorAttestationResponse =
+            AuthenticatorAttestationResponse.deserializeFromBytes(fido2Response)
 
         return WebAuthnRegistration.createRegistrationPublicKeyCredential(
             authenticatorAttestationResponse

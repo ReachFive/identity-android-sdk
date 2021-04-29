@@ -13,7 +13,11 @@ interface ButtonCallbacks {
     fun removeDeviceCallback(position: Int)
 }
 
-class DevicesAdapter(private val context: Context, private var devices: List<DeviceCredential>, var callbacks: ButtonCallbacks) : BaseAdapter() {
+class DevicesAdapter(
+    private val context: Context,
+    private var devices: List<DeviceCredential>,
+    var callbacks: ButtonCallbacks
+) : BaseAdapter() {
     fun refresh(devices: List<DeviceCredential>) {
         this.devices = devices
         notifyDataSetChanged()
@@ -46,7 +50,8 @@ class DevicesAdapter(private val context: Context, private var devices: List<Dev
             view = convertView
             viewHolder = view.tag as ViewHolder
         } else {
-            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater =
+                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.device_item, null)
             viewHolder = ViewHolder(view)
             view?.tag = viewHolder

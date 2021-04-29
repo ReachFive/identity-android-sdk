@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:padding="10dip" />
     </LinearLayout>
-    
+
     <TextView
             android:id="@+id/user_email"
             android:layout_width="match_parent"
