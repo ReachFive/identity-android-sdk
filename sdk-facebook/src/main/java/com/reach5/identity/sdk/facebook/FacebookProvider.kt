@@ -69,42 +69,46 @@ class ConfiguredFacebookProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult?) {
-                val accessToken = result?.accessToken?.token
-                if (accessToken != null) {
-                    val loginProviderRequest = LoginProviderRequest(
-                        provider = name,
-                        providerToken = accessToken,
-                        clientId = sdkConfig.clientId,
-                        origin = origin,
-                        scope = scope.joinToString(" ")
-                    )
-                    reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries()).enqueue(
-                        ReachFiveApiCallback(success = { it.toAuthToken().fold(success, failure) }, failure = failure)
-                    )
-                } else {
-                    failure(ReachFiveError.from("Facebook didn't return an access token!"))
+        LoginManager.getInstance()
+            .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+                override fun onSuccess(result: LoginResult?) {
+                    val accessToken = result?.accessToken?.token
+                    if (accessToken != null) {
+                        val loginProviderRequest = LoginProviderRequest(
+                            provider = name,
+                            providerToken = accessToken,
+                            clientId = sdkConfig.clientId,
+                            origin = origin,
+                            scope = scope.joinToString(" ")
+                        )
+                        reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
+                            .enqueue(
+                                ReachFiveApiCallback(success = {
+                                    it.toAuthToken().fold(success, failure)
+                                }, failure = failure)
+                            )
+                    } else {
+                        failure(ReachFiveError.from("Facebook didn't return an access token!"))
+                    }
                 }
-            }
 
-            override fun onCancel() {
-                failure(ReachFiveError.from("User cancel")) // TODO is it a real error or we do nothing ?
-            }
-
-            override fun onError(error: FacebookException?) {
-                if (error != null) {
-                    if (error is FacebookAuthorizationException) {
-                        if (AccessToken.getCurrentAccessToken() != null) {
-                            LoginManager.getInstance().logOut()
-                        }
-                    } else
-                        failure(ReachFiveError.from(error))
-                } else {
-                    failure(ReachFiveError.from("Technical error"))
+                override fun onCancel() {
+                    failure(ReachFiveError.from("User cancel")) // TODO is it a real error or we do nothing ?
                 }
-            }
-        })
+
+                override fun onError(error: FacebookException?) {
+                    if (error != null) {
+                        if (error is FacebookAuthorizationException) {
+                            if (AccessToken.getCurrentAccessToken() != null) {
+                                LoginManager.getInstance().logOut()
+                            }
+                        } else
+                            failure(ReachFiveError.from(error))
+                    } else {
+                        failure(ReachFiveError.from("Technical error"))
+                    }
+                }
+            })
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
 

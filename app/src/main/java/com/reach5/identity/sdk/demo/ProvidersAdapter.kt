@@ -8,7 +8,8 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.reach5.identity.sdk.core.Provider
 
-class ProvidersAdapter(private val context: Context, private var providers: List<Provider>) : BaseAdapter() {
+class ProvidersAdapter(private val context: Context, private var providers: List<Provider>) :
+    BaseAdapter() {
     fun refresh(providers: List<Provider>) {
         this.providers = providers
         notifyDataSetChanged()
@@ -41,7 +42,8 @@ class ProvidersAdapter(private val context: Context, private var providers: List
             view = convertView
             viewHolder = view.tag as ViewHolder
         } else {
-            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater =
+                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.provider_item, null)
             viewHolder = ViewHolder(view)
             view?.tag = viewHolder

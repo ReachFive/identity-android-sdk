@@ -11,22 +11,26 @@ data class RegistrationOptions(
     @SerializedName("friendly_name")
     val friendlyName: String,
     val options: CredentialCreationOptions
-): Parcelable {
+) : Parcelable {
     fun toFido2Model(): PublicKeyCredentialCreationOptions {
         val publicKey = options.publicKey
 
         return PublicKeyCredentialCreationOptions.Builder()
-            .setRp(PublicKeyCredentialRpEntity(
-                publicKey.rp.id,
-                publicKey.rp.name,
-                null
-            ))
-            .setUser(PublicKeyCredentialUserEntity(
-                publicKey.user.id.toByteArray(),
-                publicKey.user.name,
-                null,
-                publicKey.user.displayName
-            ))
+            .setRp(
+                PublicKeyCredentialRpEntity(
+                    publicKey.rp.id,
+                    publicKey.rp.name,
+                    null
+                )
+            )
+            .setUser(
+                PublicKeyCredentialUserEntity(
+                    publicKey.user.id.toByteArray(),
+                    publicKey.user.name,
+                    null,
+                    publicKey.user.displayName
+                )
+            )
             .setChallenge(WebAuthn.decodeBase64(publicKey.challenge))
             .setParameters(publicKey.pubKeyCredParams.map {
                 PublicKeyCredentialParameters(it.type, it.alg)
@@ -35,7 +39,11 @@ data class RegistrationOptions(
             .setExcludeList(publicKey.excludeCredentials?.map { it.toPublicKeyCredentialDescriptor() })
             .setAuthenticatorSelection(
                 AuthenticatorSelectionCriteria.Builder()
-                    .setAttachment(publicKey.authenticatorSelection?.authenticatorAttachment?.let { Attachment.valueOf(it) })
+                    .setAttachment(publicKey.authenticatorSelection?.authenticatorAttachment?.let {
+                        Attachment.valueOf(
+                            it
+                        )
+                    })
                     .build()
             )
             .setAttestationConveyancePreference(AttestationConveyancePreference.fromString(publicKey.attestation))
@@ -47,7 +55,7 @@ data class RegistrationOptions(
 data class CredentialCreationOptions(
     @SerializedName("public_key")
     val publicKey: R5PublicKeyCredentialCreationOptions
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class R5PublicKeyCredentialCreationOptions(
@@ -62,13 +70,13 @@ data class R5PublicKeyCredentialCreationOptions(
     @SerializedName("authenticator_selection")
     val authenticatorSelection: R5AuthenticatorSelectionCriteria? = null,
     val attestation: String
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class R5PublicKeyCredentialRpEntity(
     val id: String,
     val name: String
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class R5PublicKeyCredentialUserEntity(
@@ -76,13 +84,13 @@ data class R5PublicKeyCredentialUserEntity(
     @SerializedName("display_name")
     val displayName: String,
     val name: String
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class R5PublicKeyCredentialParameter(
     val alg: Int,
     val type: String
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class R5AuthenticatorSelectionCriteria(
@@ -94,7 +102,7 @@ data class R5AuthenticatorSelectionCriteria(
     val residentKey: String,
     @SerializedName("user_verification")
     val userVerification: String
-): Parcelable
+) : Parcelable
 
 
 

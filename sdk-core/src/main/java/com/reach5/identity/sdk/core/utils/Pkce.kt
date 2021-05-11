@@ -14,6 +14,7 @@ import kotlin.text.Charsets.UTF_8
 class Pkce(val codeVerifier: String) : Parcelable {
     @IgnoredOnParcel
     val codeChallenge: String
+
     @IgnoredOnParcel
     val codeChallengeMethod: String
 

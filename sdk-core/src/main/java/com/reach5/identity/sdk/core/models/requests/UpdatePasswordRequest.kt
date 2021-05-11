@@ -61,7 +61,10 @@ sealed class UpdatePasswordRequest {
     ) : UpdatePasswordRequest(), Parcelable
 
     companion object {
-        fun <T : UpdatePasswordRequest> enrichWithClientId(params: T, clientId: String): UpdatePasswordRequest {
+        fun <T : UpdatePasswordRequest> enrichWithClientId(
+            params: T,
+            clientId: String
+        ): UpdatePasswordRequest {
             return when (params) {
                 is EmailParams ->
                     EmailWithClientIdParams(
@@ -82,7 +85,7 @@ sealed class UpdatePasswordRequest {
         }
 
         fun <T : UpdatePasswordRequest> getAccessToken(params: T): AuthToken? {
-            return when(params) {
+            return when (params) {
                 is FreshAccessTokenParams -> params.freshAuthToken
                 is AccessTokenParams -> params.authToken
                 else -> null

@@ -25,6 +25,7 @@ class AuthenticatedActivity : AppCompatActivity() {
         directory = "/assets"
         filename = "env"
     }
+
     // This variable is only mandatory for the FIDO2 login flow
     private val origin = dotenv["ORIGIN"] ?: ""
 
@@ -55,10 +56,10 @@ class AuthenticatedActivity : AppCompatActivity() {
         )
 
         val givenNameTextView = findViewById<View>(R.id.user_given_name) as TextView
-        givenNameTextView.text =   this.authToken.user?.givenName
+        givenNameTextView.text = this.authToken.user?.givenName
 
         val familyNameTextView = findViewById<View>(R.id.user_family_name) as TextView
-        familyNameTextView.text =   this.authToken.user?.familyName
+        familyNameTextView.text = this.authToken.user?.familyName
 
         val emailTextView = findViewById<View>(R.id.user_email) as TextView
         emailTextView.text = this.authToken.user?.email
@@ -79,24 +80,25 @@ class AuthenticatedActivity : AppCompatActivity() {
             }
         }
 
-        deviceAdapter = DevicesAdapter(applicationContext, this.devicesDisplayed, object : ButtonCallbacks {
-            override fun removeDeviceCallback(position: Int) {
-                val device = deviceAdapter.getItem(position)
+        deviceAdapter =
+            DevicesAdapter(applicationContext, this.devicesDisplayed, object : ButtonCallbacks {
+                override fun removeDeviceCallback(position: Int) {
+                    val device = deviceAdapter.getItem(position)
 
-                reach5.removeWebAuthnDevice(
-                    authToken = authToken,
-                    deviceId = device.id,
-                    successWithNoContent = {
-                        showToast("The FIDO2 device '${device.friendlyName}' is removed")
-                        refreshDevicesDisplayed()
-                    },
-                    failure = {
-                        Log.d(TAG, "removeWebAuthnDevice error=$it")
-                        showErrorToast(it)
-                    }
-                )
-            }
-        })
+                    reach5.removeWebAuthnDevice(
+                        authToken = authToken,
+                        deviceId = device.id,
+                        successWithNoContent = {
+                            showToast("The FIDO2 device '${device.friendlyName}' is removed")
+                            refreshDevicesDisplayed()
+                        },
+                        failure = {
+                            Log.d(TAG, "removeWebAuthnDevice error=$it")
+                            showErrorToast(it)
+                        }
+                    )
+                }
+            })
         devices.adapter = deviceAdapter
 
         refreshDevicesDisplayed()
@@ -146,7 +148,8 @@ class AuthenticatedActivity : AppCompatActivity() {
     }
 
     private fun showDevicesTitle() {
-        devicesTitle.visibility = if (this.devicesDisplayed.isEmpty()) View.INVISIBLE else View.VISIBLE
+        devicesTitle.visibility =
+            if (this.devicesDisplayed.isEmpty()) View.INVISIBLE else View.VISIBLE
     }
 
     private fun refreshDevicesDisplayed() {
@@ -158,7 +161,7 @@ class AuthenticatedActivity : AppCompatActivity() {
                 showDevicesTitle()
             },
             failure = {
-                Log.d(TAG,"listWebAuthnDevices error=$it")
+                Log.d(TAG, "listWebAuthnDevices error=$it")
                 showErrorToast(it)
             }
         )
@@ -184,9 +187,10 @@ class AuthenticatedActivity : AppCompatActivity() {
     }
 
     private fun showErrorToast(error: ReachFiveError) {
-        showToast(error.data?.errorUserMsg ?:
-            (error.data?.errorDetails?.get(0)?.message
+        showToast(
+            error.data?.errorUserMsg ?: (error.data?.errorDetails?.get(0)?.message
                 ?: (error.data?.errorDescription
-                    ?: error.message)))
+                    ?: error.message))
+        )
     }
 }

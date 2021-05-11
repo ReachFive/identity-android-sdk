@@ -30,8 +30,7 @@ class SandboxSuccessTest {
     var mActivityTestRule = ActivityTestRule(MainActivity::class.java)
     private fun anEmail(): String = UUID.randomUUID().let { uuid -> "$uuid@testaccount.io" }
     val newEmail = anEmail()
-    val n = 8
-    val newPassword =getRandPassword(n)
+    val newPassword = "P@ssw0rd"
     val charPool : List<Char> = "0123456789".toList()
     val newPhone = "12345679".toList().random() + (1..8)
             .map { i -> kotlin.random.Random.nextInt(0, charPool.count()) }
@@ -195,19 +194,5 @@ class SandboxSuccessTest {
                         && view == parent.getChildAt(position)
             }
         }
-    }
-    fun getRandPassword(n: Int): String
-    {
-        val characterSet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-        val random = Random(System.nanoTime())
-        val password = StringBuilder()
-
-        for (i in 0 until n)
-        {
-            val rIndex = random.nextInt(characterSet.length)
-            password.append(characterSet[rIndex])
-        }
-        return password.toString()
     }
 }

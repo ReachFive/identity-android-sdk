@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 
-class RedirectionActivity: Activity() {
+class RedirectionActivity : Activity() {
     companion object {
         const val CODE_KEY = "CODE"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
@@ -25,7 +25,7 @@ class RedirectionActivity: Activity() {
         super.onCreate(savedInstanceState)
 
         val urlString = intent.getStringExtra(URL_KEY)
-        val codeVerifier =  intent.getStringExtra(CODE_VERIFIER_KEY)
+        val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
         val customTabsIntent = CustomTabsIntent.Builder().build().intent
         customTabsIntent.data = Uri.parse(urlString)

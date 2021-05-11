@@ -3,13 +3,12 @@ package com.reach5.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import com.reach5.identity.sdk.core.api.ReachFiveApi
-import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.models.ProviderConfig
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
+import com.reach5.identity.sdk.core.models.responses.AuthToken
 import com.reach5.identity.sdk.core.utils.Failure
 import com.reach5.identity.sdk.core.utils.Success
-import kotlinx.android.parcel.Parcelize
 
 interface ProviderCreator {
     val name: String
