@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.2.0 (next release)
+
+### Changes
+
+- Passwordless API calls have been updated following the latest backend changes (#125).
+
 ## v6.1.0 (30/11/2020)
 
 ### Feature
