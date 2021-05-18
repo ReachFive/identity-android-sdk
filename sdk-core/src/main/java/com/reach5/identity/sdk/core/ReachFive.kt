@@ -22,7 +22,7 @@ import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthenticat
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebauthnSignupCredential
-import com.reach5.identity.sdk.core.models.responses.AuthToken
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
 import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import com.reach5.identity.sdk.core.utils.*
@@ -386,13 +386,13 @@ class ReachFive(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        val codeVerifier = Pkce.readCodeVerifier(activity)
-        return if (codeVerifier != null) {
+        val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
+        return if (authCodeFlow != null) {
             val authCodeRequest = AuthCodeRequest(
                 sdkConfig.clientId,
                 authorizationCode,
-                sdkConfig.scheme,
-                codeVerifier
+                authCodeFlow.redirectUri,
+                authCodeFlow.codeVerifier
             )
             reachFiveApi
                 .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
@@ -403,7 +403,7 @@ class ReachFive(
                     )
                 )
         } else {
-            failure(ReachFiveError.from("Empty PKCE or Authorization Code"))
+            failure(ReachFiveError.from("No PKCE challenge found in memory."))
         }
     }
 
@@ -413,18 +413,19 @@ class ReachFive(
     ) {
         val intent = Intent(activity, RedirectionActivity::class.java)
 
-        val pkce = Pkce.generate()
-        val options: Map<String, String> = mapOf(
+        val redirectUri = sdkConfig.scheme
+        val pkce = PkceAuthCodeFlow.generate(redirectUri)
+        val request: Map<String, String> = mapOf(
             "client_id" to sdkConfig.clientId,
             "tkn" to tkn,
             "response_type" to codeResponseType,
-            "redirect_uri" to sdkConfig.scheme,
+            "redirect_uri" to redirectUri,
             "scope" to formatScope(scope),
             "code_challenge" to pkce.codeChallenge,
             "code_challenge_method" to pkce.codeChallengeMethod
         ) + SdkInfos.getQueries()
 
-        val url = reachFiveApi.authorize(options).request().url.toString()
+        val url = reachFiveApi.authorize(request).request().url.toString()
         intent.putExtra(URL_KEY, url)
         intent.putExtra(CODE_VERIFIER_KEY, pkce.codeVerifier)
 
@@ -475,14 +476,13 @@ class ReachFive(
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =
-        Pkce.generate().let { pkce ->
-            Pkce.storeCodeVerifier(pkce, activity)
+        PkceAuthCodeFlow.generate(redirectUrl).let { pkce ->
+            PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
             reachFiveApi.requestPasswordlessStart(
                 PasswordlessStartRequest(
                     clientId = sdkConfig.clientId,
                     email = email,
                     phoneNumber = phoneNumber,
-                    authType = if (email != null) PasswordlessAuthType.MAGIC_LINK else PasswordlessAuthType.SMS,
                     codeChallenge = pkce.codeChallenge,
                     codeChallengeMethod = pkce.codeChallengeMethod,
                     responseType = codeResponseType,
@@ -503,32 +503,31 @@ class ReachFive(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) =
-        reachFiveApi.requestPasswordlessCodeVerification(
-            PasswordlessCodeVerificationRequest(
-                sdkConfig.clientId,
-                phoneNumber,
-                verificationCode,
-                PasswordlessAuthType.SMS
-            ),
+        reachFiveApi.requestPasswordlessVerification(
+            PasswordlessVerificationRequest(phoneNumber, verificationCode),
             SdkInfos.getQueries()
         ).enqueue(
             ReachFiveApiCallback(
-                successWithNoContent = {
-                    reachFiveApi.requestPasswordlessVerification(
-                        PasswordlessAuthorizationCodeRequest(
-                            clientId = sdkConfig.clientId,
-                            phoneNumber = phoneNumber,
-                            verificationCode = verificationCode,
-                            codeVerifier = Pkce.readCodeVerifier(activity).orEmpty(),
-                            responseType = tokenResponseType
-                        ),
-                        SdkInfos.getQueries()
-                    ).enqueue(
-                        ReachFiveApiCallback(
-                            success = { it.toAuthToken().fold(success, failure) },
-                            failure = failure
+                success = { verificationResponse ->
+                    val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
+                    if (authCodeFlow != null) {
+                        val authCodeRequest = AuthCodeRequest(
+                            sdkConfig.clientId,
+                            verificationResponse.authCode,
+                            redirectUri = authCodeFlow.redirectUri,
+                            codeVerifier = authCodeFlow.codeVerifier
                         )
-                    )
+
+                        reachFiveApi
+                            .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+                            .enqueue(
+                                ReachFiveApiCallback(
+                                    success = { tokenResponse -> tokenResponse.toAuthToken().fold(success, failure) },
+                                    failure = failure
+                                )
+                            )
+                    } else failure(ReachFiveError.from("No PKCE challenge found in memory."))
+
                 },
                 failure = failure
             )

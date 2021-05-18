@@ -13,7 +13,7 @@ import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.reach5.identity.sdk.core.utils.Pkce
+import com.reach5.identity.sdk.core.utils.PkceAuthCodeFlow
 import kotlinx.android.synthetic.main.reachfive_login_activity.*
 import java.util.regex.Pattern
 
@@ -38,7 +38,7 @@ class ReachFiveLoginActivity : Activity() {
             webview.getSettings().getUserAgentString().replace("wv", getString(R.string.app_name))
         );
 
-        val pkce = intent.getParcelableExtra<Pkce>(ConfiguredWebViewProvider.PKCE)
+        val pkce = intent.getParcelableExtra<PkceAuthCodeFlow>(ConfiguredWebViewProvider.PKCE)
         val url = config.buildUrl(pkce)
 
         Log.d(TAG, "ReachFiveLoginActivity onCreate : $url")

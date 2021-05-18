@@ -7,7 +7,7 @@ import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest
-import com.reach5.identity.sdk.core.models.responses.AuthToken
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.utils.Callback
 
 class JavaReachFive(

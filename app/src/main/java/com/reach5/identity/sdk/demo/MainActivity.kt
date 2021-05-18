@@ -14,7 +14,7 @@ import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.requests.ProfileSignupRequest
 import com.reach5.identity.sdk.core.models.requests.ProfileWebAuthnSignupRequest
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
-import com.reach5.identity.sdk.core.models.responses.AuthToken
+import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.AUTH_TOKEN
 import com.reach5.identity.sdk.demo.AuthenticatedActivity.Companion.SDK_CONFIG
 import com.reach5.identity.sdk.facebook.FacebookProvider

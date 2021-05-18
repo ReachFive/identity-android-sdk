@@ -5,7 +5,7 @@ import android.os.Parcelable
 import com.reach5.identity.sdk.core.models.ProviderConfig
 import com.reach5.identity.sdk.core.models.SdkConfig
 import com.reach5.identity.sdk.core.models.SdkInfos
-import com.reach5.identity.sdk.core.utils.Pkce
+import com.reach5.identity.sdk.core.utils.PkceAuthCodeFlow
 import java.net.URLEncoder
 
 internal data class WebViewProviderConfig(
@@ -15,7 +15,7 @@ internal data class WebViewProviderConfig(
     val scope: String
 ) : Parcelable {
 
-    fun buildUrl(pkce: Pkce): String {
+    fun buildUrl(pkceAuthCodeFlow: PkceAuthCodeFlow): String {
         val params = mapOf(
             "client_id" to sdkConfig.clientId,
             "provider" to providerConfig.provider,
@@ -23,8 +23,8 @@ internal data class WebViewProviderConfig(
             "redirect_uri" to sdkConfig.scheme,
             "response_type" to "code",
             "scope" to scope,
-            "code_challenge" to pkce.codeChallenge,
-            "code_challenge_method" to pkce.codeChallengeMethod
+            "code_challenge" to pkceAuthCodeFlow.codeChallenge,
+            "code_challenge_method" to pkceAuthCodeFlow.codeChallengeMethod
         ) + SdkInfos.getQueries()
         val query = params.entries.joinToString("&") { (key, value) ->
             "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
