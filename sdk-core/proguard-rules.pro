@@ -19,6 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-### Avoid network model classes to be obfuscated
--keep class com.reach5.identity.sdk.core.models.** {*;}
