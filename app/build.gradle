@@ -63,7 +63,7 @@ dependencies {
     implementation project(":sdk-google")
     implementation project(":sdk-webview")
 
-    implementation "com.facebook.android:facebook-login:5.0.3"
+    implementation "com.facebook.android:facebook-login:8.2.0"
     implementation "com.google.android.gms:play-services-fido:18.1.0"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "io.github.cdimascio:java-dotenv:5.1.1"
