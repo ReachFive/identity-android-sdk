@@ -5,6 +5,7 @@
 ### Changes
 
 - Passwordless API calls have been updated following the latest backend changes (#125).
+- Upgrade Facebook SDK dependency from 5.0.3 to 8.2.0.
 
 ## v6.1.0 (30/11/2020)
 
