@@ -1,14 +1,12 @@
-apply plugin: "com.android.application"
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
-apply plugin: "com.google.gms.google-services"
-
-version = lib_version
+//apply plugin: "com.android.application"
+//apply plugin: "kotlin-android"
+//apply plugin: "kotlin-android-extensions"
+//apply plugin: "com.google.gms.google-services"
 
 android {
     compileSdkVersion compile_sdk_version
 
-    defaultConfig {
+    productFlavors {
         applicationId "com.reach5.identity.sdk.demo"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
