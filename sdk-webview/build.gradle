@@ -1,8 +1,14 @@
+apply plugin: "com.android.library"
+
+def ext = rootProject.ext
+def libs = ext.libraries
+
 dependencies {
     implementation project(":sdk-core")
-    implementation "com.github.kittinunf.result:result:2.2.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.6.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
 
-//apply from: rootProject.file("publish.gradle")
+    implementation ext.kotlin_stdlib
+    implementation libs.androidxAppCompat
+    implementation libs.retrofit
+    implementation libs.retrofitConverterGson
+    implementation libs.result
+}

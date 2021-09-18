@@ -1,28 +1,16 @@
-group = lib_group
-version = lib_version
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 
-android {
-    kotlinOptions {
-        freeCompilerArgs = ["-Xallow-result-return-type"]
-    }
-
-    androidExtensions {
-        /**
-         *  Used to create automatically the @Parcelize methods
-         *  Link: https://kotlinlang.org/docs/tutorials/android-plugin.html#parcelable-implementations-generator
-         */
-        experimental = true
-    }
-}
+def ext = rootProject.ext
+def libs = ext.libraries
 
 dependencies {
-
-    implementation "com.github.kittinunf.result:result:2.2.0"
-    implementation "com.google.android.gms:play-services-fido:18.1.0"
+    implementation ext.kotlin_stdlib
+    implementation libs.androidCustomTabs
+    implementation libs.result
+    implementation libs.playServicesFido
+    implementation libs.retrofit
+    implementation libs.retrofitConverterGson
     implementation "com.squareup.okhttp3:logging-interceptor:4.0.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.6.0"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-//apply from: rootProject.file("publish.gradle")

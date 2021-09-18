@@ -1,15 +1,13 @@
+apply plugin: "com.android.library"
+
+def ext = rootProject.ext
+def libs = ext.libraries
+
 dependencies {
     implementation project(":sdk-core")
-    implementation "com.github.kittinunf.result:result:2.2.0"
+
+    implementation ext.kotlin_stdlib
+    implementation libs.result
+    implementation libs.retrofit
     implementation "com.facebook.android:facebook-login:8.2.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-//repositories {
-//    mavenCentral()
-//    maven {
-//        url "https://dl.bintray.com/reachfive/identity-sdk"
-//    }
-//}
-
-//apply from: rootProject.file("publish.gradle")

@@ -1,12 +1,14 @@
+apply plugin: "com.android.library"
+
+def ext = rootProject.ext
+def libs = ext.libraries
+
 dependencies {
     implementation project(":sdk-core")
-    implementation "com.google.android.gms:play-services-auth:16.0.1"
-    implementation "com.github.kittinunf.result:result:2.2.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation ext.kotlin_stdlib
+    implementation libs.retrofit
+    implementation libs.result
+    implementation libs.playServicesAuth
+    implementation libs.androidxAppCompat
 }
-
-//repositories {
-//    mavenCentral()
-//}
-
-//apply from: rootProject.file("publish.gradle")
