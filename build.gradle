@@ -49,15 +49,12 @@ subprojects {
     apply plugin: "kotlin-android"
     apply plugin: "kotlin-android-extensions"
     apply plugin: "maven-publish"
-//    apply plugin: "signing"
+    apply plugin: "signing"
 
     repositories {
         google()
         jcenter()
         mavenCentral()
-//        maven {
-//            url "https://dl.bintray.com/reachfive/identity-sdk"
-//        }
     }
 
     android {
@@ -83,24 +80,44 @@ subprojects {
         }
     }
 
-    task sourceJar(type: Jar) {
-        archiveClassifier = "sources"
-    }
-
-    task docJar(type: Jar) {
-        archiveClassifier = "javadoc"
-    }
+//    task sourceJar(type: Jar) {
+//        archiveClassifier = "sources"
+//    }
+//
+//    task docJar(type: Jar) {
+//        archiveClassifier = "javadoc"
+//    }
 
     afterEvaluate {
         publishing {
+            repositories {
+                maven {
+                    name = "release"
+                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    credentials {
+                        username = ossrhUsername
+                        password = ossrhPassword
+                    }
+                }
+
+                maven {
+                    name = "snapshot"
+                    url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                    credentials {
+                        username = ossrhUsername
+                        password = ossrhPassword
+                    }
+                }
+            }
+
             publications {
                 release(MavenPublication) {
-//                    from components.java
+                    from components.release
 
-                    artifacts {
-                        artifact sourceJar
-                        artifact docJar
-                    }
+//                    artifacts {
+//                        artifact sourceJar
+//                        artifact docJar
+//                    }
 
                     pom {
                         name = 'ReachFive'
@@ -108,9 +125,8 @@ subprojects {
                         inceptionYear = '2019'
                         url = 'https://github.com/ReachFive/identity-android-sdk'
 
-                        groupId this.group
-                        version this.version
-//                artifactId moduleArtifactId
+                        groupId = this.group
+                        version = this.version
                         packaging = 'aar'
 
                         licenses {
@@ -135,6 +151,10 @@ subprojects {
                     }
                 }
             }
+        }
+
+        signing {
+            sign publishing.publications.release
         }
     }
 }
