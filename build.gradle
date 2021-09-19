@@ -1,7 +1,7 @@
 buildscript {
     ext {
         reachfive = [
-            lib_version : "6.2.0",
+            lib_version : "6.2.1",
             lib_group   : "co.reachfive.identity",
         ]
 
@@ -34,7 +34,6 @@ buildscript {
     }
 
     dependencies {
-        // TODO/cbu upgrade
         classpath 'com.android.tools.build:gradle:4.1.3'
         classpath "com.google.gms:google-services:4.3.5"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -49,16 +48,16 @@ subprojects {
     apply plugin: "com.android.library"
     apply plugin: "kotlin-android"
     apply plugin: "kotlin-android-extensions"
-    apply plugin: "com.github.dcendents.android-maven"
-    //apply from: rootProject.file("publish.gradle")
+    apply plugin: "maven-publish"
+//    apply plugin: "signing"
 
     repositories {
         google()
         jcenter()
         mavenCentral()
-        maven {
-            url "https://dl.bintray.com/reachfive/identity-sdk"
-        }
+//        maven {
+//            url "https://dl.bintray.com/reachfive/identity-sdk"
+//        }
     }
 
     android {
@@ -83,39 +82,64 @@ subprojects {
             abortOnError false
         }
     }
+
+    task sourceJar(type: Jar) {
+        archiveClassifier = "sources"
+    }
+
+    task docJar(type: Jar) {
+        archiveClassifier = "javadoc"
+    }
+
+    afterEvaluate {
+        publishing {
+            publications {
+                release(MavenPublication) {
+//                    from components.java
+
+                    artifacts {
+                        artifact sourceJar
+                        artifact docJar
+                    }
+
+                    pom {
+                        name = 'ReachFive'
+                        description = 'SDK'
+                        inceptionYear = '2019'
+                        url = 'https://github.com/ReachFive/identity-android-sdk'
+
+                        groupId this.group
+                        version this.version
+//                artifactId moduleArtifactId
+                        packaging = 'aar'
+
+                        licenses {
+                            license {
+                                name = 'The MIT License (MIT)'
+                                url = 'https://opensource.org/licenses/MIT'
+                            }
+                        }
+
+                        scm {
+                            connection = 'https://github.com/ReachFive/identity-android-sdk.git'
+                            url = 'https://github.com/ReachFive/identity-android-sdk'
+
+                        }
+
+                        developers {
+                            developer {
+                                id = 'reachfive'
+                                name = 'Reachfive'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
-//pom.project {
-//    name 'ReachFive'
-//    description 'SDK'
-//    url 'https://github.com/ReachFive/identity-android-sdk'
-//
-//    inceptionYear '2019'
-//
-//    packaging 'aar'
-//    groupId this.group
-//    artifactId moduleArtifactId
-//    version this.version
-//
-//    licenses {
-//        license {
-//            name 'The MIT License (MIT)'
-//            url 'https://opensource.org/licenses/MIT'
-//        }
-//    }
-//    scm {
-//        connection 'https://github.com/ReachFive/identity-android-sdk.git'
-//        url 'https://github.com/ReachFive/identity-android-sdk'
-//
-//    }
-//    developers {
-//        developer {
-//            id = 'reachfive'
-//            name 'Reachfive'
-//        }
-//    }
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
 //}
+
