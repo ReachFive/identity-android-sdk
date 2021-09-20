@@ -1,5 +1,12 @@
 # Changelog
 
+## v6.2.1 (20/09/2021)
+
+### Changes
+
+- Publish artifacts to Sonatype
+- Package FQDN has changed from `com.reach5.identity` to `co.reachfive.identity`
+
 ## v6.2.0 (10/09/2021)
 
 ### Changes
