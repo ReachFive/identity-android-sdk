@@ -1,39 +1,147 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
-    ext.kotlin_version = "1.3.72"
-    ext.lib_version = "6.2.0"
-    ext.lib_group = "com.reach5.identity"
-    ext.min_sdk_version = 19
-    ext.target_sdk_version = 29
-    ext.compile_sdk_version = 29
-    ext.version_code = 4
+    ext {
+        reachfive = [
+            lib_version : "6.2.1",
+            lib_group   : "co.reachfive.identity",
+        ]
+
+        kotlin_version = "1.3.72"
+        kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+        androidSettings = [
+            min_sdk_version: 19,
+            target_sdk_version: 29,
+            compile_sdk_version: 29,
+            version_code: 4
+        ]
+
+        libraries = [
+            androidxAppCompat: "androidx.appcompat:appcompat:1.0.2",
+            androidCustomTabs: "com.android.support:customtabs:28.0.0",
+            result: "com.github.kittinunf.result:result:2.2.0",
+
+            playServicesFido: "com.google.android.gms:play-services-fido:18.1.0",
+            playServicesAuth: "com.google.android.gms:play-services-auth:16.0.1",
+
+            retrofit:               "com.squareup.retrofit2:retrofit:2.6.0",
+            retrofitConverterGson:  "com.squareup.retrofit2:converter-gson:2.6.0",
+        ]
+    }
+
     repositories {
         google()
         jcenter()
     }
+
     dependencies {
-        classpath "com.google.gms:google-services:4.3.5"
         classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath "com.google.gms:google-services:4.3.5"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
         classpath "com.github.dcendents:android-maven-gradle-plugin:2.1"
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 }
 
-allprojects {
+group = reachfive.lib_group
+version = reachfive.lib_version
+
+subprojects {
+    apply plugin: "com.android.library"
+    apply plugin: "kotlin-android"
+    apply plugin: "kotlin-android-extensions"
+    apply plugin: "maven-publish"
+    apply plugin: "signing"
+
     repositories {
         google()
         jcenter()
         mavenCentral()
-        maven {
-            url "https://dl.bintray.com/reachfive/identity-sdk"
+    }
+
+    android {
+        compileSdkVersion androidSettings.compile_sdk_version
+
+        defaultConfig {
+            minSdkVersion androidSettings.min_sdk_version
+            targetSdkVersion androidSettings.target_sdk_version
+            versionCode androidSettings.version_code
+            versionName this.version
+        }
+
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            }
+        }
+
+        // TODO remove
+        lintOptions {
+            abortOnError false
         }
     }
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    afterEvaluate {
+        publishing {
+            repositories {
+                maven {
+                    name = "release"
+                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    credentials {
+                        username = ossrhUsername
+                        password = ossrhPassword
+                    }
+                }
+
+                maven {
+                    name = "snapshot"
+                    url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                    credentials {
+                        username = ossrhUsername
+                        password = ossrhPassword
+                    }
+                }
+            }
+
+            publications {
+                release(MavenPublication) {
+                    from components.release
+
+                    pom {
+                        name = 'ReachFive'
+                        description = 'SDK'
+                        inceptionYear = '2019'
+                        url = 'https://github.com/ReachFive/identity-android-sdk'
+
+                        groupId = this.group
+                        version = this.version
+                        packaging = 'aar'
+
+                        licenses {
+                            license {
+                                name = 'The MIT License (MIT)'
+                                url = 'https://opensource.org/licenses/MIT'
+                            }
+                        }
+
+                        scm {
+                            connection = 'https://github.com/ReachFive/identity-android-sdk.git'
+                            url = 'https://github.com/ReachFive/identity-android-sdk'
+
+                        }
+
+                        developers {
+                            developer {
+                                id = 'reachfive'
+                                name = 'Reachfive'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        signing {
+            sign publishing.publications.release
+        }
+    }
 }
