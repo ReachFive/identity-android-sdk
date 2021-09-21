@@ -1,11 +1,11 @@
-package com.reach5.identity.sdk.webview
+package co.reachfive.identity.sdk.webview
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.reach5.identity.sdk.core.models.ProviderConfig
-import com.reach5.identity.sdk.core.models.SdkConfig
-import com.reach5.identity.sdk.core.models.SdkInfos
-import com.reach5.identity.sdk.core.utils.PkceAuthCodeFlow
+import co.reachfive.identity.sdk.core.models.ProviderConfig
+import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import java.net.URLEncoder
 
 internal data class WebViewProviderConfig(

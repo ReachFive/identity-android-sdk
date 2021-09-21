@@ -1,11 +1,11 @@
-package com.reach5.identity.sdk.core.api
+package co.reachfive.identity.sdk.core.api
 
 import com.google.gson.Gson
-import com.reach5.identity.sdk.core.models.ReachFiveApiError
-import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.Success
-import com.reach5.identity.sdk.core.utils.SuccessWithNoContent
+import co.reachfive.identity.sdk.core.models.ReachFiveApiError
+import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

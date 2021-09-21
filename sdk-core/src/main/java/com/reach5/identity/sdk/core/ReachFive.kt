@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core
+package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
@@ -6,26 +6,26 @@ import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
-import com.reach5.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
-import com.reach5.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
-import com.reach5.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
-import com.reach5.identity.sdk.core.RedirectionActivity.Companion.NO_AUTH_ERROR_RESULT_CODE
-import com.reach5.identity.sdk.core.RedirectionActivity.Companion.URL_KEY
-import com.reach5.identity.sdk.core.api.ReachFiveApi
-import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
-import com.reach5.identity.sdk.core.models.*
-import com.reach5.identity.sdk.core.models.requests.*
-import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
-import com.reach5.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
-import com.reach5.identity.sdk.core.models.requests.webAuthn.AuthenticationPublicKeyCredential
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthentication.createAuthenticationPublicKeyCredential
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
-import com.reach5.identity.sdk.core.models.requests.webAuthn.WebauthnSignupCredential
-import com.reach5.identity.sdk.core.models.AuthToken
-import com.reach5.identity.sdk.core.models.responses.ClientConfigResponse
-import com.reach5.identity.sdk.core.models.responses.webAuthn.DeviceCredential
-import com.reach5.identity.sdk.core.utils.*
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.NO_AUTH_ERROR_RESULT_CODE
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.URL_KEY
+import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
+import co.reachfive.identity.sdk.core.models.*
+import co.reachfive.identity.sdk.core.models.requests.*
+import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.enrichWithClientId
+import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest.Companion.getAccessToken
+import co.reachfive.identity.sdk.core.models.requests.webAuthn.AuthenticationPublicKeyCredential
+import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthentication.createAuthenticationPublicKeyCredential
+import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
+import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
+import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebauthnSignupCredential
+import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
+import co.reachfive.identity.sdk.core.models.responses.webAuthn.DeviceCredential
+import co.reachfive.identity.sdk.core.utils.*
 
 class ReachFive(
     val activity: Activity,

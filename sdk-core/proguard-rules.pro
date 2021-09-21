@@ -21,4 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 ### Avoid network model classes to be obfuscated
--keep class com.reach5.identity.sdk.core.models.** {*;}
+-keep class co.reachfive.identity.sdk.core.models.** {*;}

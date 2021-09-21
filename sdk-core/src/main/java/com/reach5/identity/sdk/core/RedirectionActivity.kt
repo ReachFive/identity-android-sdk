@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core
+package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
