@@ -7,7 +7,7 @@ buildscript {
             lib_group   : "co.reachfive.identity",
         ]
 
-        kotlin_version = "1.3.72"
+        kotlin_version = "1.5.31"
         kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
         androidSettings = [
@@ -51,7 +51,6 @@ version = reachfive.lib_version
 subprojects {
     apply plugin: "com.android.library"
     apply plugin: "kotlin-android"
-    apply plugin: "kotlin-android-extensions"
     apply plugin: "maven-publish"
     apply plugin: "signing"
 
