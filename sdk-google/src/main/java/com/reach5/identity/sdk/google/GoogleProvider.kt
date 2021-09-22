@@ -3,15 +3,11 @@ package com.reach5.identity.sdk.google
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.util.Log
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks
 import com.google.android.gms.common.api.Scope
 import com.reach5.identity.sdk.core.Provider
 import com.reach5.identity.sdk.core.ProviderCreator
@@ -52,7 +48,7 @@ class ConfiguredGoogleProvider(
     private lateinit var origin: String
     private lateinit var scope: Collection<String>
 
-    private val googleApiClient: GoogleApiClient
+    private val googleSignInClient: GoogleSignInClient
 
     companion object {
         const val REQUEST_CODE = 14267
@@ -68,32 +64,19 @@ class ConfiguredGoogleProvider(
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestScopes(
                 Scope(Scopes.OPEN_ID),
-                *(providerConfig.scope ?: setOf()).map { s -> Scope(s) }.toTypedArray()
+                *providerConfig.scope.map { Scope(it) }.toTypedArray()
             )
             .requestServerAuthCode(providerConfig.clientId)
             .requestEmail()
-
-        googleApiClient = GoogleApiClient.Builder(activity.applicationContext)
-            .addConnectionCallbacks(object : ConnectionCallbacks {
-                override fun onConnected(bundle: Bundle?) {
-                    Log.d(TAG, "GoogleProvider.onConnected")
-                }
-
-                override fun onConnectionSuspended(n: Int) {
-                    Log.d(TAG, "GoogleProvider.onConnected $n")
-                }
-            })
-            .addOnConnectionFailedListener { connectionResult ->
-                Log.e(TAG, "addOnConnectionFailedListener $connectionResult")
-            }
-            .addApi(Auth.GOOGLE_SIGN_IN_API, gso.build())
             .build()
+
+        googleSignInClient = GoogleSignIn.getClient(activity.applicationContext, gso)
     }
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
         this.origin = origin
         this.scope = scope
-        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
+        val signInIntent = googleSignInClient.signInIntent
         activity.startActivityForResult(signInIntent, REQUEST_CODE)
     }
 
@@ -155,9 +138,5 @@ class ConfiguredGoogleProvider(
                     failure = failure
                 )
             )
-    }
-
-    override fun onStop() {
-        googleApiClient.disconnect()
     }
 }
