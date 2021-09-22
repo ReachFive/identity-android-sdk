@@ -6,15 +6,43 @@ import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
+import com.google.android.gms.fido.fido2.api.common.ErrorCode
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.models.requests.webAuthn.RegistrationPublicKeyCredential
 import com.reach5.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistration
 import com.reach5.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
-import com.reach5.identity.sdk.core.utils.Failure
 
 class ReachFiveWebAuthn(val activity: Activity) {
     companion object {
         private const val TAG = "Reach5"
+
+        fun extractFIDO2Error(intent: Intent): ReachFiveError {
+            return intent
+                .getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
+                ?.let { errorBytes ->
+                    AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
+                }
+                ?.run {
+                    ReachFiveError(
+                        message = errorMessage ?: "Unexpected error during FIDO2 authentication",
+                        code = errorCodeAsInt
+                    )
+                } ?: ReachFiveError(
+                message = "Unexpected error during FIDO2 authentication",
+                code = ErrorCode.UNKNOWN_ERR.code
+            )
+        }
+
+        fun extractRegistrationPublicKeyCredential(intent: Intent): RegistrationPublicKeyCredential? {
+            return intent
+                .getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+                ?.let {
+                    AuthenticatorAttestationResponse.deserializeFromBytes(it)
+                }
+                ?.let {
+                    WebAuthnRegistration.createRegistrationPublicKeyCredential(it)
+                }
+        }
     }
 
     fun startFIDO2RegisterTask(
@@ -42,27 +70,5 @@ class ReachFiveWebAuthn(val activity: Activity) {
         fido2PendingIntentTask.addOnFailureListener {
             throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
         }
-    }
-
-    fun extractFIDO2Error(intent: Intent, failure: Failure<ReachFiveError>) {
-        val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
-        val authenticatorErrorResponse = AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
-        val reachFiveError = ReachFiveError(
-            message = authenticatorErrorResponse.errorMessage
-                ?: "Unexpected error during FIDO2 registration",
-            code = authenticatorErrorResponse.errorCodeAsInt
-        )
-
-        return failure(reachFiveError)
-    }
-
-    fun extractRegistrationPublicKeyCredential(intent: Intent): RegistrationPublicKeyCredential {
-        val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-        val authenticatorAttestationResponse =
-            AuthenticatorAttestationResponse.deserializeFromBytes(fido2Response)
-
-        return WebAuthnRegistration.createRegistrationPublicKeyCredential(
-            authenticatorAttestationResponse
-        )
     }
 }
