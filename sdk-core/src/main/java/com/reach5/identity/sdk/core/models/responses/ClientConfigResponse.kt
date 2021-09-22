@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core.models.responses
+package co.reachfive.identity.sdk.core.models.responses
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

@@ -1,9 +1,9 @@
-package com.reach5.identity.sdk.core.models.responses.webAuthn
+package co.reachfive.identity.sdk.core.models.responses.webAuthn
 
 import android.os.Parcelable
 import com.google.android.gms.fido.common.Transport
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
-import com.reach5.identity.sdk.core.utils.WebAuthn
+import co.reachfive.identity.sdk.core.utils.WebAuthn
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
