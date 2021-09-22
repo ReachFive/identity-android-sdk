@@ -1,4 +1,5 @@
-apply plugin: "com.github.ben-manes.versions"
+// apply plugin: "com.github.ben-manes.versions"
+
 
 buildscript {
     ext {
@@ -45,8 +46,29 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.github.gradle-nexus.publish-plugin"  version "1.1.0"
+}
+
 group = reachfive.lib_group
 version = reachfive.lib_version
+
+ossrhUsername = System.getenv('OSSRH_USERNAME')
+ossrhPassword = System.getenv('OSSRH_PASSWORD')
+signingKey    = System.getenv('OSSRH_KEY')
+signingKeyPwd = System.getenv('OSSRH_KEY_PWD')
+
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username = ossrhUsername
+            password = ossrhPassword
+            // publishToSonatype closeSonatypeStagingRepository
+        }
+    }
+}
 
 subprojects {
     apply plugin: "com.android.library"
@@ -84,26 +106,6 @@ subprojects {
 
     afterEvaluate {
         publishing {
-            repositories {
-                maven {
-                    name = "release"
-                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                    credentials {
-                        username = ossrhUsername
-                        password = ossrhPassword
-                    }
-                }
-
-                maven {
-                    name = "snapshot"
-                    url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                    credentials {
-                        username = ossrhUsername
-                        password = ossrhPassword
-                    }
-                }
-            }
-
             publications {
                 release(MavenPublication) {
                     from components.release
@@ -143,6 +145,7 @@ subprojects {
         }
 
         signing {
+            useInMemoryPgpKeys(signingKey, signingKeyPwd)
             sign publishing.publications.release
         }
     }
