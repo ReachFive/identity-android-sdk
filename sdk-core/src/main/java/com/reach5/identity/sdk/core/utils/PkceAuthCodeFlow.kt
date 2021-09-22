@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.os.Parcelable
 import android.util.Base64
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
 import java.security.MessageDigest
 import java.security.SecureRandom
 import kotlin.text.Charsets.UTF_8

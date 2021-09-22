@@ -8,7 +8,7 @@ import com.reach5.identity.sdk.core.models.AuthToken
 import com.reach5.identity.sdk.core.models.OpenIdUser
 import com.reach5.identity.sdk.core.models.ReachFiveError
 import com.reach5.identity.sdk.core.utils.Jwt
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TokenEndpointResponse(

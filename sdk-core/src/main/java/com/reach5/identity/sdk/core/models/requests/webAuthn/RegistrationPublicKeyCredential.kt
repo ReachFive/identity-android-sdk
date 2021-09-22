@@ -5,7 +5,7 @@ import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResp
 import com.google.gson.annotations.SerializedName
 import com.reach5.identity.sdk.core.utils.WebAuthn.encodeToBase64
 import com.reach5.identity.sdk.core.utils.WebAuthn.publicKeyCredentialType
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 object WebAuthnRegistration {
     fun createRegistrationPublicKeyCredential(authenticatorAttestationResponse: AuthenticatorAttestationResponse): RegistrationPublicKeyCredential {
