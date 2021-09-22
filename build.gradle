@@ -1,12 +1,14 @@
+apply plugin: "com.github.ben-manes.versions"
+
 buildscript {
     ext {
         reachfive = [
-            lib_version : "6.2.1",
+            lib_version : "6.2.2",
             lib_group   : "co.reachfive.identity",
         ]
 
         kotlin_version = "1.3.72"
-        kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+        kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
         androidSettings = [
             min_sdk_version: 19,
@@ -16,26 +18,28 @@ buildscript {
         ]
 
         libraries = [
-            androidxAppCompat: "androidx.appcompat:appcompat:1.0.2",
+            androidxAppCompat: "androidx.appcompat:appcompat:1.3.1",
             androidCustomTabs: "com.android.support:customtabs:28.0.0",
-            result: "com.github.kittinunf.result:result:2.2.0",
+            result: "com.github.kittinunf.result:result:3.0.1",
 
             playServicesFido: "com.google.android.gms:play-services-fido:18.1.0",
-            playServicesAuth: "com.google.android.gms:play-services-auth:16.0.1",
+            playServicesAuth: "com.google.android.gms:play-services-auth:19.2.0",
 
-            retrofit:               "com.squareup.retrofit2:retrofit:2.6.0",
-            retrofitConverterGson:  "com.squareup.retrofit2:converter-gson:2.6.0",
+            retrofit:               "com.squareup.retrofit2:retrofit:2.9.0",
+            retrofitConverterGson:  "com.squareup.retrofit2:converter-gson:2.9.0",
         ]
     }
 
     repositories {
+        gradlePluginPortal()
         google()
-        jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
-        classpath "com.google.gms:google-services:4.3.5"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.39.0"
+
+        classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath "com.google.gms:google-services:4.3.10"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.github.dcendents:android-maven-gradle-plugin:2.1"
     }
@@ -53,7 +57,6 @@ subprojects {
 
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 
@@ -74,7 +77,6 @@ subprojects {
             }
         }
 
-        // TODO remove
         lintOptions {
             abortOnError false
         }
