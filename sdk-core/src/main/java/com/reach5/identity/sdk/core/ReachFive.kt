@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
+import com.google.android.gms.fido.fido2.api.common.ErrorCode
 import com.reach5.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
 import com.reach5.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
 import com.reach5.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
@@ -680,14 +681,23 @@ class ReachFive(
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            val errorBytes = intent.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
             val authenticatorErrorResponse =
-                AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
-            val reachFiveError = ReachFiveError(
-                message = authenticatorErrorResponse.errorMessage
-                    ?: "Unexpected error during FIDO2 authentication",
-                code = authenticatorErrorResponse.errorCodeAsInt
-            )
+                intent
+                    .getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
+                    ?.let { errorBytes ->
+                        AuthenticatorErrorResponse.deserializeFromBytes(errorBytes)
+                    }
+
+            val reachFiveError =
+                authenticatorErrorResponse?.run {
+                    ReachFiveError(
+                        message = errorMessage ?: "Unexpected error during FIDO2 authentication",
+                        code = errorCodeAsInt
+                    )
+                } ?: ReachFiveError(
+                    message = "Unexpected error during FIDO2 authentication",
+                    code = ErrorCode.UNKNOWN_ERR.code
+                )
 
             failure(reachFiveError)
         } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
