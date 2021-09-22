@@ -27,22 +27,24 @@ class ReachFiveLoginActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reachfive_login_activity)
         binding = ReachfiveLoginActivityBinding.inflate(layoutInflater)
-        val webview = binding.webview
 
-        val config =
-            intent.getParcelableExtra<WebViewProviderConfig>(ConfiguredWebViewProvider.BUNDLE_ID)
+        val webview = binding.webview.apply {
+            @SuppressLint("SetJavaScriptEnabled")
+            settings.javaScriptEnabled = true
+            webViewClient = ReachFiveWebViewClient()
+            // Google does not allow default implementations of WebView to be used, so we need to differentiate the WebView by looking for the wv field
+            settings.setUserAgentString(
+                getSettings().getUserAgentString().replace("wv", getString(R.string.app_name))
+            );
+        }
 
-        @SuppressLint("SetJavaScriptEnabled")
-        webview.settings.javaScriptEnabled = true
-
-        webview.webViewClient = ReachFiveWebViewClient()
-        // Google does not allow default implementations of WebView to be used, so we need to differentiate the WebView by looking for the wv field
-        webview.settings.setUserAgentString(
-            webview.getSettings().getUserAgentString().replace("wv", getString(R.string.app_name))
-        );
-
+        val config = intent.getParcelableExtra<WebViewProviderConfig>(ConfiguredWebViewProvider.BUNDLE_ID)
         val pkce = intent.getParcelableExtra<PkceAuthCodeFlow>(ConfiguredWebViewProvider.PKCE)
-        val url = config.buildUrl(pkce)
+        val url: String? = config?.run {
+            pkce?.let {
+                buildUrl(it)
+            }
+        }
 
         Log.d(TAG, "ReachFiveLoginActivity onCreate : $url")
 
