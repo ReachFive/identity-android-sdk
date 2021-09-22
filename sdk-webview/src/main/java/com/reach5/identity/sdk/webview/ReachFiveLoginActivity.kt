@@ -14,17 +14,20 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.reach5.identity.sdk.core.utils.PkceAuthCodeFlow
-import kotlinx.android.synthetic.main.reachfive_login_activity.*
+import com.reach5.identity.sdk.webview.databinding.ReachfiveLoginActivityBinding
 import java.util.regex.Pattern
 
 class ReachFiveLoginActivity : Activity() {
     private val TAG = "Reach5"
 
+    private lateinit var binding: ReachfiveLoginActivityBinding
     private var code: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reachfive_login_activity)
+        binding = ReachfiveLoginActivityBinding.inflate(layoutInflater)
+        val webview = binding.webview
 
         val config =
             intent.getParcelableExtra<WebViewProviderConfig>(ConfiguredWebViewProvider.BUNDLE_ID)
@@ -47,8 +50,8 @@ class ReachFiveLoginActivity : Activity() {
     }
 
     override fun onBackPressed() {
-        if (webview.canGoBack()) {
-            webview.goBack()
+        if (binding.webview.canGoBack()) {
+            binding.webview.goBack()
         } else {
             loginFailure("User aborted login!")
         }
@@ -71,8 +74,8 @@ class ReachFiveLoginActivity : Activity() {
     }
 
     fun hideLoader() {
-        progress.visibility = View.INVISIBLE
-        webview.visibility = View.VISIBLE
+        binding.progress.visibility = View.INVISIBLE
+        binding.webview.visibility = View.VISIBLE
     }
 
     inner class ReachFiveWebViewClient : WebViewClient() {
