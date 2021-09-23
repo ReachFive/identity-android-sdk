@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core.models
+package co.reachfive.identity.sdk.core.models
 
 import android.os.Build
 

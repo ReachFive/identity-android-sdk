@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core.utils
+package co.reachfive.identity.sdk.core.utils
 
 import android.util.Base64
 

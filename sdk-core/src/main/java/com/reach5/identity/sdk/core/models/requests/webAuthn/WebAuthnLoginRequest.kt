@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.core.models.requests.webAuthn
+package co.reachfive.identity.sdk.core.models.requests.webAuthn
 
 import android.os.Parcelable
 import com.google.gson.Gson
@@ -6,7 +6,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
-import com.reach5.identity.sdk.core.utils.formatScope
+import co.reachfive.identity.sdk.core.utils.formatScope
 import kotlinx.parcelize.Parcelize
 import java.lang.reflect.Type
 

@@ -1,4 +1,4 @@
-package com.reach5.identity.sdk.webview
+package co.reachfive.identity.sdk.webview
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -13,7 +13,7 @@ import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.reach5.identity.sdk.core.utils.PkceAuthCodeFlow
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import com.reach5.identity.sdk.webview.databinding.ReachfiveLoginActivityBinding
 import java.util.regex.Pattern
 

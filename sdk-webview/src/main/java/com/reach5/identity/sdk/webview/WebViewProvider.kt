@@ -1,20 +1,20 @@
-package com.reach5.identity.sdk.webview
+package co.reachfive.identity.sdk.webview
 
 import android.app.Activity
 import android.content.Intent
-import com.reach5.identity.sdk.core.Provider
-import com.reach5.identity.sdk.core.ProviderCreator
-import com.reach5.identity.sdk.core.api.ReachFiveApi
-import com.reach5.identity.sdk.core.api.ReachFiveApiCallback
-import com.reach5.identity.sdk.core.models.ProviderConfig
-import com.reach5.identity.sdk.core.models.ReachFiveError
-import com.reach5.identity.sdk.core.models.SdkConfig
-import com.reach5.identity.sdk.core.models.SdkInfos
-import com.reach5.identity.sdk.core.models.requests.AuthCodeRequest
-import com.reach5.identity.sdk.core.models.AuthToken
-import com.reach5.identity.sdk.core.utils.Failure
-import com.reach5.identity.sdk.core.utils.PkceAuthCodeFlow
-import com.reach5.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.core.Provider
+import co.reachfive.identity.sdk.core.ProviderCreator
+import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
+import co.reachfive.identity.sdk.core.models.ProviderConfig
+import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
+import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
+import co.reachfive.identity.sdk.core.utils.Success
 
 class WebViewProvider : ProviderCreator {
     override val name: String = "webview"
