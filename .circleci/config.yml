@@ -1,0 +1,81 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2.1
+
+defaults: &defaults
+  docker:
+    - image: circleci/android:api-29
+  environment:
+    JVM_OPTS: -Xmx3200m
+
+default_upload_steps: &default_upload_steps
+  steps:
+    - checkout:
+        path: ~/repo
+    - restore_cache:
+        key: v1-jars-{{ checksum "build.gradle" }}
+    - run:
+        name: Inject Maven signing key
+        command: |
+          echo $SIGNING_KEY \
+            | awk 'NR == 1 { print "signingKey=" } 1' ORS='\\n' \
+            >> gradle.properties
+    - run:
+        name: Download Dependencies
+        command: ./gradlew androidDependencies
+    - save_cache:
+        paths:
+          - ~/.gradle
+        key: v2-jars-{{ checksum "build.gradle" }}
+    - run: ./gradlew clean build publishToSonatype closeAndReleaseSonatypeStagingRepository
+
+default_build_steps: &default_build_steps
+  steps:
+    - checkout:
+        path: ~/repo
+    - restore_cache:
+        key: v2-jars-{{ checksum "build.gradle" }}
+    - run:
+        name: Download Dependencies
+        command: ./gradlew androidDependencies
+    - save_cache:
+        paths:
+          - ~/.gradle
+        key: v1-jars-{{ checksum "build.gradle" }}
+    - run: ./gradlew lint test build
+
+jobs:
+
+  build_all:
+    <<: *defaults
+    working_directory: ~/repo
+    <<: *default_build_steps
+
+  upload_all:
+    <<: *defaults
+    working_directory: ~/repo
+    <<: *default_upload_steps
+
+default_workflows_filters: &default_workflows_filters
+  filters:
+    tags:
+      only: /.*/
+    branches:
+      ignore: /.*/
+
+default_workflows_tags: &default_workflows_tags
+  filters:
+    tags:
+      only: /.*/
+
+workflows:
+  deploy:
+    jobs:
+      - build_all:
+          <<: *default_workflows_tags
+      - upload_all:
+          requires:
+            - build_all
+          <<: *default_workflows_filters
