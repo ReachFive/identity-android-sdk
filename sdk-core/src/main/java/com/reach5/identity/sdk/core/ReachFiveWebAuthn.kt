@@ -10,6 +10,7 @@ import co.reachfive.identity.sdk.core.models.responses.webAuthn.RegistrationOpti
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
+import com.google.android.gms.fido.fido2.api.common.ErrorCode
 
 class ReachFiveWebAuthn(val activity: Activity) {
     companion object {

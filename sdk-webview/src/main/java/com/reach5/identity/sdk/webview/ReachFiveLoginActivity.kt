@@ -14,7 +14,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
-import com.reach5.identity.sdk.webview.databinding.ReachfiveLoginActivityBinding
+import co.reachfive.identity.sdk.webview.databinding.ReachfiveLoginActivityBinding
 import java.util.regex.Pattern
 
 class ReachFiveLoginActivity : Activity() {
