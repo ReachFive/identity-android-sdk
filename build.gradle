@@ -1,10 +1,8 @@
-// apply plugin: "com.github.ben-manes.versions"
-
 
 buildscript {
     ext {
         reachfive = [
-            lib_version : "6.2.2",
+            lib_version : "7.0.0",
             lib_group   : "co.reachfive.identity",
         ]
 
@@ -48,19 +46,20 @@ buildscript {
 
 plugins {
     id "io.github.gradle-nexus.publish-plugin"  version "1.1.0"
+    id "com.github.ben-manes.versions" version "0.39.0"
 }
-
-group = reachfive.lib_group
-version = reachfive.lib_version
 
 ossrhUsername = System.getenv('OSSRH_USERNAME')
 ossrhPassword = System.getenv('OSSRH_PASSWORD')
 signingKey    = System.getenv('OSSRH_KEY')
 signingKeyPwd = System.getenv('OSSRH_KEY_PWD')
 
+group = reachfive.lib_group
+version = reachfive.lib_version
+
 nexusPublishing {
     repositories {
-        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+        sonatype {
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
             username = ossrhUsername
