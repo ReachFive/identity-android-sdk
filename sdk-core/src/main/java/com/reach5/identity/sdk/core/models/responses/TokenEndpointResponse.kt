@@ -57,7 +57,7 @@ data class TokenEndpointResponse(
                 }
             }
         } else {
-            Result.error(
+            Result.failure(
                 ReachFiveError.from(
                     "No access_token returned"
                 )
