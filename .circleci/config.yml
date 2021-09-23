@@ -23,7 +23,7 @@ default_upload_steps: &default_upload_steps
         paths:
           - ~/.gradle
         key: v2-jars-{{ checksum "build.gradle" }}
-    - run: ../gradlew clean build publishToSonatype closeSonatypeStagingRepository
+    - run: ../gradlew clean build publishToSonatype closeAndReleaseSonatypeStagingRepository
 
 default_build_steps: &default_build_steps
   steps:
