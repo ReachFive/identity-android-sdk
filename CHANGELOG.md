@@ -1,5 +1,15 @@
 # Changelog
 
+## v7.0.0 (23/09/2021)
+
+### Changes
+
+- Revised Gradle build
+- Upgrade Kotlin
+- Upgrade plugins
+- Upgrade libraries
+- All packages have been migrated from `com.reach5` to `co.reachfive`
+
 ## v6.2.1 (20/09/2021)
 
 ### Changes
