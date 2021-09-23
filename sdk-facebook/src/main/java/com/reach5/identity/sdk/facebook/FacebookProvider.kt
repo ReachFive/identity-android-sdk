@@ -2,21 +2,17 @@ package co.reachfive.identity.sdk.facebook
 
 import android.app.Activity
 import android.content.Intent
-import com.facebook.*
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
-import co.reachfive.identity.sdk.core.models.ProviderConfig
-import co.reachfive.identity.sdk.core.models.ReachFiveError
-import co.reachfive.identity.sdk.core.models.SdkConfig
-import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.models.*
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
-import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
+import com.facebook.*
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 
 class FacebookProvider : ProviderCreator {
     companion object {

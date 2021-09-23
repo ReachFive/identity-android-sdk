@@ -1,13 +1,13 @@
 package co.reachfive.identity.sdk.core.models.requests.webAuthn
 
 import android.os.Parcelable
+import co.reachfive.identity.sdk.core.utils.formatScope
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
-import co.reachfive.identity.sdk.core.utils.formatScope
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.lang.reflect.Type
 
 sealed class WebAuthnLoginRequest {

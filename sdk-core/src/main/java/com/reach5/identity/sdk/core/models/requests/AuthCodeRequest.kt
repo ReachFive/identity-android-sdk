@@ -2,7 +2,7 @@ package co.reachfive.identity.sdk.core.models.requests
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AuthCodeRequest(
@@ -12,8 +12,7 @@ data class AuthCodeRequest(
     @SerializedName("redirect_uri")
     val redirectUri: String,
     @SerializedName("code_verifier")
-    val codeVerifier: String
-) : Parcelable {
+    val codeVerifier: String,
     @SerializedName("grant_type")
     val grantType: String = "authorization_code"
-}
+) : Parcelable
