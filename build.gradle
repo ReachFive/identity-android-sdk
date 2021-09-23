@@ -49,11 +49,6 @@ plugins {
     id "com.github.ben-manes.versions" version "0.39.0"
 }
 
-ossrhUsername = System.getenv('OSSRH_USERNAME')
-ossrhPassword = System.getenv('OSSRH_PASSWORD')
-signingKey    = System.getenv('OSSRH_KEY')
-signingKeyPwd = System.getenv('OSSRH_KEY_PWD')
-
 group = reachfive.lib_group
 version = reachfive.lib_version
 
