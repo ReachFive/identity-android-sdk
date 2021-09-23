@@ -1,9 +1,9 @@
 package co.reachfive.identity.sdk.core.models.requests.webAuthn
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import co.reachfive.identity.sdk.core.models.requests.ProfileWebAuthnSignupRequest
-import kotlinx.android.parcel.Parcelize
+import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WebAuthnRegistrationRequest(

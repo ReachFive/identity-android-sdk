@@ -1,8 +1,8 @@
 package co.reachfive.identity.sdk.core.utils
 
 import android.util.Base64
-import com.google.gson.Gson
 import co.reachfive.identity.sdk.core.models.ReachFiveError
+import com.google.gson.Gson
 
 object Jwt {
     fun <T : Any> decode(token: String, type: Class<T>): T {

@@ -1,10 +1,10 @@
 package co.reachfive.identity.sdk.core.models.responses.webAuthn
 
 import android.os.Parcelable
+import co.reachfive.identity.sdk.core.utils.WebAuthn
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import com.google.gson.annotations.SerializedName
-import co.reachfive.identity.sdk.core.utils.WebAuthn
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AuthenticationOptions(

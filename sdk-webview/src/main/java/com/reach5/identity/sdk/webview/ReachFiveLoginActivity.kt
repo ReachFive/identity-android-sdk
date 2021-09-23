@@ -14,32 +14,37 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
-import kotlinx.android.synthetic.main.reachfive_login_activity.*
+import co.reachfive.identity.sdk.webview.databinding.ReachfiveLoginActivityBinding
 import java.util.regex.Pattern
 
 class ReachFiveLoginActivity : Activity() {
     private val TAG = "Reach5"
 
+    private lateinit var binding: ReachfiveLoginActivityBinding
     private var code: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reachfive_login_activity)
+        binding = ReachfiveLoginActivityBinding.inflate(layoutInflater)
 
-        val config =
-            intent.getParcelableExtra<WebViewProviderConfig>(ConfiguredWebViewProvider.BUNDLE_ID)
+        val webview = binding.webview.apply {
+            @SuppressLint("SetJavaScriptEnabled")
+            settings.javaScriptEnabled = true
+            webViewClient = ReachFiveWebViewClient()
+            // Google does not allow default implementations of WebView to be used, so we need to differentiate the WebView by looking for the wv field
+            settings.setUserAgentString(
+                getSettings().getUserAgentString().replace("wv", getString(R.string.app_name))
+            );
+        }
 
-        @SuppressLint("SetJavaScriptEnabled")
-        webview.settings.javaScriptEnabled = true
-
-        webview.webViewClient = ReachFiveWebViewClient()
-        // Google does not allow default implementations of WebView to be used, so we need to differentiate the WebView by looking for the wv field
-        webview.settings.setUserAgentString(
-            webview.getSettings().getUserAgentString().replace("wv", getString(R.string.app_name))
-        );
-
+        val config = intent.getParcelableExtra<WebViewProviderConfig>(ConfiguredWebViewProvider.BUNDLE_ID)
         val pkce = intent.getParcelableExtra<PkceAuthCodeFlow>(ConfiguredWebViewProvider.PKCE)
-        val url = config.buildUrl(pkce)
+        val url: String? = config?.run {
+            pkce?.let {
+                buildUrl(it)
+            }
+        }
 
         Log.d(TAG, "ReachFiveLoginActivity onCreate : $url")
 
@@ -47,8 +52,8 @@ class ReachFiveLoginActivity : Activity() {
     }
 
     override fun onBackPressed() {
-        if (webview.canGoBack()) {
-            webview.goBack()
+        if (binding.webview.canGoBack()) {
+            binding.webview.goBack()
         } else {
             loginFailure("User aborted login!")
         }
@@ -71,8 +76,8 @@ class ReachFiveLoginActivity : Activity() {
     }
 
     fun hideLoader() {
-        progress.visibility = View.INVISIBLE
-        webview.visibility = View.VISIBLE
+        binding.progress.visibility = View.INVISIBLE
+        binding.webview.visibility = View.VISIBLE
     }
 
     inner class ReachFiveWebViewClient : WebViewClient() {

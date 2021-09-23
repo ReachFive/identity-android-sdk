@@ -1,7 +1,7 @@
 package co.reachfive.identity.sdk.core.models.responses
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AuthenticationToken(
