@@ -38,6 +38,12 @@ default_build_steps: &default_build_steps
     - restore_cache:
         key: v2-jars-{{ checksum "build.gradle" }}
     - run:
+        name: Inject Maven signing key
+        command: |
+          echo $SIGNING_KEY \
+            | awk 'NR == 1 { print "signingKey=" } 1' ORS='\\n' \
+            >> gradle.properties
+    - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
     - save_cache:
