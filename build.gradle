@@ -3,7 +3,7 @@ apply plugin: "com.github.ben-manes.versions"
 buildscript {
     ext {
         reachfive = [
-            lib_version : "6.2.2",
+            lib_version : "7.0.0",
             lib_group   : "co.reachfive.identity",
         ]
 
