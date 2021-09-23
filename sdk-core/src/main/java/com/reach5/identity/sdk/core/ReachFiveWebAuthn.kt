@@ -3,13 +3,13 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import com.google.android.gms.fido.Fido
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.RegistrationPublicKeyCredential
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistration
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
+import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 
 class ReachFiveWebAuthn(val activity: Activity) {
     companion object {

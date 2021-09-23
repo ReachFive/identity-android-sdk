@@ -1,13 +1,13 @@
 package co.reachfive.identity.sdk.core.models.responses
 
 import android.os.Parcelable
-import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.map
-import com.google.gson.annotations.SerializedName
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.OpenIdUser
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.utils.Jwt
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.map
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

@@ -3,24 +3,20 @@ package co.reachfive.identity.sdk.google
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import co.reachfive.identity.sdk.core.Provider
+import co.reachfive.identity.sdk.core.ProviderCreator
+import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
+import co.reachfive.identity.sdk.core.models.*
+import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
+import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.Success
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import co.reachfive.identity.sdk.core.Provider
-import co.reachfive.identity.sdk.core.ProviderCreator
-import co.reachfive.identity.sdk.core.api.ReachFiveApi
-import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
-import co.reachfive.identity.sdk.core.models.ProviderConfig
-import co.reachfive.identity.sdk.core.models.ReachFiveError
-import co.reachfive.identity.sdk.core.models.SdkConfig
-import co.reachfive.identity.sdk.core.models.SdkInfos
-import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
-import co.reachfive.identity.sdk.core.models.AuthToken
-import co.reachfive.identity.sdk.core.utils.Failure
-import co.reachfive.identity.sdk.core.utils.Success
 
 class GoogleProvider : ProviderCreator {
     companion object {

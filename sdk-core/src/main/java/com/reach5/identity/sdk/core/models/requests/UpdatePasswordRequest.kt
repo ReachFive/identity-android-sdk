@@ -1,12 +1,12 @@
 package co.reachfive.identity.sdk.core.models.requests
 
 import android.os.Parcelable
+import co.reachfive.identity.sdk.core.models.AuthToken
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
-import co.reachfive.identity.sdk.core.models.AuthToken
 import kotlinx.parcelize.Parcelize
 import java.lang.reflect.Type
 

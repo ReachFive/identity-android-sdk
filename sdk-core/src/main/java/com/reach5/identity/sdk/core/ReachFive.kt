@@ -3,10 +3,6 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import com.google.android.gms.fido.Fido
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
-import com.google.android.gms.fido.fido2.api.common.ErrorCode
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
@@ -23,10 +19,11 @@ import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnAuthentic
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnRegistrationRequest
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebauthnSignupCredential
-import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import co.reachfive.identity.sdk.core.utils.*
+import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
 
 class ReachFive(
     val activity: Activity,
