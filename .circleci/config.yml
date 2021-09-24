@@ -13,7 +13,7 @@ defaults: &defaults
 upload_steps: &upload_steps
   steps:
     - checkout:
-        path: ~/repo
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
@@ -34,7 +34,7 @@ upload_steps: &upload_steps
 default_build_steps: &default_build_steps
   steps:
     - checkout:
-        path: ~/repo
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v2-jars-{{ checksum "build.gradle" }}
     - run:
@@ -56,7 +56,7 @@ jobs:
 
   build_all:
     <<: *defaults
-    working_directory: ~/repo
+    working_directory: ~/identity-android-sdk
     <<: *default_build_steps
 
   upload:
