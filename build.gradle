@@ -133,11 +133,48 @@ subprojects {
                         }
                     }
                 }
+
+                snapshot(MavenPublication) {
+                    from components.release
+
+                    pom {
+                        name = 'ReachFive'
+                        description = 'SDK'
+                        inceptionYear = '2019'
+                        url = 'https://github.com/ReachFive/identity-android-sdk'
+
+                        groupId = this.group
+                        version = this.version + "-SNAPSHOT"
+                        packaging = 'aar'
+
+                        licenses {
+                            license {
+                                name = 'The MIT License (MIT)'
+                                url = 'https://opensource.org/licenses/MIT'
+                            }
+                        }
+
+                        scm {
+                            connection = 'https://github.com/ReachFive/identity-android-sdk.git'
+                            url = 'https://github.com/ReachFive/identity-android-sdk'
+
+                        }
+
+                        developers {
+                            developer {
+                                id = 'reachfive'
+                                name = 'Reachfive'
+                            }
+                        }
+                    }
+                }
             }
         }
 
         signing {
-            useInMemoryPgpKeys(signingKey, signingKeyPwd)
+            if (properties.containsKey('signingKey')) {
+                useInMemoryPgpKeys(signingKey, signingKeyPwd)
+            }
             sign publishing.publications.release
         }
     }
