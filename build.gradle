@@ -1,10 +1,5 @@
 buildscript {
     ext {
-        reachfive = [
-            lib_version : "7.0.0-SNAPSHOT",
-            lib_group   : "co.reachfive.identity",
-        ]
-
         kotlin_version = "1.5.31"
         kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -47,9 +42,14 @@ plugins {
     id "io.github.gradle-nexus.publish-plugin"  version "1.1.0"
     id "com.github.ben-manes.versions" version "0.39.0"
 }
+apply from: rootProject.file("libversion.gradle")
 
-group = reachfive.lib_group
-version = reachfive.lib_version
+group = "co.reachfive.identity"
+if (project.hasProperty("snapshot")) {
+    version = libversion + "-SNAPSHOT"
+} else {
+    version = libversion
+}
 
 nexusPublishing {
     repositories {
@@ -80,7 +80,7 @@ subprojects {
             minSdkVersion androidSettings.min_sdk_version
             targetSdkVersion androidSettings.target_sdk_version
             versionCode androidSettings.version_code
-            versionName this.version
+            versionName version
         }
 
         buildTypes {
@@ -107,8 +107,8 @@ subprojects {
                         inceptionYear = '2019'
                         url = 'https://github.com/ReachFive/identity-android-sdk'
 
-                        groupId = this.group
-                        version = this.version
+                        groupId = group
+                        version = version
                         packaging = 'aar'
 
                         licenses {
