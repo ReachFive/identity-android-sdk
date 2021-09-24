@@ -13,7 +13,7 @@ defaults: &defaults
 release_upload_steps: &release_upload_steps
   steps:
     - checkout:
-        path: ~/repo
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
@@ -34,7 +34,7 @@ release_upload_steps: &release_upload_steps
 snapshot_upload_steps: &snapshot_upload_steps
   steps:
     - checkout:
-        path: ~/repo
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
@@ -55,7 +55,7 @@ snapshot_upload_steps: &snapshot_upload_steps
 default_build_steps: &default_build_steps
   steps:
     - checkout:
-        path: ~/repo
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v2-jars-{{ checksum "build.gradle" }}
     - run:
@@ -77,17 +77,17 @@ jobs:
 
   build_all:
     <<: *defaults
-    working_directory: ~/repo
+    working_directory: ~/identity-android-sdk
     <<: *default_build_steps
 
   upload_snapshot:
     <<: *defaults
-    working_directory: ~/repo
+    working_directory: ~/identity-android-sdk
     <<: *snapshot_upload_steps
 
   upload_release:
     <<: *defaults
-    working_directory: ~/repo
+    working_directory: ~/identity-android-sdk
     <<: *release_upload_steps
 
 release_filters: &release_filters
