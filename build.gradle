@@ -1,7 +1,7 @@
 buildscript {
     ext {
         reachfive = [
-            lib_version : "7.0.0-SNAPSHOT",
+            lib_version : "7.0.0",
             lib_group   : "co.reachfive.identity",
         ]
 
@@ -49,7 +49,14 @@ plugins {
 }
 
 group = reachfive.lib_group
-version = reachfive.lib_version
+
+if (project.hasProperty("snapshot")) {
+    version = reachfive.lib_version + "-SNAPSHOT"
+} else {
+    version = reachfive.lib_version
+}
+
+println "VERSION : "+version
 
 nexusPublishing {
     repositories {
@@ -136,9 +143,7 @@ subprojects {
         }
 
         signing {
-            if (properties.containsKey('signingKey')) {
-                useInMemoryPgpKeys(signingKey, signingKeyPwd)
-            }
+            useInMemoryPgpKeys(signingKey, signingKeyPwd)
             sign publishing.publications.release
         }
     }
