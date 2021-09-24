@@ -19,9 +19,7 @@ release_upload_steps: &release_upload_steps
     - run:
         name: Inject Maven signing key
         command: |
-          echo $SIGNING_KEY \
-            | awk 'NR == 1 { print "signingKey=" } 1' ORS='\\n' \
-            >> gradle.properties
+          echo "ext.signingKey=\"$SIGNING_KEY\"" > signingkey.gradle
     - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
@@ -40,9 +38,7 @@ snapshot_upload_steps: &snapshot_upload_steps
     - run:
         name: Inject Maven signing key
         command: |
-          echo $SIGNING_KEY \
-            | awk 'NR == 1 { print "signingKey=" } 1' ORS='\\n' \
-            >> gradle.properties
+          echo "ext.signingKey=\"$SIGNING_KEY\"" > signingkey.gradle
     - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
@@ -58,12 +54,6 @@ default_build_steps: &default_build_steps
         path: ~/identity-android-sdk
     - restore_cache:
         key: v2-jars-{{ checksum "build.gradle" }}
-    - run:
-        name: Inject Maven signing key
-        command: |
-          echo $SIGNING_KEY \
-            | awk 'NR == 1 { print "signingKey=" } 1' ORS='\\n' \
-            >> gradle.properties
     - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
