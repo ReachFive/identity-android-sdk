@@ -108,7 +108,7 @@ default_workflows_tags: &default_workflows_tags
       only: /.*/
 
 workflows:
-  deploy:
+  circleci:
     jobs:
       - build_all:
           <<: *default_workflows_tags
