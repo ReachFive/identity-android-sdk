@@ -80,7 +80,7 @@ subprojects {
             minSdkVersion androidSettings.min_sdk_version
             targetSdkVersion androidSettings.target_sdk_version
             versionCode androidSettings.version_code
-            versionName version
+            versionName this.version
         }
 
         buildTypes {
@@ -107,8 +107,8 @@ subprojects {
                         inceptionYear = '2019'
                         url = 'https://github.com/ReachFive/identity-android-sdk'
 
-                        groupId = group
-                        version = version
+                        groupId = this.group
+                        version = this.version
                         packaging = 'aar'
 
                         licenses {
@@ -136,9 +136,7 @@ subprojects {
         }
 
         signing {
-            if (properties.containsKey('signingKey')) {
-                useInMemoryPgpKeys(signingKey, signingKeyPwd)
-            }
+            useInMemoryPgpKeys(signingKey, signingKeyPwd)
             sign publishing.publications.release
         }
     }
