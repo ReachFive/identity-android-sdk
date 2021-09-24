@@ -2,7 +2,7 @@
 buildscript {
     ext {
         reachfive = [
-            lib_version : "7.0.0",
+            lib_version : "7.0.0-SNAPSHOT",
             lib_group   : "co.reachfive.identity",
         ]
 
@@ -110,41 +110,6 @@ subprojects {
 
                         groupId = this.group
                         version = this.version
-                        packaging = 'aar'
-
-                        licenses {
-                            license {
-                                name = 'The MIT License (MIT)'
-                                url = 'https://opensource.org/licenses/MIT'
-                            }
-                        }
-
-                        scm {
-                            connection = 'https://github.com/ReachFive/identity-android-sdk.git'
-                            url = 'https://github.com/ReachFive/identity-android-sdk'
-
-                        }
-
-                        developers {
-                            developer {
-                                id = 'reachfive'
-                                name = 'Reachfive'
-                            }
-                        }
-                    }
-                }
-
-                snapshot(MavenPublication) {
-                    from components.release
-
-                    pom {
-                        name = 'ReachFive'
-                        description = 'SDK'
-                        inceptionYear = '2019'
-                        url = 'https://github.com/ReachFive/identity-android-sdk'
-
-                        groupId = this.group
-                        version = this.version + "-SNAPSHOT"
                         packaging = 'aar'
 
                         licenses {
