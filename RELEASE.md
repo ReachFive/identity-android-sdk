@@ -1,11 +1,5 @@
 # Guide for publication
 
-## Snapshots
-Each commit on `master` triggers the publication of a snapshot on the [snapshot repository](https://s01.oss.sonatype.org/content/repositories/snapshots/co/reachfive/identity/).
-If `x.y.z` is the version referenced in `libcersion.gradle`, the snapshot will be released as `x.y.z-SNAPSHOT`.
-If a snapshot for the version of `libversion.gradle` is already present, it will be overridden.
-
-## Release
 1. Create a pull request named `Release vx.y.z` (add the Github tag `release`).
 
 2. Describe the new features and the bug fixes in the [CHANGELOG.md](CHANGELOG.md) file.
