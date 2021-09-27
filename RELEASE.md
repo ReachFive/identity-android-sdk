@@ -1,15 +1,19 @@
 # Guide for publication
 
+## Snapshots
+Each commit on `master` triggers the publication of a snapshot on the [snapshot repository](https://s01.oss.sonatype.org/content/repositories/snapshots/co/reachfive/identity/).
+If `x.y.z` is the version referenced in `libcersion.gradle`, the snapshot will be released as `x.y.z-SNAPSHOT`.
+If a snapshot for the version of `libversion.gradle` is already present, it will be overridden.
+
+## Release
 1. Create a pull request named `Release vx.y.z` (add the Github tag `release`).
 
 2. Describe the new features and the bug fixes in the [CHANGELOG.md](CHANGELOG.md) file.
 
-3. Upgrade the `x.y.z` version into `build.gradle`:
+3. Upgrade the `x.y.z` version into `libversion.gradle`:
 
 ```groovy
-buildscript {
-    ext.lib_version = 'x.y.z'
-}
+ext.libversion="x.y.z"
 ```
 
 4. Submit your pull request.
@@ -26,7 +30,7 @@ buildscript {
     git push origin <tag_name> 
     ```
 
-    [circleci](https://circleci.com/gh/ReachFive/identity-android-sdk) will automatically trigger a build, run the tests and publish the new version of the SDK on [`JCenter`](https://bintray.com/beta/#/reachfive/identity-sdk?tab=packages).
+    [circleci](https://circleci.com/gh/ReachFive/identity-android-sdk) will automatically trigger a build, run the tests and publish the new version of the SDK on [`MavenCentral`](https://search.maven.org/search?q=g:co.reachfive.identity).
     
     > It's important to push the tag separately otherwise the deployment job is not triggered (https://support.circleci.com/hc/en-us/articles/115013854347-Jobs-builds-not-triggered-when-pushing-tag).
 
