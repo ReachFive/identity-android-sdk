@@ -4,12 +4,10 @@
 
 2. Describe the new features and the bug fixes in the [CHANGELOG.md](CHANGELOG.md) file.
 
-3. Upgrade the `x.y.z` version into `build.gradle`:
+3. Upgrade the `x.y.z` version in `libversion.gradle`:
 
 ```groovy
-buildscript {
-    ext.lib_version = 'x.y.z'
-}
+ext.libversion="x.y.z"
 ```
 
 4. Submit your pull request.
@@ -26,7 +24,7 @@ buildscript {
     git push origin <tag_name> 
     ```
 
-    [circleci](https://circleci.com/gh/ReachFive/identity-android-sdk) will automatically trigger a build, run the tests and publish the new version of the SDK on [`JCenter`](https://bintray.com/beta/#/reachfive/identity-sdk?tab=packages).
+    [circleci](https://circleci.com/gh/ReachFive/identity-android-sdk) will automatically trigger a build, run the tests and publish the new version of the SDK on [`MavenCentral`](https://search.maven.org/search?q=g:co.reachfive.identity).
     
     > It's important to push the tag separately otherwise the deployment job is not triggered (https://support.circleci.com/hc/en-us/articles/115013854347-Jobs-builds-not-triggered-when-pushing-tag).
 
