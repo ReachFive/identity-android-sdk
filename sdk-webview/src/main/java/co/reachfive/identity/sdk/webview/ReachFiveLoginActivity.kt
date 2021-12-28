@@ -48,7 +48,7 @@ class ReachFiveLoginActivity : Activity() {
 
         Log.d(TAG, "ReachFiveLoginActivity onCreate : $url")
 
-        webview.loadUrl(url)
+        url?.let { webview.loadUrl(it) }
     }
 
     override fun onBackPressed() {
