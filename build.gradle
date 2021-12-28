@@ -5,8 +5,8 @@ buildscript {
 
         androidSettings = [
             min_sdk_version: 19,
-            target_sdk_version: 29,
-            compile_sdk_version: 29,
+            target_sdk_version: 31,
+            compile_sdk_version: 31,
             version_code: 4
         ]
 
