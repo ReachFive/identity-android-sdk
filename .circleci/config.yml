@@ -6,22 +6,20 @@ version: 2.1
 
 defaults: &defaults
   docker:
-    - image: circleci/android:api-29
+    - image: cimg/android:2021.12.2
   environment:
     JVM_OPTS: -Xmx3200m
 
-default_upload_steps: &default_upload_steps
+release_upload_steps: &release_upload_steps
   steps:
     - checkout:
-        path: ~/repo
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
         name: Inject Maven signing key
         command: |
-          echo $SIGNING_KEY \
-            | awk 'NR == 1 { print "signingKey=" } 1' ORS='\\n' \
-            >> gradle.properties
+          echo "ext.signingKey=\"$SIGNING_KEY\"" > signingkey.gradle
     - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
@@ -31,10 +29,29 @@ default_upload_steps: &default_upload_steps
         key: v2-jars-{{ checksum "build.gradle" }}
     - run: ./gradlew clean build publishToSonatype closeAndReleaseSonatypeStagingRepository
 
-default_build_steps: &default_build_steps
+snapshot_upload_steps: &snapshot_upload_steps
   steps:
     - checkout:
         path: ~/repo
+    - restore_cache:
+        key: v1-jars-{{ checksum "build.gradle" }}
+    - run:
+        name: Inject Maven signing key
+        command: |
+          echo "ext.signingKey=\"$SIGNING_KEY\"" > signingkey.gradle
+    - run:
+        name: Download Dependencies
+        command: ./gradlew androidDependencies
+    - save_cache:
+        paths:
+          - ~/.gradle
+        key: v2-jars-{{ checksum "build.gradle" }}
+    - run: ./gradlew -Psnapshot clean build publishToSonatype
+
+default_build_steps: &default_build_steps
+  steps:
+    - checkout:
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v2-jars-{{ checksum "build.gradle" }}
     - run:
@@ -50,20 +67,30 @@ jobs:
 
   build_all:
     <<: *defaults
-    working_directory: ~/repo
+    working_directory: ~/identity-android-sdk
     <<: *default_build_steps
 
-  upload_all:
+  upload_snapshot:
     <<: *defaults
     working_directory: ~/repo
-    <<: *default_upload_steps
+    <<: *snapshot_upload_steps
 
-default_workflows_filters: &default_workflows_filters
+  upload_release:
+    <<: *defaults
+    working_directory: ~/repo
+    <<: *release_upload_steps
+
+release_filters: &release_filters
   filters:
     tags:
       only: /.*/
     branches:
       ignore: /.*/
+
+snapshot_filters: &snapshot_filters
+  filters:
+    branches:
+      only: master
 
 default_workflows_tags: &default_workflows_tags
   filters:
@@ -71,11 +98,15 @@ default_workflows_tags: &default_workflows_tags
       only: /.*/
 
 workflows:
-  deploy:
+  circleci:
     jobs:
       - build_all:
           <<: *default_workflows_tags
-      - upload_all:
+      - upload_snapshot:
           requires:
             - build_all
-          <<: *default_workflows_filters
+          <<: *snapshot_filters
+      - upload_release:
+          requires:
+            - build_all
+          <<: *release_filters

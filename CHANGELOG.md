@@ -5,9 +5,11 @@
 ### Changes
 
 - Revised Gradle build
-- Upgrade Kotlin
-- Upgrade plugins
+- Upgrade Android target SDK to 31
+- Upgrade Kotlin to 1.6.10
+- Upgrade build plugins
 - Upgrade libraries
+- Upgrade Facebook Login 11.3 => 12.2
 - All packages have been migrated from `com.reach5` to `co.reachfive`
 
 ## v6.2.1 (20/09/2021)
