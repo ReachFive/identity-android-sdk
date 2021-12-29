@@ -32,7 +32,7 @@ release_upload_steps: &release_upload_steps
 snapshot_upload_steps: &snapshot_upload_steps
   steps:
     - checkout:
-        path: ~/repo
+        path: ~/identity-android-sdk
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
