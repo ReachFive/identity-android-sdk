@@ -72,12 +72,12 @@ jobs:
 
   upload_snapshot:
     <<: *defaults
-    working_directory: ~/repo
+    working_directory: ~/identity-android-sdk
     <<: *snapshot_upload_steps
 
   upload_release:
     <<: *defaults
-    working_directory: ~/repo
+    working_directory: ~/identity-android-sdk
     <<: *release_upload_steps
 
 release_filters: &release_filters
