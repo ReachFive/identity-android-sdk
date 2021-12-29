@@ -10,5 +10,5 @@ dependencies {
     implementation libs.retrofit
     implementation libs.retrofitConverterGson
     implementation "com.squareup.okhttp3:logging-interceptor:4.9.3"
-    implementation 'androidx.browser:browser:1.4.0'
+    implementation "androidx.browser:browser:1.4.0"
 }
