@@ -11,7 +11,6 @@ dependencies {
     implementation project(":sdk-core")
 
     implementation ext.kotlin_stdlib
-    implementation libs.androidxAppCompat
     implementation libs.retrofit
     implementation libs.retrofitConverterGson
     implementation libs.result

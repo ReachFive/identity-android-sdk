@@ -7,6 +7,5 @@ dependencies {
     implementation ext.kotlin_stdlib
     implementation libs.retrofit
     implementation libs.result
-    implementation libs.playServicesAuth
-    implementation libs.androidxAppCompat
+    implementation "com.google.android.gms:play-services-auth:20.0.0"
 }

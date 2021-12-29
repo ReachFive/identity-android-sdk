@@ -1,7 +1,7 @@
 buildscript {
     ext {
         kotlin_version = "1.6.10"
-        kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
         androidSettings = [
             min_sdk_version: 19,
@@ -11,13 +11,7 @@ buildscript {
         ]
 
         libraries = [
-            androidxAppCompat: "androidx.appcompat:appcompat:1.4.0",
-            androidCustomTabs: "com.android.support:customtabs:28.0.0",
             result: "com.github.kittinunf.result:result:5.2.0",
-
-            playServicesFido: "com.google.android.gms:play-services-fido:18.1.0",
-            playServicesAuth: "com.google.android.gms:play-services-auth:19.2.0",
-
             retrofit:               "com.squareup.retrofit2:retrofit:2.9.0",
             retrofitConverterGson:  "com.squareup.retrofit2:converter-gson:2.9.0",
         ]
