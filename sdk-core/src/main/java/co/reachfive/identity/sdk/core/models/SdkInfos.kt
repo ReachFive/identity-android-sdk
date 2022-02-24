@@ -1,9 +1,10 @@
 package co.reachfive.identity.sdk.core.models
 
 import android.os.Build
+import co.reachfive.identity.sdk.core.BuildConfig
 
 object SdkInfos {
-    const val version = "4.0.0"
+    val version = BuildConfig.r5_sdk_version
     private const val platform = "android"
     private val device: String = Build.DEVICE
     private val model: String = Build.MODEL

@@ -77,6 +77,7 @@ subprojects {
             targetSdkVersion androidSettings.target_sdk_version
             versionCode androidSettings.version_code
             versionName this.version
+            buildConfigField("String", "r5_sdk_version", "\"$libversion\"")
         }
 
         buildTypes {
