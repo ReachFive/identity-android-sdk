@@ -114,7 +114,7 @@ class ReachFive(
 
     fun loginWithProvider(
         name: String,
-        scope: Collection<String> = emptySet(),
+        scope: Collection<String> = this.scope,
         origin: String,
         activity: Activity
     ) {
