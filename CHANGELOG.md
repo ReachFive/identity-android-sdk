@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.0.1 (01/03/2022)
+
+### Changes
+
+- Fix `SdkInfos.version` not indicating the correct SDK version. (#149)
+- Use the scope configured in identity client as default value in `loginWithProvider`. (#148)
+- Call `/userinfo` instead deprecated endpoint `/me`. (#147)
+
 ## v7.0.0 (29/12/2021)
 
 ### Changes
