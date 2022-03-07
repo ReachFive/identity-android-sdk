@@ -65,7 +65,7 @@ class ConfiguredFacebookProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult");
+        Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult")
         LoginManager.getInstance()
             .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult) {
@@ -92,7 +92,7 @@ class ConfiguredFacebookProvider(
                 }
 
                 override fun onError(error: FacebookException) {
-                    Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult.onError");
+                    Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult.onError: " + error);
                     if (error is FacebookAuthorizationException) {
                         if (AccessToken.getCurrentAccessToken() != null) {
                             LoginManager.getInstance().logOut()
