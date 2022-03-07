@@ -2,8 +2,10 @@ package co.reachfive.identity.sdk.facebook
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
+import co.reachfive.identity.sdk.core.ReachFiveWebAuthn
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -51,6 +53,8 @@ class ConfiguredFacebookProvider(
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
         this.origin = origin
         this.scope = scope
+        val loginManager = LoginManager.getInstance()
+        Log.d("SDK_DEBUG", "LoginManager.authType: "+loginManager.authType)
         LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)
     }
 
@@ -61,9 +65,11 @@ class ConfiguredFacebookProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
+        Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult");
         LoginManager.getInstance()
             .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult) {
+                    Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult.onSuccess: "+result);
                     val accessToken = result.accessToken.token
                     val loginProviderRequest = LoginProviderRequest(
                         provider = name,
@@ -81,10 +87,12 @@ class ConfiguredFacebookProvider(
                 }
 
                 override fun onCancel() {
+                    Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult.onCancel");
                     failure(ReachFiveError.from("User cancel"))
                 }
 
                 override fun onError(error: FacebookException) {
+                    Log.d("SDK_DEBUG", "FacebookProvider.onActivityResult.onError");
                     if (error is FacebookAuthorizationException) {
                         if (AccessToken.getCurrentAccessToken() != null) {
                             LoginManager.getInstance().logOut()
