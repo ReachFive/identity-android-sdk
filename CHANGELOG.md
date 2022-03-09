@@ -1,5 +1,11 @@
 # Changelog
 
+## v7.0.2 (09/03/2022)
+
+### Changes
+
+-  Fix error propagation in FB login flows. (#152)
+
 ## v7.0.1 (01/03/2022)
 
 ### Changes
