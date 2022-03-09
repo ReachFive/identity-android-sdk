@@ -89,8 +89,9 @@ class ConfiguredFacebookProvider(
                         if (AccessToken.getCurrentAccessToken() != null) {
                             LoginManager.getInstance().logOut()
                         }
-                    } else
-                        failure(ReachFiveError.from(error))
+                    }
+
+                    failure(ReachFiveError.from(error))
                 }
             })
         callbackManager.onActivityResult(requestCode, resultCode, data)
