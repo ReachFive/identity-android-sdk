@@ -2,8 +2,10 @@ package co.reachfive.identity.sdk.webview
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
+import co.reachfive.identity.sdk.core.RedirectionActivity
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -35,25 +37,28 @@ class ConfiguredWebViewProvider(
     override val requestCode: Int = PROVIDER_REDIRECTION_REQUEST_CODE
 
     companion object {
-        const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
         const val AuthCode = "AuthCode"
-        const val PKCE = "PKCE"
         const val PROVIDER_REDIRECTION_REQUEST_CODE = 52559
-        const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
-        val intent = Intent(activity, ReachFiveLoginActivity::class.java)
-        intent.putExtra(
-            BUNDLE_ID, WebViewProviderConfig(
+        val intent = Intent(activity, RedirectionActivity::class.java)
+
+        val pkce = PkceAuthCodeFlow.generate(sdkConfig.scheme)
+        val webviewProvider =
+            WebViewProviderConfig(
                 providerConfig = providerConfig,
                 sdkConfig = sdkConfig,
                 origin = origin,
                 scope = scope.joinToString(" ")
             )
-        )
-        intent.putExtra(PKCE, PkceAuthCodeFlow.generate(sdkConfig.scheme))
-        activity.startActivityForResult(intent, requestCode)
+
+        val url = webviewProvider.buildUrl(pkce)
+        intent.putExtra(RedirectionActivity.URL_KEY, url)
+        intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
+        Log.d("WebViewProvider", "URL: ${url}")
+
+        activity.startActivityForResult(intent, PROVIDER_REDIRECTION_REQUEST_CODE)
     }
 
     override fun onActivityResult(
@@ -63,25 +68,31 @@ class ConfiguredWebViewProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        val authCode = data?.getStringExtra(AuthCode)
-        val authCodeFlow = data?.getParcelableExtra<PkceAuthCodeFlow>(PKCE)
-        return if (authCode != null && authCodeFlow != null) {
-            val authCodeRequest = AuthCodeRequest(
-                sdkConfig.clientId,
-                authCode,
-                authCodeFlow.redirectUri,
-                authCodeFlow.codeVerifier
-            )
-            reachFiveApi
-                .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                .enqueue(
-                    ReachFiveApiCallback(
-                        success = { it.toAuthToken().fold(success, failure) },
-                        failure = failure
-                    )
-                )
+        Log.d("WebViewProvider: onActivityResult ${requestCode}, ${resultCode}")
+        if (data == null) {
+            failure(ReachFiveError.from("WebViewProvider: Data"))
         } else {
-            failure(ReachFiveError.from("No authorization code or PKCE verifier code found in activity result"))
+            val authCode = data.getStringExtra(AuthCode)
+            val codeVerifier = data.getStringExtra(RedirectionActivity.CODE_VERIFIER_KEY)
+
+            return if (authCode != null && codeVerifier != null) {
+                val authCodeRequest = AuthCodeRequest(
+                    clientId = sdkConfig.clientId,
+                    code = authCode,
+                    redirectUri = sdkConfig.scheme,
+                    codeVerifier = codeVerifier
+                )
+                reachFiveApi
+                    .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+                    .enqueue(
+                        ReachFiveApiCallback(
+                            success = { it.toAuthToken().fold(success, failure) },
+                            failure = failure
+                        )
+                    )
+            } else {
+                failure(ReachFiveError.from("No authorization code or PKCE verifier code found in activity result"))
+            }
         }
     }
 
