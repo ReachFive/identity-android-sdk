@@ -14,4 +14,5 @@ dependencies {
     implementation libs.retrofit
     implementation libs.retrofitConverterGson
     implementation libs.result
+    implementation libs.browser
 }
