@@ -68,11 +68,10 @@ class ConfiguredWebViewProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        Log.d("WebViewProvider: onActivityResult ${requestCode}, ${resultCode}")
         if (data == null) {
             failure(ReachFiveError.from("WebViewProvider: Data"))
         } else {
-            val authCode = data.getStringExtra(AuthCode)
+            val authCode = data.getStringExtra(RedirectionActivity.CODE_KEY)
             val codeVerifier = data.getStringExtra(RedirectionActivity.CODE_VERIFIER_KEY)
 
             return if (authCode != null && codeVerifier != null) {
