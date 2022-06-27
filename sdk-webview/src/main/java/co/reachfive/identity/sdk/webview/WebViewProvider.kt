@@ -2,16 +2,15 @@ package co.reachfive.identity.sdk.webview
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
 import co.reachfive.identity.sdk.core.RedirectionActivity
+import co.reachfive.identity.sdk.core.RedirectionActivityLauncher
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
 import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.utils.Failure
-import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 
 class WebViewProvider : ProviderCreator {
@@ -33,34 +32,20 @@ class ConfiguredWebViewProvider(
     private val reachFiveApi: ReachFiveApi
 ) : Provider {
 
+    private val redirectionActivityLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
+
     override val name: String = providerConfig.provider
     override val requestCode: Int = PROVIDER_REDIRECTION_REQUEST_CODE
 
     companion object {
-        const val AuthCode = "AuthCode"
         const val PROVIDER_REDIRECTION_REQUEST_CODE = 52559
     }
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
-        val intent = Intent(activity, RedirectionActivity::class.java)
-
-        val pkce = PkceAuthCodeFlow.generate(sdkConfig.scheme)
-        val webviewProvider =
-            WebViewProviderConfig(
-                providerConfig = providerConfig,
-                sdkConfig = sdkConfig,
-                origin = origin,
-                scope = scope.joinToString(" ")
-            )
-
-        val url = webviewProvider.buildUrl(pkce)
-        intent.putExtra(RedirectionActivity.URL_KEY, url)
-        intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
-        Log.d("WebViewProvider", "URL: ${url}")
-
-        activity.startActivityForResult(intent, PROVIDER_REDIRECTION_REQUEST_CODE)
+        redirectionActivityLauncher.sloFlow(activity, this, scope, origin)
     }
 
+    // TODO/cbu
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,

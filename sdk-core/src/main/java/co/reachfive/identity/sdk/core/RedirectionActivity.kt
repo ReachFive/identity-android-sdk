@@ -4,9 +4,73 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
+import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
+import co.reachfive.identity.sdk.core.utils.formatScope
 
-class RedirectionActivity : Activity() {
+class RedirectionActivityLauncher(
+    val sdkConfig: SdkConfig,
+    val api: ReachFiveApi,
+) {
+
+    fun sloFlow(
+        activity: Activity,
+        provider: Provider,
+        scope: Collection<String>,
+        origin: String,
+    ) {
+        val intent = prepareIntent(activity, scope, origin = origin, provider = provider.name)
+        activity.startActivityForResult(intent, provider.requestCode)
+    }
+
+    fun loginCallback(
+        activity: Activity,
+        scope: Collection<String>,
+        tkn: String,
+    ) {
+        val intent = prepareIntent(activity, scope, tkn)
+        activity.startActivityForResult(intent, RedirectionActivity.REDIRECTION_REQUEST_CODE)
+    }
+
+    private fun prepareIntent(
+        activity: Activity,
+        scope: Collection<String>,
+        tkn: String? = null,
+        provider: String? = null,
+        origin: String? = null,
+    ): Intent {
+        val intent = Intent(activity, RedirectionActivity::class.java)
+
+        val redirectUri = sdkConfig.scheme
+        val pkce = PkceAuthCodeFlow.generate(redirectUri)
+
+        val maybeTkn = if (tkn != null) { mapOf("tkn" to tkn) } else emptyMap()
+        val maybeProvider = if (provider != null) { mapOf("provider" to provider) } else emptyMap()
+        val maybeOrigin = if (origin != null) { mapOf("origin" to origin) } else emptyMap()
+
+        val request: Map<String, String> = mapOf(
+            "client_id" to sdkConfig.clientId,
+            "redirect_uri" to redirectUri,
+            "response_type" to "code",
+            "scope" to formatScope(scope),
+            "code_challenge" to pkce.codeChallenge,
+            "code_challenge_method" to pkce.codeChallengeMethod
+        ) + SdkInfos.getQueries() + maybeTkn + maybeProvider + maybeOrigin
+
+        val url = api.authorize(request).request().url.toString()
+        Log.d("DEBUG", "URL: ${url}")
+        intent.putExtra(RedirectionActivity.URL_KEY, url)
+        intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
+
+        return intent
+    }
+}
+
+class RedirectionActivity: Activity() {
     companion object {
         const val CODE_KEY = "CODE"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
@@ -40,7 +104,9 @@ class RedirectionActivity : Activity() {
         val newResultCode = if (newIntent.action != Intent.ACTION_VIEW || data == null) {
             UNEXPECTED_ERROR_RESULT_CODE
         } else {
+            Log.d("DEBUG", "query: ${data.query}")
             val authCode = data.getQueryParameter("code")
+            Log.d("DEBUG", "Code: ${authCode}")
 
             if (authCode == null) NO_AUTH_ERROR_RESULT_CODE
             else {
