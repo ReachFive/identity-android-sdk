@@ -405,7 +405,6 @@ class ReachFive(
         }
     }
 
-    // TODO/priv
     fun loginCallback(
         tkn: String,
         scope: Collection<String>

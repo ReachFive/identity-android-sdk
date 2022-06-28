@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.SdkConfig
@@ -48,9 +47,15 @@ class RedirectionActivityLauncher(
         val redirectUri = sdkConfig.scheme
         val pkce = PkceAuthCodeFlow.generate(redirectUri)
 
-        val maybeTkn = if (tkn != null) { mapOf("tkn" to tkn) } else emptyMap()
-        val maybeProvider = if (provider != null) { mapOf("provider" to provider) } else emptyMap()
-        val maybeOrigin = if (origin != null) { mapOf("origin" to origin) } else emptyMap()
+        val maybeTkn = if (tkn != null) {
+            mapOf("tkn" to tkn)
+        } else emptyMap()
+        val maybeProvider = if (provider != null) {
+            mapOf("provider" to provider)
+        } else emptyMap()
+        val maybeOrigin = if (origin != null) {
+            mapOf("origin" to origin)
+        } else emptyMap()
 
         val request: Map<String, String> = mapOf(
             "client_id" to sdkConfig.clientId,
@@ -62,7 +67,6 @@ class RedirectionActivityLauncher(
         ) + SdkInfos.getQueries() + maybeTkn + maybeProvider + maybeOrigin
 
         val url = api.authorize(request).request().url.toString()
-        Log.d("DEBUG", "URL: ${url}")
         intent.putExtra(RedirectionActivity.URL_KEY, url)
         intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
 
@@ -70,7 +74,7 @@ class RedirectionActivityLauncher(
     }
 }
 
-class RedirectionActivity: Activity() {
+class RedirectionActivity : Activity() {
     companion object {
         const val CODE_KEY = "CODE"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
@@ -104,9 +108,7 @@ class RedirectionActivity: Activity() {
         val newResultCode = if (newIntent.action != Intent.ACTION_VIEW || data == null) {
             UNEXPECTED_ERROR_RESULT_CODE
         } else {
-            Log.d("DEBUG", "query: ${data.query}")
             val authCode = data.getQueryParameter("code")
-            Log.d("DEBUG", "Code: ${authCode}")
 
             if (authCode == null) NO_AUTH_ERROR_RESULT_CODE
             else {
