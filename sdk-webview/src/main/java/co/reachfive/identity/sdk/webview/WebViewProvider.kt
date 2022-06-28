@@ -45,7 +45,6 @@ class ConfiguredWebViewProvider(
         redirectionActivityLauncher.sloFlow(activity, this, scope, origin)
     }
 
-    // TODO/cbu
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
