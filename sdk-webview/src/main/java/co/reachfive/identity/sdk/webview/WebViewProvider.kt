@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
-import co.reachfive.identity.sdk.core.RedirectionActivity
-import co.reachfive.identity.sdk.core.RedirectionActivityLauncher
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -32,20 +30,24 @@ class ConfiguredWebViewProvider(
     private val reachFiveApi: ReachFiveApi
 ) : Provider {
 
-    private val redirectionActivityLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
+    private val flowLauncher =
+        ReachFiveLoginActivityLauncher(sdkConfig, reachFiveApi)
 
     override val name: String = providerConfig.provider
     override val requestCode: Int = PROVIDER_REDIRECTION_REQUEST_CODE
 
     companion object {
+        const val BUNDLE_ID = "BUNDLE_REACH_FIVE"
+        const val AuthCode = "AuthCode"
+        const val PKCE = "PKCE"
         const val PROVIDER_REDIRECTION_REQUEST_CODE = 52559
+        const val RESULT_INTENT_ERROR = "RESULT_INTENT_ERROR"
     }
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
-        redirectionActivityLauncher.sloFlow(activity, this, scope, origin)
+        flowLauncher.startProviderFlow(activity, this, scope, origin)
     }
 
-    // TODO/cbu
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -56,8 +58,8 @@ class ConfiguredWebViewProvider(
         if (data == null) {
             failure(ReachFiveError.from("WebViewProvider: Data"))
         } else {
-            val authCode = data.getStringExtra(RedirectionActivity.CODE_KEY)
-            val codeVerifier = data.getStringExtra(RedirectionActivity.CODE_VERIFIER_KEY)
+            val authCode = data.getStringExtra(ReachFiveLoginActivity.CODE_KEY)
+            val codeVerifier = data.getStringExtra(ReachFiveLoginActivity.CODE_VERIFIER_KEY)
 
             return if (authCode != null && codeVerifier != null) {
                 val authCodeRequest = AuthCodeRequest(

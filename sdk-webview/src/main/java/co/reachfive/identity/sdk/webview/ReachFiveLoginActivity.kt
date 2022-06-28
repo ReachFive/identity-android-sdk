@@ -1,37 +1,39 @@
-package co.reachfive.identity.sdk.core
+package co.reachfive.identity.sdk.webview
 
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
+import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.formatScope
 
-class RedirectionActivityLauncher(
+class ReachFiveLoginActivityLauncher(
     val sdkConfig: SdkConfig,
     val api: ReachFiveApi,
 ) {
 
-    fun loginCallback(
+    fun startProviderFlow(
         activity: Activity,
+        provider: Provider,
         scope: Collection<String>,
-        tkn: String,
+        origin: String,
     ) {
-        val intent = prepareIntent(activity, scope, tkn)
-        activity.startActivityForResult(intent, RedirectionActivity.REDIRECTION_REQUEST_CODE)
+        val intent = prepareIntent(activity, scope, provider = provider.name, origin = origin)
+        activity.startActivityForResult(intent, provider.requestCode)
     }
 
     private fun prepareIntent(
         activity: Activity,
         scope: Collection<String>,
-        tkn: String,
+        provider: String,
+        origin: String,
     ): Intent {
-        val intent = Intent(activity, RedirectionActivity::class.java)
+        val intent = Intent(activity, ReachFiveLoginActivity::class.java)
 
         val redirectUri = sdkConfig.scheme
         val pkce = PkceAuthCodeFlow.generate(redirectUri)
@@ -43,30 +45,25 @@ class RedirectionActivityLauncher(
             "scope" to formatScope(scope),
             "code_challenge" to pkce.codeChallenge,
             "code_challenge_method" to pkce.codeChallengeMethod,
-            "tkn" to tkn
+            "provider" to provider,
+            "origin" to origin
         ) + SdkInfos.getQueries()
 
         val url = api.authorize(request).request().url.toString()
-        intent.putExtra(RedirectionActivity.URL_KEY, url)
-        intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
+        intent.putExtra(ReachFiveLoginActivity.URL_KEY, url)
+        intent.putExtra(ReachFiveLoginActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
 
         return intent
     }
 }
 
-class RedirectionActivity: Activity() {
+class ReachFiveLoginActivity : Activity() {
     companion object {
         const val CODE_KEY = "CODE"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
         const val URL_KEY = "URL"
 
-        const val REDIRECTION_REQUEST_CODE = 52558
         const val CHROME_CUSTOM_TAB_REQUEST_CODE = 100
-
-        const val SUCCESS_RESULT_CODE = 0
-        const val UNEXPECTED_ERROR_RESULT_CODE = -1
-        const val ABORT_RESULT_CODE = 1
-        const val NO_AUTH_ERROR_RESULT_CODE = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,19 +82,28 @@ class RedirectionActivity: Activity() {
     override fun onNewIntent(newIntent: Intent) {
         val data = newIntent.data
 
-        val newResultCode = if (newIntent.action != Intent.ACTION_VIEW || data == null) {
-            UNEXPECTED_ERROR_RESULT_CODE
+        if (newIntent.action != Intent.ACTION_VIEW || data == null) {
+            loginFailure("Unexpected error")
         } else {
             val authCode = data.getQueryParameter("code")
-
-            if (authCode == null) NO_AUTH_ERROR_RESULT_CODE
-            else {
-                intent.putExtra(CODE_KEY, authCode)
-                SUCCESS_RESULT_CODE
-            }
+            loginSuccess(authCode)
         }
+    }
 
-        setResult(newResultCode, intent)
+    override fun onBackPressed() {
+        loginFailure("User aborted login!")
+    }
+
+    private fun loginFailure(message: String) {
+        val intent = Intent()
+        intent.putExtra(ConfiguredWebViewProvider.RESULT_INTENT_ERROR, message)
+        setResult(ConfiguredWebViewProvider.PROVIDER_REDIRECTION_REQUEST_CODE, intent)
+        finish()
+    }
+
+    fun loginSuccess(authCode: String?) {
+        intent.putExtra(ConfiguredWebViewProvider.AuthCode, authCode)
+        setResult(ConfiguredWebViewProvider.PROVIDER_REDIRECTION_REQUEST_CODE, intent)
         finish()
     }
 }
