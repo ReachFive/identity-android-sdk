@@ -40,10 +40,10 @@ data class OpenIdUser(
 
 @Parcelize
 data class Address(
-    val formatted: String,
-    val streetAddress: String,
-    val locality: String,
-    val region: String,
-    val postalCode: String,
-    val country: String
+    val formatted: String?,
+    val streetAddress: String?,
+    val locality: String?,
+    val region: String?,
+    val postalCode: String?,
+    val country: String?
 ) : Parcelable
