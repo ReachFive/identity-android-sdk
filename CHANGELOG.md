@@ -1,5 +1,11 @@
 # Changelog
 
+## v7.0.3 (18/07/2022)
+
+### Changes
+- `Address` properties are all nullable
+- Suppression of proguard rules
+
 ## v7.0.2 (09/03/2022)
 
 ### Changes
