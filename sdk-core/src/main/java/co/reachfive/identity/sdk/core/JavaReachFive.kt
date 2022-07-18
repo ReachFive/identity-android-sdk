@@ -2,6 +2,7 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
@@ -127,6 +128,15 @@ class JavaReachFive(
             success = success::call,
             failure = failure::call
         )
+    }
+
+    fun loginWithWeb(
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+    ) {
+        return reach5.loginWithWeb(scope, state, nonce, origin)
     }
 
     fun logout(
