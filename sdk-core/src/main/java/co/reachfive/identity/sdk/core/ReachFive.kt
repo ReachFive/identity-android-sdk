@@ -7,6 +7,7 @@ import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.NO_AUTH_ERROR_RESULT_CODE
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.REDIRECTION_REQUEST_CODE
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.URL_KEY
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
@@ -418,8 +419,6 @@ class ReachFive(
         nonce: String? = null,
         origin: String? = null,
     ) {
-        Log.d("SDK CORE", "ENTER LOGIN WITH WEB")
-
         redirectionActivityLauncher.loginWithWeb(activity, scope, state, nonce, origin)
     }
 
@@ -513,7 +512,9 @@ class ReachFive(
                             .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
                             .enqueue(
                                 ReachFiveApiCallback(
-                                    success = { tokenResponse -> tokenResponse.toAuthToken().fold(success, failure) },
+                                    success = { tokenResponse ->
+                                        tokenResponse.toAuthToken().fold(success, failure)
+                                    },
                                     failure = failure
                                 )
                             )
@@ -732,6 +733,34 @@ class ReachFive(
         val provider = providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
             provider.onActivityResult(requestCode, resultCode, data, success, failure)
+        } else if (requestCode == REDIRECTION_REQUEST_CODE) {
+
+            if (data != null) {
+                val authCode = data.getStringExtra(CODE_KEY)
+                val codeVerifier = data.getStringExtra(CODE_VERIFIER_KEY)
+                return if (authCode != null && codeVerifier != null) {
+                    val authCodeRequest = AuthCodeRequest(
+                        clientId = sdkConfig.clientId,
+                        code = authCode,
+                        redirectUri = sdkConfig.scheme,
+                        codeVerifier = codeVerifier
+                    )
+                    reachFiveApi
+                        .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+                        .enqueue(
+                            ReachFiveApiCallback(
+                                success = { it.toAuthToken().fold(success, failure) },
+                                failure = failure
+                            )
+                        )
+                } else {
+                    failure(ReachFiveError.from("No authorization code or PKCE verifier code found in activity result"))
+                }
+
+            } else {
+                Log.d("SDKCORE", "No data");
+            }
+
         } else {
             failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
         }
