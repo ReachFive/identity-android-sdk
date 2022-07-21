@@ -98,38 +98,6 @@ class RedirectionActivityLauncher(
 
         return intent
     }
-
-    fun onActivityResult(requestCode: Int,
-                         resultCode: Int,
-                         data: Intent?,
-                         success: Success<AuthToken>,
-                         failure: Failure<ReachFiveError>) {
-        if (data != null) {
-            val authCode = data.getStringExtra(RedirectionActivity.CODE_KEY)
-            val codeVerifier = data.getStringExtra(RedirectionActivity.CODE_VERIFIER_KEY)
-            return if (authCode != null && codeVerifier != null) {
-                val authCodeRequest = AuthCodeRequest(
-                    clientId = sdkConfig.clientId,
-                    code = authCode,
-                    redirectUri = sdkConfig.scheme,
-                    codeVerifier = codeVerifier
-                )
-                api
-                    .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                    .enqueue(
-                        ReachFiveApiCallback(
-                            success = { it.toAuthToken().fold(success, failure) },
-                            failure = failure
-                        )
-                    )
-            } else {
-                failure(ReachFiveError.from("No authorization code or PKCE verifier code found in activity result"))
-            }
-
-        } else {
-            Log.d("SDKCORE", "No data");
-        }
-    }
 }
 
 class RedirectionActivity : Activity() {

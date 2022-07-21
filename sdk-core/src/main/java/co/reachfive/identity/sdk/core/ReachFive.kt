@@ -733,8 +733,8 @@ class ReachFive(
         val provider = providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
             provider.onActivityResult(requestCode, resultCode, data, success, failure)
-        } else if (requestCode == REDIRECTION_REQUEST_CODE) {
-            redirectionActivityLauncher.onActivityResult(requestCode, resultCode, data, success, failure)
+        } else if (requestCode == REDIRECTION_REQUEST_CODE && data != null) {
+            this.onLoginCallbackResult(data, resultCode, success, failure)
         } else {
             failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
         }
