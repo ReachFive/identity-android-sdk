@@ -7,7 +7,6 @@ import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.NO_AUTH_ERROR_RESULT_CODE
-import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.REDIRECTION_REQUEST_CODE
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.URL_KEY
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
@@ -512,9 +511,7 @@ class ReachFive(
                             .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
                             .enqueue(
                                 ReachFiveApiCallback(
-                                    success = { tokenResponse ->
-                                        tokenResponse.toAuthToken().fold(success, failure)
-                                    },
+                                    success = { tokenResponse -> tokenResponse.toAuthToken().fold(success, failure) },
                                     failure = failure
                                 )
                             )
@@ -733,8 +730,6 @@ class ReachFive(
         val provider = providers.find { p -> p.requestCode == requestCode }
         if (provider != null) {
             provider.onActivityResult(requestCode, resultCode, data, success, failure)
-        } else if (requestCode == REDIRECTION_REQUEST_CODE && data != null) {
-            this.onLoginCallbackResult(data, resultCode, success, failure)
         } else {
             failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
         }
