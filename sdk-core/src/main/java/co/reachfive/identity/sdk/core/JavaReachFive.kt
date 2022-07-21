@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
@@ -12,25 +13,19 @@ import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest
 import co.reachfive.identity.sdk.core.utils.Callback
 
 class JavaReachFive(
-    activity: Activity,
-    sdkConfig: SdkConfig,
+    override val activity: Activity,
+    override val sdkConfig: SdkConfig,
     providersCreators: List<ProviderCreator>
-) {
+) : PasswordClient, PasswordlessClient, ProfileClient, SocialLoginClient {
     private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
+
+    override var defaultScope: Set<String> = reach5.defaultScope
 
     fun initialize(
         success: Callback<List<Provider>>,
         failure: Callback<ReachFiveError>
     ): ReachFive {
         return reach5.initialize(success::call, failure::call)
-    }
-
-    fun getProvider(name: String): Provider? {
-        return reach5.getProvider(name)
-    }
-
-    fun getProviders(): List<Provider> {
-        return reach5.getProviders()
     }
 
     fun loginWithNativeProvider(
