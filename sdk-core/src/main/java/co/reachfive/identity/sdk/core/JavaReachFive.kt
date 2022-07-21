@@ -248,6 +248,15 @@ class JavaReachFive(
         return reach5.onActivityResult(requestCode, resultCode, data, success::call, failure::call)
     }
 
+    fun onLoginCallbackResult(
+        intent: Intent,
+        resultCode: Int,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.onLoginCallbackResult(intent, resultCode, success::call, failure::call)
+    }
+
     fun onStop() {
         reach5.onStop()
     }
