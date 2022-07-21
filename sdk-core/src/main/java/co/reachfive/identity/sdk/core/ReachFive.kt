@@ -1,6 +1,8 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
@@ -511,7 +513,9 @@ class ReachFive(
                             .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
                             .enqueue(
                                 ReachFiveApiCallback(
-                                    success = { tokenResponse -> tokenResponse.toAuthToken().fold(success, failure) },
+                                    success = { tokenResponse ->
+                                        tokenResponse.toAuthToken().fold(success, failure)
+                                    },
                                     failure = failure
                                 )
                             )
@@ -549,31 +553,40 @@ class ReachFive(
     }
 
     fun onSignupWithWebAuthnResult(
-        intent: Intent,
-        webAuthnId: String,
+        resultCode: Int,
+        intent: Intent?,
         scope: Collection<String> = this.scope,
         failure: Failure<ReachFiveError>
     ) {
-        if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            failure(ReachFiveWebAuthn.extractFIDO2Error(intent))
-        } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            ReachFiveWebAuthn
-                .extractRegistrationPublicKeyCredential(intent)
-                ?.let { registrationPublicKeyCredential ->
-                    reachFiveApi
-                        .signupWithWebAuthn(
-                            WebauthnSignupCredential(
-                                webauthnId = webAuthnId,
-                                publicKeyCredential = registrationPublicKeyCredential
-                            )
-                        )
-                        .enqueue(
-                            ReachFiveApiCallback(
-                                success = { loginCallback(it.tkn, scope) },
-                                failure = failure
-                            )
-                        )
+        when (resultCode) {
+            RESULT_OK -> {
+                if (intent == null) Log.d(TAG, "The data is null")
+                else if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
+                    failure(ReachFiveWebAuthn.extractFIDO2Error(intent))
+                } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+                    val webAuthnId = intent.getStringExtra("WebauthnId")
+                    if (webAuthnId == null) Log.d("ERROR")
+                    else ReachFiveWebAuthn
+                        .extractRegistrationPublicKeyCredential(intent)
+                        ?.let { registrationPublicKeyCredential ->
+                            reachFiveApi
+                                .signupWithWebAuthn(
+                                    WebauthnSignupCredential(
+                                        webauthnId = webAuthnId,
+                                        publicKeyCredential = registrationPublicKeyCredential
+                                    )
+                                )
+                                .enqueue(
+                                    ReachFiveApiCallback(
+                                        success = { loginCallback(it.tkn, scope) },
+                                        failure = failure
+                                    )
+                                )
+                        }
                 }
+            }
+            RESULT_CANCELED -> Log.d(TAG, "Operation is cancelled")
+            else -> Log.e(TAG, "Operation failed, with resultCode: $resultCode")
         }
     }
 
@@ -666,30 +679,39 @@ class ReachFive(
             )
 
     fun onLoginWithWebAuthnResult(
-        intent: Intent,
+        resultCode: Int,
+        intent: Intent?,
         scope: Collection<String> = this.scope,
         failure: Failure<ReachFiveError>
     ) {
-        if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            ReachFiveWebAuthn
-                .extractFIDO2Error(intent)
-                .let { failure(it) }
-        } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
-            val authenticatorAssertionResponse: AuthenticatorAssertionResponse =
-                AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
-            val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential =
-                createAuthenticationPublicKeyCredential(authenticatorAssertionResponse)
+        when (resultCode) {
+            RESULT_OK -> {
+                if (intent == null) Log.d(TAG, "The data is null")
+                else if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
+                    ReachFiveWebAuthn
+                        .extractFIDO2Error(intent)
+                        .let { failure(it) }
+                } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+                    val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+                    val authenticatorAssertionResponse: AuthenticatorAssertionResponse =
+                        AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
+                    val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential =
+                        createAuthenticationPublicKeyCredential(authenticatorAssertionResponse)
 
-            return reachFiveApi
-                .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-                .enqueue(
-                    ReachFiveApiCallback(
-                        success = { loginCallback(it.tkn, scope) },
-                        failure = failure
-                    )
-                )
+                    return reachFiveApi
+                        .authenticateWithWebAuthn(authenticationPublicKeyCredential)
+                        .enqueue(
+                            ReachFiveApiCallback(
+                                success = { loginCallback(it.tkn, scope) },
+                                failure = failure
+                            )
+                        )
+                }
+            }
+            RESULT_CANCELED -> Log.d(TAG, "Operation is cancelled")
+            else -> Log.e(TAG, "Operation failed, with resultCode: $resultCode")
         }
+
     }
 
     fun listWebAuthnDevices(
@@ -727,11 +749,28 @@ class ReachFive(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        val provider = providers.find { p -> p.requestCode == requestCode }
-        if (provider != null) {
-            provider.onActivityResult(requestCode, resultCode, data, success, failure)
-        } else {
-            failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
+        when (requestCode) {
+            ReachFiveWebAuthn.WEBAUTHN_LOGIN_REQUEST_CODE -> {
+                this.onLoginWithWebAuthnResult(resultCode, data, scope, failure)
+            }
+
+            ReachFiveWebAuthn.WEBAUTHN_SIGNUP_REQUEST_CODE -> {
+                this.onSignupWithWebAuthnResult(resultCode, data, scope, failure)
+            }
+
+            RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
+                if (data == null) Log.d(TAG, "The data is null")
+                else this.onLoginCallbackResult(data, resultCode, success, failure)
+            }
+
+            else -> {
+                val provider = providers.find { p -> p.requestCode == requestCode }
+                if (provider != null) {
+                    provider.onActivityResult(requestCode, resultCode, data, success, failure)
+                } else {
+                    failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
+                }
+            }
         }
     }
 

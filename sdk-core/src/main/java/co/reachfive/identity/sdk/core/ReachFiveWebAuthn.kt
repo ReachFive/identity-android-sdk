@@ -16,6 +16,9 @@ class ReachFiveWebAuthn(val activity: Activity) {
     companion object {
         private const val TAG = "Reach5"
 
+        const val WEBAUTHN_LOGIN_REQUEST_CODE = 2
+        const val WEBAUTHN_SIGNUP_REQUEST_CODE = 3
+
         fun extractFIDO2Error(intent: Intent): ReachFiveError {
             return intent
                 .getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)
