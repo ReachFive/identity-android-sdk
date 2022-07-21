@@ -734,33 +734,7 @@ class ReachFive(
         if (provider != null) {
             provider.onActivityResult(requestCode, resultCode, data, success, failure)
         } else if (requestCode == REDIRECTION_REQUEST_CODE) {
-
-            if (data != null) {
-                val authCode = data.getStringExtra(CODE_KEY)
-                val codeVerifier = data.getStringExtra(CODE_VERIFIER_KEY)
-                return if (authCode != null && codeVerifier != null) {
-                    val authCodeRequest = AuthCodeRequest(
-                        clientId = sdkConfig.clientId,
-                        code = authCode,
-                        redirectUri = sdkConfig.scheme,
-                        codeVerifier = codeVerifier
-                    )
-                    reachFiveApi
-                        .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                        .enqueue(
-                            ReachFiveApiCallback(
-                                success = { it.toAuthToken().fold(success, failure) },
-                                failure = failure
-                            )
-                        )
-                } else {
-                    failure(ReachFiveError.from("No authorization code or PKCE verifier code found in activity result"))
-                }
-
-            } else {
-                Log.d("SDKCORE", "No data");
-            }
-
+            redirectionActivityLauncher.onActivityResult(requestCode, resultCode, data, success, failure)
         } else {
             failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
         }
