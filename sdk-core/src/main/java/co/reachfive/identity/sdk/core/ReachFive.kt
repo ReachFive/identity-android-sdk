@@ -107,7 +107,7 @@ class ReachFive private constructor(
             )
     }
 
-    fun onLoginCallbackResult(
+    private fun onLoginCallbackResult(
         intent: Intent,
         resultCode: Int,
         success: Success<AuthToken>,
@@ -152,17 +152,25 @@ class ReachFive private constructor(
         failure: Failure<ReachFiveError>
     ) {
         when (requestCode) {
-            WebauthnAuthClient.WEBAUTHN_LOGIN_REQUEST_CODE -> {
-                this.onLoginWithWebAuthnResult(resultCode, data, defaultScope, failure)
+            WebauthnAuth.LOGIN_REQUEST_CODE -> {
+                if (data != null)
+                    webauthnAuth.onLoginWithWebAuthnResult(resultCode, data, defaultScope, failure)
+                else
+                    failure(ReachFiveError.from(""))
             }
 
-            WebauthnAuthClient.WEBAUTHN_SIGNUP_REQUEST_CODE -> {
-                this.onSignupWithWebAuthnResult(resultCode, data, defaultScope, failure)
+            WebauthnAuth.SIGNUP_REQUEST_CODE -> {
+                if (data != null)
+                    webauthnAuth.onSignupWithWebAuthnResult(resultCode, data, defaultScope, failure)
+                else
+                    failure(ReachFiveError.from(""))
             }
 
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
-                if (data == null) Log.d(TAG, "The data is null")
-                else this.onLoginCallbackResult(data, resultCode, success, failure)
+                if (data != null)
+                    this.onLoginCallbackResult(data, resultCode, success, failure)
+                else
+                    failure(ReachFiveError.from(""))
             }
 
             else -> socialLoginAuth.onActivityResult(
