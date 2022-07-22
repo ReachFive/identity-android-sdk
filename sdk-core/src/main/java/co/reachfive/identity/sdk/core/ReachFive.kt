@@ -156,7 +156,8 @@ class ReachFive private constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        success: Success<AuthToken>,
+        loginSuccessHandler: Success<AuthToken>,
+        webAuthnSuccessHandler: Success<Unit>, // TODO/cbu there is another way
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -177,14 +178,14 @@ class ReachFive private constructor(
 
            /* WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE -> {
                 if (data != null)
-                    webauthnAuth.onAddNewWebAuthnDeviceResult(data, success, failure)
+                    webauthnAuth.onAddNewWebAuthnDeviceResult(data, webAuthnSuccessHandler, failure)
                 else
                     failure(ReachFiveError.from(""))
             }*/
 
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
                 if (data != null)
-                    this.onLoginCallbackResult(data, resultCode, success, failure)
+                    this.onLoginCallbackResult(data, resultCode, loginSuccessHandler, failure)
                 else
                     failure(ReachFiveError.from(""))
             }
@@ -193,7 +194,7 @@ class ReachFive private constructor(
                 requestCode,
                 resultCode,
                 data,
-                success,
+                loginSuccessHandler,
                 failure
             )
         }
