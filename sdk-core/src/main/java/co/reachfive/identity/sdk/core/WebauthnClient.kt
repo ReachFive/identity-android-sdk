@@ -34,7 +34,7 @@ internal class WebauthnAuthClient(
         profile: ProfileWebAuthnSignupRequest,
         origin: String,
         friendlyName: String?,
-        signupRequestCode: Int,
+        // TODO/cbu type / alias
         successWithWebAuthnId: Success<String>,
         failure: Failure<ReachFiveError>
     ) {
@@ -48,7 +48,7 @@ internal class WebauthnAuthClient(
             .enqueue(
                 ReachFiveApiCallback(
                     success = {
-                        startFIDO2RegisterTask(it, signupRequestCode)
+                        startFIDO2RegisterTask(it, WebauthnAuth.SIGNUP_REQUEST_CODE)
                         successWithWebAuthnId(it.options.publicKey.user.id)
                     },
                     failure = failure
@@ -125,8 +125,8 @@ internal class WebauthnAuthClient(
             )
     }
 
-    override fun onAddNewWebAuthnDeviceResult(
-        authToken: AuthToken,
+    // TODO/cbu resultCode ?
+    internal fun onAddNewWebAuthnDeviceResult(
         intent: Intent,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
@@ -134,6 +134,7 @@ internal class WebauthnAuthClient(
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
             failure(extractFIDO2Error(intent))
         } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            // TODO/cbu retrieve AuthToken from intent
             extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
                 reachFiveApi
                     .registerWithWebAuthn(
@@ -263,7 +264,7 @@ internal class WebauthnAuthClient(
                 )
             )
 
-    override fun startFIDO2RegisterTask(
+    private fun startFIDO2RegisterTask(
         registrationOptions: RegistrationOptions,
         requestCode: Int
     ) {
@@ -285,6 +286,7 @@ internal class WebauthnAuthClient(
             }
         }
 
+        // TODO/cbu revise
         fido2PendingIntentTask.addOnFailureListener {
             throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
         }
@@ -368,10 +370,5 @@ internal interface WebauthnAuth {
         deviceId: String,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
-    )
-
-    fun startFIDO2RegisterTask(
-        registrationOptions: RegistrationOptions,
-        requestCode: Int
     )
 }

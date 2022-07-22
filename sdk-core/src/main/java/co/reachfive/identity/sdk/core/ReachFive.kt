@@ -166,6 +166,13 @@ class ReachFive private constructor(
                     failure(ReachFiveError.from(""))
             }
 
+            WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE -> {
+                if (data != null)
+                    webauthnAuth.onAddNewWebAuthnDeviceResult(data, success, failure)
+                else
+                    failure(ReachFiveError.from(""))
+            }
+
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
                 if (data != null)
                     this.onLoginCallbackResult(data, resultCode, success, failure)
