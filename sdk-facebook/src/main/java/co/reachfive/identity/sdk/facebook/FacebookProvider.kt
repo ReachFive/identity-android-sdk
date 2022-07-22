@@ -104,7 +104,8 @@ internal class ConfiguredFacebookProvider(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     ) {
         // Do nothing
     }
