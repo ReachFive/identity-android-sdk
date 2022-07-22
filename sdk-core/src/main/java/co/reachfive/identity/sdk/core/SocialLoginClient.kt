@@ -15,6 +15,8 @@ internal interface SocialLoginAuth {
 
     fun getProvider(name: String): Provider?
 
+    fun getProviders(): List<Provider>
+
     fun loginWithProvider(
         name: String,
         scope: Collection<String> = defaultScope,
@@ -39,6 +41,8 @@ internal class SocialLoginAuthClient(
 ) : SocialLoginAuth {
 
     private var providers: List<Provider> = emptyList()
+
+    override fun getProviders(): List<Provider> = providers
 
     internal fun onStop() = providers.forEach { it.onStop() }
 
