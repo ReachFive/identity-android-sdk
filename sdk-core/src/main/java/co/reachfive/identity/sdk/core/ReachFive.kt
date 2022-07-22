@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
@@ -43,20 +44,19 @@ class ReachFive private constructor(
 
         operator fun invoke(
             sdkConfig: SdkConfig,
-            activity: Activity,
             providersCreators: List<ProviderCreator>,
         ): ReachFive {
             val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
             val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
 
             val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi)
-            val passwordlessAuthClient = PasswordlessAuthClient(activity, reachFiveApi, sdkConfig)
+            val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
             val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
-                SocialLoginAuthClient(reachFiveApi, activity, sdkConfig, providersCreators)
-            val oauthClient = ReachFiveOAuthClient(reachFiveApi, sdkConfig, webLauncher, activity)
+                SocialLoginAuthClient(reachFiveApi, sdkConfig, providersCreators)
+            val oauthClient = ReachFiveOAuthClient(reachFiveApi, sdkConfig, webLauncher,)
             val webauthnAuthClient =
-                WebauthnAuthClient(reachFiveApi, sdkConfig, activity, oauthClient)
+                WebauthnAuthClient(reachFiveApi, sdkConfig, oauthClient)
 
             return ReachFive(
                 reachFiveApi,
@@ -72,7 +72,7 @@ class ReachFive private constructor(
     }
 
     fun initialize(
-        success: Success<List<Provider>> = {},
+        success: Success<Unit> = {},
         failure: Failure<ReachFiveError> = {}
     ): ReachFive {
         reachFiveApi
@@ -81,13 +81,21 @@ class ReachFive private constructor(
                 ReachFiveApiCallback<ClientConfigResponse>(
                     success = { clientConfig ->
                         defaultScope = clientConfig.scope.split(" ").toSet()
-                        socialLoginAuth.providersConfigs(success, failure)
+                        success(Unit)
                     },
                     failure = failure
                 )
             )
 
         return this
+    }
+
+    fun loadProviders(
+        success: Success<List<Provider>> = {},
+        failure: Failure<ReachFiveError> = {},
+        context: Context,
+    ) {
+       return socialLoginAuth.providersConfigs(success, failure, context)
     }
 
     fun onStop() = socialLoginAuth.onStop()
@@ -149,29 +157,30 @@ class ReachFive private constructor(
         resultCode: Int,
         data: Intent?,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     ) {
         when (requestCode) {
             WebauthnAuth.LOGIN_REQUEST_CODE -> {
                 if (data != null)
-                    webauthnAuth.onLoginWithWebAuthnResult(resultCode, data, defaultScope, failure)
+                    webauthnAuth.onLoginWithWebAuthnResult(resultCode, data, defaultScope, failure, activity)
                 else
                     failure(ReachFiveError.from(""))
             }
 
             WebauthnAuth.SIGNUP_REQUEST_CODE -> {
                 if (data != null)
-                    webauthnAuth.onSignupWithWebAuthnResult(resultCode, data, defaultScope, failure)
+                    webauthnAuth.onSignupWithWebAuthnResult(resultCode, data, defaultScope, failure, activity)
                 else
                     failure(ReachFiveError.from(""))
             }
 
-            WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE -> {
+           /* WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE -> {
                 if (data != null)
                     webauthnAuth.onAddNewWebAuthnDeviceResult(data, success, failure)
                 else
                     failure(ReachFiveError.from(""))
-            }
+            }*/
 
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
                 if (data != null)
@@ -189,11 +198,4 @@ class ReachFive private constructor(
             )
         }
     }
-
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
-        failure: Failure<ReachFiveError>
-    ) = socialLoginAuth.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
 }

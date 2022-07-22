@@ -26,12 +26,15 @@ internal interface ReachFiveOAuth {
     fun exchangeCodeForToken(
         authorizationCode: String,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     )
 
+    // TODO/cbu visib
     fun loginCallback(
         tkn: String,
-        scope: Collection<String>
+        scope: Collection<String>,
+        activity: Activity
     )
 
     fun loginWithWeb(
@@ -39,6 +42,7 @@ internal interface ReachFiveOAuth {
         state: String? = null,
         nonce: String? = null,
         origin: String? = null,
+        activity: Activity,
     )
 }
 
@@ -46,7 +50,6 @@ internal class ReachFiveOAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val webLauncher: RedirectionActivityLauncher,
-    private val activity: Activity,
     override var defaultScope: Set<String> = emptySet(),
 ) : ReachFiveOAuth {
     companion object {
@@ -77,7 +80,8 @@ internal class ReachFiveOAuthClient(
     override fun exchangeCodeForToken(
         authorizationCode: String,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     ) {
         val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
         return if (authCodeFlow != null) {
@@ -102,7 +106,8 @@ internal class ReachFiveOAuthClient(
 
     override fun loginCallback(
         tkn: String,
-        scope: Collection<String>
+        scope: Collection<String>,
+        activity: Activity
     ) {
         webLauncher.loginCallback(activity, scope, tkn)
     }
@@ -112,6 +117,7 @@ internal class ReachFiveOAuthClient(
         state: String?,
         nonce: String?,
         origin: String?,
+        activity: Activity,
     ) {
         Log.d("SDK CORE", "ENTER LOGIN WITH WEB")
         webLauncher.loginWithWeb(activity, scope, state, nonce, origin)
