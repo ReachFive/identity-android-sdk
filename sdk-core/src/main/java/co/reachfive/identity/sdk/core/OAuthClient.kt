@@ -30,13 +30,6 @@ internal interface ReachFiveOAuth {
         activity: Activity
     )
 
-    // TODO/cbu visib
-    fun loginCallback(
-        tkn: String,
-        scope: Collection<String>,
-        activity: Activity
-    )
-
     fun loginWithWeb(
         scope: Collection<String> = defaultScope,
         state: String? = null,
@@ -104,7 +97,7 @@ internal class ReachFiveOAuthClient(
         }
     }
 
-    override fun loginCallback(
+    internal fun loginCallback(
         tkn: String,
         scope: Collection<String>,
         activity: Activity
