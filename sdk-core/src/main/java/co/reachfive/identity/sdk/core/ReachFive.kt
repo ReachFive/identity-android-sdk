@@ -54,7 +54,7 @@ class ReachFive private constructor(
             val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
                 SocialLoginAuthClient(reachFiveApi, sdkConfig, providersCreators)
-            val oauthClient = ReachFiveOAuthClient(reachFiveApi, sdkConfig, webLauncher,)
+            val oauthClient = ReachFiveOAuthClient(reachFiveApi, sdkConfig, webLauncher)
             val webauthnAuthClient =
                 WebauthnAuthClient(reachFiveApi, sdkConfig, oauthClient)
 
@@ -95,7 +95,7 @@ class ReachFive private constructor(
         failure: Failure<ReachFiveError> = {},
         context: Context,
     ) {
-       return socialLoginAuth.providersConfigs(success, failure, context)
+        return socialLoginAuth.providersConfigs(success, failure, context)
     }
 
     fun onStop() = socialLoginAuth.onStop()
@@ -152,37 +152,64 @@ class ReachFive private constructor(
         }
     }
 
-    fun onActivityResult(
+    fun onWebauthnLoginResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        loginSuccessHandler: Success<AuthToken>,
-        webAuthnSuccessHandler: Success<Unit>, // TODO/cbu there is another way
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
         when (requestCode) {
             WebauthnAuth.LOGIN_REQUEST_CODE -> {
                 if (data != null)
-                    webauthnAuth.onLoginWithWebAuthnResult(resultCode, data, defaultScope, failure, activity)
+                    webauthnAuth.onLoginWithWebAuthnResult(
+                        resultCode,
+                        data,
+                        defaultScope,
+                        failure,
+                        activity
+                    )
                 else
                     failure(ReachFiveError.from(""))
             }
 
             WebauthnAuth.SIGNUP_REQUEST_CODE -> {
                 if (data != null)
-                    webauthnAuth.onSignupWithWebAuthnResult(resultCode, data, defaultScope, failure, activity)
+                    webauthnAuth.onSignupWithWebAuthnResult(
+                        resultCode,
+                        data,
+                        defaultScope,
+                        failure,
+                        activity
+                    )
                 else
                     failure(ReachFiveError.from(""))
             }
+        }
+    }
 
-           /* WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE -> {
-                if (data != null)
-                    webauthnAuth.onAddNewWebAuthnDeviceResult(data, webAuthnSuccessHandler, failure)
-                else
-                    failure(ReachFiveError.from(""))
-            }*/
+    fun onWebauthnDeviceAddResult(
+        requestCode: Int,
+        data: Intent?,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        if (requestCode == WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE) {
+            if (data != null)
+                webauthnAuth.onAddNewWebAuthnDeviceResult(data, success, failure)
+            else
+                failure(ReachFiveError.from(""))
+        }
+    }
 
+    fun onLoginActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        loginSuccessHandler: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        when (requestCode) {
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
                 if (data != null)
                     this.onLoginCallbackResult(data, resultCode, loginSuccessHandler, failure)
