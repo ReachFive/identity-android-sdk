@@ -12,6 +12,8 @@ data class RegistrationOptions(
     val friendlyName: String,
     val options: CredentialCreationOptions
 ) : Parcelable {
+    val publicKeyId: String = options.publicKey.rp.id
+
     fun toFido2Model(): PublicKeyCredentialCreationOptions {
         val publicKey = options.publicKey
 
