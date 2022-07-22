@@ -13,4 +13,7 @@ data class AuthToken(
     val expiresIn: Int?,
     // The `user` field is optional because if the `openid` scope is not provided, the `user` is not retrieved
     val user: OpenIdUser? = null
-) : Parcelable
+) : Parcelable {
+
+    val authHeader: String = "$tokenType $accessToken"
+}
