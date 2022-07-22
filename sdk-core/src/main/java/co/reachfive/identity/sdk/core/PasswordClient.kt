@@ -12,15 +12,16 @@ import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 import co.reachfive.identity.sdk.core.utils.formatScope
 
-internal interface PasswordClient {
-    var defaultScope: Set<String>
-    val sdkConfig: SdkConfig
-    val reachFiveApi: ReachFiveApi
+internal class PasswordAuthClient(
+    private val sdkConfig: SdkConfig,
+    private val reachFiveApi: ReachFiveApi,
+    override var defaultScope: Set<String> = emptySet(),
+) : PasswordAuth {
 
-    fun signup(
+    override fun signup(
         profile: ProfileSignupRequest,
-        scope: Collection<String> = this.defaultScope,
-        redirectUrl: String? = null,
+        scope: Collection<String>,
+        redirectUrl: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -43,10 +44,10 @@ internal interface PasswordClient {
     /**
      * @param username You can use email or phone number
      */
-    fun loginWithPassword(
+    override fun loginWithPassword(
         username: String,
         password: String,
-        scope: Collection<String> = defaultScope,
+        scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -67,7 +68,7 @@ internal interface PasswordClient {
             )
     }
 
-    fun updatePassword(
+    override fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
@@ -90,10 +91,10 @@ internal interface PasswordClient {
             )
     }
 
-    fun requestPasswordReset(
-        email: String? = null,
-        redirectUrl: String? = null,
-        phoneNumber: String? = null,
+    override fun requestPasswordReset(
+        email: String?,
+        redirectUrl: String?,
+        phoneNumber: String?,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
@@ -114,4 +115,38 @@ internal interface PasswordClient {
                 )
             )
     }
+}
+
+internal interface PasswordAuth {
+    var defaultScope: Set<String>
+
+    fun signup(
+        profile: ProfileSignupRequest,
+        scope: Collection<String> = defaultScope,
+        redirectUrl: String? = null,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun loginWithPassword(
+        username: String,
+        password: String,
+        scope: Collection<String> = defaultScope,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun updatePassword(
+        updatePasswordRequest: UpdatePasswordRequest,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun requestPasswordReset(
+        email: String? = null,
+        redirectUrl: String? = null,
+        phoneNumber: String? = null,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    )
 }

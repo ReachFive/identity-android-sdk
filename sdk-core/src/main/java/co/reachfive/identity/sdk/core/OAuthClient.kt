@@ -1,0 +1,116 @@
+package co.reachfive.identity.sdk.core
+
+import android.app.Activity
+import android.util.Log
+import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
+import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
+import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
+import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
+import co.reachfive.identity.sdk.core.utils.Success
+
+internal interface ReachFiveOAuth {
+    var defaultScope: Set<String>
+
+    fun refreshAccessToken(
+        authToken: AuthToken,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun exchangeCodeForToken(
+        authorizationCode: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun loginCallback(
+        tkn: String,
+        scope: Collection<String>
+    )
+
+    fun loginWithWeb(
+        scope: Collection<String> = defaultScope,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+    )
+}
+
+internal class ReachFiveOAuthClient(
+    private val reachFiveApi: ReachFiveApi,
+    private val sdkConfig: SdkConfig,
+    private val webLauncher: RedirectionActivityLauncher,
+    private val activity: Activity,
+    override var defaultScope: Set<String> = emptySet(),
+) : ReachFiveOAuth {
+
+    override fun refreshAccessToken(
+        authToken: AuthToken,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val refreshRequest = RefreshRequest(
+            clientId = sdkConfig.clientId,
+            refreshToken = authToken.refreshToken ?: "",
+            redirectUri = sdkConfig.scheme
+        )
+
+        reachFiveApi
+            .refreshAccessToken(refreshRequest, SdkInfos.getQueries())
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { it.toAuthToken().fold(success, failure) },
+                    failure = failure
+                )
+            )
+    }
+
+    override fun exchangeCodeForToken(
+        authorizationCode: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
+        return if (authCodeFlow != null) {
+            val authCodeRequest = AuthCodeRequest(
+                sdkConfig.clientId,
+                authorizationCode,
+                authCodeFlow.redirectUri,
+                authCodeFlow.codeVerifier
+            )
+            reachFiveApi
+                .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+                .enqueue(
+                    ReachFiveApiCallback(
+                        success = { it.toAuthToken().fold(success, failure) },
+                        failure = failure
+                    )
+                )
+        } else {
+            failure(ReachFiveError.from("No PKCE challenge found in memory."))
+        }
+    }
+
+    override fun loginCallback(
+        tkn: String,
+        scope: Collection<String>
+    ) {
+        webLauncher.loginCallback(activity, scope, tkn)
+    }
+
+    override fun loginWithWeb(
+        scope: Collection<String>,
+        state: String?,
+        nonce: String?,
+        origin: String?,
+    ) {
+        Log.d("SDK CORE", "ENTER LOGIN WITH WEB")
+        webLauncher.loginWithWeb(activity, scope, state, nonce, origin)
+    }
+}

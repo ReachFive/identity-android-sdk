@@ -14,47 +14,62 @@ import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
-import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
-import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
-class ReachFive(
-    override val activity: Activity,
+
+class ReachFive private constructor(
+    private val reachFiveApi: ReachFiveApi,
+    private val passwordAuth: PasswordAuthClient,
+    private val passwordlessAuth: PasswordlessAuthClient,
+    private val profileManagement: ProfileManagementClient,
+    private val socialLoginAuth: SocialLoginAuthClient,
+    private val webauthnAuth: WebauthnAuthClient,
+    private val oAuthClient: ReachFiveOAuthClient,
     override val sdkConfig: SdkConfig,
-    val providersCreators: List<ProviderCreator>
-) : PasswordClient, PasswordlessClient, ProfileClient, SocialLoginClient {
+    override var defaultScope: Set<String> = emptySet(),
+) :
+    PasswordAuth by passwordAuth,
+    PasswordlessAuth by passwordlessAuth,
+    ProfileManagement by profileManagement,
+    SocialLoginAuth by socialLoginAuth,
+    WebauthnAuth by webauthnAuth,
+    ReachFiveOAuth by oAuthClient {
+
     companion object {
         const val TAG = "Reach5"
-        const val codeResponseType = "code"
-    }
+        private const val codeResponseType = "code"
 
-    override val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
-    private val redirectionActivityLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
+        operator fun invoke(
+            sdkConfig: SdkConfig,
+            activity: Activity,
+            providersCreators: List<ProviderCreator>,
+        ): ReachFive {
+            val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
+            val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
 
-    override var defaultScope: Set<String> = emptySet()
+            val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi)
+            val passwordlessAuthClient = PasswordlessAuthClient(activity, reachFiveApi, sdkConfig)
+            val profileManagementClient = ProfileManagementClient(reachFiveApi)
+            val socialLoginAuthClient =
+                SocialLoginAuthClient(reachFiveApi, activity, sdkConfig, providersCreators)
+            val oauthClient = ReachFiveOAuthClient(reachFiveApi, sdkConfig, webLauncher, activity)
+            val webauthnAuthClient =
+                WebauthnAuthClient(reachFiveApi, sdkConfig, activity, oauthClient)
 
-    private val socialLoginManager: SocialLoginManager = SocialLoginManager(
-        reachFiveApi,
-        activity,
-        defaultScope,
-        providersCreators,
-        sdkConfig
-    )
-
-    override fun getProvider(name: String): Provider? {
-        return socialLoginManager.getProvider(name)
-    }
-
-    override fun loginWithProvider(
-        name: String,
-        scope: Collection<String>,
-        origin: String,
-        activity: Activity
-    ) {
-        return socialLoginManager.loginWithProvider(name, scope, origin, activity)
+            return ReachFive(
+                reachFiveApi,
+                passwordAuthClient,
+                passwordlessAuthClient,
+                profileManagementClient,
+                socialLoginAuthClient,
+                webauthnAuthClient,
+                oauthClient,
+                sdkConfig,
+            )
+        }
     }
 
     fun initialize(
@@ -67,8 +82,7 @@ class ReachFive(
                 ReachFiveApiCallback<ClientConfigResponse>(
                     success = { clientConfig ->
                         defaultScope = clientConfig.scope.split(" ").toSet()
-                        socialLoginManager.defaultScope = defaultScope
-                        socialLoginManager.providersConfigs(success, failure)
+                        socialLoginAuth.providersConfigs(success, failure)
                     },
                     failure = failure
                 )
@@ -77,12 +91,13 @@ class ReachFive(
         return this
     }
 
+    fun onStop() = socialLoginAuth.onStop()
+
     fun logout(
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
-        socialLoginManager.providers.forEach { it.logout() }
-
+        socialLoginAuth.logoutFromAll()
         reachFiveApi
             .logout(SdkInfos.getQueries())
             .enqueue(
@@ -91,71 +106,6 @@ class ReachFive(
                     failure = failure
                 )
             )
-    }
-
-    fun refreshAccessToken(
-        authToken: AuthToken,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    ) {
-        val refreshRequest = RefreshRequest(
-            clientId = sdkConfig.clientId,
-            refreshToken = authToken.refreshToken ?: "",
-            redirectUri = sdkConfig.scheme
-        )
-
-        reachFiveApi
-            .refreshAccessToken(refreshRequest, SdkInfos.getQueries())
-            .enqueue(
-                ReachFiveApiCallback(
-                    success = { it.toAuthToken().fold(success, failure) },
-                    failure = failure
-                )
-            )
-    }
-
-    fun exchangeCodeForToken(
-        authorizationCode: String,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    ) {
-        val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
-        return if (authCodeFlow != null) {
-            val authCodeRequest = AuthCodeRequest(
-                sdkConfig.clientId,
-                authorizationCode,
-                authCodeFlow.redirectUri,
-                authCodeFlow.codeVerifier
-            )
-            reachFiveApi
-                .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                .enqueue(
-                    ReachFiveApiCallback(
-                        success = { it.toAuthToken().fold(success, failure) },
-                        failure = failure
-                    )
-                )
-        } else {
-            failure(ReachFiveError.from("No PKCE challenge found in memory."))
-        }
-    }
-
-    fun loginCallback(
-        tkn: String,
-        scope: Collection<String>
-    ) {
-        redirectionActivityLauncher.loginCallback(activity, scope, tkn)
-    }
-
-    fun loginWithWeb(
-        scope: Collection<String> = this.defaultScope,
-        state: String? = null,
-        nonce: String? = null,
-        origin: String? = null,
-    ) {
-        Log.d("SDK CORE", "ENTER LOGIN WITH WEB")
-
-        redirectionActivityLauncher.loginWithWeb(activity, scope, state, nonce, origin)
     }
 
     fun onLoginCallbackResult(
@@ -202,12 +152,7 @@ class ReachFive(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-        val provider = socialLoginManager.providers.find { p -> p.requestCode == requestCode }
-        if (provider != null) {
-            provider.onActivityResult(requestCode, resultCode, data, success, failure)
-        } else {
-            failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
-        }
+        socialLoginAuth.onActivityResult(requestCode, resultCode, data, success, failure)
     }
 
     fun onRequestPermissionsResult(
@@ -215,17 +160,5 @@ class ReachFive(
         permissions: Array<String>,
         grantResults: IntArray,
         failure: Failure<ReachFiveError>
-    ) {
-        val provider = socialLoginManager.providers.find { p -> p.requestCode == requestCode }
-        provider?.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
-    }
-
-    fun onStop() {
-        socialLoginManager.providers.forEach { it.onStop() }
-    }
-
-    // TODO/cbu revise
-    fun formatAuthorization(authToken: AuthToken): String {
-        return "${authToken.tokenType} ${authToken.accessToken}"
-    }
+    ) = socialLoginAuth.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
 }

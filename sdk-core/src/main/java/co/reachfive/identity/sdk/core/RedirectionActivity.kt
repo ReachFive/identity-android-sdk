@@ -1,7 +1,6 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -88,7 +87,7 @@ class RedirectionActivityLauncher(
         ) + SdkInfos.getQueries() + maybeTkn + maybeProvider + maybeOrigin + maybeNonce + maybeState
 
         val url = api.authorize(request).request().url.toString()
-        Log.d("SDKCORE", "about to open url: "+url);
+        Log.d("SDKCORE", "about to open url: " + url)
         intent.putExtra(RedirectionActivity.URL_KEY, url)
         intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
 

@@ -22,13 +22,15 @@ import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResp
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.google.android.gms.fido.fido2.api.common.ErrorCode
 
-internal interface WebauthnClient {
-    var defaultScope: Set<String>
-    val activity: Activity
-    val sdkConfig: SdkConfig
-    val reachFiveApi: ReachFiveApi
+internal class WebauthnAuthClient(
+    private val reachFiveApi: ReachFiveApi,
+    private val sdkConfig: SdkConfig,
+    private val activity: Activity,
+    private val oAuthClient: ReachFiveOAuthClient,
+) : WebauthnAuth {
+    override var defaultScope: Set<String> = emptySet()
 
-    fun signupWithWebAuthn(
+    override fun signupWithWebAuthn(
         profile: ProfileWebAuthnSignupRequest,
         origin: String,
         friendlyName: String?,
@@ -54,10 +56,10 @@ internal interface WebauthnClient {
             )
     }
 
-    fun onSignupWithWebAuthnResult(
+    override fun onSignupWithWebAuthnResult(
         intent: Intent,
         webAuthnId: String,
-        scope: Collection<String> = defaultScope,
+        scope: Collection<String>,
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
@@ -73,7 +75,7 @@ internal interface WebauthnClient {
                     )
                     .enqueue(
                         ReachFiveApiCallback(
-                            success = { loginCallback(it.tkn, scope) },
+                            success = { oAuthClient.loginCallback(it.tkn, scope) },
                             failure = failure
                         )
                     )
@@ -81,7 +83,7 @@ internal interface WebauthnClient {
         }
     }
 
-    fun addNewWebAuthnDevice(
+    override fun addNewWebAuthnDevice(
         authToken: AuthToken,
         origin: String,
         friendlyName: String?,
@@ -103,7 +105,7 @@ internal interface WebauthnClient {
             )
     }
 
-    fun onAddNewWebAuthnDeviceResult(
+    override fun onAddNewWebAuthnDeviceResult(
         authToken: AuthToken,
         intent: Intent,
         successWithNoContent: SuccessWithNoContent<Unit>,
@@ -128,44 +130,44 @@ internal interface WebauthnClient {
         }
     }
 
-    fun loginWithWebAuthn(
+    override fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
         loginRequestCode: Int,
         failure: Failure<ReachFiveError>
     ) = reachFiveApi.createWebAuthnAuthenticationOptions(
-            WebAuthnLoginRequest.enrichWithClientId(
-                loginRequest,
-                sdkConfig.clientId
-            )
-        ).enqueue(
-            ReachFiveApiCallback(
-                success = {
-                    val fido2ApiClient = Fido.getFido2ApiClient(activity)
-                    val fido2PendingIntentTask = fido2ApiClient.getSignPendingIntent(it.toFido2Model())
-                    fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
-                        if (fido2PendingIntent != null) {
-                            Log.d(TAG, "Launching Fido2 Pending Intent")
-                            activity.startIntentSenderForResult(
-                                fido2PendingIntent.intentSender,
-                                loginRequestCode,
-                                null,
-                                0,
-                                0,
-                                0
-                            )
-                        }
-                    }
-                    fido2PendingIntentTask.addOnFailureListener {
-                        throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
-                    }
-                },
-                failure = failure
-            )
+        WebAuthnLoginRequest.enrichWithClientId(
+            loginRequest,
+            sdkConfig.clientId
         )
+    ).enqueue(
+        ReachFiveApiCallback(
+            success = {
+                val fido2ApiClient = Fido.getFido2ApiClient(activity)
+                val fido2PendingIntentTask = fido2ApiClient.getSignPendingIntent(it.toFido2Model())
+                fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
+                    if (fido2PendingIntent != null) {
+                        Log.d(TAG, "Launching Fido2 Pending Intent")
+                        activity.startIntentSenderForResult(
+                            fido2PendingIntent.intentSender,
+                            loginRequestCode,
+                            null,
+                            0,
+                            0,
+                            0
+                        )
+                    }
+                }
+                fido2PendingIntentTask.addOnFailureListener {
+                    throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
+                }
+            },
+            failure = failure
+        )
+    )
 
-    fun onLoginWithWebAuthnResult(
+    override fun onLoginWithWebAuthnResult(
         intent: Intent,
-        scope: Collection<String> = defaultScope,
+        scope: Collection<String>,
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
@@ -183,14 +185,14 @@ internal interface WebauthnClient {
                 .authenticateWithWebAuthn(authenticationPublicKeyCredential)
                 .enqueue(
                     ReachFiveApiCallback(
-                        success = { loginCallback(it.tkn, scope) },
+                        success = { oAuthClient.loginCallback(it.tkn, scope) },
                         failure = failure
                     )
                 )
         }
     }
 
-    fun listWebAuthnDevices(
+    override fun listWebAuthnDevices(
         authToken: AuthToken,
         success: Success<List<DeviceCredential>>,
         failure: Failure<ReachFiveError>
@@ -199,7 +201,7 @@ internal interface WebauthnClient {
             .getWebAuthnRegistrations(authToken.authHeader, SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback(success = success, failure = failure))
 
-    fun removeWebAuthnDevice(
+    override fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
         successWithNoContent: SuccessWithNoContent<Unit>,
@@ -218,7 +220,7 @@ internal interface WebauthnClient {
                 )
             )
 
-    fun startFIDO2RegisterTask(
+    override fun startFIDO2RegisterTask(
         registrationOptions: RegistrationOptions,
         requestCode: Int
     ) {
@@ -245,12 +247,12 @@ internal interface WebauthnClient {
         }
     }
 
-    private fun formatFriendlyName(friendlyName: String?): String {
-        return if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
-    }
+    private companion object {
+        const val TAG = "Reach5"
 
-    companion object {
-        private const val TAG = "Reach5"
+        fun formatFriendlyName(friendlyName: String?): String {
+            return if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
+        }
 
         fun extractFIDO2Error(intent: Intent): ReachFiveError {
             return intent
@@ -280,4 +282,69 @@ internal interface WebauthnClient {
                 }
         }
     }
+}
+
+internal interface WebauthnAuth {
+    var defaultScope: Set<String>
+
+    fun signupWithWebAuthn(
+        profile: ProfileWebAuthnSignupRequest,
+        origin: String,
+        friendlyName: String?,
+        signupRequestCode: Int,
+        successWithWebAuthnId: Success<String>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun onSignupWithWebAuthnResult(
+        intent: Intent,
+        webAuthnId: String,
+        scope: Collection<String> = defaultScope,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun addNewWebAuthnDevice(
+        authToken: AuthToken,
+        origin: String,
+        friendlyName: String?,
+        registerRequestCode: Int,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun onAddNewWebAuthnDeviceResult(
+        authToken: AuthToken,
+        intent: Intent,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun loginWithWebAuthn(
+        loginRequest: WebAuthnLoginRequest,
+        loginRequestCode: Int,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun onLoginWithWebAuthnResult(
+        intent: Intent,
+        scope: Collection<String> = defaultScope,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun listWebAuthnDevices(
+        authToken: AuthToken,
+        success: Success<List<DeviceCredential>>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun removeWebAuthnDevice(
+        authToken: AuthToken,
+        deviceId: String,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun startFIDO2RegisterTask(
+        registrationOptions: RegistrationOptions,
+        requestCode: Int
+    )
 }

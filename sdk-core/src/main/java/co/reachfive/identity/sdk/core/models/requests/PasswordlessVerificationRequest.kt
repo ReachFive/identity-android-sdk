@@ -10,4 +10,4 @@ data class PasswordlessVerificationRequest(
     val phoneNumber: String,
     @SerializedName("c")
     val verificationCode: String
-): Parcelable
+) : Parcelable

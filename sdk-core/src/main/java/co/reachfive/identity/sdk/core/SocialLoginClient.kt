@@ -1,38 +1,64 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
-import co.reachfive.identity.sdk.core.models.ProvidersConfigsResult
-import co.reachfive.identity.sdk.core.models.ReachFiveError
-import co.reachfive.identity.sdk.core.models.SdkConfig
-import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.models.*
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
-internal interface SocialLoginClient {
+internal interface SocialLoginAuth {
     var defaultScope: Set<String>
-    val sdkConfig: SdkConfig
 
     fun getProvider(name: String): Provider?
 
     fun loginWithProvider(
         name: String,
-        scope: Collection<String> = this.defaultScope,
+        scope: Collection<String> = defaultScope,
         origin: String,
         activity: Activity
     )
 }
 
-internal class SocialLoginManager(
-    val reachFiveApi: ReachFiveApi,
-    val activity: Activity,
-    override var defaultScope: Set<String>,
-    val providersCreators: List<ProviderCreator>,
-    override val sdkConfig: SdkConfig,
-    var providers: List<Provider> = emptyList(),
-) : SocialLoginClient {
+internal class SocialLoginAuthClient(
+    private val reachFiveApi: ReachFiveApi,
+    private val activity: Activity,
+    private val sdkConfig: SdkConfig,
+    private val providersCreators: List<ProviderCreator>,
+    override var defaultScope: Set<String> = emptySet(),
+) : SocialLoginAuth {
+
+    private var providers: List<Provider> = emptyList()
+
+    internal fun onStop() = providers.forEach { it.onStop() }
+
+    internal fun logoutFromAll() = providers.forEach { it.logout() }
+
+    internal fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val provider = providers.find { p -> p.requestCode == requestCode }
+        if (provider != null) {
+            provider.onActivityResult(requestCode, resultCode, data, success, failure)
+        } else {
+            failure(ReachFiveError.from("No provider found for this requestCode: $requestCode"))
+        }
+    }
+
+    internal fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+        failure: Failure<ReachFiveError>
+    ) = providers
+        .find { p -> p.requestCode == requestCode }
+        ?.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
 
     override fun loginWithProvider(
         name: String,
@@ -50,12 +76,14 @@ internal class SocialLoginManager(
         success: Success<List<Provider>>,
         failure: Failure<ReachFiveError>
     ) {
-        reachFiveApi
-            .providersConfigs(SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
-                providers = createProviders(it)
-                success(providers)
-            }, failure = failure))
+        if (providersCreators.isNotEmpty()) {
+            reachFiveApi
+                .providersConfigs(SdkInfos.getQueries())
+                .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
+                    providers = createProviders(it)
+                    success(providers)
+                }, failure = failure))
+        } else success(emptyList())
     }
 
     private fun createProviders(providersConfigsResult: ProvidersConfigsResult): List<Provider> {

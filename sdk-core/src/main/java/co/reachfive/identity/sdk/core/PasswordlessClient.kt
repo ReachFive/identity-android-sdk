@@ -15,15 +15,16 @@ import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
-internal interface PasswordlessClient {
-    val activity: Activity
-    val sdkConfig: SdkConfig
-    val reachFiveApi: ReachFiveApi
+internal class PasswordlessAuthClient(
+    private val activity: Activity,
+    private val reachFiveApi: ReachFiveApi,
+    override val sdkConfig: SdkConfig,
+) : PasswordlessAuth {
 
-    fun startPasswordless(
-        email: String? = null,
-        phoneNumber: String? = null,
-        redirectUrl: String = sdkConfig.scheme,
+    override fun startPasswordless(
+        email: String?,
+        phoneNumber: String?,
+        redirectUrl: String,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =
@@ -48,7 +49,7 @@ internal interface PasswordlessClient {
             )
         }
 
-    fun verifyPasswordless(
+    override fun verifyPasswordless(
         phoneNumber: String,
         verificationCode: String,
         success: Success<AuthToken>,
@@ -85,4 +86,23 @@ internal interface PasswordlessClient {
                 failure = failure
             )
         )
+}
+
+internal interface PasswordlessAuth {
+    val sdkConfig: SdkConfig
+
+    fun startPasswordless(
+        email: String? = null,
+        phoneNumber: String? = null,
+        redirectUrl: String = sdkConfig.scheme,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun verifyPasswordless(
+        phoneNumber: String,
+        verificationCode: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    )
 }
