@@ -107,7 +107,7 @@ class ReachFive private constructor(
             )
     }
 
-    fun onLoginCallbackResult(
+    private fun onLoginCallbackResult(
         intent: Intent,
         resultCode: Int,
         success: Success<AuthToken>,
@@ -153,11 +153,4 @@ class ReachFive private constructor(
     ) {
         socialLoginAuth.onActivityResult(requestCode, resultCode, data, success, failure)
     }
-
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
-        failure: Failure<ReachFiveError>
-    ) = socialLoginAuth.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
 }

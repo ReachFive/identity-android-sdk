@@ -49,7 +49,7 @@ internal class WebauthnAuthClient(
                 ReachFiveApiCallback(
                     success = {
                         startFIDO2RegisterTask(it, signupRequestCode)
-                        successWithWebAuthnId(it.options.publicKey.user.id)
+                        successWithWebAuthnId(it.publicKeyId)
                     },
                     failure = failure
                 )
@@ -220,7 +220,7 @@ internal class WebauthnAuthClient(
                 )
             )
 
-    override fun startFIDO2RegisterTask(
+    private fun startFIDO2RegisterTask(
         registrationOptions: RegistrationOptions,
         requestCode: Int
     ) {
@@ -285,6 +285,12 @@ internal class WebauthnAuthClient(
 }
 
 internal interface WebauthnAuth {
+    companion object {
+        const val SIGNUP_REQUEST_CODE = 31001
+        const val LOGIN_REQUEST_CODE = 31002
+        const val REGISTER_DEVICE_REQUEST_CODE = 31003
+    }
+
     var defaultScope: Set<String>
 
     fun signupWithWebAuthn(
@@ -341,10 +347,5 @@ internal interface WebauthnAuth {
         deviceId: String,
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
-    )
-
-    fun startFIDO2RegisterTask(
-        registrationOptions: RegistrationOptions,
-        requestCode: Int
     )
 }
