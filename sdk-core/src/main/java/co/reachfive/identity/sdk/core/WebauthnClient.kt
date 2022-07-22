@@ -83,7 +83,6 @@ internal class WebauthnAuthClient(
         scope: Collection<String>,
         failure: Failure<ReachFiveError>
     ) {
-        // TODO/cbu/nbrr resume (likely can remove ID response)
         val webAuthnId = intent.getStringExtra("WebauthnId")
 
         if (webAuthnId == null)
@@ -284,7 +283,13 @@ internal class WebauthnAuthClient(
         val fido2PendingIntentTask =
             fido2ApiClient.getRegisterPendingIntent(registrationOptions.toFido2Model())
 
+        val webAuthnId = registrationOptions.publicKeyId
+
         fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
+
+            val intentSender = fido2PendingIntent.intentSender
+//            val fillinIntent = Intent
+
             if (fido2PendingIntent != null) {
                 Log.d(TAG, "Launching Fido2 Pending Intent")
                 activity.startIntentSenderForResult(
