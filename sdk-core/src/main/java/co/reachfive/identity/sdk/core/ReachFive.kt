@@ -190,11 +190,4 @@ class ReachFive private constructor(
             )
         }
     }
-
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
-        failure: Failure<ReachFiveError>
-    ) = socialLoginAuth.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
 }

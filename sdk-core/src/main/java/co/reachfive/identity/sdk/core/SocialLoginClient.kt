@@ -14,11 +14,20 @@ internal interface SocialLoginAuth {
 
     fun getProvider(name: String): Provider?
 
+    fun getProviders(): List<Provider>
+
     fun loginWithProvider(
         name: String,
         scope: Collection<String> = defaultScope,
         origin: String,
         activity: Activity
+    )
+
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+        failure: Failure<ReachFiveError>
     )
 }
 
@@ -31,6 +40,8 @@ internal class SocialLoginAuthClient(
 ) : SocialLoginAuth {
 
     private var providers: List<Provider> = emptyList()
+
+    override fun getProviders(): List<Provider> = providers
 
     internal fun onStop() = providers.forEach { it.onStop() }
 
@@ -51,14 +62,16 @@ internal class SocialLoginAuthClient(
         }
     }
 
-    internal fun onRequestPermissionsResult(
+    override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
         failure: Failure<ReachFiveError>
-    ) = providers
-        .find { p -> p.requestCode == requestCode }
-        ?.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
+    ) {
+        providers
+            .find { p -> p.requestCode == requestCode }
+            ?.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
+    }
 
     override fun loginWithProvider(
         name: String,
