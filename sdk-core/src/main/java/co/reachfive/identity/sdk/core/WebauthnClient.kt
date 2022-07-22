@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
@@ -90,11 +91,14 @@ internal class WebauthnAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        val webAuthnId = intent.getStringExtra("WebauthnId")
+        val webAuthnId = activity
+            .getSharedPreferences("webauthn", Context.MODE_PRIVATE)
+            .getString(WEBAUTHN_ID, null)
 
-        if (webAuthnId == null)
-            Log.e(ReachFive.TAG, "webAuthnId ERROR")
-        else
+        if (webAuthnId == null) {
+            Log.d(ReachFive.TAG, "webAuthnId ERROR")
+            failure(ReachFiveError.from("TODO"))
+        } else
             extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
                 reachFiveApi
                     .signupWithWebAuthn(
@@ -296,12 +300,16 @@ internal class WebauthnAuthClient(
         val fido2PendingIntentTask =
             fido2ApiClient.getRegisterPendingIntent(registrationOptions.toFido2Model())
 
-        val webAuthnId = registrationOptions.publicKeyId
-
         fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
+            val webAuthnId = registrationOptions.publicKeyId
 
-            val intentSender = fido2PendingIntent.intentSender
-//            val fillinIntent = Intent
+            activity
+                .getSharedPreferences("webauthn", Context.MODE_PRIVATE)
+                .edit()
+                .run {
+                    putString(WEBAUTHN_ID, webAuthnId)
+                    apply()
+                }
 
             if (fido2PendingIntent != null) {
                 Log.d(TAG, "Launching Fido2 Pending Intent")
@@ -323,6 +331,8 @@ internal class WebauthnAuthClient(
 
     private companion object {
         const val TAG = "Reach5"
+
+        const val WEBAUTHN_ID = "webauthnId"
 
         fun formatFriendlyName(friendlyName: String?): String {
             return if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
