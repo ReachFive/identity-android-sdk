@@ -37,7 +37,7 @@ internal class PasswordlessAuthClient(
                     phoneNumber = phoneNumber,
                     codeChallenge = pkce.codeChallenge,
                     codeChallengeMethod = pkce.codeChallengeMethod,
-                    responseType = ReachFive.codeResponseType,
+                    responseType = ReachFiveOAuthClient.codeResponseType,
                     redirectUri = redirectUrl
                 ),
                 SdkInfos.getQueries()

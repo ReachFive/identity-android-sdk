@@ -40,7 +40,6 @@ class ReachFive private constructor(
 
     companion object {
         const val TAG = "Reach5"
-        private const val codeResponseType = "code"
 
         operator fun invoke(
             sdkConfig: SdkConfig,
