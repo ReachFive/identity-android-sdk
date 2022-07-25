@@ -144,36 +144,61 @@ class ReachFive private constructor(
         }
     }
 
-    fun onActivityResult(
+    fun onWebauthnLoginResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        loginSuccessHandler: Success<AuthToken>,
-        webAuthnSuccessHandler: Success<Unit>, // TODO/cbu there is another way
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
     ) {
         when (requestCode) {
             WebauthnAuth.LOGIN_REQUEST_CODE -> {
                 if (data != null)
-                    webauthnAuth.onLoginWithWebAuthnResult(resultCode, data, defaultScope, failure)
+                    webauthnAuth.onLoginWithWebAuthnResult(
+                        resultCode,
+                        data,
+                        defaultScope,
+                        failure,
+                    )
                 else
                     failure(ReachFiveError.from(""))
             }
 
             WebauthnAuth.SIGNUP_REQUEST_CODE -> {
                 if (data != null)
-                    webauthnAuth.onSignupWithWebAuthnResult(resultCode, data, defaultScope, failure)
+                    webauthnAuth.onSignupWithWebAuthnResult(
+                        resultCode,
+                        data,
+                        defaultScope,
+                        failure,
+                    )
                 else
                     failure(ReachFiveError.from(""))
             }
+        }
+    }
 
-            WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE -> {
-                if (data != null)
-                    webauthnAuth.onAddNewWebAuthnDeviceResult(data, webAuthnSuccessHandler, failure)
-                else
-                    failure(ReachFiveError.from(""))
-            }
+    fun onWebauthnDeviceAddResult(
+        requestCode: Int,
+        data: Intent?,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        if (requestCode == WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE) {
+            if (data != null)
+                webauthnAuth.onAddNewWebAuthnDeviceResult(data, success, failure)
+            else
+                failure(ReachFiveError.from(""))
+        }
+    }
 
+    fun onLoginActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        loginSuccessHandler: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        when (requestCode) {
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
                 if (data != null)
                     this.onLoginCallbackResult(data, resultCode, loginSuccessHandler, failure)
