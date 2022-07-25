@@ -42,8 +42,8 @@ class ReachFive private constructor(
         const val TAG = "Reach5"
 
         operator fun invoke(
-            sdkConfig: SdkConfig,
             activity: Activity,
+            sdkConfig: SdkConfig,
             providersCreators: List<ProviderCreator>,
         ): ReachFive {
             val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)

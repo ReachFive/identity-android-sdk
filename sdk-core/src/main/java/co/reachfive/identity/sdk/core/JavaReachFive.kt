@@ -15,7 +15,7 @@ class JavaReachFive(
     sdkConfig: SdkConfig,
     providersCreators: List<ProviderCreator>
 ) {
-    private val reach5 = ReachFive( sdkConfig, activity, providersCreators)
+    private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
 
     fun initialize(
         success: Callback<List<Provider>>,
