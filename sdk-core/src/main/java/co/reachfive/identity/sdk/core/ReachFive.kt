@@ -115,7 +115,7 @@ class ReachFive private constructor(
             )
     }
 
-    private fun onLoginCallbackResult(
+    fun onLoginCallbackResult(
         intent: Intent,
         resultCode: Int,
         success: Success<AuthToken>,
