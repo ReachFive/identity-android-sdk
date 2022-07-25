@@ -35,11 +35,11 @@ class ReachFive(
         private const val TAG = "Reach5"
 
         const val codeResponseType = "code"
-        private const val tokenResponseType = "token"
     }
 
     private val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
     private val reachFiveWebAuthn = ReachFiveWebAuthn(activity)
+    private val redirectionActivityLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
 
     private var scope: Set<String> = emptySet()
 
@@ -409,25 +409,7 @@ class ReachFive(
         tkn: String,
         scope: Collection<String>
     ) {
-        val intent = Intent(activity, RedirectionActivity::class.java)
-
-        val redirectUri = sdkConfig.scheme
-        val pkce = PkceAuthCodeFlow.generate(redirectUri)
-        val request: Map<String, String> = mapOf(
-            "client_id" to sdkConfig.clientId,
-            "tkn" to tkn,
-            "response_type" to codeResponseType,
-            "redirect_uri" to redirectUri,
-            "scope" to formatScope(scope),
-            "code_challenge" to pkce.codeChallenge,
-            "code_challenge_method" to pkce.codeChallengeMethod
-        ) + SdkInfos.getQueries()
-
-        val url = reachFiveApi.authorize(request).request().url.toString()
-        intent.putExtra(URL_KEY, url)
-        intent.putExtra(CODE_VERIFIER_KEY, pkce.codeVerifier)
-
-        activity.startActivityForResult(intent, RedirectionActivity.REDIRECTION_REQUEST_CODE)
+        redirectionActivityLauncher.loginCallback(activity, scope, tkn)
     }
 
     fun onLoginCallbackResult(

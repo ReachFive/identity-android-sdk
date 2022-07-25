@@ -32,7 +32,7 @@ data class OpenIdUser(
     @SerializedName("phone_number_verified")
     val phoneNumberVerified: Boolean?,
     val address: Address?,
-    // DOB in ISO­-8601 format (ex: 1965-12-31)
+    // DOB in ISO-8601 format (ex: 1965-12-31)
     var birthdate: String?,
     @SerializedName("external_id")
     val externalId: String?
