@@ -195,13 +195,13 @@ class ReachFive private constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        loginSuccessHandler: Success<AuthToken>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
     ) {
         when (requestCode) {
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
                 if (data != null)
-                    this.onLoginCallbackResult(data, resultCode, loginSuccessHandler, failure)
+                    this.onLoginCallbackResult(data, resultCode, success, failure)
                 else
                     failure(ReachFiveError.from(""))
             }
@@ -210,7 +210,7 @@ class ReachFive private constructor(
                 requestCode,
                 resultCode,
                 data,
-                loginSuccessHandler,
+                success,
                 failure
             )
         }

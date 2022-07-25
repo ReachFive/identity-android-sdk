@@ -237,14 +237,32 @@ class JavaReachFive(
         )
     }
 
-    fun onActivityResult(
+    fun onWebauthnLoginResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        failure: Callback<ReachFiveError>,
+    ) {
+        return reach5.onWebauthnLoginResult(requestCode, resultCode, data, failure::call)
+    }
+
+    fun onWebauthnDeviceAddResult(
+        requestCode: Int,
+        data: Intent?,
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>,
+    ) {
+        return reach5.onWebauthnDeviceAddResult(requestCode, data, success::call, failure::call)
+    }
+
+    fun onLoginActivityResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
         success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
     ) {
-        return reach5.onActivityResult(requestCode, resultCode, data, success::call, failure::call)
+        return reach5.onLoginActivityResult(requestCode, resultCode, data, success::call, failure::call)
     }
 
     fun onLoginCallbackResult(
