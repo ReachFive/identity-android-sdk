@@ -412,6 +412,15 @@ class ReachFive(
         redirectionActivityLauncher.loginCallback(activity, scope, tkn)
     }
 
+    fun loginWithWeb(
+        scope: Collection<String> = this.scope,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+    ) {
+        redirectionActivityLauncher.loginWithWeb(activity, scope, state, nonce, origin)
+    }
+
     fun onLoginCallbackResult(
         intent: Intent,
         resultCode: Int,

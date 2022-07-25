@@ -16,6 +16,17 @@ class RedirectionActivityLauncher(
     val api: ReachFiveApi,
 ) {
 
+    fun loginWithWeb(
+        activity: Activity,
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+    ) {
+        val intent = prepareIntent(activity, scope, origin = origin, state = state, nonce = nonce)
+        activity.startActivityForResult(intent, RedirectionActivity.REDIRECTION_REQUEST_CODE)
+    }
+
     fun sloFlow(
         activity: Activity,
         provider: Provider,
@@ -41,6 +52,8 @@ class RedirectionActivityLauncher(
         tkn: String? = null,
         provider: String? = null,
         origin: String? = null,
+        state: String? = null,
+        nonce: String? = null,
     ): Intent {
         val intent = Intent(activity, RedirectionActivity::class.java)
 
@@ -56,6 +69,12 @@ class RedirectionActivityLauncher(
         val maybeOrigin = if (origin != null) {
             mapOf("origin" to origin)
         } else emptyMap()
+        val maybeNonce = if (nonce != null) {
+            mapOf("nonce" to nonce)
+        } else emptyMap()
+        val maybeState = if (state != null) {
+            mapOf("state" to state)
+        } else emptyMap()
 
         val request: Map<String, String> = mapOf(
             "client_id" to sdkConfig.clientId,
@@ -64,7 +83,7 @@ class RedirectionActivityLauncher(
             "scope" to formatScope(scope),
             "code_challenge" to pkce.codeChallenge,
             "code_challenge_method" to pkce.codeChallengeMethod
-        ) + SdkInfos.getQueries() + maybeTkn + maybeProvider + maybeOrigin
+        ) + SdkInfos.getQueries() + maybeTkn + maybeProvider + maybeOrigin + maybeNonce + maybeState
 
         val url = api.authorize(request).request().url.toString()
         intent.putExtra(RedirectionActivity.URL_KEY, url)
