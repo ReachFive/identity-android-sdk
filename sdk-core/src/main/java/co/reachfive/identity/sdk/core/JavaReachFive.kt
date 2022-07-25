@@ -2,8 +2,6 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
-import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
