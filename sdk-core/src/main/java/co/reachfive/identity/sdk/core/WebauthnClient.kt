@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
+import co.reachfive.identity.sdk.core.WebauthnAuth.Companion.LOGIN_REQUEST_CODE
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -30,6 +31,8 @@ internal class WebauthnAuthClient(
     private val activity: Activity,
     private val oAuthClient: ReachFiveOAuthClient,
 ) : WebauthnAuth {
+    private val fido2ApiClient = Fido.getFido2ApiClient(activity)
+
     private var authToken: AuthToken? = null
 
     override var defaultScope: Set<String> = emptySet()
@@ -168,7 +171,6 @@ internal class WebauthnAuthClient(
 
     override fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
-        loginRequestCode: Int,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi.createWebAuthnAuthenticationOptions(
@@ -179,15 +181,15 @@ internal class WebauthnAuthClient(
         ).enqueue(
             ReachFiveApiCallback(
                 success = {
-                    val fido2ApiClient = Fido.getFido2ApiClient(activity)
                     val fido2PendingIntentTask =
                         fido2ApiClient.getSignPendingIntent(it.toFido2Model())
+
                     fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
                         if (fido2PendingIntent != null) {
                             Log.d(TAG, "Launching Fido2 Pending Intent")
                             activity.startIntentSenderForResult(
                                 fido2PendingIntent.intentSender,
-                                loginRequestCode,
+                                LOGIN_REQUEST_CODE,
                                 null,
                                 0,
                                 0,
@@ -263,7 +265,7 @@ internal class WebauthnAuthClient(
     override fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
@@ -274,7 +276,7 @@ internal class WebauthnAuthClient(
             )
             .enqueue(
                 ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
+                    successWithNoContent = success,
                     failure = failure
                 )
             )
@@ -379,7 +381,6 @@ internal interface WebauthnAuth {
 
     fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
-        loginRequestCode: Int,
         failure: Failure<ReachFiveError>
     )
 
@@ -392,7 +393,7 @@ internal interface WebauthnAuth {
     fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     )
 }
