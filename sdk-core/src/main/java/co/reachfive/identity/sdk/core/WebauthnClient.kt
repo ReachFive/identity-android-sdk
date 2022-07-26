@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
@@ -91,13 +92,13 @@ internal class WebauthnAuthClient(
 
         if (webauthnId == null) {
             Log.e(TAG, "Could not retrieve Webauthn ID!")
-            failure(ReachFiveError.from("TODO/cbu/nbrr"))
+            failure(ReachFiveError.from("Could not retrieve Webauthn ID!"))
         } else
             extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
                 reachFiveApi
                     .signupWithWebAuthn(
                         WebauthnSignupCredential(
-                            webauthnId = webAuthnId,
+                            webauthnId = webauthnId,
                             publicKeyCredential = registrationPublicKeyCredential
                         )
                     )
@@ -146,7 +147,6 @@ internal class WebauthnAuthClient(
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
             failure(extractFIDO2Error(intent))
         } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            // TODO/cbu/nbrr favor intent??
             val authToken = this.authToken
             if (authToken != null) {
                 extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
@@ -162,7 +162,7 @@ internal class WebauthnAuthClient(
                             )
                         )
                 }
-            } else failure(ReachFiveError.from("TODO")) // TODO/cbu/nbrr
+            } else failure(ReachFiveError.from("Lost auth token state"))
         }
     }
 
