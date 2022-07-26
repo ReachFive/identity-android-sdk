@@ -14,7 +14,7 @@ data class RegistrationOptions(
     val options: CredentialCreationOptions
 ) : Parcelable {
     @IgnoredOnParcel
-    val publicKeyId: String = options.publicKey.rp.id
+    val userId: String = options.publicKey.user.id
 
     fun toFido2Model(): PublicKeyCredentialCreationOptions {
         val publicKey = options.publicKey
