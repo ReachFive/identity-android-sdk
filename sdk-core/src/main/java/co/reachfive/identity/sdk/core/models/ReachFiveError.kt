@@ -37,6 +37,7 @@ data class ReachFiveError(
     val exception: Exception? = null,
     val data: ReachFiveApiError? = null
 ) : java.lang.Exception(message), Parcelable {
+
     companion object {
         @JvmStatic
         fun from(error: Exception): ReachFiveError {
@@ -59,5 +60,7 @@ data class ReachFiveError(
                 message = message
             )
         }
+
+        val NoIntent: ReachFiveError = from("Intent is null")
     }
 }
