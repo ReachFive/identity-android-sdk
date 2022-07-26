@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -118,7 +119,7 @@ internal class SocialLoginAuthClient(
                 )
                 else -> {
                     Log.w(
-                        ReachFive.TAG,
+                        TAG,
                         "Non supported provider found, please add webview or native provider"
                     )
                     null
