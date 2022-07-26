@@ -186,7 +186,7 @@ internal class WebauthnAuthClient(
 
                     fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
                         if (fido2PendingIntent != null) {
-                            Log.d(TAG, "Launching Fido2 Pending Intent")
+                            Log.d(TAG, "Launching Fido2 PendingIntent")
                             activity.startIntentSenderForResult(
                                 fido2PendingIntent.intentSender,
                                 LOGIN_REQUEST_CODE,
@@ -195,8 +195,11 @@ internal class WebauthnAuthClient(
                                 0,
                                 0
                             )
+                        } else {
+                            failure(ReachFiveError.from("Unexpected: Fido2 PendingIntent is null!"))
                         }
                     }
+
                     fido2PendingIntentTask.addOnFailureListener {
                         failure(ReachFiveError.from(it))
                     }
