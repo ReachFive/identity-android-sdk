@@ -53,8 +53,8 @@ internal class WebauthnAuthClient(
             )
             .enqueue(
                 ReachFiveApiCallback(
-                    success = {
-                        startFIDO2RegisterTask(it, WebauthnAuth.SIGNUP_REQUEST_CODE, failure)
+                    success = { registrationOptions ->
+                        startFIDO2RegisterTask(registrationOptions, WebauthnAuth.SIGNUP_REQUEST_CODE, failure)
                         success(Unit)
                     },
                     failure = failure
@@ -130,9 +130,9 @@ internal class WebauthnAuthClient(
             )
             .enqueue(
                 ReachFiveApiCallback(
-                    success = {
+                    success = { registrationOptions ->
                         startFIDO2RegisterTask(
-                            it,
+                            registrationOptions,
                             WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE,
                             failure
                         )
@@ -196,7 +196,7 @@ internal class WebauthnAuthClient(
                                 0
                             )
                         } else {
-                            failure(ReachFiveError.from("Unexpected: Fido2 PendingIntent is null!"))
+                            failure(ReachFiveError.from("Unexpected: null Fido2 PendingIntent"))
                         }
                     }
 
