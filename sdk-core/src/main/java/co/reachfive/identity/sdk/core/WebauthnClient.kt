@@ -196,7 +196,7 @@ internal class WebauthnAuthClient(
                         }
                     }
                     fido2PendingIntentTask.addOnFailureListener {
-                        throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
+                        failure(ReachFiveError("FAILURE Launching Fido2 Pending Intent"))
                     }
                 },
                 failure = failure
