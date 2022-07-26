@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -309,8 +310,6 @@ internal class WebauthnAuthClient(
     }
 
     private companion object {
-        const val TAG = "Reach5"
-
         fun formatFriendlyName(friendlyName: String?): String {
             return if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName
         }
