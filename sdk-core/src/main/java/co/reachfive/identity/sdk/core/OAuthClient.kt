@@ -113,7 +113,6 @@ internal class ReachFiveOAuthClient(
         nonce: String?,
         origin: String?,
     ) {
-        Log.d("SDK CORE", "ENTER LOGIN WITH WEB")
         webLauncher.loginWithWeb(activity, scope, state, nonce, origin)
     }
 }
