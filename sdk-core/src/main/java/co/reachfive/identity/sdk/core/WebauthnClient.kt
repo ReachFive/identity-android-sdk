@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -78,10 +79,10 @@ internal class WebauthnAuthClient(
                     handleSignupSuccess(intent, scope, failure, activity)
 
             Activity.RESULT_CANCELED ->
-                Log.d(ReachFive.TAG, "Operation is cancelled")
+                Log.d(TAG, "Operation is cancelled")
 
             else ->
-                Log.e(ReachFive.TAG, "Operation failed, with resultCode: $resultCode")
+                Log.e(TAG, "Operation failed, with resultCode: $resultCode")
         }
     }
 
@@ -91,11 +92,12 @@ internal class WebauthnAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        val webAuthnId = activity
-            .getSharedPreferences("webauthn", Context.MODE_PRIVATE)
-            .getString(WEBAUTHN_ID, null)
+        val webauthnId =
+            activity
+                .getSharedPreferences(SHAREDPREFS_NAME, Context.MODE_PRIVATE)
+                .getString(SHAREDPREFS_USERID, null)
 
-        if (webAuthnId == null) {
+        if (webauthnId == null) {
             Log.d(ReachFive.TAG, "webAuthnId ERROR")
             failure(ReachFiveError.from("TODO"))
         } else
@@ -103,7 +105,7 @@ internal class WebauthnAuthClient(
                 reachFiveApi
                     .signupWithWebAuthn(
                         WebauthnSignupCredential(
-                            webauthnId = webAuthnId,
+                            webauthnId = webauthnId,
                             publicKeyCredential = registrationPublicKeyCredential
                         )
                     )
@@ -154,7 +156,6 @@ internal class WebauthnAuthClient(
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
             failure(extractFIDO2Error(intent))
         } else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            // TODO/cbu/nbrr favor intent??
             val authToken = this.authToken
             if (authToken != null) {
                 extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
@@ -170,7 +171,7 @@ internal class WebauthnAuthClient(
                             )
                         )
                 }
-            } else failure(ReachFiveError.from("TODO")) // TODO/cbu/nbrr
+            } else failure(ReachFiveError.from("Lost auth token state"))
         }
     }
 
@@ -228,10 +229,10 @@ internal class WebauthnAuthClient(
                     handleLoginSuccess(intent, scope, failure, activity)
 
             Activity.RESULT_CANCELED ->
-                Log.d(ReachFive.TAG, "Operation is cancelled")
+                Log.d(TAG, "Operation is cancelled")
 
             else ->
-                Log.e(ReachFive.TAG, "Operation failed, with resultCode: $resultCode")
+                Log.e(TAG, "Operation failed, with resultCode: $resultCode")
         }
 
     }
@@ -300,17 +301,15 @@ internal class WebauthnAuthClient(
         val fido2PendingIntentTask =
             fido2ApiClient.getRegisterPendingIntent(registrationOptions.toFido2Model())
 
+        activity
+            .getSharedPreferences(SHAREDPREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .run {
+                putString(SHAREDPREFS_USERID, registrationOptions.userId)
+                apply()
+            }
+
         fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
-            val webAuthnId = registrationOptions.publicKeyId
-
-            activity
-                .getSharedPreferences("webauthn", Context.MODE_PRIVATE)
-                .edit()
-                .run {
-                    putString(WEBAUTHN_ID, webAuthnId)
-                    apply()
-                }
-
             if (fido2PendingIntent != null) {
                 Log.d(TAG, "Launching Fido2 Pending Intent")
                 activity.startIntentSenderForResult(
@@ -330,9 +329,8 @@ internal class WebauthnAuthClient(
     }
 
     private companion object {
-        const val TAG = "Reach5"
-
-        const val WEBAUTHN_ID = "webauthnId"
+        const val SHAREDPREFS_NAME = "webauthn"
+        const val SHAREDPREFS_USERID = "user_id"
 
         fun formatFriendlyName(friendlyName: String?): String {
             return if (friendlyName.isNullOrEmpty()) android.os.Build.MODEL else friendlyName

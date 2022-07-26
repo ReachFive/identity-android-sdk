@@ -26,7 +26,6 @@ class GoogleProvider : ProviderCreator {
         const val NAME = "google"
         const val REQUEST_CODE = 14267
         const val PERMISSIONS_REQUEST_GET_ACCOUNTS = 14278
-        private const val TAG = "Reach5"
     }
 
     override val name: String = NAME
