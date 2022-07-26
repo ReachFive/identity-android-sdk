@@ -50,7 +50,7 @@ internal class WebauthnAuthClient(
                 ReachFiveApiCallback(
                     success = {
                         startFIDO2RegisterTask(it, signupRequestCode)
-                        successWithWebAuthnId(it.userId)
+                        successWithWebAuthnId(it.options.publicKey.user.id)
                     },
                     failure = failure
                 )
