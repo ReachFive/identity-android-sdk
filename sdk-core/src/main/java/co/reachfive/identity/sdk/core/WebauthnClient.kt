@@ -162,7 +162,7 @@ internal class WebauthnAuthClient(
                             )
                         )
                 }
-            } else failure(ReachFiveError.from("Lost auth token state"))
+            } else failure(ReachFiveError.from("No auth token!"))
         }
     }
 
