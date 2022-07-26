@@ -180,9 +180,9 @@ internal class WebauthnAuthClient(
             )
         ).enqueue(
             ReachFiveApiCallback(
-                success = {
+                success = { authenticationOptions ->
                     val fido2PendingIntentTask =
-                        fido2ApiClient.getSignPendingIntent(it.toFido2Model())
+                        fido2ApiClient.getSignPendingIntent(authenticationOptions.toFido2Model())
 
                     fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
                         if (fido2PendingIntent != null) {
