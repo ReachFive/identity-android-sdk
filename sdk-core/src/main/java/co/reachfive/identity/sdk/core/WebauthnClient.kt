@@ -72,10 +72,10 @@ internal class WebauthnAuthClient(
                     handleSignupSuccess(intent, scope, failure)
 
             Activity.RESULT_CANCELED ->
-                Log.d(ReachFive.TAG, "Operation is cancelled")
+                Log.d(TAG, "Operation is cancelled")
 
             else ->
-                Log.e(ReachFive.TAG, "Operation failed, with resultCode: $resultCode")
+                Log.e(TAG, "Operation failed, with resultCode: $resultCode")
         }
     }
 
@@ -214,10 +214,10 @@ internal class WebauthnAuthClient(
                     handleLoginSuccess(intent, scope, failure)
 
             Activity.RESULT_CANCELED ->
-                Log.d(ReachFive.TAG, "Operation is cancelled")
+                Log.d(TAG, "Operation is cancelled")
 
             else ->
-                Log.e(ReachFive.TAG, "Operation failed, with resultCode: $resultCode")
+                Log.e(TAG, "Operation failed, with resultCode: $resultCode")
         }
 
     }
