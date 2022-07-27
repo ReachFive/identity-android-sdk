@@ -396,13 +396,6 @@ internal interface WebauthnAuth {
         failure: Failure<ReachFiveError>
     )
 
-    fun onAddNewWebAuthnDeviceResult(
-        authToken: AuthToken,
-        intent: Intent,
-        success: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>
-    )
-
     fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
         failure: Failure<ReachFiveError>
