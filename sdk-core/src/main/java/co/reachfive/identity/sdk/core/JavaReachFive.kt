@@ -38,11 +38,35 @@ class JavaReachFive(
         origin: String,
         activity: Activity
     ) {
-        return reach5.loginWithProvider(name, scope, origin, activity)
+        return reach5.loginWithProvider(name, scope, origin, state = null, nonce = null, activity)
     }
 
     fun loginWithProvider(name: String, origin: String, activity: Activity) {
-        return reach5.loginWithProvider(name, emptySet(), origin, activity)
+        return reach5.loginWithProvider(
+            name,
+            emptySet(),
+            origin,
+            state = null,
+            nonce = null,
+            activity
+        )
+    }
+
+    fun loginWithProvider(
+        name: String,
+        origin: String,
+        state: String? = null,
+        nonce: String? = null,
+        activity: Activity
+    ) {
+        return reach5.loginWithProvider(
+            name,
+            emptySet(),
+            origin,
+            state = state,
+            nonce = nonce,
+            activity
+        )
     }
 
     /**
@@ -76,14 +100,18 @@ class JavaReachFive(
         email: String? = null,
         phoneNumber: String? = null,
         redirectUri: String,
-        successWithNoContent: Callback<Unit>,
+        state: String? = null,
+        nonce: String? = null,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
         reach5.startPasswordless(
             email,
             phoneNumber,
             redirectUri,
-            { successWithNoContent.call(Unit) },
+            state = state,
+            nonce = nonce,
+            { success.call(Unit) },
             failure::call
         )
     }
