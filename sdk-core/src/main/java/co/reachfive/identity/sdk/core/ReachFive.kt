@@ -2,11 +2,8 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
-import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
-import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.NO_AUTH_ERROR_RESULT_CODE
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -113,7 +110,7 @@ class ReachFive private constructor(
         failure: Failure<ReachFiveError>
     ) {
         when (resultCode) {
-            RedirectionActivity.SUCCESS_RESULT_CODE -> {
+            LoginResult.SUCCESS.code -> {
                 val code = intent.getStringExtra(CODE_KEY)!!
                 val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)!!
 
@@ -129,13 +126,13 @@ class ReachFive private constructor(
                         )
                     )
             }
-            NO_AUTH_ERROR_RESULT_CODE -> {
+
+            LoginResult.NO_AUTHORIZATION_CODE.code -> {
                 failure(ReachFiveError("No authorization code found in activity result."))
             }
-            else -> {
-                Log.e(TAG, "Unexpected event.")
-                Unit
-            }
+
+            LoginResult.UNEXPECTED_ERROR.code ->
+                failure(ReachFiveError("No authorization code found in activity result."))
         }
     }
 
