@@ -32,8 +32,17 @@ class RedirectionActivityLauncher(
         provider: Provider,
         scope: Collection<String>,
         origin: String,
+        state: String?,
+        nonce: String?,
     ) {
-        val intent = prepareIntent(activity, scope, origin = origin, provider = provider.name)
+        val intent = prepareIntent(
+            activity = activity,
+            scope = scope,
+            origin = origin,
+            provider = provider.name,
+            state = state,
+            nonce = nonce,
+        )
         activity.startActivityForResult(intent, provider.requestCode)
     }
 

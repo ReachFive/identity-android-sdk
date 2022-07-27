@@ -67,7 +67,13 @@ internal class ConfiguredGoogleProvider(
         googleSignInClient = GoogleSignIn.getClient(activity.applicationContext, gso)
     }
 
-    override fun login(origin: String, scope: Collection<String>, activity: Activity) {
+    override fun login(
+        origin: String,
+        scope: Collection<String>,
+        state: String?,
+        nonce: String?,
+        activity: Activity
+    ) {
         this.origin = origin
         this.scope = scope
         val signInIntent = googleSignInClient.signInIntent

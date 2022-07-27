@@ -12,6 +12,7 @@ import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.facebook.FacebookProvider.Companion.REQUEST_CODE
 import com.facebook.*
+import com.facebook.login.LoginConfiguration
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 
@@ -50,7 +51,13 @@ internal class ConfiguredFacebookProvider(
         FacebookSdk.setApplicationId(providerConfig.clientId)
     }
 
-    override fun login(origin: String, scope: Collection<String>, activity: Activity) {
+    override fun login(
+        origin: String,
+        scope: Collection<String>,
+        state: String?,
+        nonce: String?,
+        activity: Activity
+    ) {
         this.origin = origin
         this.scope = scope
         LoginManager.getInstance().logInWithReadPermissions(activity, providerConfig.scope)

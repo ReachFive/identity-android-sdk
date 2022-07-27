@@ -20,6 +20,8 @@ internal interface SocialLoginAuth {
         name: String,
         scope: Collection<String> = defaultScope,
         origin: String,
+        state: String? = null,
+        nonce: String? = null,
         activity: Activity
     )
 
@@ -77,6 +79,8 @@ internal class SocialLoginAuthClient(
         name: String,
         scope: Collection<String>,
         origin: String,
+        state: String?,
+        nonce: String?,
         activity: Activity
     ) {
         getProvider(name)?.login(origin, scope, activity)

@@ -2,7 +2,10 @@ package co.reachfive.identity.sdk.webview
 
 import android.app.Activity
 import android.content.Intent
-import co.reachfive.identity.sdk.core.*
+import co.reachfive.identity.sdk.core.Provider
+import co.reachfive.identity.sdk.core.ProviderCreator
+import co.reachfive.identity.sdk.core.RedirectionActivity
+import co.reachfive.identity.sdk.core.RedirectionActivityLauncher
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -39,8 +42,13 @@ internal class ConfiguredWebViewProvider(
     override val name: String = providerConfig.provider
     override val requestCode: Int = REQUEST_CODE
 
-    override fun login(origin: String, scope: Collection<String>, activity: Activity) {
-        redirectionActivityLauncher.sloFlow(activity, this, scope, origin)
+    override fun login(
+        origin: String, scope: Collection<String>,
+        state: String?,
+        nonce: String?,
+        activity: Activity
+    ) {
+        redirectionActivityLauncher.sloFlow(activity, this, scope, origin, state, nonce)
     }
 
     override fun onActivityResult(
