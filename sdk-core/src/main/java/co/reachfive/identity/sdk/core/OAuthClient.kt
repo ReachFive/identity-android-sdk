@@ -23,17 +23,6 @@ internal interface ReachFiveOAuth {
         failure: Failure<ReachFiveError>
     )
 
-    fun exchangeCodeForToken(
-        authorizationCode: String,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    )
-
-    fun loginCallback(
-        tkn: String,
-        scope: Collection<String>
-    )
-
     fun loginWithWeb(
         scope: Collection<String> = defaultScope,
         state: String? = null,
@@ -74,33 +63,7 @@ internal class ReachFiveOAuthClient(
             )
     }
 
-    override fun exchangeCodeForToken(
-        authorizationCode: String,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    ) {
-        val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
-        return if (authCodeFlow != null) {
-            val authCodeRequest = AuthCodeRequest(
-                sdkConfig.clientId,
-                authorizationCode,
-                authCodeFlow.redirectUri,
-                authCodeFlow.codeVerifier
-            )
-            reachFiveApi
-                .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                .enqueue(
-                    ReachFiveApiCallback(
-                        success = { it.toAuthToken().fold(success, failure) },
-                        failure = failure
-                    )
-                )
-        } else {
-            failure(ReachFiveError.from("No PKCE challenge found in memory."))
-        }
-    }
-
-    override fun loginCallback(
+    internal fun loginCallback(
         tkn: String,
         scope: Collection<String>
     ) {
