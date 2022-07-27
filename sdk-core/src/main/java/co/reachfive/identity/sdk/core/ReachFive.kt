@@ -218,9 +218,23 @@ class ReachFive private constructor(
         }
     }
 
-    fun isReachFiveRequestCode(code: Int): Boolean =
+    fun resolveResultHandler(
+        requestCode: Int,
+        resultCode: Int,
+        intent: Intent?
+    ): ActivityResultHandler? {
+        if (isReachFiveLoginRequestCode(requestCode))
+            return LoginResultHandler(this, requestCode, resultCode, intent)
+        else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode))
+            return WebauthnActionHandler(this, requestCode, intent)
+        else return null
+    }
+
+    fun isReachFiveLoginRequestCode(code: Int): Boolean =
         socialLoginAuth.isSocialLoginRequestCode(code) ||
                 WebauthnAuth.isWebauthnLoginRequestCode(code) ||
-                WebauthnAuth.isWebauthnActionRequestCode(code) ||
                 RedirectionActivity.isRedirectionActivityRequestCode(code)
+
+    fun isReachFiveActionRequestCode(code: Int): Boolean =
+        WebauthnAuth.isWebauthnActionRequestCode(code)
 }
