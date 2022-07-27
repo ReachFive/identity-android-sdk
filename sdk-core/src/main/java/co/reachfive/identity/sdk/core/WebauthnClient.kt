@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
+import co.reachfive.identity.sdk.core.WebauthnAuth.Companion.LOGIN_REQUEST_CODE
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -50,9 +51,9 @@ internal class WebauthnAuthClient(
             )
             .enqueue(
                 ReachFiveApiCallback(
-                    success = {
+                    success = { registrationOptions ->
                         startFIDO2RegisterTask(
-                            it,
+                            registrationOptions,
                             WebauthnAuth.SIGNUP_REQUEST_CODE,
                             failure,
                             activity
@@ -135,9 +136,9 @@ internal class WebauthnAuthClient(
             )
             .enqueue(
                 ReachFiveApiCallback(
-                    success = {
+                    success = { registrationOptions ->
                         startFIDO2RegisterTask(
-                            it,
+                            registrationOptions,
                             WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE,
                             failure,
                             activity
@@ -171,13 +172,12 @@ internal class WebauthnAuthClient(
                             )
                         )
                 }
-            } else failure(ReachFiveError.from("Lost auth token state"))
+            } else failure(ReachFiveError.from("No auth token!"))
         }
     }
 
     override fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
-        loginRequestCode: Int,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -188,25 +188,30 @@ internal class WebauthnAuthClient(
             )
         ).enqueue(
             ReachFiveApiCallback(
-                success = {
+                success = { authenticationOptions ->
                     val fido2ApiClient = Fido.getFido2ApiClient(activity)
+
                     val fido2PendingIntentTask =
-                        fido2ApiClient.getSignPendingIntent(it.toFido2Model())
+                        fido2ApiClient.getSignPendingIntent(authenticationOptions.toFido2Model())
+
                     fido2PendingIntentTask.addOnSuccessListener { fido2PendingIntent ->
                         if (fido2PendingIntent != null) {
-                            Log.d(TAG, "Launching Fido2 Pending Intent")
+                            Log.d(TAG, "Launching Fido2 PendingIntent")
                             activity.startIntentSenderForResult(
                                 fido2PendingIntent.intentSender,
-                                loginRequestCode,
+                                LOGIN_REQUEST_CODE,
                                 null,
                                 0,
                                 0,
                                 0
                             )
+                        } else {
+                            failure(ReachFiveError.from("Unexpected: null Fido2 PendingIntent"))
                         }
                     }
+
                     fido2PendingIntentTask.addOnFailureListener {
-                        throw ReachFiveError("FAILURE Launching Fido2 Pending Intent")
+                        failure(ReachFiveError.from(it))
                     }
                 },
                 failure = failure
@@ -275,7 +280,7 @@ internal class WebauthnAuthClient(
     override fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
@@ -286,7 +291,7 @@ internal class WebauthnAuthClient(
             )
             .enqueue(
                 ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
+                    successWithNoContent = success,
                     failure = failure
                 )
             )
@@ -394,7 +399,6 @@ internal interface WebauthnAuth {
 
     fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
-        loginRequestCode: Int,
         failure: Failure<ReachFiveError>,
         activity: Activity
     )
@@ -408,7 +412,7 @@ internal interface WebauthnAuth {
     fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     )
 }
