@@ -301,7 +301,7 @@ internal class WebauthnAuthClient(
             .getSharedPreferences(SHAREDPREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .run {
-                putString(SHAREDPREFS_USERID, registrationOptions.userId)
+                putString(SHAREDPREFS_USERID, registrationOptions.options.publicKey.user.id)
                 apply()
             }
 
