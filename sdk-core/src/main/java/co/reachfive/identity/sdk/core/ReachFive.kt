@@ -205,13 +205,22 @@ class ReachFive private constructor(
                     failure(ReachFiveError.NoIntent)
             }
 
-            else -> socialLoginAuth.onActivityResult(
-                requestCode,
-                resultCode,
-                intent,
-                success,
-                failure
-            )
+            else ->
+                if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
+                    socialLoginAuth.onActivityResult(
+                        requestCode,
+                        resultCode,
+                        intent,
+                        success,
+                        failure
+                    )
+                }
         }
     }
+
+    fun isReachFiveRequestCode(code: Int): Boolean =
+        socialLoginAuth.isSocialLoginRequestCode(code) ||
+                WebauthnAuth.isWebauthnLoginRequestCode(code) ||
+                WebauthnAuth.isWebauthnActionRequestCode(code) ||
+                RedirectionActivity.isRedirectionActivityRequestCode(code)
 }
