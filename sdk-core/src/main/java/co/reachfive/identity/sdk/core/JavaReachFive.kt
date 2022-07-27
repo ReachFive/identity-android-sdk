@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
@@ -28,6 +29,14 @@ class JavaReachFive(
         failure: Callback<ReachFiveError>
     ): ReachFive {
         return reach5.initialize(success::call, failure::call)
+    }
+
+    fun loadProviders(
+        success: Callback<List<Provider>>,
+        failure: Callback<ReachFiveError>,
+        context: Context,
+    ) {
+        return reach5.loadProviders(success::call, failure::call, context)
     }
 
     fun getProvider(name: String): Provider? {
