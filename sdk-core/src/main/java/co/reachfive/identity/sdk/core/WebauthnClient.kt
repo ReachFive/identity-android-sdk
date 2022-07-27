@@ -54,7 +54,11 @@ internal class WebauthnAuthClient(
             .enqueue(
                 ReachFiveApiCallback(
                     success = { registrationOptions ->
-                        startFIDO2RegisterTask(registrationOptions, WebauthnAuth.SIGNUP_REQUEST_CODE, failure)
+                        startFIDO2RegisterTask(
+                            registrationOptions,
+                            WebauthnAuth.SIGNUP_REQUEST_CODE,
+                            failure
+                        )
                         success(Unit)
                     },
                     failure = failure
