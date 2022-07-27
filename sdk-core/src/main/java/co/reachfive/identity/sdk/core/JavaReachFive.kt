@@ -15,10 +15,16 @@ class JavaReachFive(
     sdkConfig: SdkConfig,
     providersCreators: List<ProviderCreator>
 ) {
-    private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
+    private val reach5 = ReachFive(sdkConfig, providersCreators)
+
+    fun isReachFiveLoginRequestCode(code: Int): Boolean =
+        reach5.isReachFiveLoginRequestCode(code)
+
+    fun isReachFiveActionRequestCode(code: Int): Boolean =
+        reach5.isReachFiveActionRequestCode(code)
 
     fun initialize(
-        success: Callback<List<Provider>>,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ): ReachFive {
         return reach5.initialize(success::call, failure::call)
@@ -42,7 +48,7 @@ class JavaReachFive(
     }
 
     fun loginWithProvider(name: String, origin: String, activity: Activity) {
-        return reach5.loginWithProvider(name, emptySet(), origin, activity)
+        return reach5.loginWithProvider(name, reach5.defaultScope, origin, activity)
     }
 
     /**
@@ -77,14 +83,16 @@ class JavaReachFive(
         phoneNumber: String? = null,
         redirectUri: String,
         successWithNoContent: Callback<Unit>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        activity: Activity
     ) {
         reach5.startPasswordless(
             email,
             phoneNumber,
             redirectUri,
             { successWithNoContent.call(Unit) },
-            failure::call
+            failure::call,
+            activity
         )
     }
 
@@ -92,9 +100,10 @@ class JavaReachFive(
         phoneNumber: String,
         verificationCode: String,
         success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        activity: Activity
     ) {
-        reach5.verifyPasswordless(phoneNumber, verificationCode, success::call, failure::call)
+        reach5.verifyPasswordless(phoneNumber, verificationCode, success::call, failure::call, activity)
     }
 
     /**
@@ -134,8 +143,9 @@ class JavaReachFive(
         state: String? = null,
         nonce: String? = null,
         origin: String? = null,
+        activity: Activity
     ) {
-        return reach5.loginWithWeb(scope, state, nonce, origin)
+        return reach5.loginWithWeb(scope, state, nonce, origin,activity)
     }
 
     fun logout(
@@ -237,15 +247,6 @@ class JavaReachFive(
         )
     }
 
-    fun onWebauthnLoginResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        failure: Callback<ReachFiveError>,
-    ) {
-        return reach5.onWebauthnLoginResult(requestCode, resultCode, data, failure::call)
-    }
-
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
         data: Intent?,
@@ -261,17 +262,9 @@ class JavaReachFive(
         data: Intent?,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
+        activity: Activity
     ) {
-        return reach5.onLoginActivityResult(requestCode, resultCode, data, success::call, failure::call)
-    }
-
-    fun onLoginCallbackResult(
-        intent: Intent,
-        resultCode: Int,
-        success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
-    ) {
-        return reach5.onLoginCallbackResult(intent, resultCode, success::call, failure::call)
+        return reach5.onLoginActivityResult(requestCode, resultCode, data, success::call, failure::call, activity)
     }
 
     fun onStop() {

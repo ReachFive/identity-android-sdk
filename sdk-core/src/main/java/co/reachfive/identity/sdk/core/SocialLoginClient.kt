@@ -40,7 +40,6 @@ internal class SocialLoginAuthClient(
     private val providersCreators: List<ProviderCreator>,
     override var defaultScope: Set<String> = emptySet(),
 ) : SocialLoginAuth {
-
     private var providers: List<Provider> = emptyList()
 
     override fun getProviders(): List<Provider> = providers
@@ -48,6 +47,9 @@ internal class SocialLoginAuthClient(
     internal fun onStop() = providers.forEach { it.onStop() }
 
     internal fun logoutFromAll() = providers.forEach { it.logout() }
+
+    internal fun isSocialLoginRequestCode(code: Int): Boolean =
+        providers.any { it.requestCode == code }
 
     internal fun onActivityResult(
         requestCode: Int,

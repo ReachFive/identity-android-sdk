@@ -3,11 +3,8 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.ABORT_RESULT_CODE
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
-import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.NO_AUTH_ERROR_RESULT_CODE
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -19,7 +16,6 @@ import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
-
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -115,14 +111,14 @@ class ReachFive private constructor(
             )
     }
 
-    fun onLoginCallbackResult(
+    private fun onLoginCallbackResult(
         intent: Intent,
         resultCode: Int,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         when (resultCode) {
-            RedirectionActivity.SUCCESS_RESULT_CODE -> {
+            LoginResult.SUCCESS.code -> {
                 val code = intent.getStringExtra(CODE_KEY)!!
                 val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)!!
 
@@ -138,92 +134,103 @@ class ReachFive private constructor(
                         )
                     )
             }
-            NO_AUTH_ERROR_RESULT_CODE -> {
+
+            LoginResult.NO_AUTHORIZATION_CODE.code -> {
                 failure(ReachFiveError("No authorization code found in activity result."))
             }
-            ABORT_RESULT_CODE -> {
-                Log.d(TAG, "The custom tab has been closed.")
-                Unit
-            }
-            else -> {
-                Log.e(TAG, "Unexpected event.")
-                Unit
-            }
+
+            LoginResult.UNEXPECTED_ERROR.code ->
+                failure(ReachFiveError("Unexpected error during login callback."))
         }
     }
 
-    fun onWebauthnLoginResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        failure: Failure<ReachFiveError>,
-        activity: Activity
-    ) {
-        when (requestCode) {
-            WebauthnAuth.LOGIN_REQUEST_CODE -> {
-                if (data != null)
-                    webauthnAuth.onLoginWithWebAuthnResult(
-                        resultCode,
-                        data,
-                        defaultScope,
-                        failure,
-                        activity
-                    )
-                else
-                    failure(ReachFiveError.from(""))
-            }
-
-            WebauthnAuth.SIGNUP_REQUEST_CODE -> {
-                if (data != null)
-                    webauthnAuth.onSignupWithWebAuthnResult(
-                        resultCode,
-                        data,
-                        defaultScope,
-                        failure,
-                        activity
-                    )
-                else
-                    failure(ReachFiveError.from(""))
-            }
-        }
-    }
 
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
-        data: Intent?,
+        intent: Intent?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
         if (requestCode == WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE) {
-            if (data != null)
-                webauthnAuth.onAddNewWebAuthnDeviceResult(data, success, failure)
+            if (intent != null)
+                webauthnAuth.onAddNewWebAuthnDeviceResult(intent, success, failure)
             else
-                failure(ReachFiveError.from(""))
+                failure(ReachFiveError.NoIntent)
         }
     }
 
     fun onLoginActivityResult(
         requestCode: Int,
         resultCode: Int,
-        data: Intent?,
+        intent: Intent?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
+        activity: Activity
     ) {
         when (requestCode) {
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
-                if (data != null)
-                    this.onLoginCallbackResult(data, resultCode, success, failure)
+                if (intent != null)
+                    this.onLoginCallbackResult(intent, resultCode, success, failure)
                 else
-                    failure(ReachFiveError.from(""))
+                    failure(ReachFiveError.NoIntent)
             }
 
-            else -> socialLoginAuth.onActivityResult(
-                requestCode,
-                resultCode,
-                data,
-                success,
-                failure
-            )
+            WebauthnAuth.LOGIN_REQUEST_CODE -> {
+                if (intent != null)
+                    webauthnAuth.onLoginWithWebAuthnResult(
+                        resultCode,
+                        intent,
+                        defaultScope,
+                        failure,
+                        activity
+                    )
+                else
+                    failure(ReachFiveError.NoIntent)
+            }
+
+            WebauthnAuth.SIGNUP_REQUEST_CODE -> {
+                if (intent != null)
+                    webauthnAuth.onSignupWithWebAuthnResult(
+                        resultCode,
+                        intent,
+                        defaultScope,
+                        failure,
+                        activity
+                    )
+                else
+                    failure(ReachFiveError.NoIntent)
+            }
+
+            else ->
+                if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
+                    socialLoginAuth.onActivityResult(
+                        requestCode,
+                        resultCode,
+                        intent,
+                        success,
+                        failure
+                    )
+                }
         }
     }
+
+    fun resolveResultHandler(
+        requestCode: Int,
+        resultCode: Int,
+        intent: Intent?
+    ): ActivityResultHandler? {
+        if (isReachFiveLoginRequestCode(requestCode))
+            return LoginResultHandler(this, requestCode, resultCode, intent)
+        else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode))
+            return WebauthnActionHandler(this, requestCode, intent)
+        else return null
+    }
+
+    fun isReachFiveLoginRequestCode(code: Int): Boolean =
+        socialLoginAuth.isSocialLoginRequestCode(code) ||
+                WebauthnAuth.isWebauthnLoginRequestCode(code) ||
+                RedirectionActivity.isRedirectionActivityRequestCode(code)
+
+    fun isReachFiveActionRequestCode(code: Int): Boolean =
+        WebauthnAuth.isWebauthnActionRequestCode(code)
 }
