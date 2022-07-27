@@ -83,7 +83,7 @@ internal class SocialLoginAuthClient(
         nonce: String?,
         activity: Activity
     ) {
-        getProvider(name)?.login(origin, scope, activity)
+        getProvider(name)?.login(origin, scope, state, nonce, activity)
     }
 
     override fun getProvider(name: String): Provider? =

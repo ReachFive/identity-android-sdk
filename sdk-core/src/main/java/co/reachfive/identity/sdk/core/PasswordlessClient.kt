@@ -25,7 +25,9 @@ internal class PasswordlessAuthClient(
         email: String?,
         phoneNumber: String?,
         redirectUrl: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        state: String?,
+        nonce: String?,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =
         PkceAuthCodeFlow.generate(redirectUrl).let { pkce ->
@@ -38,12 +40,14 @@ internal class PasswordlessAuthClient(
                     codeChallenge = pkce.codeChallenge,
                     codeChallengeMethod = pkce.codeChallengeMethod,
                     responseType = ReachFiveOAuthClient.codeResponseType,
-                    redirectUri = redirectUrl
+                    redirectUri = redirectUrl,
+                    state = state,
+                    nonce = nonce,
                 ),
                 SdkInfos.getQueries()
             ).enqueue(
                 ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
+                    successWithNoContent = success,
                     failure = failure
                 )
             )
@@ -75,7 +79,8 @@ internal class PasswordlessAuthClient(
                             .enqueue(
                                 ReachFiveApiCallback(
                                     success = { tokenResponse ->
-                                        tokenResponse.toAuthToken().fold(success, failure)
+                                        tokenResponse.toAuthToken(verificationResponse.state)
+                                            .fold(success, failure)
                                     },
                                     failure = failure
                                 )
@@ -95,7 +100,9 @@ internal interface PasswordlessAuth {
         email: String? = null,
         phoneNumber: String? = null,
         redirectUrl: String = sdkConfig.scheme,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        state: String? = null,
+        nonce: String? = null,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     )
 

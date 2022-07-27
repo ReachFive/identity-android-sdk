@@ -33,7 +33,8 @@ data class TokenEndpointResponse(
     @SerializedName("error_description")
     val errorDescription: String? = null
 ) : Parcelable {
-    fun toAuthToken(): Result<AuthToken, ReachFiveError> {
+    // TODO/cbu/nbrr revise
+    fun toAuthToken(state: String? = null,): Result<AuthToken, ReachFiveError> {
         return if (accessToken != null) {
             if (idToken != null) {
                 getUser().map {
@@ -43,7 +44,8 @@ data class TokenEndpointResponse(
                         refreshToken = refreshToken,
                         tokenType = tokenType,
                         expiresIn = expiresIn,
-                        user = it
+                        user = it,
+                        state = state,
                     )
                 }
             } else {
