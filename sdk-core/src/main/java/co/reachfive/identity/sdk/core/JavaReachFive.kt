@@ -44,7 +44,7 @@ class JavaReachFive(
     fun loginWithProvider(name: String, origin: String, activity: Activity) {
         return reach5.loginWithProvider(
             name,
-            emptySet(),
+            reach5.defaultScope,
             origin,
             state = null,
             nonce = null,
@@ -61,7 +61,7 @@ class JavaReachFive(
     ) {
         return reach5.loginWithProvider(
             name,
-            emptySet(),
+            reach5.defaultScope,
             origin,
             state = state,
             nonce = nonce,
