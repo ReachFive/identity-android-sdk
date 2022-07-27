@@ -12,7 +12,6 @@ import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest
 import co.reachfive.identity.sdk.core.utils.Callback
 
 class JavaReachFive(
-    activity: Activity,
     sdkConfig: SdkConfig,
     providersCreators: List<ProviderCreator>
 ) {
