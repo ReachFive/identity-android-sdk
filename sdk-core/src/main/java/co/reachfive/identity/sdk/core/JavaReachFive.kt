@@ -17,6 +17,12 @@ class JavaReachFive(
 ) {
     private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
 
+    fun isReachFiveLoginRequestCode(code: Int): Boolean =
+        reach5.isReachFiveLoginRequestCode(code)
+
+    fun isReachFiveActionRequestCode(code: Int): Boolean =
+        reach5.isReachFiveActionRequestCode(code)
+
     fun initialize(
         success: Callback<List<Provider>>,
         failure: Callback<ReachFiveError>
