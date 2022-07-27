@@ -148,7 +148,7 @@ internal class WebauthnAuthClient(
 
     internal fun onAddNewWebAuthnDeviceResult(
         intent: Intent,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
@@ -164,7 +164,7 @@ internal class WebauthnAuthClient(
                         )
                         .enqueue(
                             ReachFiveApiCallback(
-                                successWithNoContent = successWithNoContent,
+                                successWithNoContent = success,
                                 failure = failure
                             )
                         )
@@ -393,6 +393,13 @@ internal interface WebauthnAuth {
         authToken: AuthToken,
         origin: String,
         friendlyName: String?,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun onAddNewWebAuthnDeviceResult(
+        authToken: AuthToken,
+        intent: Intent,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     )
 

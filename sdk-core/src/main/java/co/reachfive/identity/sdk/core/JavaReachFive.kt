@@ -48,7 +48,7 @@ class JavaReachFive(
     }
 
     fun loginWithProvider(name: String, origin: String, activity: Activity) {
-        return reach5.loginWithProvider(name, emptySet(), origin, activity)
+        return reach5.loginWithProvider(name, reach5.defaultScope, origin, activity)
     }
 
     /**

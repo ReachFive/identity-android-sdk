@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core.models
 
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -15,5 +16,6 @@ data class AuthToken(
     val user: OpenIdUser? = null
 ) : Parcelable {
 
+    @IgnoredOnParcel
     val authHeader: String = "$tokenType $accessToken"
 }
