@@ -36,11 +36,12 @@ internal class ReachFiveOAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val webLauncher: RedirectionActivityLauncher,
-    override var defaultScope: Set<String> = emptySet(),
 ) : ReachFiveOAuth {
     companion object {
         const val codeResponseType = "code"
     }
+
+    override var defaultScope: Set<String> = emptySet()
 
     override fun refreshAccessToken(
         authToken: AuthToken,

@@ -38,8 +38,9 @@ internal class SocialLoginAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val providersCreators: List<ProviderCreator>,
-    override var defaultScope: Set<String> = emptySet(),
 ) : SocialLoginAuth {
+    override var defaultScope: Set<String> = emptySet()
+
     private var providers: List<Provider> = emptyList()
 
     override fun getProviders(): List<Provider> = providers
