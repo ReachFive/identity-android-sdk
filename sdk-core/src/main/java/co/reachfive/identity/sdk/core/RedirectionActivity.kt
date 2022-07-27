@@ -104,7 +104,6 @@ class RedirectionActivity : Activity() {
 
         const val SUCCESS_RESULT_CODE = 0
         const val UNEXPECTED_ERROR_RESULT_CODE = -1
-        const val ABORT_RESULT_CODE = 1
         const val NO_AUTH_ERROR_RESULT_CODE = 2
 
         fun isRedirectionActivityRequestCode(code: Int): Boolean =

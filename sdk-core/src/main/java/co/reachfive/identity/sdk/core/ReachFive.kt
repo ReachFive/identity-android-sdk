@@ -132,10 +132,6 @@ class ReachFive private constructor(
             NO_AUTH_ERROR_RESULT_CODE -> {
                 failure(ReachFiveError("No authorization code found in activity result."))
             }
-            ABORT_RESULT_CODE -> {
-                Log.d(TAG, "The custom tab has been closed.")
-                Unit
-            }
             else -> {
                 Log.e(TAG, "Unexpected event.")
                 Unit
