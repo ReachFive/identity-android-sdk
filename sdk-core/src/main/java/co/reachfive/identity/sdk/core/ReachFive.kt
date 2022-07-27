@@ -103,7 +103,7 @@ class ReachFive private constructor(
             )
     }
 
-    fun onLoginCallbackResult(
+    private fun onLoginCallbackResult(
         intent: Intent,
         resultCode: Int,
         success: Success<AuthToken>,
@@ -136,38 +136,6 @@ class ReachFive private constructor(
         }
     }
 
-    fun onWebauthnLoginResult(
-        requestCode: Int,
-        resultCode: Int,
-        intent: Intent?,
-        failure: Failure<ReachFiveError>,
-    ) {
-        when (requestCode) {
-            WebauthnAuth.LOGIN_REQUEST_CODE -> {
-                if (intent != null)
-                    webauthnAuth.onLoginWithWebAuthnResult(
-                        resultCode,
-                        intent,
-                        defaultScope,
-                        failure,
-                    )
-                else
-                    failure(ReachFiveError.NoIntent)
-            }
-
-            WebauthnAuth.SIGNUP_REQUEST_CODE -> {
-                if (intent != null)
-                    webauthnAuth.onSignupWithWebAuthnResult(
-                        resultCode,
-                        intent,
-                        defaultScope,
-                        failure,
-                    )
-                else
-                    failure(ReachFiveError.NoIntent)
-            }
-        }
-    }
 
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
@@ -194,6 +162,30 @@ class ReachFive private constructor(
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
                 if (intent != null)
                     this.onLoginCallbackResult(intent, resultCode, success, failure)
+                else
+                    failure(ReachFiveError.NoIntent)
+            }
+
+            WebauthnAuth.LOGIN_REQUEST_CODE -> {
+                if (intent != null)
+                    webauthnAuth.onLoginWithWebAuthnResult(
+                        resultCode,
+                        intent,
+                        defaultScope,
+                        failure,
+                    )
+                else
+                    failure(ReachFiveError.NoIntent)
+            }
+
+            WebauthnAuth.SIGNUP_REQUEST_CODE -> {
+                if (intent != null)
+                    webauthnAuth.onSignupWithWebAuthnResult(
+                        resultCode,
+                        intent,
+                        defaultScope,
+                        failure,
+                    )
                 else
                     failure(ReachFiveError.NoIntent)
             }
