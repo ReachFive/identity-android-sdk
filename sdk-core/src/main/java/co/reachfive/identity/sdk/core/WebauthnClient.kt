@@ -99,8 +99,8 @@ internal class WebauthnAuthClient(
                 .getString(SHAREDPREFS_USERID, null)
 
         if (webauthnId == null) {
-            Log.d(ReachFive.TAG, "webAuthnId ERROR")
-            failure(ReachFiveError.from("TODO"))
+            Log.e(TAG, "Could not retrieve Webauthn ID!")
+            failure(ReachFiveError.from("Could not retrieve Webauthn ID!"))
         } else
             extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
                 reachFiveApi
@@ -151,7 +151,7 @@ internal class WebauthnAuthClient(
 
     internal fun onAddNewWebAuthnDeviceResult(
         intent: Intent,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
@@ -167,7 +167,7 @@ internal class WebauthnAuthClient(
                         )
                         .enqueue(
                             ReachFiveApiCallback(
-                                successWithNoContent = successWithNoContent,
+                                successWithNoContent = success,
                                 failure = failure
                             )
                         )
@@ -310,7 +310,7 @@ internal class WebauthnAuthClient(
             .getSharedPreferences(SHAREDPREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .run {
-                putString(SHAREDPREFS_USERID, registrationOptions.userId)
+                putString(SHAREDPREFS_USERID, registrationOptions.options.publicKey.user.id)
                 apply()
             }
 
@@ -376,6 +376,16 @@ internal interface WebauthnAuth {
         const val SIGNUP_REQUEST_CODE = 31001
         const val LOGIN_REQUEST_CODE = 31002
         const val REGISTER_DEVICE_REQUEST_CODE = 31003
+
+        fun isWebauthnLoginRequestCode(code: Int): Boolean =
+            setOf(
+                SIGNUP_REQUEST_CODE,
+                LOGIN_REQUEST_CODE,
+                REGISTER_DEVICE_REQUEST_CODE
+            ).any { it == code }
+
+        fun isWebauthnActionRequestCode(code: Int): Boolean =
+            REGISTER_DEVICE_REQUEST_CODE == code
     }
 
     var defaultScope: Set<String>

@@ -102,10 +102,8 @@ class RedirectionActivity : Activity() {
         const val REDIRECTION_REQUEST_CODE = 52558
         const val CHROME_CUSTOM_TAB_REQUEST_CODE = 100
 
-        const val SUCCESS_RESULT_CODE = 0
-        const val UNEXPECTED_ERROR_RESULT_CODE = -1
-        const val ABORT_RESULT_CODE = 1
-        const val NO_AUTH_ERROR_RESULT_CODE = 2
+        fun isRedirectionActivityRequestCode(code: Int): Boolean =
+            code == REDIRECTION_REQUEST_CODE || code == CHROME_CUSTOM_TAB_REQUEST_CODE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,14 +123,15 @@ class RedirectionActivity : Activity() {
         val data = newIntent.data
 
         val newResultCode = if (newIntent.action != Intent.ACTION_VIEW || data == null) {
-            UNEXPECTED_ERROR_RESULT_CODE
+            LoginResult.UNEXPECTED_ERROR.code
         } else {
             val authCode = data.getQueryParameter("code")
 
-            if (authCode == null) NO_AUTH_ERROR_RESULT_CODE
+            if (authCode == null)
+                LoginResult.NO_AUTHORIZATION_CODE.code
             else {
                 intent.putExtra(CODE_KEY, authCode)
-                SUCCESS_RESULT_CODE
+                LoginResult.SUCCESS.code
             }
         }
 
