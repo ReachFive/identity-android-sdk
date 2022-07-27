@@ -132,7 +132,7 @@ class ReachFive private constructor(
             }
 
             LoginResult.UNEXPECTED_ERROR.code ->
-                failure(ReachFiveError("No authorization code found in activity result."))
+                failure(ReachFiveError("Unexpected error during login callback."))
         }
     }
 
