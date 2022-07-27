@@ -109,7 +109,7 @@ internal class WebauthnAuthClient(
     override fun onAddNewWebAuthnDeviceResult(
         authToken: AuthToken,
         intent: Intent,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
@@ -123,7 +123,7 @@ internal class WebauthnAuthClient(
                     )
                     .enqueue(
                         ReachFiveApiCallback(
-                            successWithNoContent = successWithNoContent,
+                            successWithNoContent = success,
                             failure = failure
                         )
                     )
@@ -205,7 +205,7 @@ internal class WebauthnAuthClient(
     override fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
@@ -216,7 +216,7 @@ internal class WebauthnAuthClient(
             )
             .enqueue(
                 ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
+                    successWithNoContent = success,
                     failure = failure
                 )
             )
@@ -319,7 +319,7 @@ internal interface WebauthnAuth {
     fun onAddNewWebAuthnDeviceResult(
         authToken: AuthToken,
         intent: Intent,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     )
 
@@ -344,7 +344,7 @@ internal interface WebauthnAuth {
     fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     )
 }
