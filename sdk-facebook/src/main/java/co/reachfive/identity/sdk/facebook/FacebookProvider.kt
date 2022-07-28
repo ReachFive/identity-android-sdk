@@ -5,10 +5,11 @@ import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
-import co.reachfive.identity.sdk.core.SocialLoginAuthClient
-import co.reachfive.identity.sdk.core.models.AuthToken
-import co.reachfive.identity.sdk.core.models.ProviderConfig
-import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.SessionUtilsClient
+import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
+import co.reachfive.identity.sdk.core.models.*
+import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.facebook.FacebookProvider.Companion.REQUEST_CODE
@@ -26,16 +27,16 @@ class FacebookProvider : ProviderCreator {
 
     override fun create(
         providerConfig: ProviderConfig,
-        socialLoginClient: SocialLoginAuthClient,
+        sessionUtils: SessionUtilsClient,
         context: Context
     ): Provider {
-        return ConfiguredFacebookProvider(providerConfig, socialLoginClient)
+        return ConfiguredFacebookProvider(providerConfig, sessionUtils)
     }
 }
 
 internal class ConfiguredFacebookProvider(
     private val providerConfig: ProviderConfig,
-    private val socialLoginClient: SocialLoginAuthClient,
+    private val sessionUtils: SessionUtilsClient,
 ) : Provider {
     override val requestCode: Int = REQUEST_CODE
     override val name: String = FacebookProvider.NAME
@@ -66,7 +67,7 @@ internal class ConfiguredFacebookProvider(
             .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult) {
                     val accessToken = result.accessToken.token
-                    socialLoginClient.completeNativeProviderAuth(
+                    sessionUtils.loginWithProvider(
                         name,
                         providerAccessToken = accessToken,
                         origin = origin,

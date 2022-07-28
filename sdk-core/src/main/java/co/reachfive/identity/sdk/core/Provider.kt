@@ -13,10 +13,9 @@ import co.reachfive.identity.sdk.core.utils.Success
 
 interface ProviderCreator {
     val name: String
-
     fun create(
         providerConfig: ProviderConfig,
-        socialLoginClient: SocialLoginAuthClient,
+        sessionUtils: SessionUtilsClient,
         context: Context
     ): Provider
 }

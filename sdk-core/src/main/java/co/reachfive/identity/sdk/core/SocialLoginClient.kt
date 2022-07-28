@@ -8,7 +8,6 @@ import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
-import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
@@ -41,10 +40,9 @@ internal interface SocialLoginAuth {
     )
 }
 
-class SocialLoginAuthClient(
+internal class SocialLoginAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
-    private val sessionUtils: SessionUtilsClient,
     private val providersCreators: List<ProviderCreator>,
 ) : SocialLoginAuth {
 
@@ -61,43 +59,6 @@ class SocialLoginAuthClient(
     private var providers: List<Provider> = emptyList()
 
     override fun getProviders(): List<Provider> = providers
-
-    fun webProviderAuth(
-        activity: Activity,
-        provider: Provider,
-        scope: Collection<String>,
-        origin: String?,
-    ) {
-        sessionUtils.webSocialLogin(activity, provider, scope, origin)
-    }
-
-    fun completeNativeProviderAuth(
-        provider: String,
-        authCode: String? = null,
-        providerAccessToken: String? = null,
-        origin: String? = null,
-        scope: Collection<String>,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    ) {
-        val loginProviderRequest = LoginProviderRequest(
-            provider = provider,
-            clientId = sdkConfig.clientId,
-            code = authCode,
-            providerToken = providerAccessToken,
-            origin = origin,
-            scope = scope.joinToString(" ")
-        )
-
-        reachFiveApi
-            .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
-            .enqueue(
-                ReachFiveApiCallback(
-                    success = { it.toAuthToken().fold(success, failure) },
-                    failure = failure
-                )
-            )
-    }
 
     internal fun onStop() = providers.forEach { it.onStop() }
 
@@ -169,12 +130,14 @@ class SocialLoginAuthClient(
             when {
                 nativeProvider != null -> nativeProvider.create(
                     config,
-                    this,
+                    sdkConfig,
+                    reachFiveApi,
                     context
                 )
                 webViewProvider != null -> webViewProvider.create(
                     config,
-                    this,
+                    sdkConfig,
+                    reachFiveApi,
                     context
                 )
                 else -> {
