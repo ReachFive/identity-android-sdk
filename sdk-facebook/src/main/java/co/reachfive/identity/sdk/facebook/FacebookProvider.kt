@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.facebook
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
@@ -27,7 +28,7 @@ class FacebookProvider : ProviderCreator {
         providerConfig: ProviderConfig,
         sdkConfig: SdkConfig,
         reachFiveApi: ReachFiveApi,
-        activity: Activity
+        context: Context
     ): Provider {
         return ConfiguredFacebookProvider(providerConfig, sdkConfig, reachFiveApi)
     }
@@ -103,7 +104,8 @@ internal class ConfiguredFacebookProvider(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     ) {
         // Do nothing
     }

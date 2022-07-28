@@ -26,6 +26,7 @@ internal interface SessionUtils {
         state: String? = null,
         nonce: String? = null,
         origin: String? = null,
+        activity: Activity,
     )
 
     fun logout(
@@ -39,12 +40,12 @@ internal class SessionUtilsClient(
     private val sdkConfig: SdkConfig,
     private val webLauncher: RedirectionActivityLauncher,
     private val socialLoginAuth: SocialLoginAuthClient,
-    private val activity: Activity,
-    override var defaultScope: Set<String> = emptySet(),
 ) : SessionUtils {
     companion object {
         const val codeResponseType = "code"
     }
+
+    override var defaultScope: Set<String> = emptySet()
 
     override fun logout(
         successWithNoContent: SuccessWithNoContent<Unit>,
@@ -84,7 +85,8 @@ internal class SessionUtilsClient(
 
     internal fun loginCallback(
         tkn: String,
-        scope: Collection<String>
+        scope: Collection<String>,
+        activity: Activity
     ) {
         webLauncher.loginCallback(activity, scope, tkn)
     }
@@ -94,6 +96,7 @@ internal class SessionUtilsClient(
         state: String?,
         nonce: String?,
         origin: String?,
+        activity: Activity,
     ) {
         webLauncher.loginWithWeb(activity, scope, state, nonce, origin)
     }

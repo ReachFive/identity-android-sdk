@@ -1,5 +1,6 @@
 package co.reachfive.identity.sdk.core
 
+import android.app.Activity
 import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
@@ -14,8 +15,8 @@ open class LoginResultHandler(
     val resultCode: Int,
     val intent: Intent?,
 ) : ActivityResultHandler {
-    fun handle(success: Success<AuthToken>, failure: Failure<ReachFiveError>) {
-        reachFive.onLoginActivityResult(requestCode, resultCode, intent, success, failure)
+    fun handle(success: Success<AuthToken>, failure: Failure<ReachFiveError>, activity: Activity) {
+        reachFive.onLoginActivityResult(requestCode, resultCode, intent, success, failure, activity)
     }
 }
 

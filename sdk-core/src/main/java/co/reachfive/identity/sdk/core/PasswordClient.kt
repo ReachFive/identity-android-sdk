@@ -15,8 +15,8 @@ import co.reachfive.identity.sdk.core.utils.formatScope
 internal class PasswordAuthClient(
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi,
-    override var defaultScope: Set<String> = emptySet(),
 ) : PasswordAuth {
+    override var defaultScope: Set<String> = emptySet()
 
     override fun signup(
         profile: ProfileSignupRequest,

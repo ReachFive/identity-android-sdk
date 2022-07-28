@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
@@ -38,7 +39,6 @@ class ReachFive private constructor(
         const val TAG = "Reach5"
 
         operator fun invoke(
-            activity: Activity,
             sdkConfig: SdkConfig,
             providersCreators: List<ProviderCreator>,
         ): ReachFive {
@@ -46,13 +46,14 @@ class ReachFive private constructor(
             val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
 
             val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi)
-            val passwordlessAuthClient = PasswordlessAuthClient(activity, reachFiveApi, sdkConfig)
+            val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
             val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
-                SocialLoginAuthClient(reachFiveApi, activity, sdkConfig, providersCreators)
-            val sessionUtils = SessionUtilsClient(reachFiveApi, sdkConfig, webLauncher, socialLoginAuthClient, activity)
+                SocialLoginAuthClient(reachFiveApi, sdkConfig, providersCreators)
+            val sessionUtils =
+                SessionUtilsClient(reachFiveApi, sdkConfig, webLauncher, socialLoginAuthClient)
             val webauthnAuthClient =
-                WebauthnAuthClient(reachFiveApi, sdkConfig, activity, sessionUtils)
+                WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
 
             return ReachFive(
                 reachFiveApi,
@@ -68,7 +69,7 @@ class ReachFive private constructor(
     }
 
     fun initialize(
-        success: Success<List<Provider>> = {},
+        success: Success<Unit> = {},
         failure: Failure<ReachFiveError> = {}
     ): ReachFive {
         reachFiveApi
@@ -77,13 +78,21 @@ class ReachFive private constructor(
                 ReachFiveApiCallback<ClientConfigResponse>(
                     success = { clientConfig ->
                         defaultScope = clientConfig.scope.split(" ").toSet()
-                        socialLoginAuth.providersConfigs(success, failure)
+                        success(Unit)
                     },
                     failure = failure
                 )
             )
 
         return this
+    }
+
+    fun loadProviders(
+        success: Success<List<Provider>> = {},
+        failure: Failure<ReachFiveError> = {},
+        context: Context,
+    ) {
+        return socialLoginAuth.providersConfigs(success, failure, context)
     }
 
     fun onStop() = socialLoginAuth.onStop()
@@ -142,6 +151,7 @@ class ReachFive private constructor(
         intent: Intent?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
+        activity: Activity
     ) {
         when (requestCode) {
             RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
@@ -158,6 +168,7 @@ class ReachFive private constructor(
                         intent,
                         defaultScope,
                         failure,
+                        activity
                     )
                 else
                     failure(ReachFiveError.NoIntent)
@@ -170,6 +181,7 @@ class ReachFive private constructor(
                         intent,
                         defaultScope,
                         failure,
+                        activity
                     )
                 else
                     failure(ReachFiveError.NoIntent)

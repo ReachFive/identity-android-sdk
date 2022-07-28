@@ -1,8 +1,12 @@
 package co.reachfive.identity.sdk.webview
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import co.reachfive.identity.sdk.core.*
+import co.reachfive.identity.sdk.core.Provider
+import co.reachfive.identity.sdk.core.ProviderCreator
+import co.reachfive.identity.sdk.core.RedirectionActivity
+import co.reachfive.identity.sdk.core.RedirectionActivityLauncher
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -18,7 +22,7 @@ class WebViewProvider : ProviderCreator {
         providerConfig: ProviderConfig,
         sdkConfig: SdkConfig,
         reachFiveApi: ReachFiveApi,
-        activity: Activity
+        context: Context
     ): Provider {
         return ConfiguredWebViewProvider(providerConfig, sdkConfig, reachFiveApi)
     }
@@ -85,7 +89,8 @@ internal class ConfiguredWebViewProvider(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
     ) {
         // Do nothing
     }

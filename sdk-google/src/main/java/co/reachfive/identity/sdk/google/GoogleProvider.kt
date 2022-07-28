@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.google
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import co.reachfive.identity.sdk.core.Provider
@@ -33,9 +34,9 @@ class GoogleProvider : ProviderCreator {
         providerConfig: ProviderConfig,
         sdkConfig: SdkConfig,
         reachFiveApi: ReachFiveApi,
-        activity: Activity
+        context: Context,
     ): Provider {
-        return ConfiguredGoogleProvider(providerConfig, sdkConfig, reachFiveApi, activity)
+        return ConfiguredGoogleProvider(providerConfig, sdkConfig, reachFiveApi, context)
     }
 }
 
@@ -43,7 +44,7 @@ internal class ConfiguredGoogleProvider(
     private val providerConfig: ProviderConfig,
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi,
-    private val activity: Activity
+    private val context: Context,
 ) : Provider {
     private lateinit var origin: String
     private lateinit var scope: Collection<String>
@@ -64,12 +65,13 @@ internal class ConfiguredGoogleProvider(
             .requestEmail()
             .build()
 
-        googleSignInClient = GoogleSignIn.getClient(activity.applicationContext, gso)
+        googleSignInClient = GoogleSignIn.getClient(context, gso)
     }
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
         this.origin = origin
         this.scope = scope
+
         val signInIntent = googleSignInClient.signInIntent
         activity.startActivityForResult(signInIntent, REQUEST_CODE)
     }
@@ -99,7 +101,8 @@ internal class ConfiguredGoogleProvider(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
     ) {
         if (PERMISSIONS_REQUEST_GET_ACCOUNTS == requestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
