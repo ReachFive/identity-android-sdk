@@ -2,16 +2,14 @@ package co.reachfive.identity.sdk.webview
 
 import android.app.Activity
 import android.content.Intent
-import co.reachfive.identity.sdk.core.Provider
-import co.reachfive.identity.sdk.core.ProviderCreator
-import co.reachfive.identity.sdk.core.RedirectionActivity
-import co.reachfive.identity.sdk.core.RedirectionActivityLauncher
+import co.reachfive.identity.sdk.core.*
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
 import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.webview.WebViewProvider.Companion.REQUEST_CODE
 
 class WebViewProvider : ProviderCreator {
     override val name: String = "webview"
@@ -24,9 +22,13 @@ class WebViewProvider : ProviderCreator {
     ): Provider {
         return ConfiguredWebViewProvider(providerConfig, sdkConfig, reachFiveApi)
     }
+
+    companion object {
+        const val REQUEST_CODE = 52559
+    }
 }
 
-class ConfiguredWebViewProvider(
+internal class ConfiguredWebViewProvider(
     private val providerConfig: ProviderConfig,
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi
@@ -35,11 +37,7 @@ class ConfiguredWebViewProvider(
     private val redirectionActivityLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
 
     override val name: String = providerConfig.provider
-    override val requestCode: Int = PROVIDER_REDIRECTION_REQUEST_CODE
-
-    companion object {
-        const val PROVIDER_REDIRECTION_REQUEST_CODE = 52559
-    }
+    override val requestCode: Int = REQUEST_CODE
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
         redirectionActivityLauncher.sloFlow(activity, this, scope, origin)

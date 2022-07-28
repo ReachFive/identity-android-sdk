@@ -11,7 +11,7 @@ import java.security.SecureRandom
 import kotlin.text.Charsets.UTF_8
 
 @Parcelize
-class PkceAuthCodeFlow(val codeVerifier: String, val redirectUri: String) : Parcelable {
+internal class PkceAuthCodeFlow(val codeVerifier: String, val redirectUri: String) : Parcelable {
     @IgnoredOnParcel
     val codeChallenge: String
 
@@ -28,7 +28,8 @@ class PkceAuthCodeFlow(val codeVerifier: String, val redirectUri: String) : Parc
     companion object {
         private const val BASE64_FLAGS = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
 
-        fun generate(redirectUri: String): PkceAuthCodeFlow = PkceAuthCodeFlow(generateCodeVerifier(), redirectUri)
+        fun generate(redirectUri: String): PkceAuthCodeFlow =
+            PkceAuthCodeFlow(generateCodeVerifier(), redirectUri)
 
         private fun generateCodeVerifier(): String =
             SecureRandom()

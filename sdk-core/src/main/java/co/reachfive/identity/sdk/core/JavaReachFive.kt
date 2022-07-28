@@ -2,7 +2,6 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
@@ -33,7 +32,7 @@ class JavaReachFive(
         return reach5.getProviders()
     }
 
-    fun loginWithNativeProvider(
+    fun loginWithProvider(
         name: String,
         scope: Collection<String>,
         origin: String,
@@ -42,8 +41,8 @@ class JavaReachFive(
         return reach5.loginWithProvider(name, scope, origin, activity)
     }
 
-    fun loginWithNativeProvider(name: String, origin: String, activity: Activity) {
-        return reach5.loginWithProvider(name, emptySet(), origin, activity)
+    fun loginWithProvider(name: String, origin: String, activity: Activity) {
+        return reach5.loginWithProvider(name, reach5.defaultScope, origin, activity)
     }
 
     /**
