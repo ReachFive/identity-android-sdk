@@ -4,7 +4,6 @@ import android.os.Parcelable
 import co.reachfive.identity.sdk.core.utils.WebAuthn
 import com.google.android.gms.fido.fido2.api.common.*
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -13,9 +12,6 @@ data class RegistrationOptions(
     val friendlyName: String,
     val options: CredentialCreationOptions
 ) : Parcelable {
-    @IgnoredOnParcel
-    val userId: String = options.publicKey.user.id
-
     fun toFido2Model(): PublicKeyCredentialCreationOptions {
         val publicKey = options.publicKey
 

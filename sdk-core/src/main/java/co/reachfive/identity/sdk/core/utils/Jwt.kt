@@ -4,7 +4,7 @@ import android.util.Base64
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import com.google.gson.Gson
 
-internal object Jwt {
+object Jwt {
     fun <T : Any> decode(token: String, type: Class<T>): T {
         val parts = token.split("\\.".toRegex())
         return if (parts.size == 3) {

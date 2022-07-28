@@ -10,7 +10,6 @@ import co.reachfive.identity.sdk.core.models.*
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.facebook.FacebookProvider.Companion.REQUEST_CODE
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
@@ -18,7 +17,6 @@ import com.facebook.login.LoginResult
 class FacebookProvider : ProviderCreator {
     companion object {
         const val NAME = "facebook"
-        const val REQUEST_CODE = 64206
     }
 
     override val name: String = NAME
@@ -33,12 +31,12 @@ class FacebookProvider : ProviderCreator {
     }
 }
 
-internal class ConfiguredFacebookProvider(
+class ConfiguredFacebookProvider(
     private val providerConfig: ProviderConfig,
     val sdkConfig: SdkConfig,
     val reachFiveApi: ReachFiveApi,
 ) : Provider {
-    override val requestCode: Int = REQUEST_CODE
+    override val requestCode: Int = 64206
     override val name: String = FacebookProvider.NAME
 
     private lateinit var origin: String

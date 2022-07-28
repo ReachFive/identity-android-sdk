@@ -2,7 +2,7 @@ package co.reachfive.identity.sdk.core.utils
 
 import android.util.Base64
 
-internal object WebAuthn {
+object WebAuthn {
     const val publicKeyCredentialType = "public-key"
 
     private const val base64Flags = Base64.NO_PADDING or Base64.NO_WRAP or Base64.URL_SAFE

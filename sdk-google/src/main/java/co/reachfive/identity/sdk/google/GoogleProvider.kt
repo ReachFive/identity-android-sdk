@@ -11,8 +11,6 @@ import co.reachfive.identity.sdk.core.models.*
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.google.GoogleProvider.Companion.PERMISSIONS_REQUEST_GET_ACCOUNTS
-import co.reachfive.identity.sdk.google.GoogleProvider.Companion.REQUEST_CODE
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -23,8 +21,6 @@ import com.google.android.gms.common.api.Scope
 class GoogleProvider : ProviderCreator {
     companion object {
         const val NAME = "google"
-        const val REQUEST_CODE = 14267
-        const val PERMISSIONS_REQUEST_GET_ACCOUNTS = 14278
     }
 
     override val name: String = NAME
@@ -39,7 +35,7 @@ class GoogleProvider : ProviderCreator {
     }
 }
 
-internal class ConfiguredGoogleProvider(
+class ConfiguredGoogleProvider(
     private val providerConfig: ProviderConfig,
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi,
@@ -49,6 +45,12 @@ internal class ConfiguredGoogleProvider(
     private lateinit var scope: Collection<String>
 
     private val googleSignInClient: GoogleSignInClient
+
+    companion object {
+        const val REQUEST_CODE = 14267
+        const val PERMISSIONS_REQUEST_GET_ACCOUNTS = 14278
+        private const val TAG = "Reach5"
+    }
 
     override val requestCode: Int = REQUEST_CODE
     override val name: String = GoogleProvider.NAME
