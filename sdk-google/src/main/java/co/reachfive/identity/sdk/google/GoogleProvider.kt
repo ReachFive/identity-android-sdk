@@ -6,12 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
-import co.reachfive.identity.sdk.core.SessionUtilsClient
-import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.SocialLoginAuthClient
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ProviderConfig
 import co.reachfive.identity.sdk.core.models.ReachFiveError
-import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.google.GoogleProvider.Companion.PERMISSIONS_REQUEST_GET_ACCOUNTS
@@ -34,16 +32,16 @@ class GoogleProvider : ProviderCreator {
 
     override fun create(
         providerConfig: ProviderConfig,
-        sessionUtils: SessionUtilsClient,
+        socialLoginClient: SocialLoginAuthClient,
         context: Context,
     ): Provider {
-        return ConfiguredGoogleProvider(providerConfig, sessionUtils, context)
+        return ConfiguredGoogleProvider(providerConfig, socialLoginClient, context)
     }
 }
 
 internal class ConfiguredGoogleProvider(
     private val providerConfig: ProviderConfig,
-    private val sessionUtils: SessionUtilsClient,
+    private val socialLoginClient: SocialLoginAuthClient,
     private val context: Context,
 ) : Provider {
     private lateinit var origin: String
@@ -88,7 +86,14 @@ internal class ConfiguredGoogleProvider(
             val googleSigninAccount = task.getResult(ApiException::class.java)
             val authCode = googleSigninAccount?.serverAuthCode
             if (authCode != null) {
-                sessionUtils.loginWithProvider(name, authCode, origin, scope, success, failure)
+                socialLoginClient.completeNativeProviderAuth(
+                    name,
+                    authCode,
+                    origin,
+                    scope = scope,
+                    success = success,
+                    failure = failure
+                )
             } else {
                 failure(ReachFiveError.from("No auth code"))
             }
