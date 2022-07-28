@@ -153,7 +153,7 @@ class JavaReachFive(
         origin: String? = null,
         activity: Activity
     ) {
-        return reach5.loginWithWeb(scope, state, nonce, origin,activity)
+        return reach5.refreshOrLoginWithWeb(scope, state, nonce, origin,activity)
     }
 
     fun logout(
