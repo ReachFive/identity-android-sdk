@@ -31,9 +31,9 @@ class JavaReachFive(
     }
 
     fun loadSocialProviders(
+        context: Context,
         success: Callback<List<Provider>>,
         failure: Callback<ReachFiveError>,
-        context: Context,
     ) {
         return reach5.loadSocialProviders(context, success::call, failure::call)
     }
