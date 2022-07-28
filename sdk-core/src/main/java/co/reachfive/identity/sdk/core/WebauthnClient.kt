@@ -29,7 +29,7 @@ internal class WebauthnAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val activity: Activity,
-    private val oAuthClient: ReachFiveOAuthClient,
+    private val oAuthClient: SessionUtilsClient,
 ) : WebauthnAuth {
     private val fido2ApiClient = Fido.getFido2ApiClient(activity)
 

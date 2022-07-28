@@ -10,6 +10,7 @@ import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 internal interface SessionUtils {
     var defaultScope: Set<String>
@@ -26,17 +27,38 @@ internal interface SessionUtils {
         nonce: String? = null,
         origin: String? = null,
     )
+
+    fun logout(
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    )
 }
 
 internal class SessionUtilsClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val webLauncher: RedirectionActivityLauncher,
+    private val socialLoginAuth: SocialLoginAuthClient,
     private val activity: Activity,
     override var defaultScope: Set<String> = emptySet(),
 ) : SessionUtils {
     companion object {
         const val codeResponseType = "code"
+    }
+
+    override fun logout(
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        socialLoginAuth.logoutFromAll()
+        reachFiveApi
+            .logout(SdkInfos.getQueries())
+            .enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
     }
 
     override fun refreshAccessToken(
