@@ -114,6 +114,8 @@ class RedirectionActivity : Activity() {
         }
     }
 
+    private var started = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -146,5 +148,15 @@ class RedirectionActivity : Activity() {
 
         setResult(result.code, intent)
         finish()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (!started) {
+            started = true
+        } else {
+            finish()
+        }
     }
 }
