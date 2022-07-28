@@ -7,7 +7,6 @@ import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
-import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
@@ -36,7 +35,7 @@ internal interface SessionUtils {
     )
 }
 
-class SessionUtilsClient(
+internal class SessionUtilsClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val webLauncher: RedirectionActivityLauncher,
@@ -47,33 +46,6 @@ class SessionUtilsClient(
     }
 
     override var defaultScope: Set<String> = emptySet()
-
-    fun loginWithProvider(
-        provider: String,
-        authCode: String? = null,
-        providerAccessToken: String? = null,
-        origin: String? = null,
-        scope: Collection<String>,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    ) {
-        val loginProviderRequest = LoginProviderRequest(
-            provider = provider,
-            clientId = sdkConfig.clientId,
-            code = authCode,
-            providerToken = providerAccessToken,
-            origin = origin,
-            scope = scope.joinToString(" ")
-        )
-        reachFiveApi
-            .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
-            .enqueue(
-                ReachFiveApiCallback(
-                    success = { it.toAuthToken().fold(success, failure) },
-                    failure = failure
-                )
-            )
-    }
 
     override fun logout(
         successWithNoContent: SuccessWithNoContent<Unit>,

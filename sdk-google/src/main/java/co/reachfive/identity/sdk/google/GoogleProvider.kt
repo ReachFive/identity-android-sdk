@@ -6,12 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
-import co.reachfive.identity.sdk.core.SessionUtilsClient
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
-import co.reachfive.identity.sdk.core.models.AuthToken
-import co.reachfive.identity.sdk.core.models.ProviderConfig
-import co.reachfive.identity.sdk.core.models.ReachFiveError
-import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
+import co.reachfive.identity.sdk.core.models.*
+import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.google.GoogleProvider.Companion.PERMISSIONS_REQUEST_GET_ACCOUNTS
@@ -34,16 +32,18 @@ class GoogleProvider : ProviderCreator {
 
     override fun create(
         providerConfig: ProviderConfig,
-        sessionUtils: SessionUtilsClient,
+        sdkConfig: SdkConfig,
+        reachFiveApi: ReachFiveApi,
         context: Context,
     ): Provider {
-        return ConfiguredGoogleProvider(providerConfig, sessionUtils, context)
+        return ConfiguredGoogleProvider(providerConfig, sdkConfig, reachFiveApi, context)
     }
 }
 
 internal class ConfiguredGoogleProvider(
     private val providerConfig: ProviderConfig,
-    private val sessionUtils: SessionUtilsClient,
+    private val sdkConfig: SdkConfig,
+    private val reachFiveApi: ReachFiveApi,
     private val context: Context,
 ) : Provider {
     private lateinit var origin: String
@@ -59,13 +59,13 @@ internal class ConfiguredGoogleProvider(
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestScopes(
                 Scope(Scopes.OPEN_ID),
-                *this.providerConfig.scope.map { Scope(it) }.toTypedArray()
+                *providerConfig.scope.map { Scope(it) }.toTypedArray()
             )
             .requestServerAuthCode(providerConfig.clientId)
             .requestEmail()
             .build()
 
-        googleSignInClient = GoogleSignIn.getClient(this.context, gso)
+        googleSignInClient = GoogleSignIn.getClient(context, gso)
     }
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
@@ -88,7 +88,7 @@ internal class ConfiguredGoogleProvider(
             val googleSigninAccount = task.getResult(ApiException::class.java)
             val authCode = googleSigninAccount?.serverAuthCode
             if (authCode != null) {
-                sessionUtils.loginWithProvider(name, authCode, origin, scope, success, failure)
+                loginWithProvider(authCode, origin, scope, success, failure)
             } else {
                 failure(ReachFiveError.from("No auth code"))
             }
@@ -111,5 +111,29 @@ internal class ConfiguredGoogleProvider(
                 failure(ReachFiveError.from("permission denied"))
             }
         }
+    }
+
+    private fun loginWithProvider(
+        code: String,
+        origin: String,
+        scope: Collection<String>,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val loginProviderRequest = LoginProviderRequest(
+            provider = name,
+            clientId = sdkConfig.clientId,
+            code = code,
+            origin = origin,
+            scope = scope.joinToString(" ")
+        )
+        reachFiveApi
+            .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { it.toAuthToken().fold(success, failure) },
+                    failure = failure
+                )
+            )
     }
 }
