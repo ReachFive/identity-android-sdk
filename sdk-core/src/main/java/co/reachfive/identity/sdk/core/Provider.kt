@@ -15,8 +15,7 @@ interface ProviderCreator {
     val name: String
     fun create(
         providerConfig: ProviderConfig,
-        sdkConfig: SdkConfig,
-        reachFiveApi: ReachFiveApi,
+        sessionUtils: SessionUtilsClient,
         context: Context
     ): Provider
 }
