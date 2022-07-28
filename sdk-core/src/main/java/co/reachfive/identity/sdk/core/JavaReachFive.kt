@@ -30,12 +30,12 @@ class JavaReachFive(
         return reach5.initialize(success::call, failure::call)
     }
 
-    fun loadProviders(
+    fun loadSocialProviders(
         success: Callback<List<Provider>>,
         failure: Callback<ReachFiveError>,
         context: Context,
     ) {
-        return reach5.loadProviders(success::call, failure::call, context)
+        return reach5.loadSocialProviders(success::call, failure::call, context)
     }
 
     fun getProvider(name: String): Provider? {

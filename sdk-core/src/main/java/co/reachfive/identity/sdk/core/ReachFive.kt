@@ -87,7 +87,7 @@ class ReachFive private constructor(
         return this
     }
 
-    fun loadProviders(
+    fun loadSocialProviders(
         success: Success<List<Provider>> = {},
         failure: Failure<ReachFiveError> = {},
         context: Context,
