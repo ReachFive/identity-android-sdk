@@ -1,7 +1,6 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
@@ -147,14 +146,11 @@ class ReachFive private constructor(
         activity: Activity
     ) {
         when (requestCode) {
-            RedirectionActivity.REDIRECTION_REQUEST_CODE -> {
-                if (intent != null)
-                    this.onLoginCallbackResult(intent, resultCode, success, failure)
-                else
-                    failure(ReachFiveError.NoIntent)
-            }
+            RedirectionActivity.REDIRECTION_REQUEST_CODE ->
+                if (intent != null) this.onLoginCallbackResult(intent, resultCode, success, failure)
+                else failure(ReachFiveError.NoIntent)
 
-            WebauthnAuth.LOGIN_REQUEST_CODE -> {
+            WebauthnAuth.LOGIN_REQUEST_CODE ->
                 if (intent != null)
                     webauthnAuth.onLoginWithWebAuthnResult(
                         resultCode,
@@ -163,9 +159,7 @@ class ReachFive private constructor(
                         failure,
                         activity
                     )
-                else
-                    failure(ReachFiveError.NoIntent)
-            }
+                else failure(ReachFiveError.NoIntent)
 
             WebauthnAuth.SIGNUP_REQUEST_CODE -> {
                 if (intent != null)
@@ -176,8 +170,7 @@ class ReachFive private constructor(
                         failure,
                         activity
                     )
-                else
-                    failure(ReachFiveError.NoIntent)
+                else failure(ReachFiveError.NoIntent)
             }
 
             else ->
