@@ -14,6 +14,12 @@ import co.reachfive.identity.sdk.core.utils.Success
 internal interface SocialLoginAuth {
     var defaultScope: Set<String>
 
+    fun loadSocialProviders(
+        context: Context,
+        success: Success<List<Provider>> = {},
+        failure: Failure<ReachFiveError> = {},
+    )
+
     fun getProvider(name: String): Provider?
 
     fun getProviders(): List<Provider>
@@ -39,6 +45,14 @@ internal class SocialLoginAuthClient(
     private val sdkConfig: SdkConfig,
     private val providersCreators: List<ProviderCreator>,
 ) : SocialLoginAuth {
+
+    override fun loadSocialProviders(
+        context: Context,
+        success: Success<List<Provider>>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        providersConfigs(success, failure, context)
+    }
 
     override var defaultScope: Set<String> = emptySet()
 

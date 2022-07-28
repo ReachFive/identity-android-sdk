@@ -87,14 +87,6 @@ class ReachFive private constructor(
         return this
     }
 
-    fun loadSocialProviders(
-        success: Success<List<Provider>> = {},
-        failure: Failure<ReachFiveError> = {},
-        context: Context,
-    ) {
-        return socialLoginAuth.providersConfigs(success, failure, context)
-    }
-
     fun onStop() = socialLoginAuth.onStop()
 
     private fun onLoginCallbackResult(
