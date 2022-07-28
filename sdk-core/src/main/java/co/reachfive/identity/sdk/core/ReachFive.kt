@@ -16,6 +16,7 @@ import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -69,7 +70,7 @@ class ReachFive private constructor(
     }
 
     fun initialize(
-        success: Success<Unit> = {},
+        success: SuccessWithNoContent<Unit> = {},
         failure: Failure<ReachFiveError> = {}
     ): ReachFive {
         reachFiveApi
