@@ -39,6 +39,7 @@ internal class SocialLoginAuthClient(
     private val providersCreators: List<ProviderCreator>,
     override var defaultScope: Set<String> = emptySet(),
 ) : SocialLoginAuth {
+
     private var providers: List<Provider> = emptyList()
 
     override fun getProviders(): List<Provider> = providers
