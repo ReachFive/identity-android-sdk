@@ -184,7 +184,11 @@ class ReachFive private constructor(
                         success,
                         failure
                     )
-                }
+                } else Log.d(
+                    TAG,
+                    "Request code ${requestCode} does not match any ReachFive actions."
+                )
+
         }
     }
 
