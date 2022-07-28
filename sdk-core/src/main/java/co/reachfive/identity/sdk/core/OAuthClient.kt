@@ -1,20 +1,18 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
-import android.util.Log
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
-import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
-import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
-internal interface ReachFiveOAuth {
+internal interface SessionUtils {
     var defaultScope: Set<String>
 
     fun refreshAccessToken(
@@ -30,18 +28,39 @@ internal interface ReachFiveOAuth {
         origin: String? = null,
         activity: Activity,
     )
+
+    fun logout(
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    )
 }
 
-internal class ReachFiveOAuthClient(
+internal class SessionUtilsClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val webLauncher: RedirectionActivityLauncher,
-) : ReachFiveOAuth {
+    private val socialLoginAuth: SocialLoginAuthClient,
+) : SessionUtils {
     companion object {
         const val codeResponseType = "code"
     }
 
     override var defaultScope: Set<String> = emptySet()
+
+    override fun logout(
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        socialLoginAuth.logoutFromAll()
+        reachFiveApi
+            .logout(SdkInfos.getQueries())
+            .enqueue(
+                ReachFiveApiCallback(
+                    successWithNoContent = successWithNoContent,
+                    failure = failure
+                )
+            )
+    }
 
     override fun refreshAccessToken(
         authToken: AuthToken,

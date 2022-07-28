@@ -28,7 +28,7 @@ import com.google.android.gms.fido.fido2.api.common.ErrorCode
 internal class WebauthnAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
-    private val oAuthClient: ReachFiveOAuthClient,
+    private val sessionUtils: SessionUtilsClient,
 ) : WebauthnAuth {
     private var authToken: AuthToken? = null
 
@@ -112,7 +112,7 @@ internal class WebauthnAuthClient(
                     )
                     .enqueue(
                         ReachFiveApiCallback(
-                            success = { oAuthClient.loginCallback(it.tkn, scope, activity) },
+                            success = { sessionUtils.loginCallback(it.tkn, scope, activity) },
                             failure = failure
                         )
                     )
@@ -262,7 +262,7 @@ internal class WebauthnAuthClient(
             .authenticateWithWebAuthn(authenticationPublicKeyCredential)
             .enqueue(
                 ReachFiveApiCallback(
-                    success = { oAuthClient.loginCallback(it.tkn, scope, activity) },
+                    success = { sessionUtils.loginCallback(it.tkn, scope, activity) },
                     failure = failure
                 )
             )

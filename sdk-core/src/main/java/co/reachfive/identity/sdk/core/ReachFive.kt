@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
@@ -15,7 +16,6 @@ import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -24,7 +24,7 @@ class ReachFive private constructor(
     private val profileManagement: ProfileManagementClient,
     private val socialLoginAuth: SocialLoginAuthClient,
     private val webauthnAuth: WebauthnAuthClient,
-    private val oAuthClient: ReachFiveOAuthClient,
+    private val sessionUtils: SessionUtilsClient,
     override val sdkConfig: SdkConfig,
     override var defaultScope: Set<String> = emptySet(),
 ) :
@@ -33,7 +33,7 @@ class ReachFive private constructor(
     ProfileManagement by profileManagement,
     SocialLoginAuth by socialLoginAuth,
     WebauthnAuth by webauthnAuth,
-    ReachFiveOAuth by oAuthClient {
+    SessionUtils by sessionUtils {
 
     companion object {
         const val TAG = "Reach5"
@@ -50,9 +50,10 @@ class ReachFive private constructor(
             val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
                 SocialLoginAuthClient(reachFiveApi, sdkConfig, providersCreators)
-            val oauthClient = ReachFiveOAuthClient(reachFiveApi, sdkConfig, webLauncher)
+            val sessionUtils =
+                SessionUtilsClient(reachFiveApi, sdkConfig, webLauncher, socialLoginAuthClient)
             val webauthnAuthClient =
-                WebauthnAuthClient(reachFiveApi, sdkConfig, oauthClient)
+                WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
 
             return ReachFive(
                 reachFiveApi,
@@ -61,7 +62,7 @@ class ReachFive private constructor(
                 profileManagementClient,
                 socialLoginAuthClient,
                 webauthnAuthClient,
-                oauthClient,
+                sessionUtils,
                 sdkConfig,
             )
         }
@@ -95,21 +96,6 @@ class ReachFive private constructor(
     }
 
     fun onStop() = socialLoginAuth.onStop()
-
-    fun logout(
-        successWithNoContent: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>
-    ) {
-        socialLoginAuth.logoutFromAll()
-        reachFiveApi
-            .logout(SdkInfos.getQueries())
-            .enqueue(
-                ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
-                    failure = failure
-                )
-            )
-    }
 
     private fun onLoginCallbackResult(
         intent: Intent,
@@ -210,7 +196,11 @@ class ReachFive private constructor(
                         success,
                         failure
                     )
-                }
+                } else Log.d(
+                    TAG,
+                    "Request code ${requestCode} does not match any ReachFive actions."
+                )
+
         }
     }
 
