@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.browser.customtabs.CustomTabsIntent
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
+import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
@@ -104,6 +106,12 @@ class RedirectionActivity : Activity() {
 
         fun isRedirectionActivityRequestCode(code: Int): Boolean =
             code == REDIRECTION_REQUEST_CODE || code == CHROME_CUSTOM_TAB_REQUEST_CODE
+
+        enum class Result(val code: Int) {
+            Success(0),
+            ReachFiveError(1),
+            UnexpectedError(2);
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,22 +128,23 @@ class RedirectionActivity : Activity() {
     }
 
     override fun onNewIntent(newIntent: Intent) {
-        val data = newIntent.data
+        val uri = newIntent.data
 
-        val newResultCode = if (newIntent.action != Intent.ACTION_VIEW || data == null) {
-            LoginResult.UNEXPECTED_ERROR.code
-        } else {
-            val authCode = data.getQueryParameter("code")
+        val authCode = uri?.getQueryParameter("code")
+        val error = uri?.let { ReachFiveError.fromRedirectionResult(it) }
 
-            if (authCode == null)
-                LoginResult.NO_AUTHORIZATION_CODE.code
-            else {
+        val result =
+            if (authCode != null) {
                 intent.putExtra(CODE_KEY, authCode)
-                LoginResult.SUCCESS.code
+                Result.Success
+            } else if (error != null) {
+                intent.putExtra(ReachFiveError.INTENT_EXTRA_KEY, error as Parcelable)
+                Result.ReachFiveError
+            } else {
+                Result.UnexpectedError
             }
-        }
 
-        setResult(newResultCode, intent)
+        setResult(result.code, intent)
         finish()
     }
 }
