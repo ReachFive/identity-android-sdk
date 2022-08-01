@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
+import co.reachfive.identity.sdk.core.SessionUtilsClient
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -26,18 +27,16 @@ class FacebookProvider : ProviderCreator {
 
     override fun create(
         providerConfig: ProviderConfig,
-        sdkConfig: SdkConfig,
-        reachFiveApi: ReachFiveApi,
+        sessionUtils: SessionUtilsClient,
         context: Context
     ): Provider {
-        return ConfiguredFacebookProvider(providerConfig, sdkConfig, reachFiveApi)
+        return ConfiguredFacebookProvider(providerConfig, sessionUtils)
     }
 }
 
 internal class ConfiguredFacebookProvider(
     private val providerConfig: ProviderConfig,
-    val sdkConfig: SdkConfig,
-    val reachFiveApi: ReachFiveApi,
+    private val sessionUtils: SessionUtilsClient,
 ) : Provider {
     override val requestCode: Int = REQUEST_CODE
     override val name: String = FacebookProvider.NAME
@@ -68,19 +67,14 @@ internal class ConfiguredFacebookProvider(
             .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult) {
                     val accessToken = result.accessToken.token
-                    val loginProviderRequest = LoginProviderRequest(
-                        provider = name,
-                        providerToken = accessToken,
-                        clientId = sdkConfig.clientId,
+                    sessionUtils.loginWithProvider(
+                        name,
+                        providerAccessToken = accessToken,
                         origin = origin,
-                        scope = scope.joinToString(" ")
+                        scope = scope,
+                        success = success,
+                        failure = failure
                     )
-                    reachFiveApi.loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
-                        .enqueue(
-                            ReachFiveApiCallback(success = {
-                                it.toAuthToken().fold(success, failure)
-                            }, failure = failure)
-                        )
                 }
 
                 override fun onCancel() {
