@@ -40,7 +40,7 @@ internal interface SocialLoginAuth {
     )
 }
 
-internal class SocialLoginAuthClient(
+class SocialLoginAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val providersCreators: List<ProviderCreator>,
