@@ -3,15 +3,11 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_KEY
-import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
-import co.reachfive.identity.sdk.core.models.SdkInfos
-import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
@@ -48,10 +44,10 @@ class ReachFive private constructor(
             val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi)
             val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
             val profileManagementClient = ProfileManagementClient(reachFiveApi)
-            val socialLoginAuthClient =
-                SocialLoginAuthClient(reachFiveApi, sdkConfig, providersCreators)
             val sessionUtils =
-                SessionUtilsClient(reachFiveApi, sdkConfig, webLauncher, socialLoginAuthClient)
+                SessionUtilsClient(reachFiveApi, sdkConfig, webLauncher)
+            val socialLoginAuthClient =
+                SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient =
                 WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
 
@@ -89,13 +85,22 @@ class ReachFive private constructor(
 
     fun onStop() = socialLoginAuth.onStop()
 
+    fun logout(
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>,
+        logoutFromWeb: Boolean = false,
+    ) {
+        socialLoginAuth.logoutFromAll()
+        if (logoutFromWeb) sessionUtils.webLogout(successWithNoContent, failure)
+    }
+
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
         intent: Intent?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
-        if (requestCode == WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE) {
+        if (requestCode == WebauthnAuth.RC_REGISTER_DEVICE) {
             if (intent != null)
                 webauthnAuth.onAddNewWebAuthnDeviceResult(intent, success, failure)
             else
@@ -112,7 +117,7 @@ class ReachFive private constructor(
         activity: Activity
     ) {
         when (requestCode) {
-            WebauthnAuth.LOGIN_REQUEST_CODE ->
+            WebauthnAuth.RC_LOGIN ->
                 if (intent != null)
                     webauthnAuth.onLoginWithWebAuthnResult(
                         resultCode,
@@ -123,7 +128,7 @@ class ReachFive private constructor(
                     )
                 else failure(ReachFiveError.NoIntent)
 
-            WebauthnAuth.SIGNUP_REQUEST_CODE -> {
+            WebauthnAuth.RC_SIGNUP -> {
                 if (intent != null)
                     webauthnAuth.onSignupWithWebAuthnResult(
                         resultCode,
@@ -166,9 +171,11 @@ class ReachFive private constructor(
     ): ActivityResultHandler? {
         if (isReachFiveLoginRequestCode(requestCode))
             return LoginResultHandler(this, requestCode, resultCode, intent)
-        else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode))
-            return WebauthnActionHandler(this, requestCode, intent)
-        else return null
+        else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode)) {
+            if (WebauthnAuth.RC_REGISTER_DEVICE == requestCode)
+                return WebAuthnDeviceAddResult(this, requestCode, intent)
+            else return null
+        } else return null
     }
 
     fun isReachFiveLoginRequestCode(code: Int): Boolean =

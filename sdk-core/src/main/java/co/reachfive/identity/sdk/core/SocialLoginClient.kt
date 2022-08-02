@@ -42,8 +42,8 @@ internal interface SocialLoginAuth {
 
 class SocialLoginAuthClient(
     private val reachFiveApi: ReachFiveApi,
-    private val sdkConfig: SdkConfig,
     private val providersCreators: List<ProviderCreator>,
+    private val sessionUtils: SessionUtilsClient,
 ) : SocialLoginAuth {
 
     override fun loadSocialProviders(
@@ -130,14 +130,12 @@ class SocialLoginAuthClient(
             when {
                 nativeProvider != null -> nativeProvider.create(
                     config,
-                    sdkConfig,
-                    reachFiveApi,
+                    sessionUtils,
                     context
                 )
                 webViewProvider != null -> webViewProvider.create(
                     config,
-                    sdkConfig,
-                    reachFiveApi,
+                    sessionUtils,
                     context
                 )
                 else -> {

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
-import co.reachfive.identity.sdk.core.WebauthnAuth.Companion.LOGIN_REQUEST_CODE
+import co.reachfive.identity.sdk.core.WebauthnAuth.Companion.RC_LOGIN
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -54,7 +54,7 @@ internal class WebauthnAuthClient(
                     success = { registrationOptions ->
                         startFIDO2RegisterTask(
                             registrationOptions,
-                            WebauthnAuth.SIGNUP_REQUEST_CODE,
+                            WebauthnAuth.RC_SIGNUP,
                             failure,
                             activity
                         )
@@ -139,7 +139,7 @@ internal class WebauthnAuthClient(
                     success = { registrationOptions ->
                         startFIDO2RegisterTask(
                             registrationOptions,
-                            WebauthnAuth.REGISTER_DEVICE_REQUEST_CODE,
+                            WebauthnAuth.RC_REGISTER_DEVICE,
                             failure,
                             activity
                         )
@@ -199,7 +199,7 @@ internal class WebauthnAuthClient(
                             Log.d(TAG, "Launching Fido2 PendingIntent")
                             activity.startIntentSenderForResult(
                                 fido2PendingIntent.intentSender,
-                                LOGIN_REQUEST_CODE,
+                                RC_LOGIN,
                                 null,
                                 0,
                                 0,
@@ -373,19 +373,19 @@ internal class WebauthnAuthClient(
 
 internal interface WebauthnAuth {
     companion object {
-        const val SIGNUP_REQUEST_CODE = 31001
-        const val LOGIN_REQUEST_CODE = 31002
-        const val REGISTER_DEVICE_REQUEST_CODE = 31003
+        const val RC_SIGNUP = 31001
+        const val RC_LOGIN = 31002
+        const val RC_REGISTER_DEVICE = 31003
 
         fun isWebauthnLoginRequestCode(code: Int): Boolean =
             setOf(
-                SIGNUP_REQUEST_CODE,
-                LOGIN_REQUEST_CODE,
-                REGISTER_DEVICE_REQUEST_CODE
+                RC_SIGNUP,
+                RC_LOGIN,
+                RC_REGISTER_DEVICE
             ).any { it == code }
 
         fun isWebauthnActionRequestCode(code: Int): Boolean =
-            REGISTER_DEVICE_REQUEST_CODE == code
+            RC_REGISTER_DEVICE == code
     }
 
     var defaultScope: Set<String>

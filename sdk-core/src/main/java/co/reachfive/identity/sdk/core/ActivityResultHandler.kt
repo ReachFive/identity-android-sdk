@@ -20,11 +20,13 @@ open class LoginResultHandler(
     }
 }
 
-open class WebauthnActionHandler(
+sealed interface WebauthnActionHandler : ActivityResultHandler
+
+open class WebAuthnDeviceAddResult(
     private val reachFive: ReachFive,
     val requestCode: Int,
     val intent: Intent?,
-) : ActivityResultHandler {
+) : WebauthnActionHandler {
     fun handle(success: Success<Unit>, failure: Failure<ReachFiveError>) {
         reachFive.onWebauthnDeviceAddResult(requestCode, intent, success, failure)
     }

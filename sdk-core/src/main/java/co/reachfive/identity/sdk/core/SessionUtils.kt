@@ -33,18 +33,12 @@ internal interface SessionUtils {
         origin: String? = null,
         activity: Activity,
     )
-
-    fun logout(
-        successWithNoContent: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>
-    )
 }
 
 class SessionUtilsClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val webLauncher: RedirectionActivityLauncher,
-    private val socialLoginAuth: SocialLoginAuthClient,
 ) : SessionUtils {
     companion object {
         const val codeResponseType = "code"
@@ -129,11 +123,10 @@ class SessionUtilsClient(
             )
     }
 
-    override fun logout(
+    internal fun webLogout(
         successWithNoContent: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>
     ) {
-        socialLoginAuth.logoutFromAll()
         reachFiveApi
             .logout(SdkInfos.getQueries())
             .enqueue(

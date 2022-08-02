@@ -97,11 +97,12 @@ data class ReachFiveError(
         val NoIntent: ReachFiveError = from("Intent is null")
 
         @JvmStatic
-        val UserCanceled = ReachFiveError.from("User canceled auth!")
+        val UserCanceled = from("User canceled auth!")
 
         enum class Code(val code: Int) {
             // OAuth
             OAuthAuthorizationError(303),
+
             /*
             API error codes
              */
