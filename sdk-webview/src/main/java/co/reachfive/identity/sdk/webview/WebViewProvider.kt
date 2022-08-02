@@ -20,7 +20,7 @@ class WebViewProvider : ProviderCreator {
         sessionUtils: SessionUtilsClient,
         context: Context
     ): Provider {
-        return ConfiguredWebViewProvider(providerConfig, )
+        return ConfiguredWebViewProvider(providerConfig, sessionUtils)
     }
 
     companion object {
@@ -30,16 +30,14 @@ class WebViewProvider : ProviderCreator {
 
 internal class ConfiguredWebViewProvider(
     private val providerConfig: ProviderConfig,
-    private val redirectionHandler: RedirectionActivityResultHandler
+    private val sessionUtils: SessionUtilsClient,
 ) : Provider {
-
-    private val redirectionActivityLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
 
     override val name: String = providerConfig.provider
     override val requestCode: Int = REQUEST_CODE
 
     override fun login(origin: String, scope: Collection<String>, activity: Activity) {
-        redirectionActivityLauncher.sloFlow(activity, this, scope, origin)
+        sessionUtils.loginWithProvider(activity, this, scope, origin)
     }
 
     override fun onActivityResult(
@@ -48,7 +46,9 @@ internal class ConfiguredWebViewProvider(
         data: Intent?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
-    ) = redirectionHandler.handle(resultCode, data, success, failure)
+    ) {
+        sessionUtils.handleAuthorizationCompletion(data, success, failure)
+    }
 
     override fun toString(): String =
         providerConfig.provider

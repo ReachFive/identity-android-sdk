@@ -24,19 +24,24 @@ data class ReachFiveApiError(
     @SerializedName("error_details")
     val errorDetails: List<ReachFiveApiErrorDetail>? = null
 ) : Parcelable {
-    companion object {
-        // TODO from query string
-        fun resolveFrom(data: Uri): ReachFiveApiError? {
-            val error: String
-            val errorMessageKey: String?
-            val errorDescription: String
 
-            return ReachFiveApiError(
-                error = "",
-                errorMessageKey = null,
-                errorDescription = null,
-            )
-        }
+    companion object {
+        @JvmStatic
+        fun resolveFrom(data: Uri): ReachFiveApiError? =
+            data.getQueryParameter("error")?.let { error ->
+                val errorId = data.getQueryParameter("error_id")
+                val errorDescription = data.getQueryParameter("error_description")
+                val errorMessageKey = data.getQueryParameter("error_message_key")
+                val errorUserMsg = data.getQueryParameter("error_user_msg")
+
+                ReachFiveApiError(
+                    error = error,
+                    errorId = errorId,
+                    errorUserMsg = errorUserMsg,
+                    errorMessageKey = errorMessageKey,
+                    errorDescription = errorDescription,
+                )
+            }
     }
 }
 
@@ -55,8 +60,6 @@ data class ReachFiveError(
 ) : java.lang.Exception(message), Parcelable {
 
     companion object {
-        const val INTENT_EXTRA_KEY = "R5_ERROR"
-
         @JvmStatic
         fun from(error: Exception): ReachFiveError {
             return ReachFiveError(
@@ -81,20 +84,24 @@ data class ReachFiveError(
 
         @JvmStatic
         fun fromRedirectionResult(uri: Uri): ReachFiveError? {
-            val apiError = ReachFiveApiError.resolveFrom(uri)
-            return ReachFiveError(
-                code = 303,
-                message = apiError?.error ?: "ReachFive API response error",
-                data = apiError
-            )
+            return ReachFiveApiError.resolveFrom(uri)?.let { apiError ->
+                ReachFiveError(
+                    code = 303,
+                    message = apiError.errorDescription ?: "ReachFive API response error",
+                    data = apiError
+                )
+            }
         }
 
+        @JvmStatic
         val NoIntent: ReachFiveError = from("Intent is null")
 
-        // TODO
-        val Unexpected: ReachFiveError = from("Unexpected error")
+        @JvmStatic
+        val UserCanceled = ReachFiveError.from("User canceled auth!")
 
         enum class Code(val code: Int) {
+            // OAuth
+            OAuthAuthorizationError(303),
             /*
             API error codes
              */

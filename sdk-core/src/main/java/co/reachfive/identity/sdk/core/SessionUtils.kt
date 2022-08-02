@@ -1,12 +1,16 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
@@ -47,6 +51,56 @@ class SessionUtilsClient(
     }
 
     override var defaultScope: Set<String> = emptySet()
+
+    fun loginWithProvider(
+        activity: Activity,
+        provider: Provider,
+        scope: Collection<String>,
+        origin: String,
+    ) = webLauncher.loginWithProvider(activity, provider, scope, origin)
+
+    fun handleAuthorizationCompletion(
+        intent: Intent?,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>
+    ) {
+        val uri = intent?.data ?: Uri.EMPTY
+        val error = uri.let { ReachFiveError.fromRedirectionResult(it) }
+
+        val authCode = uri.getQueryParameter("code")
+        val codeVerifier = intent?.getStringExtra(CODE_VERIFIER_KEY)
+
+        if (error != null)
+            failure(error)
+        else {
+            if (authCode == null) failure(ReachFiveError.UserCanceled)
+            else if (codeVerifier == null) failure(ReachFiveError.from("Could not retrieve code verifier!"))
+            else exchangeAuthorizationCode(authCode, codeVerifier, success, failure)
+        }
+    }
+
+    private fun exchangeAuthorizationCode(
+        authCode: String,
+        codeVerifier: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        val authCodeRequest = AuthCodeRequest(
+            clientId = sdkConfig.clientId,
+            code = authCode,
+            redirectUri = sdkConfig.scheme,
+            codeVerifier = codeVerifier
+        )
+
+        reachFiveApi
+            .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+            .enqueue(
+                ReachFiveApiCallback(
+                    success = { it.toAuthToken().fold(success, failure) },
+                    failure = failure
+                )
+            )
+    }
 
     fun loginWithProvider(
         provider: String,

@@ -88,7 +88,7 @@ internal class ConfiguredGoogleProvider(
             val googleSigninAccount = task.getResult(ApiException::class.java)
             val authCode = googleSigninAccount?.serverAuthCode
             if (authCode != null) {
-                sessionUtils.loginWithProvider(name, authCode, origin, scope, success, failure)
+                sessionUtils.loginWithProvider(name, authCode, origin, scope = scope, success = success, failure = failure)
             } else {
                 failure(ReachFiveError.from("No auth code"))
             }

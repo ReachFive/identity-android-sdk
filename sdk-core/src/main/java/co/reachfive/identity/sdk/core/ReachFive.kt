@@ -89,40 +89,6 @@ class ReachFive private constructor(
 
     fun onStop() = socialLoginAuth.onStop()
 
-    private fun onLoginCallbackResult(
-        intent: Intent,
-        resultCode: Int,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    ) {
-        when (resultCode) {
-            LoginResult.SUCCESS.code -> {
-                val code = intent.getStringExtra(CODE_KEY)!!
-                val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)!!
-
-                val authCodeRequest =
-                    AuthCodeRequest(sdkConfig.clientId, code, sdkConfig.scheme, codeVerifier)
-
-                reachFiveApi
-                    .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                    .enqueue(
-                        ReachFiveApiCallback(
-                            success = { it.toAuthToken().fold(success, failure) },
-                            failure = failure
-                        )
-                    )
-            }
-
-            LoginResult.NO_AUTHORIZATION_CODE.code -> {
-                failure(ReachFiveError("No authorization code found in activity result."))
-            }
-
-            LoginResult.UNEXPECTED_ERROR.code ->
-                failure(ReachFiveError("Unexpected error during login callback."))
-        }
-    }
-
-
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
         intent: Intent?,
@@ -146,10 +112,6 @@ class ReachFive private constructor(
         activity: Activity
     ) {
         when (requestCode) {
-            RedirectionActivity.REDIRECTION_REQUEST_CODE ->
-                if (intent != null) this.onLoginCallbackResult(intent, resultCode, success, failure)
-                else failure(ReachFiveError.NoIntent)
-
             WebauthnAuth.LOGIN_REQUEST_CODE ->
                 if (intent != null)
                     webauthnAuth.onLoginWithWebAuthnResult(
@@ -174,7 +136,14 @@ class ReachFive private constructor(
             }
 
             else ->
-                if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
+                if (RedirectionActivity.isRedirectionActivityRequestCode(requestCode)) {
+                    if (intent != null) sessionUtils.handleAuthorizationCompletion(
+                        intent,
+                        success,
+                        failure
+                    )
+                    else failure(ReachFiveError.NoIntent)
+                } else if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
                     socialLoginAuth.onActivityResult(
                         requestCode,
                         resultCode,
