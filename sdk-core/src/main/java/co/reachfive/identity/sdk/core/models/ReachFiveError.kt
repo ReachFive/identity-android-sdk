@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core.models
 import android.net.Uri
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -94,34 +95,16 @@ data class ReachFiveError(
         }
 
         @JvmStatic
-        val NoIntent: ReachFiveError = from("Intent is null")
+        val NoIntent: ReachFiveError =
+            ReachFiveError(
+                code = 52002,
+                message = "Intent is null"
+            )
 
         @JvmStatic
-        val UserCanceled = from("User canceled auth!")
-
-        enum class Code(val code: Int) {
-            // OAuth
-            OAuthAuthorizationError(303),
-
-            /*
-            API error codes
-             */
-            BadRequest(400),
-            Unauthorized(401),
-            Forbidden(403),
-            NotFound(404),
-            Conflict(409),
-            TooManyRequests(429),
-            InternalServerError(500),
-            NotImplemented(501),
-            BadGateway(502),
-            ServiceUnavailable(503),
-            GatewayTimeout(504),
-
-            /*
-            SDK error codes
-             */
-            // TODO
-        }
+        val UserCanceled = ReachFiveError(
+            code = 52001,
+            message = "User canceled or closed the web flow.",
+        )
     }
 }
