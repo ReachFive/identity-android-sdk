@@ -86,12 +86,10 @@ class ReachFive private constructor(
     fun onStop() = socialLoginAuth.onStop()
 
     fun logout(
-        successWithNoContent: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>,
-        logoutFromWeb: Boolean = false,
+        logoutFromWebActivity: Activity? = null,
     ) {
         socialLoginAuth.logoutFromAll()
-        if (logoutFromWeb) sessionUtils.webLogout(successWithNoContent, failure)
+        logoutFromWebActivity?.also { sessionUtils.webLogout(it) }
     }
 
     fun onWebauthnDeviceAddResult(
@@ -108,11 +106,12 @@ class ReachFive private constructor(
         }
     }
 
-    fun onLoginActivityResult(
+    fun onSessionActivityResult(
         requestCode: Int,
         resultCode: Int,
         intent: Intent?,
-        success: Success<AuthToken>,
+        loginSuccess: Success<AuthToken>,
+        webLogoutSuccess: SuccessWithNoContent<Unit>? = null,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -142,9 +141,11 @@ class ReachFive private constructor(
 
             else ->
                 if (RedirectionActivity.isRedirectionActivityRequestCode(requestCode)) {
-                    if (intent != null) sessionUtils.handleAuthorizationCompletion(
+                    if (requestCode == RedirectionActivity.RC_WEBLOGOUT) {
+                        (webLogoutSuccess ?: {})(Unit)
+                    } else if (intent != null) sessionUtils.handleAuthorizationCompletion(
                         intent,
-                        success,
+                        loginSuccess,
                         failure
                     )
                     else failure(ReachFiveError.NoIntent)
@@ -153,7 +154,7 @@ class ReachFive private constructor(
                         requestCode,
                         resultCode,
                         intent,
-                        success,
+                        loginSuccess,
                         failure
                     )
                 } else Log.d(

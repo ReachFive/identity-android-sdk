@@ -18,11 +18,12 @@ class RedirectionActivity : Activity() {
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
         const val URL_KEY = "URL"
 
+        const val RC_WEBLOGOUT = 52556
         const val RC_WEBLOGIN = 52557
         const val RC_LOGINCALLBACK = 52558
 
         fun isRedirectionActivityRequestCode(code: Int): Boolean =
-            setOf(RC_WEBLOGIN, RC_LOGINCALLBACK).contains(code)
+            setOf(RC_WEBLOGOUT, RC_WEBLOGIN, RC_LOGINCALLBACK).contains(code)
     }
 
     private var started = false

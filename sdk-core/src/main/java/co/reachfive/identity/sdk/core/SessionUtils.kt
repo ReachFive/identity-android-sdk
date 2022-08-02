@@ -124,17 +124,9 @@ class SessionUtilsClient(
     }
 
     internal fun webLogout(
-        successWithNoContent: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>
+        activity: Activity,
     ) {
-        reachFiveApi
-            .logout(SdkInfos.getQueries())
-            .enqueue(
-                ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
-                    failure = failure
-                )
-            )
+        webLauncher.webLogout(activity)
     }
 
     override fun refreshAccessToken(

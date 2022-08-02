@@ -111,7 +111,13 @@ class JavaReachFive(
         failure: Callback<ReachFiveError>,
         activity: Activity
     ) {
-        reach5.verifyPasswordless(phoneNumber, verificationCode, success::call, failure::call, activity)
+        reach5.verifyPasswordless(
+            phoneNumber,
+            verificationCode,
+            success::call,
+            failure::call,
+            activity
+        )
     }
 
     /**
@@ -153,14 +159,13 @@ class JavaReachFive(
         origin: String? = null,
         activity: Activity
     ) {
-        return reach5.loginWithWeb(scope, state, nonce, origin,activity)
+        return reach5.loginWithWeb(scope, state, nonce, origin, activity)
     }
 
     fun logout(
-        successWithNoContent: Callback<Unit>,
-        failure: Callback<ReachFiveError>
+        logoutFromWebActivity: Activity? = null,
     ) {
-        return reach5.logout({ successWithNoContent.call(Unit) }, failure::call)
+        return reach5.logout(logoutFromWebActivity)
     }
 
     fun getProfile(
@@ -268,11 +273,20 @@ class JavaReachFive(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        success: Callback<AuthToken>,
+        loginSuccess: Callback<AuthToken>,
+        webLogoutSuccess: Callback<Unit>,
         failure: Callback<ReachFiveError>,
         activity: Activity
     ) {
-        return reach5.onLoginActivityResult(requestCode, resultCode, data, success::call, failure::call, activity)
+        return reach5.onSessionActivityResult(
+            requestCode,
+            resultCode,
+            data,
+            loginSuccess::call,
+            webLogoutSuccess::call,
+            failure::call,
+            activity
+        )
     }
 
     fun onStop() {
