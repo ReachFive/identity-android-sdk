@@ -15,7 +15,6 @@ import co.reachfive.identity.sdk.core.utils.formatScope
 
 class RedirectionActivity : Activity() {
     companion object {
-        const val CODE_KEY = "CODE"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
         const val URL_KEY = "URL"
 
