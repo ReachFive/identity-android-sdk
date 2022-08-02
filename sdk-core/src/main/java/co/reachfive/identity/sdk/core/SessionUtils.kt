@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
@@ -45,6 +46,10 @@ class SessionUtilsClient(
     }
 
     override var defaultScope: Set<String> = emptySet()
+
+    internal fun webLogout(activity: Activity) {
+        webLauncher.webLogout(activity)
+    }
 
     fun loginWithProvider(
         activity: Activity,
@@ -121,12 +126,6 @@ class SessionUtilsClient(
                     failure = failure
                 )
             )
-    }
-
-    internal fun webLogout(
-        activity: Activity,
-    ) {
-        webLauncher.webLogout(activity)
     }
 
     override fun refreshAccessToken(

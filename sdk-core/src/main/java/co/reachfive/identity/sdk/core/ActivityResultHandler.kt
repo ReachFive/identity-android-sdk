@@ -6,6 +6,7 @@ import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 sealed interface ActivityResultHandler
 
@@ -16,7 +17,7 @@ open class LoginResultHandler(
     val intent: Intent?,
 ) : ActivityResultHandler {
     fun handle(success: Success<AuthToken>, failure: Failure<ReachFiveError>, activity: Activity) {
-        reachFive.onSessionActivityResult(
+        reachFive.onLoginActivityResult(
             requestCode,
             resultCode,
             intent,
@@ -24,6 +25,15 @@ open class LoginResultHandler(
             failure = failure,
             activity = activity
         )
+    }
+}
+
+open class WebLogoutHandler(
+    private val reachFive: ReachFive,
+    private val requestCode: Int,
+) : ActivityResultHandler {
+    fun handle(success: SuccessWithNoContent<Unit>) {
+        reachFive.onWebLogoutActivityResult(requestCode, success)
     }
 }
 

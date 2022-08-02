@@ -163,9 +163,10 @@ class JavaReachFive(
     }
 
     fun logout(
-        logoutFromWebActivity: Activity? = null,
+        alsoLogoutFromWeb: Boolean = false,
+        webLogoutActivity: Activity? = null,
     ) {
-        return reach5.logout(logoutFromWebActivity)
+        return reach5.logout(alsoLogoutFromWeb, webLogoutActivity)
     }
 
     fun getProfile(
@@ -274,16 +275,14 @@ class JavaReachFive(
         resultCode: Int,
         data: Intent?,
         loginSuccess: Callback<AuthToken>,
-        webLogoutSuccess: Callback<Unit>,
         failure: Callback<ReachFiveError>,
         activity: Activity
     ) {
-        return reach5.onSessionActivityResult(
+        return reach5.onLoginActivityResult(
             requestCode,
             resultCode,
             data,
             loginSuccess::call,
-            webLogoutSuccess::call,
             failure::call,
             activity
         )

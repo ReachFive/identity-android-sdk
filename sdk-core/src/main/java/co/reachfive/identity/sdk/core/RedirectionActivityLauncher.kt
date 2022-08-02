@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.SdkConfig

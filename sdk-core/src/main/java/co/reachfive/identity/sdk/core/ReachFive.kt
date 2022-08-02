@@ -12,6 +12,7 @@ import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
+import java.lang.NullPointerException
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -86,16 +87,24 @@ class ReachFive private constructor(
     fun onStop() = socialLoginAuth.onStop()
 
     fun logout(
-        logoutFromWebActivity: Activity? = null,
+        alsoLogoutFromWeb: Boolean = false,
+        webLogoutActivity: Activity? = null,
     ) {
+        Log.d(TAG, "Logging out from native social providers...")
         socialLoginAuth.logoutFromAll()
-        logoutFromWebActivity?.also { sessionUtils.webLogout(it) }
+
+        if (alsoLogoutFromWeb) {
+            Log.d(TAG, "Destroying ReachFive session...")
+
+            if (webLogoutActivity != null) sessionUtils.webLogout(webLogoutActivity)
+            else throw ReachFiveError.from(NullPointerException("webLogoutActivity cannot be null if `alsoLogoutFromWeb`  is set to `true`"))
+        }
     }
 
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
         intent: Intent?,
-        success: Success<Unit>,
+        success: SuccessWithNoContent<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
         if (requestCode == WebauthnAuth.RC_REGISTER_DEVICE) {
@@ -106,12 +115,11 @@ class ReachFive private constructor(
         }
     }
 
-    fun onSessionActivityResult(
+    fun onLoginActivityResult(
         requestCode: Int,
         resultCode: Int,
         intent: Intent?,
         loginSuccess: Success<AuthToken>,
-        webLogoutSuccess: SuccessWithNoContent<Unit>? = null,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -140,15 +148,11 @@ class ReachFive private constructor(
             }
 
             else ->
-                if (RedirectionActivity.isRedirectionActivityRequestCode(requestCode)) {
-                    if (requestCode == RedirectionActivity.RC_WEBLOGOUT) {
-                        (webLogoutSuccess ?: {})(Unit)
-                    } else if (intent != null) sessionUtils.handleAuthorizationCompletion(
-                        intent,
-                        loginSuccess,
-                        failure
-                    )
-                    else failure(ReachFiveError.NoIntent)
+                if (RedirectionActivity.isLoginRequestCode(requestCode)) {
+                    if (intent != null)
+                        sessionUtils.handleAuthorizationCompletion(intent, loginSuccess, failure)
+                    else
+                        failure(ReachFiveError.NoIntent)
                 } else if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
                     socialLoginAuth.onActivityResult(
                         requestCode,
@@ -165,6 +169,17 @@ class ReachFive private constructor(
         }
     }
 
+    fun onWebLogoutActivityResult(
+        requestCode: Int,
+        success: SuccessWithNoContent<Unit>,
+    ) {
+        if (requestCode == RedirectionActivity.RC_WEBLOGOUT) {
+            success(Unit)
+        } else {
+            Log.d(TAG, "The request code does not concern web logout.")
+        }
+    }
+
     fun resolveResultHandler(
         requestCode: Int,
         resultCode: Int,
@@ -172,6 +187,8 @@ class ReachFive private constructor(
     ): ActivityResultHandler? {
         if (isReachFiveLoginRequestCode(requestCode))
             return LoginResultHandler(this, requestCode, resultCode, intent)
+        else if (RedirectionActivity.isLogoutRequestCode(requestCode))
+            return WebLogoutHandler(this, requestCode)
         else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode)) {
             if (WebauthnAuth.RC_REGISTER_DEVICE == requestCode)
                 return WebAuthnDeviceAddResult(this, requestCode, intent)
@@ -182,7 +199,10 @@ class ReachFive private constructor(
     fun isReachFiveLoginRequestCode(code: Int): Boolean =
         socialLoginAuth.isSocialLoginRequestCode(code) ||
                 WebauthnAuth.isWebauthnLoginRequestCode(code) ||
-                RedirectionActivity.isRedirectionActivityRequestCode(code)
+                RedirectionActivity.isLoginRequestCode(code)
+
+    fun isReachFiveWebLogoutRequestCode(code: Int): Boolean =
+        RedirectionActivity.isLogoutRequestCode(code)
 
     fun isReachFiveActionRequestCode(code: Int): Boolean =
         WebauthnAuth.isWebauthnActionRequestCode(code)

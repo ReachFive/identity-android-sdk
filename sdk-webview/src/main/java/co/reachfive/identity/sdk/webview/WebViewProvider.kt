@@ -4,10 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.*
-import co.reachfive.identity.sdk.core.api.ReachFiveApi
-import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
-import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.webview.WebViewProvider.Companion.REQUEST_CODE
