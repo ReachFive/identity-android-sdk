@@ -163,17 +163,6 @@ class ReachFive private constructor(
         }
     }
 
-    fun onWebLogoutActivityResult(
-        requestCode: Int,
-        success: SuccessWithNoContent<Unit>,
-    ) {
-        if (requestCode == RedirectionActivity.RC_WEBLOGOUT) {
-            success(Unit)
-        } else {
-            Log.d(TAG, "The request code does not concern web logout.")
-        }
-    }
-
     fun resolveResultHandler(
         requestCode: Int,
         resultCode: Int,
@@ -181,8 +170,6 @@ class ReachFive private constructor(
     ): ActivityResultHandler? {
         if (isReachFiveLoginRequestCode(requestCode))
             return LoginResultHandler(this, requestCode, resultCode, intent)
-        else if (RedirectionActivity.isLogoutRequestCode(requestCode))
-            return WebLogoutHandler(this, requestCode)
         else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode)) {
             if (WebauthnAuth.RC_REGISTER_DEVICE == requestCode)
                 return WebAuthnDeviceAddResult(this, requestCode, intent)
@@ -194,9 +181,6 @@ class ReachFive private constructor(
         socialLoginAuth.isSocialLoginRequestCode(code) ||
                 WebauthnAuth.isWebauthnLoginRequestCode(code) ||
                 RedirectionActivity.isLoginRequestCode(code)
-
-    fun isReachFiveWebLogoutRequestCode(code: Int): Boolean =
-        RedirectionActivity.isLogoutRequestCode(code)
 
     fun isReachFiveActionRequestCode(code: Int): Boolean =
         WebauthnAuth.isWebauthnActionRequestCode(code)
