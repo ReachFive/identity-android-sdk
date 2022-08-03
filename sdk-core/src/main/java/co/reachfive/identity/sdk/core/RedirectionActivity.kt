@@ -44,7 +44,6 @@ class RedirectionActivity : Activity() {
     }
 
     override fun onNewIntent(newIntent: Intent) {
-        intent = newIntent
         finish()
     }
 
