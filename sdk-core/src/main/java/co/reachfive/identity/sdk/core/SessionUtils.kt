@@ -1,7 +1,6 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
@@ -18,8 +17,6 @@ import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
-import kotlin.math.log
 
 internal interface SessionUtils {
     var defaultScope: Set<String>
