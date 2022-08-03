@@ -47,7 +47,8 @@ internal class PasswordAuthClient(
      * @param username You can use email or phone number
      */
     override fun loginWithPassword(
-        username: String,
+        email: String?,
+        phoneNumber: String?,
         password: String,
         scope: Collection<String>,
         success: Success<AuthToken>,
@@ -55,8 +56,8 @@ internal class PasswordAuthClient(
     ) {
         val loginRequest = LoginRequest(
             clientId = sdkConfig.clientId,
-            grantType = "password",
-            username = username,
+            email = email,
+            phoneNumber = phoneNumber,
             password = password,
             scope = formatScope(scope)
         )
@@ -133,7 +134,8 @@ internal interface PasswordAuth {
     )
 
     fun loginWithPassword(
-        username: String,
+        email: String? = null,
+        phoneNumber: String? = null,
         password: String,
         scope: Collection<String> = defaultScope,
         success: Success<AuthToken>,

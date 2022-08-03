@@ -6,10 +6,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LoginRequest(
-    val username: String,
+    val email: String?,
+    @SerializedName("phone_number")
+    val phoneNumber: String?,
     val password: String,
-    @SerializedName("grant_type")
-    val grantType: String,
     @SerializedName("client_id")
     val clientId: String,
     val scope: String

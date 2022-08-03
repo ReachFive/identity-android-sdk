@@ -125,13 +125,14 @@ class JavaReachFive(
      * @param username You can use email or phone number
      */
     fun loginWithPassword(
-        username: String,
+        email: String? = null,
+        phoneNumber: String? = null,
         password: String,
         scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.loginWithPassword(username, password, scope, success::call, failure::call)
+        return reach5.loginWithPassword(email, phoneNumber, password, scope, success::call, failure::call)
     }
 
     /**
@@ -139,13 +140,15 @@ class JavaReachFive(
      * @param username You can use email or phone number
      */
     fun loginWithPassword(
-        username: String,
+        email: String? = null,
+        phoneNumber: String? = null,
         password: String,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.loginWithPassword(
-            username,
+            email,
+            phoneNumber,
             password,
             success = success::call,
             failure = failure::call
