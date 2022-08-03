@@ -44,6 +44,7 @@ class SessionUtilsClient(
     companion object {
         const val codeResponseType = "code"
     }
+
     val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig, reachFiveApi)
 
     override var defaultScope: Set<String> = emptySet()
