@@ -7,6 +7,7 @@ import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.*
+import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
@@ -15,6 +16,7 @@ import co.reachfive.identity.sdk.core.utils.formatScope
 internal class PasswordAuthClient(
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi,
+    private val sessionUtils: SessionUtilsClient,
 ) : PasswordAuth {
     override var defaultScope: Set<String> = emptySet()
 
@@ -61,8 +63,10 @@ internal class PasswordAuthClient(
         reachFiveApi
             .loginWithPassword(loginRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback(
-                    success = { it.toAuthToken().fold(success, failure) },
+                ReachFiveApiCallback<AuthenticationToken>(
+                    success = {
+                        sessionUtils.loginCallback(it.tkn, scope, success, failure)
+                    },
                     failure = failure
                 )
             )

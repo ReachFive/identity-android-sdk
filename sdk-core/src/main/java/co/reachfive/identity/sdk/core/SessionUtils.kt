@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
+import co.reachfive.identity.sdk.core.api.LoginCallbackHandler
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -15,8 +16,10 @@ import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
+import kotlin.math.log
 
 internal interface SessionUtils {
     var defaultScope: Set<String>
@@ -44,6 +47,7 @@ class SessionUtilsClient(
     companion object {
         const val codeResponseType = "code"
     }
+    val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig, reachFiveApi)
 
     override var defaultScope: Set<String> = emptySet()
 
@@ -148,9 +152,23 @@ class SessionUtilsClient(
     internal fun loginCallback(
         tkn: String,
         scope: Collection<String>,
-        activity: Activity
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
     ) {
-        webLauncher.loginCallback(activity, scope, tkn)
+        val redirectUri = sdkConfig.scheme
+        val pkce = PkceAuthCodeFlow.generate(redirectUri)
+
+        loginCallbackHandler.loginCallback(
+            tkn = tkn,
+            pkce = pkce,
+            clientId = sdkConfig.clientId,
+            redirectUri = redirectUri,
+            scope = scope,
+            success = { authCode ->
+                exchangeAuthorizationCode(authCode, pkce.codeVerifier, success, failure)
+            },
+            failure = failure
+        )
     }
 
     override fun loginWithWeb(

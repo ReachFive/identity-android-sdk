@@ -8,12 +8,10 @@ import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
-import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
-import java.lang.NullPointerException
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -42,12 +40,12 @@ class ReachFive private constructor(
         ): ReachFive {
             val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
             val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
-
-            val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi)
-            val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
-            val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val sessionUtils =
                 SessionUtilsClient(reachFiveApi, sdkConfig, webLauncher)
+
+            val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi, sessionUtils)
+            val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
+            val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient =
@@ -124,8 +122,8 @@ class ReachFive private constructor(
                         resultCode,
                         intent,
                         defaultScope,
+                        loginSuccess,
                         failure,
-                        activity
                     )
                 else failure(ReachFiveError.NoIntent)
 
@@ -135,6 +133,7 @@ class ReachFive private constructor(
                         resultCode,
                         intent,
                         defaultScope,
+                        loginSuccess,
                         failure,
                         activity
                     )
