@@ -47,10 +47,6 @@ class SessionUtilsClient(
 
     override var defaultScope: Set<String> = emptySet()
 
-    internal fun webLogout(activity: Activity) {
-        webLauncher.webLogout(activity)
-    }
-
     fun loginWithProvider(
         activity: Activity,
         provider: Provider,

@@ -14,19 +14,6 @@ class RedirectionActivityLauncher(
     val api: ReachFiveApi,
 ) {
 
-    fun webLogout(activity: Activity) {
-        val intent = Intent(activity, RedirectionActivity::class.java)
-
-        val query = mapOf(
-            "redirect_to" to sdkConfig.scheme,
-        ) + SdkInfos.getQueries()
-
-        val url = api.logout(query).request().url.toString()
-        intent.putExtra(RedirectionActivity.URL_KEY, url)
-
-        activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGOUT)
-    }
-
     /**
      * Orchestrated login. The client must configure a Login URL and enable orchestration tokens
      * in order to delegate auth to a Web identity client.

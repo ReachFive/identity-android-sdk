@@ -8,6 +8,7 @@ import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
@@ -87,18 +88,11 @@ class ReachFive private constructor(
     fun onStop() = socialLoginAuth.onStop()
 
     fun logout(
-        alsoLogoutFromWeb: Boolean = false,
-        webLogoutActivity: Activity? = null,
+        successWithNoContent: SuccessWithNoContent<Unit>,
+        failure: Failure<ReachFiveError>
     ) {
-        Log.d(TAG, "Logging out from native social providers...")
         socialLoginAuth.logoutFromAll()
-
-        if (alsoLogoutFromWeb) {
-            Log.d(TAG, "Destroying ReachFive session...")
-
-            if (webLogoutActivity != null) sessionUtils.webLogout(webLogoutActivity)
-            else throw ReachFiveError.from(NullPointerException("webLogoutActivity cannot be null if `alsoLogoutFromWeb`  is set to `true`"))
-        }
+        successWithNoContent(Unit)
     }
 
     fun onWebauthnDeviceAddResult(

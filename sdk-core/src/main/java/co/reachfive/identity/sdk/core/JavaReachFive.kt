@@ -163,10 +163,10 @@ class JavaReachFive(
     }
 
     fun logout(
-        alsoLogoutFromWeb: Boolean = false,
-        webLogoutActivity: Activity? = null,
+        successWithNoContent: Callback<Unit>,
+        failure: Callback<ReachFiveError>
     ) {
-        return reach5.logout(alsoLogoutFromWeb, webLogoutActivity)
+        return reach5.logout({ successWithNoContent.call(Unit) }, failure::call)
     }
 
     fun getProfile(
