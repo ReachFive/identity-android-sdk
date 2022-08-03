@@ -86,6 +86,13 @@ class ReachFive private constructor(
 
     fun onStop() = socialLoginAuth.onStop()
 
+    /*
+    TODO: logout
+    - SLO logouts
+    - RT invalidation
+    - optional SSO session invalidation
+     */
+
     fun logout(
         alsoLogoutFromWeb: Boolean = false,
         webLogoutActivity: Activity? = null,
