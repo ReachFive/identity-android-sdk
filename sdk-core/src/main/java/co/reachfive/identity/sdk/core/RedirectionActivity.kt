@@ -20,10 +20,9 @@ class RedirectionActivity : Activity() {
 
         const val RC_WEBLOGOUT = 52556
         const val RC_WEBLOGIN = 52557
-        const val RC_LOGINCALLBACK = 52558
 
         fun isLoginRequestCode(code: Int): Boolean =
-            setOf(RC_WEBLOGIN, RC_LOGINCALLBACK).contains(code)
+            setOf(RC_WEBLOGIN).contains(code)
 
         fun isLogoutRequestCode(code: Int): Boolean =
             RC_WEBLOGOUT == code
