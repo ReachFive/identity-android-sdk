@@ -13,16 +13,16 @@ data class ReachFiveApiError(
     val error: String,
 
     @SerializedName("error_id")
-    val errorId: String? = null,
+    val errorId: String?,
 
     @SerializedName("error_user_msg")
-    val errorUserMsg: String? = null,
+    val errorUserMsg: String?,
 
     @SerializedName("error_message_key")
-    val errorMessageKey: String? = null,
+    val errorMessageKey: String?,
 
     @SerializedName("error_description")
-    val errorDescription: String? = null,
+    val errorDescription: String?,
 
     @SerializedName("error_details")
     val errorDetails: List<ReachFiveApiErrorDetail>?
