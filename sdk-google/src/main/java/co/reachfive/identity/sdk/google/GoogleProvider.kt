@@ -7,11 +7,9 @@ import android.content.pm.PackageManager
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
 import co.reachfive.identity.sdk.core.SessionUtilsClient
-import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ProviderConfig
 import co.reachfive.identity.sdk.core.models.ReachFiveError
-import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.google.GoogleProvider.Companion.PERMISSIONS_REQUEST_GET_ACCOUNTS
@@ -88,7 +86,14 @@ internal class ConfiguredGoogleProvider(
             val googleSigninAccount = task.getResult(ApiException::class.java)
             val authCode = googleSigninAccount?.serverAuthCode
             if (authCode != null) {
-                sessionUtils.loginWithProvider(name, authCode, origin, scope = scope, success = success, failure = failure)
+                sessionUtils.loginWithProvider(
+                    name,
+                    authCode,
+                    origin,
+                    scope = scope,
+                    success = success,
+                    failure = failure
+                )
             } else {
                 failure(ReachFiveError.from("No auth code"))
             }

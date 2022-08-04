@@ -1,4 +1,4 @@
-ext.ossrhUsername=null
-ext.ossrhPassword=null
-ext.signingKey=null
-ext.signingKeyPwd=null
+ext.ossrhUsername = null
+ext.ossrhPassword = null
+ext.signingKey = null
+ext.signingKeyPwd = null
