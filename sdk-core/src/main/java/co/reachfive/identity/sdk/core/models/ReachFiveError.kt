@@ -58,8 +58,10 @@ data class ReachFiveError(
     override val message: String,
     val code: Int? = null,
     val exception: Exception? = null,
-    val data: ReachFiveApiError? = null
+    val data: ReachFiveApiError? = null,
 ) : java.lang.Exception(message), Parcelable {
+
+    fun getErrorCode(): ErrorCode? = code?.let { ErrorCode.valueOf(it.toString()) }
 
     companion object {
         @JvmStatic
