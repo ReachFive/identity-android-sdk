@@ -34,7 +34,7 @@ internal interface SessionUtils {
         activity: Activity,
     )
 
-    @Deprecated("")
+    @Deprecated("Contact ReachFive support if you are using this method.")
     fun exchangeCodeForToken(
         authorizationCode: String,
         success: Success<AuthToken>,
