@@ -1,8 +1,8 @@
 package co.reachfive.identity.sdk.core.models
 
-import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
 import android.net.Uri
 import android.os.Parcelable
+import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -122,12 +122,6 @@ data class ReachFiveError(
                 )
             }
         }
-
-        @JvmStatic
-        val UserCanceled = ReachFiveError(
-            code = 52001,
-            message = "User canceled or closed the web flow.",
-        )
 
         @JvmStatic
         val NullIntent: ReachFiveError =
