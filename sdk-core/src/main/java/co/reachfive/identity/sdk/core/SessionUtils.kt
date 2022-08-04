@@ -71,7 +71,7 @@ class SessionUtilsClient(
             failure(error)
         else {
             if (authCode == null) failure(ReachFiveError.WebFlowCanceled)
-            else if (codeVerifier == null) failure(ReachFiveError.NoAuthCode)
+            else if (codeVerifier == null) failure(ReachFiveError.NoPkce)
             else exchangeAuthorizationCode(authCode, codeVerifier, success, failure)
         }
     }

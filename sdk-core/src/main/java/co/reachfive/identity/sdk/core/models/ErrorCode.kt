@@ -24,5 +24,6 @@ enum class ErrorCode(val code: Int) {
      */
     WebFlowCanceled(52001),
     NullIntent(52002),
-    NoAuthCode(52003);
+    NoAuthCode(52003),
+    NoPkce(52004);
 }
