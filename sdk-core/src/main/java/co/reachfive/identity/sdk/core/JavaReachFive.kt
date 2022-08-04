@@ -90,7 +90,7 @@ class JavaReachFive(
         email: String? = null,
         phoneNumber: String? = null,
         redirectUri: String,
-        successWithNoContent: Callback<Unit>,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>,
         activity: Activity
     ) {
@@ -98,7 +98,7 @@ class JavaReachFive(
             email,
             phoneNumber,
             redirectUri,
-            { successWithNoContent.call(Unit) },
+            { success.call(Unit) },
             failure::call,
             activity
         )
@@ -163,10 +163,10 @@ class JavaReachFive(
     }
 
     fun logout(
-        successWithNoContent: Callback<Unit>,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.logout({ successWithNoContent.call(Unit) }, failure::call)
+        return reach5.logout({ success.call(Unit) }, failure::call)
     }
 
     fun getProfile(
@@ -181,14 +181,14 @@ class JavaReachFive(
         authToken: AuthToken,
         phoneNumber: String,
         verificationCode: String,
-        successWithNoContent: Callback<Unit>,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.verifyPhoneNumber(
             authToken,
             phoneNumber,
             verificationCode,
-            { successWithNoContent.call(Unit) },
+            { success.call(Unit) },
             failure::call
         )
     }
@@ -223,12 +223,12 @@ class JavaReachFive(
 
     fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest,
-        successWithNoContent: Callback<Unit>,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.updatePassword(
             updatePasswordRequest,
-            { successWithNoContent.call(Unit) },
+            { success.call(Unit) },
             failure::call
         )
     }
@@ -237,14 +237,14 @@ class JavaReachFive(
         email: String?,
         redirectUrl: String?,
         phoneNumber: String?,
-        successWithNoContent: Callback<Unit>,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
         return reach5.requestPasswordReset(
             email,
             redirectUrl,
             phoneNumber,
-            { successWithNoContent.call(Unit) },
+            { success.call(Unit) },
             failure::call
         )
     }

@@ -268,8 +268,10 @@ was implemented to refresh a profile's access token.
 ### Features
 
 -
+
 An [HTTP logging interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor)
 was added to the `sdk-core` module to log the API requests and responses in debug mode.
+
 - New fields were added to the `Profile` data model. You'll find their descriptions on
   the [ReachFive developer documentation](https://developer.reach5.co/api/identity-android/#profile)
   .
