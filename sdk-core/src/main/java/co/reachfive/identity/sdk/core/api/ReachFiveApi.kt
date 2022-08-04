@@ -39,11 +39,11 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<TokenEndpointResponse>
 
-    @POST("/oauth/token")
+    @POST("/identity/v1/password/login")
     fun loginWithPassword(
         @Body loginRequest: LoginRequest,
         @QueryMap options: Map<String, String>
-    ): Call<TokenEndpointResponse>
+    ): Call<AuthenticationToken>
 
     @POST("/oauth/token")
     fun authenticateWithCode(

@@ -69,6 +69,7 @@ internal class WebauthnAuthClient(
         resultCode: Int,
         intent: Intent,
         scope: Collection<String>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -77,7 +78,7 @@ internal class WebauthnAuthClient(
                 if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
                     failure(extractFIDO2Error(intent))
                 else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA))
-                    handleSignupSuccess(intent, scope, failure, activity)
+                    handleSignupSuccess(intent, scope, success, failure, activity)
 
             Activity.RESULT_CANCELED ->
                 Log.d(TAG, "Operation is cancelled")
@@ -90,8 +91,9 @@ internal class WebauthnAuthClient(
     private fun handleSignupSuccess(
         intent: Intent,
         scope: Collection<String>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
     ) {
         val webauthnId =
             activity
@@ -112,7 +114,14 @@ internal class WebauthnAuthClient(
                     )
                     .enqueue(
                         ReachFiveApiCallback(
-                            success = { sessionUtils.loginCallback(it.tkn, scope, activity) },
+                            success = {
+                                sessionUtils.loginCallback(
+                                    it.tkn,
+                                    scope,
+                                    success,
+                                    failure
+                                )
+                            },
                             failure = failure
                         )
                     )
@@ -223,15 +232,15 @@ internal class WebauthnAuthClient(
         resultCode: Int,
         intent: Intent,
         scope: Collection<String>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
     ) {
         when (resultCode) {
             Activity.RESULT_OK ->
                 if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
                     extractFIDO2Error(intent).let { failure(it) }
                 else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA))
-                    handleLoginSuccess(intent, scope, failure, activity)
+                    handleLoginSuccess(intent, scope, success, failure)
 
             Activity.RESULT_CANCELED ->
                 Log.d(TAG, "Operation is cancelled")
@@ -245,8 +254,8 @@ internal class WebauthnAuthClient(
     private fun handleLoginSuccess(
         intent: Intent,
         scope: Collection<String>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
     ) {
         val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
 
@@ -262,7 +271,7 @@ internal class WebauthnAuthClient(
             .authenticateWithWebAuthn(authenticationPublicKeyCredential)
             .enqueue(
                 ReachFiveApiCallback(
-                    success = { sessionUtils.loginCallback(it.tkn, scope, activity) },
+                    success = { sessionUtils.loginCallback(it.tkn, scope, success, failure) },
                     failure = failure
                 )
             )

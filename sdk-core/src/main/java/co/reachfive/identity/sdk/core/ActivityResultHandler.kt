@@ -20,7 +20,7 @@ open class LoginResultHandler(
             requestCode,
             resultCode,
             intent,
-            loginSuccess = success,
+            success = success,
             failure = failure,
             activity = activity
         )

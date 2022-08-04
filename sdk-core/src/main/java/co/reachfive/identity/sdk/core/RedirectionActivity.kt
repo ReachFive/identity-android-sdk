@@ -4,14 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.browser.customtabs.CustomTabsIntent
-import co.reachfive.identity.sdk.core.api.ReachFiveApi
-import co.reachfive.identity.sdk.core.models.ReachFiveError
-import co.reachfive.identity.sdk.core.models.SdkConfig
-import co.reachfive.identity.sdk.core.models.SdkInfos
-import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
-import co.reachfive.identity.sdk.core.utils.formatScope
 
 class RedirectionActivity : Activity() {
     companion object {
@@ -19,10 +12,9 @@ class RedirectionActivity : Activity() {
         const val URL_KEY = "URL"
 
         const val RC_WEBLOGIN = 52557
-        const val RC_LOGINCALLBACK = 52558
 
         fun isLoginRequestCode(code: Int): Boolean =
-            setOf(RC_WEBLOGIN, RC_LOGINCALLBACK).contains(code)
+            setOf(RC_WEBLOGIN).contains(code)
     }
 
     private var started = false

@@ -2,9 +2,11 @@ package co.reachfive.identity.sdk.core.models
 
 import android.net.Uri
 import android.os.Parcelable
+import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import retrofit2.Response
 
 @Parcelize
 data class ReachFiveApiError(
@@ -27,6 +29,15 @@ data class ReachFiveApiError(
 ) : Parcelable {
 
     companion object {
+
+        fun <T> resolveFrom(response: Response<T>): ReachFiveApiError? =
+            tryOrNull {
+                Gson().fromJson(
+                    response.errorBody()?.string(),
+                    ReachFiveApiError::class.java
+                )
+            }
+
         @JvmStatic
         fun resolveFrom(data: Uri): ReachFiveApiError? =
             data.getQueryParameter("error")?.let { error ->
@@ -87,6 +98,21 @@ data class ReachFiveError(
         }
 
         @JvmStatic
+        fun from(httpStatus: Int, apiError: ReachFiveApiError?): ReachFiveError =
+            ReachFiveError(
+                message = apiError?.error ?: "ReachFive API response error",
+                code = httpStatus,
+                data = apiError
+            )
+
+        @JvmStatic
+        fun <T> fromHttpResponse(response: Response<T>): ReachFiveError =
+            from(
+                httpStatus = response.code(),
+                apiError = ReachFiveApiError.resolveFrom(response)
+            )
+
+        @JvmStatic
         fun fromRedirectionResult(uri: Uri): ReachFiveError? {
             return ReachFiveApiError.resolveFrom(uri)?.let { apiError ->
                 ReachFiveError(
@@ -101,13 +127,19 @@ data class ReachFiveError(
         val NullIntent: ReachFiveError =
             ReachFiveError(
                 code = ErrorCode.NullIntent.code,
-                message = "Intent is null"
+                message = "Intent is null when expected."
             )
 
         @JvmStatic
         val WebFlowCanceled = ReachFiveError(
             code = ErrorCode.WebFlowCanceled.code,
             message = "User canceled or closed the web flow.",
+        )
+
+        @JvmStatic
+        val NoPkce = ReachFiveError(
+            code = ErrorCode.NoPkce.code,
+            message = "No PKCE code_verifier could be found when expected."
         )
 
         @JvmStatic
