@@ -9,8 +9,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class ReachFiveApiCallback<T>(
-    val success: Success<T> = { Unit },
-    val successWithNoContent: SuccessWithNoContent<Unit> = { Unit },
+    val success: Success<T> = {},
+    val successWithNoContent: SuccessWithNoContent = {},
     val failure: Failure<ReachFiveError>
 ) : Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {

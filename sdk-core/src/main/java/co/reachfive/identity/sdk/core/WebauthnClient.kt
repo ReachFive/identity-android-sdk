@@ -160,7 +160,7 @@ internal class WebauthnAuthClient(
 
     internal fun onAddNewWebAuthnDeviceResult(
         intent: Intent,
-        success: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     ) {
         if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
@@ -289,7 +289,7 @@ internal class WebauthnAuthClient(
     override fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        success: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     ) =
         reachFiveApi
@@ -431,7 +431,7 @@ internal interface WebauthnAuth {
     fun removeWebAuthnDevice(
         authToken: AuthToken,
         deviceId: String,
-        success: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     )
 }

@@ -65,7 +65,7 @@ class ReachFive private constructor(
     }
 
     fun initialize(
-        success: SuccessWithNoContent<Unit> = {},
+        success: SuccessWithNoContent = {},
         failure: Failure<ReachFiveError> = {}
     ): ReachFive {
         reachFiveApi
@@ -86,7 +86,7 @@ class ReachFive private constructor(
     fun onStop() = socialLoginAuth.onStop()
 
     fun logout(
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>
     ) {
         socialLoginAuth.logoutFromAll()
@@ -96,7 +96,7 @@ class ReachFive private constructor(
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
         intent: Intent?,
-        success: SuccessWithNoContent<Unit>,
+        success: SuccessWithNoContent,
         failure: Failure<ReachFiveError>,
     ) {
         if (requestCode == WebauthnAuth.RC_REGISTER_DEVICE) {

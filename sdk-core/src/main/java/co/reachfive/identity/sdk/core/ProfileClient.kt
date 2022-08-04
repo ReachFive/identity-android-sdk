@@ -35,7 +35,7 @@ internal class ProfileManagementClient(
         authToken: AuthToken,
         phoneNumber: String,
         verificationCode: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
@@ -156,7 +156,7 @@ internal interface ProfileManagement {
         authToken: AuthToken,
         phoneNumber: String,
         verificationCode: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     )
 

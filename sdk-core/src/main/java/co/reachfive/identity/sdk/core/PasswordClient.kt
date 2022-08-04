@@ -74,7 +74,7 @@ internal class PasswordAuthClient(
 
     override fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     ) {
         val headers = UpdatePasswordRequest.getAccessToken(updatePasswordRequest)
@@ -99,7 +99,7 @@ internal class PasswordAuthClient(
         email: String?,
         redirectUrl: String?,
         phoneNumber: String?,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
@@ -142,7 +142,7 @@ internal interface PasswordAuth {
 
     fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     )
 
@@ -150,7 +150,7 @@ internal interface PasswordAuth {
         email: String? = null,
         redirectUrl: String? = null,
         phoneNumber: String? = null,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>
     )
 }

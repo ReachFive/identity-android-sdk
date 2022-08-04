@@ -24,7 +24,7 @@ internal class PasswordlessAuthClient(
         email: String?,
         phoneNumber: String?,
         redirectUrl: String,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>,
         activity: Activity,
     ) =
@@ -96,7 +96,7 @@ internal interface PasswordlessAuth {
         email: String? = null,
         phoneNumber: String? = null,
         redirectUrl: String = sdkConfig.scheme,
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        successWithNoContent: SuccessWithNoContent,
         failure: Failure<ReachFiveError>,
         activity: Activity
     )
