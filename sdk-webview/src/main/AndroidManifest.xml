@@ -1,11 +1,9 @@
-<manifest
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        package="co.reachfive.identity.sdk.webview">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="co.reachfive.identity.sdk.webview">
 
     <queries>
         <intent>
-            <action android:name=
-                    "android.support.customtabs.action.CustomTabsService" />
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
         </intent>
     </queries>
 </manifest>

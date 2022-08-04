@@ -17,17 +17,21 @@ ext.libversion="x.y.z"
     ```sh
     git tag <tag_name> 
     ```
-    
-    Push it on origin.
-   
+
+   Push it on origin.
+
     ```sh
     git push origin <tag_name> 
     ```
 
-    [circleci](https://circleci.com/gh/ReachFive/identity-android-sdk) will automatically trigger a build, run the tests and publish the new version of the SDK on [`MavenCentral`](https://search.maven.org/search?q=g:co.reachfive.identity).
-    
-    > It's important to push the tag separately otherwise the deployment job is not triggered (https://support.circleci.com/hc/en-us/articles/115013854347-Jobs-builds-not-triggered-when-pushing-tag).
+   [circleci](https://circleci.com/gh/ReachFive/identity-android-sdk) will automatically trigger a
+   build, run the tests and publish the new version of the SDK
+   on [`MavenCentral`](https://search.maven.org/search?q=g:co.reachfive.identity).
 
-    Refer to the [.circleci/config.yml](.circleci/config.yml) file to set up the integration.
+   > It's important to push the tag separately otherwise the deployment job is not triggered (https://support.circleci.com/hc/en-us/articles/115013854347-Jobs-builds-not-triggered-when-pushing-tag).
 
-6.  Finally, create a new release in the [Github releases tab](https://github.com/ReachFive/identity-android-sdk/releases) (copy & paste the changelog in the release's description).
+   Refer to the [.circleci/config.yml](.circleci/config.yml) file to set up the integration.
+
+6. Finally, create a new release in
+   the [Github releases tab](https://github.com/ReachFive/identity-android-sdk/releases) (copy &
+   paste the changelog in the release's description).

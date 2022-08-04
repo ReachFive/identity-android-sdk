@@ -1,10 +1,13 @@
 package co.reachfive.identity.sdk.core.api
 
 import android.net.Uri
-import co.reachfive.identity.sdk.core.models.*
+import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
+import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
 import co.reachfive.identity.sdk.core.utils.formatScope
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -12,8 +15,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.http.*
-import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
+import retrofit2.http.GET
+import retrofit2.http.QueryMap
 
 internal class LoginCallbackHandler(
     private val noFollowClient: NoFollowClient,
