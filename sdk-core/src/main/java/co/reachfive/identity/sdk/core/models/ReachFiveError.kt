@@ -137,9 +137,9 @@ data class ReachFiveError(
         )
 
         @JvmStatic
-        val NoPkce = ReachFiveError(
+        val NoAuthCode = ReachFiveError(
             code = ErrorCode.NoPkce.code,
-            message = "No PKCE code_verifier could be found when expected."
+            message = "No authorization code could be found when expected."
         )
 
         @JvmStatic

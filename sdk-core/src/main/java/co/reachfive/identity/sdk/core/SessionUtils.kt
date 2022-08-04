@@ -206,7 +206,14 @@ class SessionUtilsClient(
             redirectUri = redirectUri,
             scope = scope,
             success = { authCode ->
-                exchangeAuthorizationCode(authCode, pkce.codeVerifier, success, failure)
+                exchangeAuthorizationCode(
+                    authCode,
+                    redirectUri,
+                    pkce.codeVerifier,
+                    success,
+                    failure,
+                    sdkMethod = "loginCallback"
+                )
             },
             failure = failure
         )
