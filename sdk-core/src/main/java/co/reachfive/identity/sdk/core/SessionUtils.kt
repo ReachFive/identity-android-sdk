@@ -88,6 +88,7 @@ class SessionUtilsClient(
         }
     }
 
+    @Deprecated("Contact ReachFive support if you are using this method.")
     override fun exchangeCodeForToken(
         authorizationCode: String,
         success: Success<AuthToken>,
