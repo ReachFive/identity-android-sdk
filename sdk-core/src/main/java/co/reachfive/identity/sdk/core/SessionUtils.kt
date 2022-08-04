@@ -14,6 +14,7 @@ import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 
 internal interface SessionUtils {
@@ -31,6 +32,14 @@ internal interface SessionUtils {
         nonce: String? = null,
         origin: String? = null,
         activity: Activity,
+    )
+
+    @Deprecated("")
+    fun exchangeCodeForToken(
+        authorizationCode: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     )
 }
 
@@ -67,26 +76,59 @@ class SessionUtilsClient(
             failure(error)
         else {
             if (authCode == null) failure(ReachFiveError.WebFlowCanceled)
-            else if (codeVerifier == null) failure(ReachFiveError.NoAuthCode)
-            else exchangeAuthorizationCode(authCode, codeVerifier, success, failure)
+            else if (codeVerifier == null) failure(ReachFiveError.NoPkce)
+            else exchangeAuthorizationCode(
+                authCode,
+                sdkConfig.scheme,
+                codeVerifier,
+                success,
+                failure,
+                sdkMethod = "handleAuthorizationCompletion"
+            )
+        }
+    }
+
+    override fun exchangeCodeForToken(
+        authorizationCode: String,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+        activity: Activity
+    ) {
+        val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
+
+        if (authCodeFlow != null) {
+            exchangeAuthorizationCode(
+                authCode = authorizationCode,
+                redirectUri = authCodeFlow.redirectUri,
+                codeVerifier = authCodeFlow.codeVerifier,
+                success,
+                failure,
+                sdkMethod = "exchangeCodeForToken"
+            )
+        } else {
+            failure(ReachFiveError.NoPkce)
         }
     }
 
     private fun exchangeAuthorizationCode(
         authCode: String,
+        redirectUri: String,
         codeVerifier: String,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
+        sdkMethod: String,
     ) {
         val authCodeRequest = AuthCodeRequest(
             clientId = sdkConfig.clientId,
             code = authCode,
-            redirectUri = sdkConfig.scheme,
+            redirectUri = redirectUri,
             codeVerifier = codeVerifier
         )
 
+        val metadata = SdkInfos.getQueries(sdkMethod)
+
         reachFiveApi
-            .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+            .authenticateWithCode(authCodeRequest, metadata)
             .enqueue(
                 ReachFiveApiCallback(
                     success = { it.toAuthToken().fold(success, failure) },
@@ -112,6 +154,7 @@ class SessionUtilsClient(
             origin = origin,
             scope = scope.joinToString(" ")
         )
+
         reachFiveApi
             .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
             .enqueue(

@@ -15,11 +15,12 @@ object SdkInfos {
         return "API Level $apiLevel, Device $device, Model $model, Product $product"
     }
 
-    fun getQueries(): Map<String, String> {
+    fun getQueries(sdkMethod: String? = null): Map<String, String> {
+        val method = if (sdkMethod != null) mapOf("sdk_method" to sdkMethod) else emptyMap()
         return mapOf(
             "platform" to platform,
             "device" to deviceInfo(),
-            "version" to version
-        )
+            "version" to version,
+        ) + method
     }
 }
