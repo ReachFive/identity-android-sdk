@@ -14,6 +14,7 @@ import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
+import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
@@ -134,7 +135,7 @@ class SessionUtilsClient(
         reachFiveApi
             .authenticateWithCode(authCodeRequest, metadata)
             .enqueue(
-                ReachFiveApiCallback(
+                ReachFiveApiCallback.withContent<TokenEndpointResponse>(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )
@@ -162,7 +163,7 @@ class SessionUtilsClient(
         reachFiveApi
             .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback(
+                ReachFiveApiCallback.withContent<TokenEndpointResponse>(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )
@@ -183,7 +184,7 @@ class SessionUtilsClient(
         reachFiveApi
             .refreshAccessToken(refreshRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback(
+                ReachFiveApiCallback.withContent<TokenEndpointResponse>(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )
