@@ -15,7 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.http.*
 import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
 
-class LoginCallbackHandler(
+internal class LoginCallbackHandler(
     private val noFollowClient: NoFollowClient,
 ) {
 
@@ -101,7 +101,7 @@ private class AuthCodeExtractorCallback(
     }
 }
 
-interface NoFollowClient {
+internal interface NoFollowClient {
 
     @GET("/oauth/authorize")
     fun loginCallback(@QueryMap options: Map<String, String>): Call<Unit>

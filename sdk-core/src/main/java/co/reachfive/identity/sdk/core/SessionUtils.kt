@@ -45,7 +45,7 @@ class SessionUtilsClient(
         const val codeResponseType = "code"
     }
 
-    val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig)
+    private val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig)
 
     override var defaultScope: Set<String> = emptySet()
 
