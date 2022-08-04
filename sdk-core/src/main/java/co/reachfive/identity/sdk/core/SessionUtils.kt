@@ -45,7 +45,7 @@ class SessionUtilsClient(
         const val codeResponseType = "code"
     }
 
-    val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig, reachFiveApi)
+    val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig)
 
     override var defaultScope: Set<String> = emptySet()
 
@@ -156,7 +156,7 @@ class SessionUtilsClient(
         val redirectUri = sdkConfig.scheme
         val pkce = PkceAuthCodeFlow.generate(redirectUri)
 
-        loginCallbackHandler.loginCallback(
+        loginCallbackHandler.getAuthorizationCode(
             tkn = tkn,
             pkce = pkce,
             clientId = sdkConfig.clientId,

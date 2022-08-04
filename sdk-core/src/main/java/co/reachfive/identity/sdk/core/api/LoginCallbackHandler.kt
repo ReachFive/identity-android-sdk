@@ -19,7 +19,7 @@ class LoginCallbackHandler(
     private val noFollowClient: NoFollowClient,
 ) {
 
-    fun loginCallback(
+    fun getAuthorizationCode(
         tkn: String,
         pkce: PkceAuthCodeFlow,
         clientId: String,
@@ -53,10 +53,7 @@ class LoginCallbackHandler(
     }
 
     companion object {
-        fun create(
-            sdkConfig: SdkConfig,
-            reachFiveApi: ReachFiveApi,
-        ): LoginCallbackHandler {
+        fun create(sdkConfig: SdkConfig): LoginCallbackHandler {
             val logging = HttpLoggingInterceptor()
             logging.apply { logging.level = HttpLoggingInterceptor.Level.BASIC }
 
@@ -91,7 +88,7 @@ private class AuthCodeExtractorCallback(
             if (authCode != null) {
                 success(authCode)
             } else {
-                val error = ReachFiveError.fromRedirectionResult(uri) ?: ReachFiveError.Unexpected
+                val error = ReachFiveError.fromRedirectionResult(uri) ?: ReachFiveError.NoAuthCode
                 failure(error)
             }
         } else {
