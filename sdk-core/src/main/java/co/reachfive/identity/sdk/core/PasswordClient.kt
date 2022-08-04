@@ -8,6 +8,7 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
+import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.formatScope
@@ -35,7 +36,7 @@ internal class PasswordAuthClient(
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback.withContent(
+                ReachFiveApiCallback.withContent<TokenEndpointResponse>(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )
@@ -62,7 +63,7 @@ internal class PasswordAuthClient(
         reachFiveApi
             .loginWithPassword(loginRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback.withContent(
+                ReachFiveApiCallback.withContent<AuthenticationToken>(
                     success = {
                         sessionUtils.loginCallback(it.tkn, scope, success, failure)
                     },

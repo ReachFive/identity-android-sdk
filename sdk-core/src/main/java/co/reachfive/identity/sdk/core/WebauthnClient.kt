@@ -14,6 +14,8 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.ProfileWebAuthnSignupRequest
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.*
+import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
+import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
 import co.reachfive.identity.sdk.core.utils.Failure
@@ -49,7 +51,7 @@ internal class WebauthnAuthClient(
                 SdkInfos.getQueries()
             )
             .enqueue(
-                ReachFiveApiCallback.withContent(
+                ReachFiveApiCallback.withContent<RegistrationOptions>(
                     success = { registrationOptions ->
                         startFIDO2RegisterTask(
                             registrationOptions,
@@ -112,7 +114,7 @@ internal class WebauthnAuthClient(
                         )
                     )
                     .enqueue(
-                        ReachFiveApiCallback.withContent(
+                        ReachFiveApiCallback.withContent<AuthenticationToken>(
                             success = {
                                 sessionUtils.loginCallback(
                                     it.tkn,
@@ -143,7 +145,7 @@ internal class WebauthnAuthClient(
                 WebAuthnRegistrationRequest(origin, newFriendlyName)
             )
             .enqueue(
-                ReachFiveApiCallback.withContent(
+                ReachFiveApiCallback.withContent<RegistrationOptions>(
                     success = { registrationOptions ->
                         startFIDO2RegisterTask(
                             registrationOptions,
@@ -173,7 +175,7 @@ internal class WebauthnAuthClient(
                             authToken.authHeader,
                             registrationPublicKeyCredential
                         )
-                        .enqueue(ReachFiveApiCallback.withContent(success, failure))
+                        .enqueue(ReachFiveApiCallback.noContent(success, failure))
                 }
             } else failure(ReachFiveError.from("No auth token!"))
         }
@@ -190,7 +192,7 @@ internal class WebauthnAuthClient(
                 sdkConfig.clientId
             )
         ).enqueue(
-            ReachFiveApiCallback.withContent(
+            ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
                     val fido2ApiClient = Fido.getFido2ApiClient(activity)
 
@@ -264,7 +266,7 @@ internal class WebauthnAuthClient(
         return reachFiveApi
             .authenticateWithWebAuthn(authenticationPublicKeyCredential)
             .enqueue(
-                ReachFiveApiCallback.withContent(
+                ReachFiveApiCallback.withContent<AuthenticationToken>(
                     success = { sessionUtils.loginCallback(it.tkn, scope, success, failure) },
                     failure = failure
                 )
@@ -278,7 +280,7 @@ internal class WebauthnAuthClient(
     ) =
         reachFiveApi
             .getWebAuthnRegistrations(authToken.authHeader, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback.withContent(success, failure))
+            .enqueue(ReachFiveApiCallback.withContent<List<DeviceCredential>>(success, failure))
 
     override fun removeWebAuthnDevice(
         authToken: AuthToken,
@@ -292,7 +294,7 @@ internal class WebauthnAuthClient(
                 deviceId,
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback.withContent(success, failure))
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
 
     private fun startFIDO2RegisterTask(
         registrationOptions: RegistrationOptions,

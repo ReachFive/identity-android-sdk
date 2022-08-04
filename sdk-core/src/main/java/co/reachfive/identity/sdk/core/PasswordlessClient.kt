@@ -10,6 +10,8 @@ import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.requests.PasswordlessStartRequest
 import co.reachfive.identity.sdk.core.models.requests.PasswordlessVerificationRequest
+import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
+import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
@@ -54,7 +56,7 @@ internal class PasswordlessAuthClient(
             PasswordlessVerificationRequest(phoneNumber, verificationCode),
             SdkInfos.getQueries()
         ).enqueue(
-            ReachFiveApiCallback.withContent(
+            ReachFiveApiCallback.withContent< PasswordlessVerificationResponse>(
                 success = { verificationResponse ->
                     val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
                     if (authCodeFlow != null) {
@@ -68,7 +70,7 @@ internal class PasswordlessAuthClient(
                         reachFiveApi
                             .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
                             .enqueue(
-                                ReachFiveApiCallback.withContent(
+                                ReachFiveApiCallback.withContent<TokenEndpointResponse>(
                                     success = { tokenResponse ->
                                         tokenResponse.toAuthToken().fold(success, failure)
                                     },
