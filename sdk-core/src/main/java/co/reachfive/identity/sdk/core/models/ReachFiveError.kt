@@ -138,7 +138,7 @@ data class ReachFiveError(
 
         @JvmStatic
         val NoAuthCode = ReachFiveError(
-            code = ErrorCode.NoAuthCode.code,
+            code = ErrorCode.NoPkce.code,
             message = "No authorization code could be found when expected."
         )
 
