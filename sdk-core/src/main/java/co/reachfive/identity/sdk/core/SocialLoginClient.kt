@@ -1,8 +1,10 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
+import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.*
@@ -11,6 +13,12 @@ import co.reachfive.identity.sdk.core.utils.Success
 
 internal interface SocialLoginAuth {
     var defaultScope: Set<String>
+
+    fun loadSocialProviders(
+        context: Context,
+        success: Success<List<Provider>> = {},
+        failure: Failure<ReachFiveError> = {},
+    )
 
     fun getProvider(name: String): Provider?
 
@@ -27,17 +35,26 @@ internal interface SocialLoginAuth {
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
     )
 }
 
-internal class SocialLoginAuthClient(
+class SocialLoginAuthClient(
     private val reachFiveApi: ReachFiveApi,
-    private val activity: Activity,
-    private val sdkConfig: SdkConfig,
     private val providersCreators: List<ProviderCreator>,
-    override var defaultScope: Set<String> = emptySet(),
+    private val sessionUtils: SessionUtilsClient,
 ) : SocialLoginAuth {
+
+    override fun loadSocialProviders(
+        context: Context,
+        success: Success<List<Provider>>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        providersConfigs(success, failure, context)
+    }
+
+    override var defaultScope: Set<String> = emptySet()
 
     private var providers: List<Provider> = emptyList()
 
@@ -46,6 +63,9 @@ internal class SocialLoginAuthClient(
     internal fun onStop() = providers.forEach { it.onStop() }
 
     internal fun logoutFromAll() = providers.forEach { it.logout() }
+
+    internal fun isSocialLoginRequestCode(code: Int): Boolean =
+        providers.any { it.requestCode == code }
 
     internal fun onActivityResult(
         requestCode: Int,
@@ -66,11 +86,11 @@ internal class SocialLoginAuthClient(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
     ) {
-        providers
-            .find { p -> p.requestCode == requestCode }
-            ?.onRequestPermissionsResult(requestCode, permissions, grantResults, failure)
+        providers.find { p -> p.requestCode == requestCode }
+            ?.onRequestPermissionsResult(requestCode, permissions, grantResults, failure, activity)
     }
 
     override fun loginWithProvider(
@@ -87,38 +107,40 @@ internal class SocialLoginAuthClient(
 
     internal fun providersConfigs(
         success: Success<List<Provider>>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        context: Context
     ) {
         if (providersCreators.isNotEmpty()) {
             reachFiveApi
                 .providersConfigs(SdkInfos.getQueries())
                 .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
-                    providers = createProviders(it)
+                    providers = createProviders(context, it)
                     success(providers)
                 }, failure = failure))
         } else success(emptyList())
     }
 
-    private fun createProviders(providersConfigsResult: ProvidersConfigsResult): List<Provider> {
+    private fun createProviders(
+        context: Context,
+        providersConfigsResult: ProvidersConfigsResult
+    ): List<Provider> {
         val webViewProvider = providersCreators.find { it.name == "webview" }
         return providersConfigsResult.items?.mapNotNull { config ->
             val nativeProvider = providersCreators.find { it.name == config.provider }
             when {
                 nativeProvider != null -> nativeProvider.create(
                     config,
-                    sdkConfig,
-                    reachFiveApi,
-                    activity
+                    sessionUtils,
+                    context
                 )
                 webViewProvider != null -> webViewProvider.create(
                     config,
-                    sdkConfig,
-                    reachFiveApi,
-                    activity
+                    sessionUtils,
+                    context
                 )
                 else -> {
                     Log.w(
-                        ReachFive.TAG,
+                        TAG,
                         "Non supported provider found, please add webview or native provider"
                     )
                     null

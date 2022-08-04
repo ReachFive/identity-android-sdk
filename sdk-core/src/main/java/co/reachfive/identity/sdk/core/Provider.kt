@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -14,9 +15,8 @@ interface ProviderCreator {
     val name: String
     fun create(
         providerConfig: ProviderConfig,
-        sdkConfig: SdkConfig,
-        reachFiveApi: ReachFiveApi,
-        activity: Activity
+        sessionUtils: SessionUtilsClient,
+        context: Context
     ): Provider
 }
 
@@ -52,7 +52,8 @@ interface Provider {
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
     )
 
     /**

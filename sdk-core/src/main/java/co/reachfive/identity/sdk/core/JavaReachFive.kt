@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
@@ -11,17 +12,30 @@ import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest
 import co.reachfive.identity.sdk.core.utils.Callback
 
 class JavaReachFive(
-    activity: Activity,
     sdkConfig: SdkConfig,
     providersCreators: List<ProviderCreator>
 ) {
-    private val reach5 = ReachFive(activity, sdkConfig, providersCreators)
+    private val reach5 = ReachFive(sdkConfig, providersCreators)
+
+    fun isReachFiveLoginRequestCode(code: Int): Boolean =
+        reach5.isReachFiveLoginRequestCode(code)
+
+    fun isReachFiveActionRequestCode(code: Int): Boolean =
+        reach5.isReachFiveActionRequestCode(code)
 
     fun initialize(
-        success: Callback<List<Provider>>,
+        success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ): ReachFive {
         return reach5.initialize(success::call, failure::call)
+    }
+
+    fun loadSocialProviders(
+        context: Context,
+        success: Callback<List<Provider>>,
+        failure: Callback<ReachFiveError>,
+    ) {
+        return reach5.loadSocialProviders(context, success::call, failure::call)
     }
 
     fun getProvider(name: String): Provider? {
@@ -77,14 +91,16 @@ class JavaReachFive(
         phoneNumber: String? = null,
         redirectUri: String,
         successWithNoContent: Callback<Unit>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        activity: Activity
     ) {
         reach5.startPasswordless(
             email,
             phoneNumber,
             redirectUri,
             { successWithNoContent.call(Unit) },
-            failure::call
+            failure::call,
+            activity
         )
     }
 
@@ -92,9 +108,16 @@ class JavaReachFive(
         phoneNumber: String,
         verificationCode: String,
         success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        activity: Activity
     ) {
-        reach5.verifyPasswordless(phoneNumber, verificationCode, success::call, failure::call)
+        reach5.verifyPasswordless(
+            phoneNumber,
+            verificationCode,
+            success::call,
+            failure::call,
+            activity
+        )
     }
 
     /**
@@ -134,8 +157,9 @@ class JavaReachFive(
         state: String? = null,
         nonce: String? = null,
         origin: String? = null,
+        activity: Activity
     ) {
-        return reach5.loginWithWeb(scope, state, nonce, origin)
+        return reach5.loginWithWeb(scope, state, nonce, origin, activity)
     }
 
     fun logout(
@@ -237,23 +261,31 @@ class JavaReachFive(
         )
     }
 
-    fun onActivityResult(
+    fun onWebauthnDeviceAddResult(
+        requestCode: Int,
+        data: Intent?,
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>,
+    ) {
+        return reach5.onWebauthnDeviceAddResult(requestCode, data, success::call, failure::call)
+    }
+
+    fun onLoginActivityResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        loginSuccess: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>,
+        activity: Activity
     ) {
-        return reach5.onActivityResult(requestCode, resultCode, data, success::call, failure::call)
-    }
-
-    fun onLoginCallbackResult(
-        intent: Intent,
-        resultCode: Int,
-        success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
-    ) {
-        return reach5.onLoginCallbackResult(intent, resultCode, success::call, failure::call)
+        return reach5.onLoginActivityResult(
+            requestCode,
+            resultCode,
+            data,
+            loginSuccess::call,
+            failure::call,
+            activity
+        )
     }
 
     fun onStop() {

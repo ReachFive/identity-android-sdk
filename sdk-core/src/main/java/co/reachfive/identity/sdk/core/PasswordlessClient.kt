@@ -16,7 +16,6 @@ import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 internal class PasswordlessAuthClient(
-    private val activity: Activity,
     private val reachFiveApi: ReachFiveApi,
     override val sdkConfig: SdkConfig,
 ) : PasswordlessAuth {
@@ -26,7 +25,8 @@ internal class PasswordlessAuthClient(
         phoneNumber: String?,
         redirectUrl: String,
         successWithNoContent: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
     ) =
         PkceAuthCodeFlow.generate(redirectUrl).let { pkce ->
             PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
@@ -37,7 +37,7 @@ internal class PasswordlessAuthClient(
                     phoneNumber = phoneNumber,
                     codeChallenge = pkce.codeChallenge,
                     codeChallengeMethod = pkce.codeChallengeMethod,
-                    responseType = ReachFiveOAuthClient.codeResponseType,
+                    responseType = SessionUtilsClient.codeResponseType,
                     redirectUri = redirectUrl
                 ),
                 SdkInfos.getQueries()
@@ -53,7 +53,8 @@ internal class PasswordlessAuthClient(
         phoneNumber: String,
         verificationCode: String,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
     ) =
         reachFiveApi.requestPasswordlessVerification(
             PasswordlessVerificationRequest(phoneNumber, verificationCode),
@@ -96,13 +97,15 @@ internal interface PasswordlessAuth {
         phoneNumber: String? = null,
         redirectUrl: String = sdkConfig.scheme,
         successWithNoContent: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     )
 
     fun verifyPasswordless(
         phoneNumber: String,
         verificationCode: String,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        activity: Activity
     )
 }
