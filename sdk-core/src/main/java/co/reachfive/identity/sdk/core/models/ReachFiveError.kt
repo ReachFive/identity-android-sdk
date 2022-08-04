@@ -90,7 +90,7 @@ data class ReachFiveError(
         fun fromRedirectionResult(uri: Uri): ReachFiveError? {
             return ReachFiveApiError.resolveFrom(uri)?.let { apiError ->
                 ReachFiveError(
-                    code = 303,
+                    code = ErrorCode.OAuthAuthorizationError.code,
                     message = apiError.errorDescription ?: "ReachFive API response error",
                     data = apiError
                 )
@@ -98,16 +98,22 @@ data class ReachFiveError(
         }
 
         @JvmStatic
-        val NoIntent: ReachFiveError =
+        val NullIntent: ReachFiveError =
             ReachFiveError(
-                code = 52002,
+                code = ErrorCode.NullIntent.code,
                 message = "Intent is null"
             )
 
         @JvmStatic
-        val UserCanceled = ReachFiveError(
-            code = 52001,
+        val WebFlowCanceled = ReachFiveError(
+            code = ErrorCode.WebFlowCanceled.code,
             message = "User canceled or closed the web flow.",
+        )
+
+        @JvmStatic
+        val NoAuthCode = ReachFiveError(
+            code = ErrorCode.NoAuthCode.code,
+            message = "No authorization code could be found when expected."
         )
     }
 }

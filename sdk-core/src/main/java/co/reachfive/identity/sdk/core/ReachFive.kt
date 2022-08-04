@@ -105,7 +105,7 @@ class ReachFive private constructor(
             if (intent != null)
                 webauthnAuth.onAddNewWebAuthnDeviceResult(intent, success, failure)
             else
-                failure(ReachFiveError.NoIntent)
+                failure(ReachFiveError.NullIntent)
         }
     }
 

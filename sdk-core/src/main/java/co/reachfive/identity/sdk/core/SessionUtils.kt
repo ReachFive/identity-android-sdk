@@ -1,7 +1,6 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
@@ -16,7 +15,6 @@ import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 internal interface SessionUtils {
     var defaultScope: Set<String>
@@ -68,8 +66,8 @@ class SessionUtilsClient(
         if (error != null)
             failure(error)
         else {
-            if (authCode == null) failure(ReachFiveError.UserCanceled)
-            else if (codeVerifier == null) failure(ReachFiveError.from("Could not retrieve code verifier!"))
+            if (authCode == null) failure(ReachFiveError.WebFlowCanceled)
+            else if (codeVerifier == null) failure(ReachFiveError.NoAuthCode)
             else exchangeAuthorizationCode(authCode, codeVerifier, success, failure)
         }
     }
