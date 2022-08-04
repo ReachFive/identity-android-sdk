@@ -1,8 +1,8 @@
 package co.reachfive.identity.sdk.core.models
 
-import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
 import android.net.Uri
 import android.os.Parcelable
+import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -25,7 +25,7 @@ data class ReachFiveApiError(
     val errorDescription: String? = null,
 
     @SerializedName("error_details")
-    val errorDetails: List<ReachFiveApiErrorDetail>? = null
+    val errorDetails: List<ReachFiveApiErrorDetail>?
 ) : Parcelable {
 
     companion object {
@@ -52,6 +52,7 @@ data class ReachFiveApiError(
                     errorUserMsg = errorUserMsg,
                     errorMessageKey = errorMessageKey,
                     errorDescription = errorDescription,
+                    errorDetails = null,
                 )
             }
     }
@@ -68,8 +69,10 @@ data class ReachFiveError(
     override val message: String,
     val code: Int? = null,
     val exception: Exception? = null,
-    val data: ReachFiveApiError? = null
+    val data: ReachFiveApiError? = null,
 ) : java.lang.Exception(message), Parcelable {
+
+    fun getErrorCode(): ErrorCode? = code?.let { ErrorCode.valueOf(it.toString()) }
 
     companion object {
         @JvmStatic
@@ -113,7 +116,7 @@ data class ReachFiveError(
         fun fromRedirectionResult(uri: Uri): ReachFiveError? {
             return ReachFiveApiError.resolveFrom(uri)?.let { apiError ->
                 ReachFiveError(
-                    code = 303,
+                    code = ErrorCode.OAuthAuthorizationError.code,
                     message = apiError.errorDescription ?: "ReachFive API response error",
                     data = apiError
                 )
@@ -121,22 +124,28 @@ data class ReachFiveError(
         }
 
         @JvmStatic
-        val UserCanceled = ReachFiveError(
-            code = 52001,
+        val NullIntent: ReachFiveError =
+            ReachFiveError(
+                code = ErrorCode.NullIntent.code,
+                message = "Intent is null when expected."
+            )
+
+        @JvmStatic
+        val WebFlowCanceled = ReachFiveError(
+            code = ErrorCode.WebFlowCanceled.code,
             message = "User canceled or closed the web flow.",
         )
 
         @JvmStatic
-        val NoIntent: ReachFiveError =
-            ReachFiveError(
-                code = 52002,
-                message = "Intent is null!"
-            )
+        val NoAuthCode = ReachFiveError(
+            code = ErrorCode.NoAuthCode.code,
+            message = "No authorization code could be found when expected."
+        )
 
         @JvmStatic
-        val Unexpected = ReachFiveError(
-            code = 52003,
-            message = "Could not resolve any ReachFive error.",
+        val NoPkce = ReachFiveError(
+            code = ErrorCode.NoPkce.code,
+            message = "No PKCE code_verifier could be found when expected."
         )
     }
 }

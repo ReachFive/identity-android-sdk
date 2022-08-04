@@ -45,7 +45,7 @@ class SessionUtilsClient(
         const val codeResponseType = "code"
     }
 
-    val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig, reachFiveApi)
+    private val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig)
 
     override var defaultScope: Set<String> = emptySet()
 
@@ -70,8 +70,8 @@ class SessionUtilsClient(
         if (error != null)
             failure(error)
         else {
-            if (authCode == null) failure(ReachFiveError.UserCanceled)
-            else if (codeVerifier == null) failure(ReachFiveError.from("Could not retrieve code verifier!"))
+            if (authCode == null) failure(ReachFiveError.WebFlowCanceled)
+            else if (codeVerifier == null) failure(ReachFiveError.NoPkce)
             else exchangeAuthorizationCode(authCode, codeVerifier, success, failure)
         }
     }
@@ -156,7 +156,7 @@ class SessionUtilsClient(
         val redirectUri = sdkConfig.scheme
         val pkce = PkceAuthCodeFlow.generate(redirectUri)
 
-        loginCallbackHandler.loginCallback(
+        loginCallbackHandler.getAuthorizationCode(
             tkn = tkn,
             pkce = pkce,
             clientId = sdkConfig.clientId,

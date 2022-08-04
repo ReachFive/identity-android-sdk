@@ -15,11 +15,11 @@ import retrofit2.Retrofit
 import retrofit2.http.*
 import co.reachfive.identity.sdk.core.utils.TryOrNull.tryOrNull
 
-class LoginCallbackHandler(
+internal class LoginCallbackHandler(
     private val noFollowClient: NoFollowClient,
 ) {
 
-    fun loginCallback(
+    fun getAuthorizationCode(
         tkn: String,
         pkce: PkceAuthCodeFlow,
         clientId: String,
@@ -53,10 +53,7 @@ class LoginCallbackHandler(
     }
 
     companion object {
-        fun create(
-            sdkConfig: SdkConfig,
-            reachFiveApi: ReachFiveApi,
-        ): LoginCallbackHandler {
+        fun create(sdkConfig: SdkConfig): LoginCallbackHandler {
             val logging = HttpLoggingInterceptor()
             logging.apply { logging.level = HttpLoggingInterceptor.Level.BASIC }
 
@@ -91,7 +88,7 @@ private class AuthCodeExtractorCallback(
             if (authCode != null) {
                 success(authCode)
             } else {
-                val error = ReachFiveError.fromRedirectionResult(uri) ?: ReachFiveError.Unexpected
+                val error = ReachFiveError.fromRedirectionResult(uri) ?: ReachFiveError.NoAuthCode
                 failure(error)
             }
         } else {
@@ -104,7 +101,7 @@ private class AuthCodeExtractorCallback(
     }
 }
 
-interface NoFollowClient {
+internal interface NoFollowClient {
 
     @GET("/oauth/authorize")
     fun loginCallback(@QueryMap options: Map<String, String>): Call<Unit>
