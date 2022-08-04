@@ -56,7 +56,7 @@ internal class PasswordlessAuthClient(
             PasswordlessVerificationRequest(phoneNumber, verificationCode),
             SdkInfos.getQueries()
         ).enqueue(
-            ReachFiveApiCallback.withContent< PasswordlessVerificationResponse>(
+            ReachFiveApiCallback.withContent<PasswordlessVerificationResponse>(
                 success = { verificationResponse ->
                     val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
                     if (authCodeFlow != null) {
