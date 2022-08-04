@@ -70,8 +70,8 @@ class SessionUtilsClient(
         if (error != null)
             failure(error)
         else {
-            if (authCode == null) failure(ReachFiveError.UserCanceled)
-            else if (codeVerifier == null) failure(ReachFiveError.from("Could not retrieve code verifier!"))
+            if (authCode == null) failure(ReachFiveError.WebFlowCanceled)
+            else if (codeVerifier == null) failure(ReachFiveError.NoAuthCode)
             else exchangeAuthorizationCode(authCode, codeVerifier, success, failure)
         }
     }

@@ -13,19 +13,19 @@ data class ReachFiveApiError(
     val error: String,
 
     @SerializedName("error_id")
-    val errorId: String? = null,
+    val errorId: String?,
 
     @SerializedName("error_user_msg")
-    val errorUserMsg: String? = null,
+    val errorUserMsg: String?,
 
     @SerializedName("error_message_key")
-    val errorMessageKey: String? = null,
+    val errorMessageKey: String?,
 
     @SerializedName("error_description")
-    val errorDescription: String? = null,
+    val errorDescription: String?,
 
     @SerializedName("error_details")
-    val errorDetails: List<ReachFiveApiErrorDetail>? = null
+    val errorDetails: List<ReachFiveApiErrorDetail>?
 ) : Parcelable {
 
     companion object {
@@ -52,6 +52,7 @@ data class ReachFiveApiError(
                     errorUserMsg = errorUserMsg,
                     errorMessageKey = errorMessageKey,
                     errorDescription = errorDescription,
+                    errorDetails = null,
                 )
             }
     }
@@ -68,8 +69,10 @@ data class ReachFiveError(
     override val message: String,
     val code: Int? = null,
     val exception: Exception? = null,
-    val data: ReachFiveApiError? = null
+    val data: ReachFiveApiError? = null,
 ) : java.lang.Exception(message), Parcelable {
+
+    fun getErrorCode(): ErrorCode? = code?.let { ErrorCode.valueOf(it.toString()) }
 
     companion object {
         @JvmStatic
@@ -113,7 +116,7 @@ data class ReachFiveError(
         fun fromRedirectionResult(uri: Uri): ReachFiveError? {
             return ReachFiveApiError.resolveFrom(uri)?.let { apiError ->
                 ReachFiveError(
-                    code = 303,
+                    code = ErrorCode.OAuthAuthorizationError.code,
                     message = apiError.errorDescription ?: "ReachFive API response error",
                     data = apiError
                 )
@@ -127,15 +130,27 @@ data class ReachFiveError(
         )
 
         @JvmStatic
-        val NoIntent: ReachFiveError =
+        val NullIntent: ReachFiveError =
             ReachFiveError(
-                code = 52002,
-                message = "Intent is null!"
+                code = ErrorCode.NullIntent.code,
+                message = "Intent is null when expected."
             )
 
         @JvmStatic
+        val WebFlowCanceled = ReachFiveError(
+            code = ErrorCode.WebFlowCanceled.code,
+            message = "User canceled or closed the web flow.",
+        )
+
+        @JvmStatic
+        val NoAuthCode = ReachFiveError(
+            code = ErrorCode.NoAuthCode.code,
+            message = "No authorization code could be found when expected."
+        )
+
+        @JvmStatic
         val Unexpected = ReachFiveError(
-            code = 52003,
+            code = ErrorCode.Unexpected.code,
             message = "Could not resolve any ReachFive error.",
         )
     }
