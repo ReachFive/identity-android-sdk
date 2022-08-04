@@ -8,12 +8,10 @@ import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
-import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
-import java.lang.NullPointerException
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -89,7 +87,7 @@ class ReachFive private constructor(
 
     fun logout(
         successWithNoContent: SuccessWithNoContent<Unit>,
-        failure: Failure<ReachFiveError>
+        @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>
     ) {
         socialLoginAuth.logoutFromAll()
         successWithNoContent(Unit)
@@ -127,7 +125,7 @@ class ReachFive private constructor(
                         failure,
                         activity
                     )
-                else failure(ReachFiveError.NoIntent)
+                else failure(ReachFiveError.NullIntent)
 
             WebauthnAuth.RC_SIGNUP -> {
                 if (intent != null)
@@ -138,7 +136,7 @@ class ReachFive private constructor(
                         failure,
                         activity
                     )
-                else failure(ReachFiveError.NoIntent)
+                else failure(ReachFiveError.NullIntent)
             }
 
             else ->
@@ -146,7 +144,7 @@ class ReachFive private constructor(
                     if (intent != null)
                         sessionUtils.handleAuthorizationCompletion(intent, loginSuccess, failure)
                     else
-                        failure(ReachFiveError.NoIntent)
+                        failure(ReachFiveError.NullIntent)
                 } else if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
                     socialLoginAuth.onActivityResult(
                         requestCode,
