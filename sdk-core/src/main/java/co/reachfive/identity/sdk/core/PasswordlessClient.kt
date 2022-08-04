@@ -13,7 +13,6 @@ import co.reachfive.identity.sdk.core.models.requests.PasswordlessVerificationRe
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 internal class PasswordlessAuthClient(
     private val reachFiveApi: ReachFiveApi,
@@ -24,7 +23,7 @@ internal class PasswordlessAuthClient(
         email: String?,
         phoneNumber: String?,
         redirectUrl: String,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity,
     ) =
@@ -41,12 +40,7 @@ internal class PasswordlessAuthClient(
                     redirectUri = redirectUrl
                 ),
                 SdkInfos.getQueries()
-            ).enqueue(
-                ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
-                    failure = failure
-                )
-            )
+            ).enqueue(ReachFiveApiCallback.noContent(success, failure))
         }
 
     override fun verifyPasswordless(
@@ -60,7 +54,7 @@ internal class PasswordlessAuthClient(
             PasswordlessVerificationRequest(phoneNumber, verificationCode),
             SdkInfos.getQueries()
         ).enqueue(
-            ReachFiveApiCallback(
+            ReachFiveApiCallback.withContent(
                 success = { verificationResponse ->
                     val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
                     if (authCodeFlow != null) {
@@ -74,7 +68,7 @@ internal class PasswordlessAuthClient(
                         reachFiveApi
                             .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
                             .enqueue(
-                                ReachFiveApiCallback(
+                                ReachFiveApiCallback.withContent(
                                     success = { tokenResponse ->
                                         tokenResponse.toAuthToken().fold(success, failure)
                                     },
@@ -96,7 +90,7 @@ internal interface PasswordlessAuth {
         email: String? = null,
         phoneNumber: String? = null,
         redirectUrl: String = sdkConfig.scheme,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity
     )

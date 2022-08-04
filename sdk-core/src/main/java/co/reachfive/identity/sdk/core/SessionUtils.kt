@@ -92,7 +92,7 @@ class SessionUtilsClient(
         reachFiveApi
             .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback(
+                ReachFiveApiCallback.withContent(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )
@@ -119,7 +119,7 @@ class SessionUtilsClient(
         reachFiveApi
             .loginWithProvider(loginProviderRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback(
+                ReachFiveApiCallback.withContent(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )
@@ -140,7 +140,7 @@ class SessionUtilsClient(
         reachFiveApi
             .refreshAccessToken(refreshRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback(
+                ReachFiveApiCallback.withContent(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )

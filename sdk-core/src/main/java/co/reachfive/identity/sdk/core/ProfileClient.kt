@@ -12,7 +12,6 @@ import co.reachfive.identity.sdk.core.models.requests.UpdatePhoneNumberRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyPhoneNumberRequest
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 internal class ProfileManagementClient(
     private val reachFiveApi: ReachFiveApi,
@@ -28,14 +27,14 @@ internal class ProfileManagementClient(
                 authToken.authHeader,
                 SdkInfos.getQueries().plus(Pair("fields", fields.joinToString(",")))
             )
-            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+            .enqueue(ReachFiveApiCallback.withContent(success, failure))
     }
 
     override fun verifyPhoneNumber(
         authToken: AuthToken,
         phoneNumber: String,
         verificationCode: String,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
@@ -44,12 +43,7 @@ internal class ProfileManagementClient(
                 VerifyPhoneNumberRequest(phoneNumber, verificationCode),
                 SdkInfos.getQueries()
             )
-            .enqueue(
-                ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
-                    failure = failure
-                )
-            )
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
 
     override fun updateEmail(
@@ -64,7 +58,7 @@ internal class ProfileManagementClient(
                 authToken.authHeader,
                 UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+            .enqueue(ReachFiveApiCallback.withContent(success, failure))
     }
 
     override fun updatePhoneNumber(
@@ -79,7 +73,7 @@ internal class ProfileManagementClient(
                 UpdatePhoneNumberRequest(phoneNumber),
                 SdkInfos.getQueries()
             )
-            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+            .enqueue(ReachFiveApiCallback.withContent(success, failure))
     }
 
     override fun updateProfile(
@@ -90,7 +84,7 @@ internal class ProfileManagementClient(
     ) {
         reachFiveApi
             .updateProfile(authToken.authHeader, profile, SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback(success = success, failure = failure))
+            .enqueue(ReachFiveApiCallback.withContent(success, failure))
     }
 }
 
@@ -156,7 +150,7 @@ internal interface ProfileManagement {
         authToken: AuthToken,
         phoneNumber: String,
         verificationCode: String,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     )
 

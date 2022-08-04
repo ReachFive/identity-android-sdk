@@ -11,7 +11,6 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -65,13 +64,13 @@ class ReachFive private constructor(
     }
 
     fun initialize(
-        success: SuccessWithNoContent = {},
+        success: Success<Unit> = {},
         failure: Failure<ReachFiveError> = {}
     ): ReachFive {
         reachFiveApi
             .clientConfig(mapOf("client_id" to sdkConfig.clientId))
             .enqueue(
-                ReachFiveApiCallback<ClientConfigResponse>(
+                ReachFiveApiCallback.withContent<ClientConfigResponse>(
                     success = { clientConfig ->
                         defaultScope = clientConfig.scope.split(" ").toSet()
                         success(Unit)
@@ -86,17 +85,17 @@ class ReachFive private constructor(
     fun onStop() = socialLoginAuth.onStop()
 
     fun logout(
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>
     ) {
         socialLoginAuth.logoutFromAll()
-        successWithNoContent(Unit)
+        success(Unit)
     }
 
     fun onWebauthnDeviceAddResult(
         requestCode: Int,
         intent: Intent?,
-        success: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
         if (requestCode == WebauthnAuth.RC_REGISTER_DEVICE) {

@@ -116,7 +116,7 @@ class SocialLoginAuthClient(
         if (providersCreators.isNotEmpty()) {
             reachFiveApi
                 .providersConfigs(SdkInfos.getQueries())
-                .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
+                .enqueue(ReachFiveApiCallback.withContent({
                     providers = createProviders(context, it)
                     success(providers)
                 }, failure = failure))

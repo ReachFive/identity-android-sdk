@@ -10,7 +10,6 @@ import co.reachfive.identity.sdk.core.models.requests.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 import co.reachfive.identity.sdk.core.utils.formatScope
 
 internal class PasswordAuthClient(
@@ -36,7 +35,7 @@ internal class PasswordAuthClient(
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback(
+                ReachFiveApiCallback.withContent(
                     success = { it.toAuthToken().fold(success, failure) },
                     failure = failure
                 )
@@ -63,7 +62,7 @@ internal class PasswordAuthClient(
         reachFiveApi
             .loginWithPassword(loginRequest, SdkInfos.getQueries())
             .enqueue(
-                ReachFiveApiCallback<AuthenticationToken>(
+                ReachFiveApiCallback.withContent(
                     success = {
                         sessionUtils.loginCallback(it.tkn, scope, success, failure)
                     },
@@ -74,7 +73,7 @@ internal class PasswordAuthClient(
 
     override fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         val headers = UpdatePasswordRequest.getAccessToken(updatePasswordRequest)
@@ -87,19 +86,14 @@ internal class PasswordAuthClient(
                 UpdatePasswordRequest.enrichWithClientId(updatePasswordRequest, sdkConfig.clientId),
                 SdkInfos.getQueries()
             )
-            .enqueue(
-                ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
-                    failure = failure
-                )
-            )
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
 
     override fun requestPasswordReset(
         email: String?,
         redirectUrl: String?,
         phoneNumber: String?,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
@@ -112,12 +106,7 @@ internal class PasswordAuthClient(
                 ),
                 SdkInfos.getQueries()
             )
-            .enqueue(
-                ReachFiveApiCallback(
-                    successWithNoContent = successWithNoContent,
-                    failure = failure
-                )
-            )
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
 }
 
@@ -142,7 +131,7 @@ internal interface PasswordAuth {
 
     fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     )
 
@@ -150,7 +139,7 @@ internal interface PasswordAuth {
         email: String? = null,
         redirectUrl: String? = null,
         phoneNumber: String? = null,
-        successWithNoContent: SuccessWithNoContent,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     )
 }
