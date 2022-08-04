@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
+import co.reachfive.identity.sdk.core.api.LoginCallbackHandler
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -14,6 +15,7 @@ import co.reachfive.identity.sdk.core.models.requests.AuthCodeRequest
 import co.reachfive.identity.sdk.core.models.requests.LoginProviderRequest
 import co.reachfive.identity.sdk.core.models.requests.RefreshRequest
 import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 
 internal interface SessionUtils {
@@ -43,6 +45,8 @@ class SessionUtilsClient(
         const val codeResponseType = "code"
     }
 
+    private val loginCallbackHandler = LoginCallbackHandler.create(sdkConfig)
+
     override var defaultScope: Set<String> = emptySet()
 
     fun loginWithProvider(
@@ -67,7 +71,7 @@ class SessionUtilsClient(
             failure(error)
         else {
             if (authCode == null) failure(ReachFiveError.WebFlowCanceled)
-            else if (codeVerifier == null) failure(ReachFiveError.NoAuthCode)
+            else if (codeVerifier == null) failure(ReachFiveError.NoPkce)
             else exchangeAuthorizationCode(authCode, codeVerifier, success, failure)
         }
     }
@@ -146,9 +150,23 @@ class SessionUtilsClient(
     internal fun loginCallback(
         tkn: String,
         scope: Collection<String>,
-        activity: Activity
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
     ) {
-        webLauncher.loginCallback(activity, scope, tkn)
+        val redirectUri = sdkConfig.scheme
+        val pkce = PkceAuthCodeFlow.generate(redirectUri)
+
+        loginCallbackHandler.getAuthorizationCode(
+            tkn = tkn,
+            pkce = pkce,
+            clientId = sdkConfig.clientId,
+            redirectUri = redirectUri,
+            scope = scope,
+            success = { authCode ->
+                exchangeAuthorizationCode(authCode, pkce.codeVerifier, success, failure)
+            },
+            failure = failure
+        )
     }
 
     override fun loginWithWeb(

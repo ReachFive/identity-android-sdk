@@ -40,12 +40,12 @@ class ReachFive private constructor(
         ): ReachFive {
             val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
             val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
-
-            val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi)
-            val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
-            val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val sessionUtils =
                 SessionUtilsClient(reachFiveApi, sdkConfig, webLauncher)
+
+            val passwordAuthClient = PasswordAuthClient(sdkConfig, reachFiveApi, sessionUtils)
+            val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
+            val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient =
@@ -111,7 +111,7 @@ class ReachFive private constructor(
         requestCode: Int,
         resultCode: Int,
         intent: Intent?,
-        loginSuccess: Success<AuthToken>,
+        success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -122,8 +122,8 @@ class ReachFive private constructor(
                         resultCode,
                         intent,
                         defaultScope,
+                        success,
                         failure,
-                        activity
                     )
                 else failure(ReachFiveError.NullIntent)
 
@@ -133,6 +133,7 @@ class ReachFive private constructor(
                         resultCode,
                         intent,
                         defaultScope,
+                        success,
                         failure,
                         activity
                     )
@@ -142,7 +143,7 @@ class ReachFive private constructor(
             else ->
                 if (RedirectionActivity.isLoginRequestCode(requestCode)) {
                     if (intent != null)
-                        sessionUtils.handleAuthorizationCompletion(intent, loginSuccess, failure)
+                        sessionUtils.handleAuthorizationCompletion(intent, success, failure)
                     else
                         failure(ReachFiveError.NullIntent)
                 } else if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
@@ -150,7 +151,7 @@ class ReachFive private constructor(
                         requestCode,
                         resultCode,
                         intent,
-                        loginSuccess,
+                        success,
                         failure
                     )
                 } else Log.d(
