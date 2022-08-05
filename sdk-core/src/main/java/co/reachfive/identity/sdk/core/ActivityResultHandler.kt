@@ -35,6 +35,6 @@ open class WebAuthnDeviceAddResult(
     val intent: Intent?,
 ) : WebauthnActionHandler {
     fun handle(success: Success<Unit>, failure: Failure<ReachFiveError>) {
-        reachFive.onWebauthnDeviceAddResult(requestCode, intent, success, failure)
+        reachFive.onAddNewWebAuthnDeviceResult(requestCode, intent, success, failure)
     }
 }

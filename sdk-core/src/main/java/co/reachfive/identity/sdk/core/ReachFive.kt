@@ -11,7 +11,6 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import co.reachfive.identity.sdk.core.utils.SuccessWithNoContent
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -65,13 +64,13 @@ class ReachFive private constructor(
     }
 
     fun initialize(
-        success: SuccessWithNoContent<Unit> = {},
+        success: Success<Unit> = {},
         failure: Failure<ReachFiveError> = {}
     ): ReachFive {
         reachFiveApi
             .clientConfig(mapOf("client_id" to sdkConfig.clientId))
             .enqueue(
-                ReachFiveApiCallback<ClientConfigResponse>(
+                ReachFiveApiCallback.withContent<ClientConfigResponse>(
                     success = { clientConfig ->
                         defaultScope = clientConfig.scope.split(" ").toSet()
                         success(Unit)
@@ -86,17 +85,17 @@ class ReachFive private constructor(
     fun onStop() = socialLoginAuth.onStop()
 
     fun logout(
-        successWithNoContent: SuccessWithNoContent<Unit>,
+        success: Success<Unit>,
         @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>
     ) {
         socialLoginAuth.logoutFromAll()
-        successWithNoContent(Unit)
+        success(Unit)
     }
 
-    fun onWebauthnDeviceAddResult(
+    fun onAddNewWebAuthnDeviceResult(
         requestCode: Int,
         intent: Intent?,
-        success: SuccessWithNoContent<Unit>,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
         if (requestCode == WebauthnAuth.RC_REGISTER_DEVICE) {
@@ -104,7 +103,7 @@ class ReachFive private constructor(
                 webauthnAuth.onAddNewWebAuthnDeviceResult(intent, success, failure)
             else
                 failure(ReachFiveError.NullIntent)
-        }
+        } else logNotReachFiveRequestCode(requestCode)
     }
 
     fun onLoginActivityResult(
@@ -154,10 +153,7 @@ class ReachFive private constructor(
                         success,
                         failure
                     )
-                } else Log.d(
-                    TAG,
-                    "Request code ${requestCode} does not match any ReachFive actions."
-                )
+                } else logNotReachFiveRequestCode(requestCode)
 
         }
     }
@@ -183,4 +179,8 @@ class ReachFive private constructor(
 
     fun isReachFiveActionRequestCode(code: Int): Boolean =
         WebauthnAuth.isWebauthnActionRequestCode(code)
+
+    private fun logNotReachFiveRequestCode(code: Int) {
+        Log.d(TAG, "Request code ${code} does not match any ReachFive actions.")
+    }
 }

@@ -7,7 +7,10 @@ import android.util.Log
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
-import co.reachfive.identity.sdk.core.models.*
+import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.ProvidersConfigsResult
+import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
@@ -113,7 +116,7 @@ class SocialLoginAuthClient(
         if (providersCreators.isNotEmpty()) {
             reachFiveApi
                 .providersConfigs(SdkInfos.getQueries())
-                .enqueue(ReachFiveApiCallback<ProvidersConfigsResult>({
+                .enqueue(ReachFiveApiCallback.withContent<ProvidersConfigsResult>({
                     providers = createProviders(context, it)
                     success(providers)
                 }, failure = failure))
