@@ -2,7 +2,7 @@
 
 ## v8.0.0 (05/08/2022)
 
-This major releases includes many breaking changes…
+This major releases includes many breaking changes but greatly simplifies the SDK integration overall.
 
 ### Features
 
