@@ -92,7 +92,7 @@ class ReachFive private constructor(
         success(Unit)
     }
 
-    fun onWebauthnDeviceAddResult(
+    fun onAddNewWebAuthnDeviceResult(
         requestCode: Int,
         intent: Intent?,
         success: Success<Unit>,
@@ -103,7 +103,7 @@ class ReachFive private constructor(
                 webauthnAuth.onAddNewWebAuthnDeviceResult(intent, success, failure)
             else
                 failure(ReachFiveError.NullIntent)
-        }
+        } else logNotReachFiveRequestCode(requestCode)
     }
 
     fun onLoginActivityResult(
@@ -153,10 +153,7 @@ class ReachFive private constructor(
                         success,
                         failure
                     )
-                } else Log.d(
-                    TAG,
-                    "Request code ${requestCode} does not match any ReachFive actions."
-                )
+                } else logNotReachFiveRequestCode(requestCode)
 
         }
     }
@@ -182,4 +179,8 @@ class ReachFive private constructor(
 
     fun isReachFiveActionRequestCode(code: Int): Boolean =
         WebauthnAuth.isWebauthnActionRequestCode(code)
+
+    private fun logNotReachFiveRequestCode(code: Int) {
+        Log.d(TAG, "Request code ${code} does not match any ReachFive actions.")
+    }
 }
