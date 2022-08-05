@@ -1,5 +1,38 @@
 # Changelog
 
+## v8.0.0 (05/08/2022)
+
+This major releases includes many breaking changes but greatly simplifies the SDK integration overall.
+
+### Features
+
+- `loginWithWeb` enables SDK integrators to delegate login to another ReachFive first-party identity client such as web page they control.
+- `onLoginActivityResult` handles all login flow results and automatically calls the appropriate internal completion flow. SDK integrators no longer have to match on request codes themselves. The method ignores any request code that does not concern the SDK.
+- SDK integrators can use `ReachFive.resolveResultHandler` to let the SDK automatically wire the appropriate activity result handler (i.e., `onLoginActivityHandler` or `onAddNewWebAuthnDeviceResult`).
+
+### Changes
+
+- Client implementation was broken down into smaller modules.
+- Client constructor no longer takes an `Activity`.
+- Client initialization now only fetches client configuration.
+- A separate initialization method (`loadSocialProviders`) has been added for social providers configuration.
+- `WebViewProvider` social login flows now use a Custom Tab.
+- Internal login callback no longer open a custom tab and silently obtain an authorization code.
+- All errors are now communicated through the `failure` callback channel; Android `Activity` result codes no longer need to be manually inspected.
+- An `ErrorCode` enumeration class documents all ReachFive API and SDK errors.
+- The `SuccessWithNoContent<Unit>` type has been removed; all success callbacks now only use `Success<T>` or `Success<Unit>`.
+
+### Removed methods
+
+- `onLoginWithWebAuthnResult` : result is now automatically handled in `onLoginActivityResult`
+- `onSignupWithWebAuthnResult` : result is now automatically handled in `onLoginActivityResult`
+
+### Fixes
+
+- Social login providers that did not support webviews are now fixed by virtue of using custom tabs.
+- Social login errors have been improved.
+- Activity callback methods no longer throw exceptions when the request code does not concern an SDK flow. Instead, no action is taken and a debug-level log is emitted.
+
 ## v7.0.3 (18/07/2022)
 
 ### Changes
