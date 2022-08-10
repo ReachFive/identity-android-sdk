@@ -22,6 +22,8 @@ enum class ErrorCode(val code: Int) {
     /*
     SDK error codes
      */
+    Unexpected(49000),
+    WebauthnActionCanceled(52000),
     WebFlowCanceled(52001),
     NullIntent(52002),
     NoAuthCode(52003),

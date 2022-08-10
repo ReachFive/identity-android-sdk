@@ -81,11 +81,18 @@ internal class WebauthnAuthClient(
                 else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA))
                     handleSignupSuccess(intent, scope, success, failure, activity)
 
-            Activity.RESULT_CANCELED ->
+            Activity.RESULT_CANCELED -> {
                 Log.d(TAG, "Operation is cancelled")
+                failure(ReachFiveError.WebauthnActionCanceled)
+            }
 
-            else ->
+            else -> {
                 Log.e(TAG, "Operation failed, with resultCode: $resultCode")
+                if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
+                    failure(extractFIDO2Error(intent))
+                else
+                    failure(ReachFiveError.Unexpected)
+            }
         }
     }
 
@@ -238,11 +245,18 @@ internal class WebauthnAuthClient(
                 else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA))
                     handleLoginSuccess(intent, scope, success, failure)
 
-            Activity.RESULT_CANCELED ->
+            Activity.RESULT_CANCELED -> {
                 Log.d(TAG, "Operation is cancelled")
+                failure(ReachFiveError.WebauthnActionCanceled)
+            }
 
-            else ->
+            else -> {
                 Log.e(TAG, "Operation failed, with resultCode: $resultCode")
+                if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
+                    failure(extractFIDO2Error(intent))
+                else
+                    failure(ReachFiveError.Unexpected)
+            }
         }
 
     }
@@ -353,7 +367,7 @@ internal class WebauthnAuthClient(
                         code = errorCodeAsInt
                     )
                 } ?: ReachFiveError(
-                message = "Unexpected error during FIDO2 authentication",
+                message = "Unexpected error during FIDO2 process.",
                 code = ErrorCode.UNKNOWN_ERR.code
             )
         }
