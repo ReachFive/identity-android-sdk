@@ -1,5 +1,11 @@
 # Changelog
 
+## v8.0.1 (12/08/2022)
+
+### Changes
+
+- Handle WebAuthn user cancellation as failures so that integrators can detect them more easily.
+
 ## v8.0.0 (05/08/2022)
 
 This major releases includes many breaking changes but greatly simplifies the SDK integration overall.
