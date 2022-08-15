@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import retrofit2.Response
+import com.google.android.gms.fido.fido2.api.common.ErrorCode as FidoError
 
 @Parcelize
 data class ReachFiveApiError(
@@ -74,6 +75,8 @@ data class ReachFiveError(
 
     fun getErrorCode(): ErrorCode? = code?.let { ErrorCode.valueOf(it.toString()) }
 
+    fun getFidoErrorCode(): FidoError? = code?.let { tryOrNull { FidoError.toErrorCode(it) } }
+
     companion object {
         @JvmStatic
         fun from(error: Exception): ReachFiveError {
@@ -131,6 +134,12 @@ data class ReachFiveError(
             )
 
         @JvmStatic
+        val WebauthnActionCanceled = ReachFiveError(
+            code = ErrorCode.WebauthnActionCanceled.code,
+            message = "User canceled the flow.",
+        )
+
+        @JvmStatic
         val WebFlowCanceled = ReachFiveError(
             code = ErrorCode.WebFlowCanceled.code,
             message = "User canceled or closed the web flow.",
@@ -146,6 +155,12 @@ data class ReachFiveError(
         val NoPkce = ReachFiveError(
             code = ErrorCode.NoPkce.code,
             message = "No PKCE code_verifier could be found when expected."
+        )
+
+        @JvmStatic
+        val Unexpected = ReachFiveError(
+            code = ErrorCode.Unexpected.code,
+            message = "An unexpected error or case has occurred."
         )
     }
 }
