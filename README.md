@@ -14,70 +14,13 @@ install the SDKs and to initialize your ReachFive client.
 
 ## Demo application
 
-In addition to the libraries, we provide in the `/app` directory a simple Android application which
+In addition to the libraries, we provide a [simple demo application](https://github.com/ReachFive/identity-android-sdk-demo) which
 integrates the ReachFive SDKs.
-
-Clone the repository and import it in your favorite IDE (we advise you to
-use [Android Studio](https://developer.android.com/studio)).
-
-Since the demo application uses Google services, you need to create a
-new [Firebase](https://firebase.google.com/) project. Download the `google-services.json` file
-associated and put it at the root of the `/app` directory.
-
-You also need to set the ReachFive client configuration in the `/app/src/main/assets/env` file as
-below (create the `assets` folder if necessary):
-
-```
-# formatted as key=value
-DOMAIN=my-reachfive-url
-CLIENT_ID=my-reachfive-client-id
-SCHEME=my-reachfive-url-scheme
-```
-
-The URL scheme must follow this pattern: `reachfive://${clientId}/callback`.
-
-To login with a WebView, the scheme's path must also be set in a resource file as below:
-
-```xml
-
-<resources>
-    <string name="reachfive_scheme">reachfive</string>
-    <string name="reachfive_client_id">${clientId}</string>
-    <string name="reachfive_path">/callback</string>
-</resources>
-```
-
-Finally install the dependencies with [Gradle](https://gradle.org/) (it will be done automatically
-with Android Studio), select a virtual device and run the application.
-
-Please note that [Gradle version](https://gradle.org/releases/) must be strictly lower than 7.0 (
-deprecated Gradle features are used, making then incompatible with Gradle 7.0).
-
-### Login with FIDO2
-
-If you want to login with FIDO2, you need to set the domain of the origin in
-the `/app/src/main/assets/env` file as below:
-
-```
-# formatted as key=value
-DOMAIN=my-reachfive-url
-CLIENT_ID=my-reachfive-client-id
-SCHEME=my-reachfive-url-scheme
-
-ORIGIN=my-webauthn-origin-domain
-```
 
 ## Documentation
 
 You'll find the documentation of the methods exposed
 on https://developer.reach5.co/api/identity-android.
-
-## Testing
-
-To launch integration tests, configure your domain and client ID as described above, start your
-Android emulator, and then run:
-
-`./gradlew connectedAndroidTest`
 
 ## Changelog
 
