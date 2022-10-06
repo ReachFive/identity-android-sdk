@@ -9,6 +9,8 @@ data class LoginRequest(
     val email: String?,
     @SerializedName("phone_number")
     val phoneNumber: String?,
+    @SerializedName("custom_identifier")
+    val customIdentifier: String?,
     val password: String,
     @SerializedName("client_id")
     val clientId: String,
