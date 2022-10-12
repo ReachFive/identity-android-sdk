@@ -127,12 +127,13 @@ class JavaReachFive(
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,
+        customIdentifier: String? = null,
         password: String,
         scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.loginWithPassword(email, phoneNumber, password, scope, success::call, failure::call)
+        return reach5.loginWithPassword(email, phoneNumber, customIdentifier, password, scope, success::call, failure::call)
     }
 
     /**
@@ -142,6 +143,7 @@ class JavaReachFive(
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,
+        customIdentifier: String? = null,
         password: String,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>
@@ -149,6 +151,7 @@ class JavaReachFive(
         return reach5.loginWithPassword(
             email,
             phoneNumber,
+            customIdentifier,
             password,
             success = success::call,
             failure = failure::call

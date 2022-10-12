@@ -11,6 +11,8 @@ import kotlinx.parcelize.RawValue
 data class ProfileSignupRequest(
     val password: String,
     val email: String? = null,
+    @SerializedName("custom_identifier")
+    val customIdentifier: String? = null,
     @SerializedName("phone_number")
     val phoneNumber: String? = null,
     @SerializedName("given_name")

@@ -49,6 +49,7 @@ internal class PasswordAuthClient(
     override fun loginWithPassword(
         email: String?,
         phoneNumber: String?,
+        customIdentifier: String?,
         password: String,
         scope: Collection<String>,
         success: Success<AuthToken>,
@@ -58,6 +59,7 @@ internal class PasswordAuthClient(
             clientId = sdkConfig.clientId,
             email = email,
             phoneNumber = phoneNumber,
+            customIdentifier = customIdentifier,
             password = password,
             scope = formatScope(scope)
         )
@@ -126,6 +128,7 @@ internal interface PasswordAuth {
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,
+        customIdentifier: String? = null,
         password: String,
         scope: Collection<String> = defaultScope,
         success: Success<AuthToken>,
