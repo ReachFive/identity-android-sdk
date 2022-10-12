@@ -1,5 +1,12 @@
 # Changelog
 
+## v8.1.0 (12/10/2022)
+
+### Changes
+
+- Added field Custom Identifier to loginWithPassword
+- Added field Custom Identifier to signup
+
 ## v8.0.1 (12/08/2022)
 
 ### Changes
