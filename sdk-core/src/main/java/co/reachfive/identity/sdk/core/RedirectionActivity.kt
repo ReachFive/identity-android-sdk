@@ -10,7 +10,7 @@ import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 
 class RedirectionActivity : Activity() {
     companion object {
-        const val FQDN = "co.reachfive.identity.sdk.core.RedirectionActivity"
+        const val FQN = "co.reachfive.identity.sdk.core.RedirectionActivity"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
         const val URL_KEY = "URL"
         const val SCHEME = "SCHEME"
@@ -43,7 +43,7 @@ class RedirectionActivity : Activity() {
         val intentClass = newIntent.resolveActivity(packageManager).className
         val url = newIntent.data
 
-        if (intentClass == FQDN && url.toString().startsWith(scheme)) {
+        if (intentClass == FQN && url.toString().startsWith(scheme)) {
             intent.data = newIntent.data
             setResult(Activity.RESULT_OK, intent)
         } else {
