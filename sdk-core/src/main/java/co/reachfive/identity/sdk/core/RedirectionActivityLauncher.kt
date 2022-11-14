@@ -79,6 +79,7 @@ class RedirectionActivityLauncher(
         val url = api.authorize(request).request().url.toString()
         intent.putExtra(RedirectionActivity.URL_KEY, url)
         intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
+        intent.putExtra(RedirectionActivity.SCHEME, sdkConfig.scheme)
 
         return intent
     }
