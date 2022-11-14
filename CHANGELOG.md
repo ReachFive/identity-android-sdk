@@ -1,5 +1,11 @@
 # Changelog
 
+## v8.1.1 (14/11/2022)
+
+### Changes
+
+- Basic checks against intent redirections
+
 ## v8.1.0 (25/10/2022)
 
 ### Changes
