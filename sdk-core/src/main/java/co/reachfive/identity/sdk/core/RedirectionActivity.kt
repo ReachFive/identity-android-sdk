@@ -37,14 +37,16 @@ class RedirectionActivity : Activity() {
     }
 
     override fun onNewIntent(newIntent: Intent) {
+        // remove any flags from the new intent
         newIntent.flags = 0
 
-        val scheme = intent.getStringExtra(SCHEME) ?: "???"
         val intentClass = newIntent.resolveActivity(packageManager).className
+        val scheme = intent.getStringExtra(SCHEME) ?: "???"
         val url = newIntent.data
 
+        // ensure intent target && URL belong to us
         if (intentClass == FQN && url.toString().startsWith(scheme)) {
-            intent.data = newIntent.data
+            intent.data = url
             setResult(Activity.RESULT_OK, intent)
         } else {
             Log.e(TAG, "Unrecognized intent!")
