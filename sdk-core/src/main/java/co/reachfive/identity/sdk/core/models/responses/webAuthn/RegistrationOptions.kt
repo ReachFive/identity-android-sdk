@@ -43,11 +43,11 @@ data class RegistrationOptions(
             .setExcludeList(publicKey.excludeCredentials?.map { it.toPublicKeyCredentialDescriptor() })
             .setAuthenticatorSelection(
                 AuthenticatorSelectionCriteria.Builder()
-                    .setAttachment(
+                    .setAttachment(publicKey.authenticatorSelection?.authenticatorAttachment?.let {
                         Attachment.valueOf(
-                            "platform"
+                            it
                         )
-                    )
+                    })
                     .build()
             )
             .setAttestationConveyancePreference(AttestationConveyancePreference.fromString("direct"))
