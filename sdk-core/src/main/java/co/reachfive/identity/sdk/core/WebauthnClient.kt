@@ -45,9 +45,12 @@ internal class WebauthnAuthClient(
     ) {
         val newFriendlyName = formatFriendlyName(friendlyName)
 
+        val t =
+            WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId)
+        Log.i(TAG, "WebAuthnRegistrationRequest:\n$t")
         reachFiveApi
             .createWebAuthnSignupOptions(
-                WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
+                t,
                 SdkInfos.getQueries()
             )
             .enqueue(
@@ -112,13 +115,25 @@ internal class WebauthnAuthClient(
             Log.e(TAG, "Could not retrieve Webauthn ID!")
             failure(ReachFiveError.from("Could not retrieve Webauthn ID!"))
         } else
-            extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
+             extractRegistrationPublicKeyCredential(intent)?.let { registrationPublicKeyCredential ->
+                val v = WebauthnSignupCredential(
+                    webauthnId = webauthnId,
+                    publicKeyCredential = registrationPublicKeyCredential
+                )
+                 Log.i(TAG, "WebAuthnSignupCredential:\n$v")
+                 val w = registrationPublicKeyCredential.response.attestationObject
+                Log.i(TAG, "WebAuthnSignupCredential.publicKeyCredential.response.attestationObject:\n")
+                 val i = 3000
+                 var sb = w
+                 while (sb.length > i) {
+                     Log.i(TAG, "Substring:" + sb.substring(0, i))
+                     sb = sb.substring(i)
+                 }
+                 Log.i(TAG, "Substring:$sb")
+
                 reachFiveApi
                     .signupWithWebAuthn(
-                        WebauthnSignupCredential(
-                            webauthnId = webauthnId,
-                            publicKeyCredential = registrationPublicKeyCredential
-                        )
+                        v
                     )
                     .enqueue(
                         ReachFiveApiCallback.withContent<AuthenticationToken>(
@@ -319,7 +334,7 @@ internal class WebauthnAuthClient(
         val fido2ApiClient = Fido.getFido2ApiClient(activity)
         val fido2PendingIntentTask =
             fido2ApiClient.getRegisterPendingIntent(registrationOptions.toFido2Model())
-
+Log.i(TAG, "RegistrationOptions:\n$registrationOptions")
         activity
             .getSharedPreferences(SHAREDPREFS_NAME, Context.MODE_PRIVATE)
             .edit()
@@ -379,6 +394,7 @@ internal class WebauthnAuthClient(
                     AuthenticatorAttestationResponse.deserializeFromBytes(it)
                 }
                 ?.let {
+                    Log.i(TAG, "AuthenticatorAttestationResponse:\n$it")
                     WebAuthnRegistration.createRegistrationPublicKeyCredential(it)
                 }
         }
