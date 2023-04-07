@@ -41,11 +41,14 @@ class RedirectionActivity : Activity() {
         newIntent.flags = 0
 
         val intentClass = newIntent.resolveActivity(packageManager).className
-        val scheme = intent.getStringExtra(SCHEME) ?: "???"
+        val scheme = intent.getStringExtra(SCHEME)
         val url = newIntent.data
 
+        val packageName = this.callingActivity?.packageName
+        val expectedPackageName = applicationContext.packageName
+
         // ensure intent target && URL belong to us
-        if (intentClass == FQN && url.toString().startsWith(scheme)) {
+        if (intentClass == FQN && packageName == expectedPackageName && scheme != null && url.toString().startsWith(scheme)) {
             intent.data = url
             setResult(Activity.RESULT_OK, intent)
         } else {
