@@ -17,6 +17,8 @@ data class ProfileAddress(
     val addressType: ProfileAddressType? = null,
     @SerializedName("street_address")
     val streetAddress: String? = null,
+    @SerializedName("address_complement")
+    val addressComplement: String? = null,
     val locality: String? = null,
     val region: String? = null,
     @SerializedName("postal_code")
