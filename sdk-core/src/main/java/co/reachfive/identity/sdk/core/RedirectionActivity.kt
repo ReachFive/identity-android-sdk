@@ -41,16 +41,27 @@ class RedirectionActivity : Activity() {
         newIntent.flags = 0
 
         val intentClass = newIntent.resolveActivity(packageManager).className
-        val scheme = intent.getStringExtra(SCHEME) ?: "???"
+
+        val scheme = intent.getStringExtra(SCHEME)
         val url = newIntent.data
+        val isTargetR5 = intentClass == FQN && scheme != null && url.toString().startsWith(scheme)
+        if (!isTargetR5) {
+            Log.e(TAG, "Unrecognized intent class: $intentClass")
+        }
+
+        val callingPackageName = this.callingActivity?.packageName
+        val isTrustedCaller =
+            callingPackageName != null && callingPackageName == applicationContext.packageName
+        if (!isTrustedCaller) {
+            Log.e(TAG, "Unrecognized calling activity: ${callingPackageName ?: "N/A"}")
+        }
 
         // ensure intent target && URL belong to us
-        if (intentClass == FQN && url.toString().startsWith(scheme)) {
+        if (isTargetR5 && isTrustedCaller) {
             intent.data = url
-            setResult(Activity.RESULT_OK, intent)
+            setResult(RESULT_OK, intent)
         } else {
-            Log.e(TAG, "Unrecognized intent!")
-            setResult(Activity.RESULT_CANCELED)
+            setResult(RESULT_CANCELED)
         }
 
         finish()
