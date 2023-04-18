@@ -1,5 +1,11 @@
 # Changelog
 
+## v8.1.2 (18/04/2023)
+
+### Changes
+
+- Option 3 of google's mitigation doc (see: https://support.google.com/faqs/answer/9267555).
+
 ## v8.1.1 (14/11/2022)
 
 ### Changes
