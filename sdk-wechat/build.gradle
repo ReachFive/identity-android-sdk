@@ -1,0 +1,12 @@
+def ext = rootProject.ext
+def libs = ext.libraries
+
+dependencies {
+    implementation project(":sdk-core")
+
+    implementation ext.kotlin_stdlib
+    implementation libs.retrofit
+    implementation libs.result
+    implementation("com.tencent.mm.opensdk:wechat-sdk-android:6.8.24")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+}
