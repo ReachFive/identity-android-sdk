@@ -18,6 +18,7 @@ class WeChatLoginActivity : Activity() {
         api = WXAPIFactory.createWXAPI(this, appId, true)
 
         api.registerApp(appId)
+        if (!api.isWXAppInstalled) finish()
         val req = SendAuth.Req()
         req.scope = "snsapi_userinfo"
         req.state = "none"
