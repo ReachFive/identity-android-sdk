@@ -47,9 +47,8 @@ internal class ConfiguredWechatProvider(
 
         this.scope = scope
         val intent = Intent(context, WeChatLoginActivity::class.java)
-        intent.putExtra("APP_ID", providerConfig.clientId)
+        intent.putExtra("APP_ID", providerConfig.androidAppId)
         activity.startActivityForResult(intent, REQUEST_CODE)
-
     }
 
 

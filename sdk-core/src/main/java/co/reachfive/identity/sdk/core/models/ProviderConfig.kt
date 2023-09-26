@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class ProviderConfig(
     val provider: String,
     val clientId: String,
+    val androidAppId: String,
     val scope: Set<String> = emptySet()
 ) : Parcelable
 
