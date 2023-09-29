@@ -63,7 +63,7 @@ internal class ConfiguredWechatProvider(
         val errorCode = SendAuth.Resp().errCode
         if (errorCode == 0 && data?.getStringExtra("token") != null) {
             sessionUtils.loginWithProvider(
-                name,
+                "wechat:android",
                 authCode = data?.getStringExtra("token"),
                 origin,
                 scope = scope,
