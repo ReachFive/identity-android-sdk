@@ -1,5 +1,8 @@
 # Changelog
 
+## v8.2.0 (02/10/2023)
+- Added WeChat provider's login
+
 ## v8.1.2 (18/04/2023)
 
 ### Changes
@@ -389,3 +392,4 @@ New modular version of the Identity SDK Android:
 - [`sdk-webview`](sdk-webview)
 - [`sdk-facebook`](sdk-facebook)
 - [`sdk-google`](sdk-google)
+- ['sdk-wechat'](sdk-wechat)
