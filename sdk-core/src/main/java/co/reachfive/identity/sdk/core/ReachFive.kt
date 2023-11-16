@@ -1,6 +1,7 @@
 package co.reachfive.identity.sdk.core
 
 import android.app.Activity
+import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import android.util.Log
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
@@ -141,7 +142,9 @@ class ReachFive private constructor(
 
             else ->
                 if (RedirectionActivity.isLoginRequestCode(requestCode)) {
-                    if (intent != null)
+                    if (resultCode == RESULT_CANCELED)
+                        failure(ReachFiveError.WebFlowCanceled)
+                    else if (intent != null)
                         sessionUtils.handleAuthorizationCompletion(intent, success, failure)
                     else
                         failure(ReachFiveError.NullIntent)

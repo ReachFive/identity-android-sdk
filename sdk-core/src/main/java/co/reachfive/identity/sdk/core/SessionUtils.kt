@@ -36,6 +36,14 @@ internal interface SessionUtils {
         activity: Activity,
     )
 
+    fun loginWithWebView(
+        scope: Collection<String> = defaultScope,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+        activity: Activity,
+    )
+
     fun exchangeCodeForToken(
         authorizationCode: String,
         success: Success<AuthToken>,
@@ -227,4 +235,15 @@ class SessionUtilsClient(
     ) {
         webLauncher.loginWithWeb(activity, scope, state, nonce, origin)
     }
+
+    override fun loginWithWebView(
+        scope: Collection<String>,
+        state: String?,
+        nonce: String?,
+        origin: String?,
+        activity: Activity,
+    ) {
+        webLauncher.loginWithWebView(activity, scope, state, nonce, origin)
+    }
+
 }

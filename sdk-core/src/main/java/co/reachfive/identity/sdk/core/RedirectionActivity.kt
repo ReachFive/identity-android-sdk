@@ -1,19 +1,31 @@
 package co.reachfive.identity.sdk.core
 
+import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.browser.customtabs.CustomTabsIntent
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
+import co.reachfive.identity.sdk.core.databinding.ReachfiveWebviewBinding
+import java.util.regex.Pattern
+
 
 class RedirectionActivity : Activity() {
+    private lateinit var binding: ReachfiveWebviewBinding
+
     companion object {
         const val FQN = "co.reachfive.identity.sdk.core.RedirectionActivity"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
         const val URL_KEY = "URL"
         const val SCHEME = "SCHEME"
+        const val USE_NATIVE_WEBVIEW = "USE_NATIVE_WEBVIEW"
 
         const val RC_WEBLOGIN = 52557
 
@@ -29,11 +41,35 @@ class RedirectionActivity : Activity() {
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
-        val customTabsIntent = CustomTabsIntent.Builder().build().intent
-        customTabsIntent.data = Uri.parse(urlString)
-        customTabsIntent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
+        val useWebview = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
+        if (useWebview) {
 
-        startActivity(customTabsIntent)
+            binding = ReachfiveWebviewBinding.inflate(layoutInflater)
+            WebView.setWebContentsDebuggingEnabled(true)
+
+            setContentView(binding.root)
+
+            binding.webview.apply {
+                @SuppressLint("SetJavaScriptEnabled")
+                settings.javaScriptEnabled = true
+                webViewClient = ReachFiveWebViewClient(codeVerifier)
+                // Google does not allow default implementations of WebView to be used, so we need to differentiate the WebView by looking for the wv field
+                settings.userAgentString = settings.userAgentString.replace("wv", getString(R.string.app_name))
+            }
+
+            urlString?.let { binding.webview.loadUrl(urlString) }
+
+        } else {
+
+            Log.d(TAG, "RedirectionActivity onCreate url: $urlString")
+
+            val customTabsIntent = CustomTabsIntent.Builder().build().intent
+            customTabsIntent.data = Uri.parse(urlString)
+            customTabsIntent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
+
+            startActivity(customTabsIntent)
+
+        }
     }
 
     override fun onNewIntent(newIntent: Intent) {
@@ -76,4 +112,47 @@ class RedirectionActivity : Activity() {
             finish()
         }
     }
+
+
+    override fun onBackPressed() {
+        if (binding.webview.canGoBack()) {
+            binding.webview.goBack()
+        } else {
+            setResult(RESULT_CANCELED)
+            finish()
+        }
+    }
+
+    inner class ReachFiveWebViewClient(val codeVerifier: String?) : WebViewClient() {
+
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+            val urlString = request.url.toString()
+            Log.d(TAG, "ReachfiveWebViewClient shouldOverrideUrlLoading url: $urlString")
+            return dispatchUrl(urlString)
+        }
+
+        @Suppress("DEPRECATION")
+        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+            Log.e(TAG, "ReachfiveWebViewClient shouldOverrideUrlLoading deprecated url: $url")
+            return dispatchUrl(url)
+        }
+
+        private fun dispatchUrl(url: String): Boolean {
+            // regex : (reachfive://word character: [a-zA-Z_0-9]/callback)(any character zero or more times)
+            val pattern = Pattern.compile("^(reachfive:\\/\\/\\w+\\/callback)(.*)$")
+            val isTargetReachFive = pattern.matcher(url).matches()
+            Log.d(TAG, "ReachfiveWebViewClient dispatchUrl isReachFiveScheme: $isTargetReachFive")
+
+            return if (isTargetReachFive) {
+                val intent = Intent()
+                intent.data = Uri.parse(url)
+                intent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
+                setResult(RC_WEBLOGIN, intent)
+                finish()
+                true
+            } else false
+        }
+    }
+
 }

@@ -168,6 +168,16 @@ class JavaReachFive(
         return reach5.loginWithWeb(scope, state, nonce, origin, activity)
     }
 
+    fun loginWithWebView(
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+        activity: Activity
+    ) {
+        return reach5.loginWithWebView(scope, state, nonce, origin, activity)
+    }
+
     fun logout(
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>
