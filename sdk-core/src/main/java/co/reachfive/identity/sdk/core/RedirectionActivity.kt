@@ -45,7 +45,6 @@ class RedirectionActivity : Activity() {
         if (useWebview) {
 
             binding = ReachfiveWebviewBinding.inflate(layoutInflater)
-            WebView.setWebContentsDebuggingEnabled(true)
 
             setContentView(binding.root)
 
