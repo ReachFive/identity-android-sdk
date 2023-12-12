@@ -14,7 +14,7 @@ class RedirectionActivityLauncher(
 ) {
 
     /**
-     * Orchestrated login. The client must configure a Login URL and enable orchestration tokens
+     * Orchestrated login with a Custom Tab. The client must configure a Login URL and enable orchestration tokens
      * in order to delegate auth to a Web identity client.
      */
     fun loginWithWeb(
@@ -25,6 +25,22 @@ class RedirectionActivityLauncher(
         origin: String? = null,
     ) {
         val intent = prepareIntent(activity, scope, origin = origin, state = state, nonce = nonce)
+        activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGIN)
+    }
+
+    /**
+     * Orchestrated login with a native WebView. The client must configure a Login URL and enable orchestration tokens
+     * in order to delegate auth to a Web identity client.
+     */
+    fun loginWithWebView(
+        activity: Activity,
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+    ) {
+        val intent = prepareIntent(activity, scope, origin = origin, state = state, nonce = nonce)
+        intent.putExtra(RedirectionActivity.USE_NATIVE_WEBVIEW, true)
         activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGIN)
     }
 

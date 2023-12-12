@@ -3,6 +3,12 @@ apply plugin: "kotlin-parcelize"
 def ext = rootProject.ext
 def libs = ext.libraries
 
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
 dependencies {
     implementation ext.kotlin_stdlib
     implementation libs.result

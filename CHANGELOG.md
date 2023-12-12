@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Features
+- `loginWithWebView` performs the same flows as `loginWithWeb`, but within a WebView
+
 ## v8.2.0 (02/10/2023)
 - Added WeChat provider's login
 
