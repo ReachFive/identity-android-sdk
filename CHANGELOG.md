@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v8.3.0 (12/12/2023)
+
 ### Features
 - `loginWithWebView` performs the same flows as `loginWithWeb`, but within a WebView
 
