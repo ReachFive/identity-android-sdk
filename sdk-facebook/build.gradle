@@ -9,5 +9,5 @@ dependencies {
     implementation ext.kotlin_stdlib
     implementation libs.result
     implementation libs.retrofit
-    implementation "com.facebook.android:facebook-login:12.2.0"
+    implementation "com.facebook.android:facebook-login:16.3.0"
 }
