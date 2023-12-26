@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changes
+- Upgrade Facebook Login 12.2 => 16.3
+
 ## v8.3.0 (12/12/2023)
 
 ### Features
