@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changes
+
+- Upgrade Facebook Login 12.2 => 16.3: a client token is now required in the manifest (see https://developers.facebook.com/docs/android/getting-started/#add-app_id)
+
 ## v8.3.0 (12/12/2023)
 
 ### Features
