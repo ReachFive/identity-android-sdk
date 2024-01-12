@@ -61,7 +61,7 @@ internal class ConfiguredWechatProvider(
         failure: Failure<ReachFiveError>
     ) {
         val errorCode = SendAuth.Resp().errCode
-        if (errorCode == 0 && data?.getStringExtra("token") != null) {
+        if (errorCode == 0 && data?.getStringExtra("token") != null && data?.getStringExtra("errorStr") == null) {
             sessionUtils.loginWithProvider(
                 "wechat:android",
                 authCode = data?.getStringExtra("token"),
@@ -71,7 +71,7 @@ internal class ConfiguredWechatProvider(
                 failure = failure
             )
         } else {
-            failure(ReachFiveError.from("Error code"))
+            failure(ReachFiveError.from(data?.getStringExtra("errorStr") ?: "No code delivered by WeChat"))
         }
     }
 
