@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core.models
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 enum class ProfileAddressType {
     billing, delivery
@@ -30,5 +31,7 @@ data class ProfileAddress(
     val recipient: String? = null,
     val company: String? = null,
     @SerializedName("phone_number")
-    val phoneNumber: String? = null
+    val phoneNumber: String? = null,
+    @SerializedName("custom_fields")
+    val customFields: Map<String, @RawValue Any>? = null
 ) : Parcelable
