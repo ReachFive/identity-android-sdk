@@ -170,7 +170,10 @@ interface ReachFiveApi {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
             logging.apply { logging.level = HttpLoggingInterceptor.Level.BASIC }
-            val client = OkHttpClient.Builder().addInterceptor(logging).build()
+
+            val client = OkHttpClient.Builder().addInterceptor(logging)
+                .addNetworkInterceptor(AcceptLanguageInterceptor())
+                .build()
 
             val gson = GsonBuilder()
                 .registerTypeAdapter(
