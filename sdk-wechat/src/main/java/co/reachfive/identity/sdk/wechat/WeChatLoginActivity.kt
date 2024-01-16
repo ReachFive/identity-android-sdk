@@ -18,11 +18,15 @@ class WeChatLoginActivity : Activity() {
         api = WXAPIFactory.createWXAPI(this, appId, true)
 
         api.registerApp(appId)
-        if (!api.isWXAppInstalled) finish()
+        if (!api.isWXAppInstalled) {
+            val intent = Intent().putExtra("errorStr", "WeChat is not installed")
+            setResult(RESULT_OK, intent)
+            api!!.unregisterApp()
+            finish()
+        }
         val req = SendAuth.Req()
         req.scope = "snsapi_userinfo"
         req.state = "none"
-        req.nonAutomatic = true
         api.sendReq(req)
     }
 
@@ -30,6 +34,7 @@ class WeChatLoginActivity : Activity() {
         super.onResume()
         if (WXEntryActivity.endedFlow) {
             val intent = Intent().putExtra("token", WXEntryActivity.token)
+            intent.putExtra("errorStr", WXEntryActivity.errorStr)
             setResult(RESULT_OK, intent)
             api!!.unregisterApp()
             finish()

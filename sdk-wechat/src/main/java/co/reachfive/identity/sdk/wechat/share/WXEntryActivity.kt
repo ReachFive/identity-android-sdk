@@ -2,7 +2,6 @@ package co.reachfive.identity.sdk.wechat.share
 
 import android.app.Activity
 import android.os.Bundle
-import android.widget.Toast
 import com.tencent.mm.opensdk.modelbase.BaseReq
 import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelmsg.SendAuth
@@ -16,6 +15,7 @@ class WXEntryActivity : Activity(), IWXAPIEventHandler {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         endedFlow = false
+        errorStr = null
         api = WXAPIFactory.createWXAPI(this, null, true)
         api.handleIntent(intent, this)
         finish()
@@ -31,20 +31,13 @@ class WXEntryActivity : Activity(), IWXAPIEventHandler {
                 val sendResp = resp as SendAuth.Resp
                 token = sendResp.code
             } catch (e: Exception) {
-                Toast.makeText(this, "Exception while parsing token", Toast.LENGTH_LONG).show()
+                errorStr = "Exception while parsing token"
             }
+            BaseResp.ErrCode.ERR_USER_CANCEL ->
+                errorStr = "User canceled the request"
 
-            BaseResp.ErrCode.ERR_USER_CANCEL -> Toast.makeText(
-                this,
-                "User canceled the request",
-                Toast.LENGTH_LONG
-            ).show()
-
-            BaseResp.ErrCode.ERR_AUTH_DENIED -> Toast.makeText(
-                this,
-                "User denied the request",
-                Toast.LENGTH_LONG
-            ).show()
+            BaseResp.ErrCode.ERR_AUTH_DENIED ->
+                errorStr = "User denied the request"
         }
         endedFlow = true
         finish()
@@ -53,5 +46,6 @@ class WXEntryActivity : Activity(), IWXAPIEventHandler {
     companion object {
         var token: String? = null
         var endedFlow = false
+        var errorStr: String? = null
     }
 }
