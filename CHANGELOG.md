@@ -14,7 +14,7 @@
 - Improve error messages for WeChat.
 - Added 'Accept-Language' header in requests sent to the backend.
 
-## v9.0.0 (12/12/2023)
+## v9.0.0 (05/01/2024)
 
 ### Breaking changes
 
