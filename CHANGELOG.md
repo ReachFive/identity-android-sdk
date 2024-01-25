@@ -2,7 +2,19 @@
 
 ## Unreleased
 
-## v9.0.0 (12/12/2023)
+## v9.1.0 (25/01/2024)
+
+### Breaking changes
+
+- The ReachFive now SDK supports Android SDK from API Level 21 (Android version 5.0 Lollipop).
+
+### Features
+
+- Added custom fields for Address entity.
+- Improve error messages for WeChat.
+- Added 'Accept-Language' header in requests sent to the backend.
+
+## v9.0.0 (05/01/2024)
 
 ### Breaking changes
 
