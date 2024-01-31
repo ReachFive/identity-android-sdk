@@ -166,6 +166,29 @@ interface ReachFiveApi {
         @Body authenticationPublicKeyCredential: AuthenticationPublicKeyCredential
     ): Call<AuthenticationToken>
 
+    @POST("/identity/v1/mfa/credentials/phone-numbers")
+    fun startMfaPhoneNumberRegistration(
+        @Header("Authorization") authorization: String,
+        @Body startMfaPhoneNumberRegistration: MfaCredentialsStartPhoneRegisteringRequest
+    ): Call<Unit>
+
+    @POST("/identity/v1/mfa/credentials/emails")
+    fun startMfaEmailRegistration(
+        @Header("Authorization") authorization: String,
+        @Body startEmailRegistration: MfaCredentialsStartEmailRegisteringRequest
+    ): Call<Unit>
+
+    @POST("/identity/v1/mfa/credentials/phone-numbers/verify")
+    fun verifyMfaPhoneNumberRegistration(
+        @Header("Authorization") authorization: String,
+        @Body verifyPhoneNumberRequest: VerifyPhoneNumberRequest,
+    ): Call<Unit>
+
+    @POST("/identity/v1/mfa/credentials/emails/verify")
+    fun verifyMfaEmailRegistration(
+        @Header("Authorization") authorization: String,
+        @Body verifyEmailRequest: VerifyEmailRequest
+    ): Call<Unit>
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
