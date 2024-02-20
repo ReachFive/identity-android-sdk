@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import android.util.Log
+import androidx.credentials.CredentialManager
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -37,6 +38,7 @@ class ReachFive private constructor(
         operator fun invoke(
             sdkConfig: SdkConfig,
             providersCreators: List<ProviderCreator>,
+            credentialManager: CredentialManager,
         ): ReachFive {
             val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
             val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
@@ -49,7 +51,7 @@ class ReachFive private constructor(
             val socialLoginAuthClient =
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient =
-                WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
+                WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils, credentialManager)
 
             return ReachFive(
                 reachFiveApi,
@@ -59,7 +61,7 @@ class ReachFive private constructor(
                 socialLoginAuthClient,
                 webauthnAuthClient,
                 sessionUtils,
-                sdkConfig,
+                sdkConfig
             )
         }
     }

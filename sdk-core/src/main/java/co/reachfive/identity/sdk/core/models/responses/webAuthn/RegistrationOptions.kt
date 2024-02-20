@@ -3,9 +3,11 @@ package co.reachfive.identity.sdk.core.models.responses.webAuthn
 import android.os.Parcelable
 import co.reachfive.identity.sdk.core.utils.WebAuthn
 import com.google.android.gms.fido.fido2.api.common.*
+import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.lang.reflect.Type
 
 @Parcelize
 data class RegistrationOptions(
@@ -66,12 +68,12 @@ data class R5PublicKeyCredentialCreationOptions(
     val rp: R5PublicKeyCredentialRpEntity,
     val user: R5PublicKeyCredentialUserEntity,
     val challenge: String,
-    @SerializedName("pub_key_cred_params")
+    @SerializedName(value="pubKeyCredParams", alternate=["pub_key_cred_params"])
     val pubKeyCredParams: List<R5PublicKeyCredentialParameter>,
     val timeout: Int? = null,
-    @SerializedName("exclude_credentials")
+    @SerializedName(value="excludeCredentials", alternate=["exclude_credentials"])
     val excludeCredentials: List<R5PublicKeyCredentialDescriptor>? = null,
-    @SerializedName("authenticator_selection")
+    @SerializedName(value="authenticatorSelection", alternate=["authenticator_selection"])
     val authenticatorSelection: R5AuthenticatorSelectionCriteria? = null,
     val attestation: String
 ) : Parcelable
@@ -85,7 +87,6 @@ data class R5PublicKeyCredentialRpEntity(
 @Parcelize
 data class R5PublicKeyCredentialUserEntity(
     val id: String,
-    @SerializedName("display_name")
     val displayName: String,
     val name: String
 ) : Parcelable
@@ -98,18 +99,12 @@ data class R5PublicKeyCredentialParameter(
 
 @Parcelize
 data class R5AuthenticatorSelectionCriteria(
-    @SerializedName("authenticator_attachement")
+    @SerializedName(value="authenticatorAttachment", alternate=["authenticator_attachement"])
     val authenticatorAttachment: String,
-    @SerializedName("require_resident_key")
+    @SerializedName(value="requireResidentKey", alternate=["require_resident_key"])
     val requireResidentKey: Boolean,
-    @SerializedName("resident_key")
+    @SerializedName(value="residentKey", alternate=["resident_key"])
     val residentKey: String,
-    @SerializedName("user_verification")
+    @SerializedName(value="userVerification", alternate = ["user_verification"])
     val userVerification: String
 ) : Parcelable
-
-
-
-
-
-
