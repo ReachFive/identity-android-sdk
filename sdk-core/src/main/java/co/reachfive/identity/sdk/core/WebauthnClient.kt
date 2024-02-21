@@ -3,8 +3,11 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.CancellationSignal
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.credentials.*
+import androidx.credentials.exceptions.CreateCredentialException
 import androidx.credentials.exceptions.GetCredentialException
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.WebauthnAuth.Companion.RC_LOGIN
@@ -32,7 +35,6 @@ import com.google.android.gms.fido.fido2.api.common.ErrorCode
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 
 
 internal class WebauthnAuthClient(
@@ -477,26 +479,28 @@ internal class WebauthnAuthClient(
                 )
             else publicKeyCredentialCreationOptions
 
-        // FIXME Application Not Responding when the credential selector is exited by a tap out of
-        //  the dialog (rather than by the "Cancel" button)
-        runBlocking {
-            withTimeout(20000) {
-                try {
-                    val jsonRegistrationOptions =
-                        GsonBuilder().create().toJson(authenticatorSelectionFiller)
+        val jsonRegistrationOptions =
+            GsonBuilder().create().toJson(authenticatorSelectionFiller)
 
-                    val createPublicKeyCredentialRequest =
-                        CreatePublicKeyCredentialRequest(requestJson = jsonRegistrationOptions)
+        val createPublicKeyCredentialRequest =
+            CreatePublicKeyCredentialRequest(requestJson = jsonRegistrationOptions)
 
-                    val createCredentialResponse = credentialManager.createCredential(
-                        request = createPublicKeyCredentialRequest,
-                        context = context
-                    )
+        val cancellationSignal = CancellationSignal()
 
-                    when (createCredentialResponse) {
+        credentialManager.createCredentialAsync(
+            request = createPublicKeyCredentialRequest,
+            context = context,
+            callback = object :
+                CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
+                override fun onError(e: CreateCredentialException) {
+                    failure(ReachFiveError.from(e))
+                }
+
+                override fun onResult(result: CreateCredentialResponse) {
+                    when (result) {
                         is CreatePublicKeyCredentialResponse -> {
                             val registrationPublicKeyCredential = Gson().fromJson(
-                                createCredentialResponse.registrationResponseJson,
+                                result.registrationResponseJson,
                                 RegistrationPublicKeyCredential::class.java
                             )
 
@@ -506,11 +510,12 @@ internal class WebauthnAuthClient(
                         // FIXME error message
                         else -> failure(ReachFiveError("Unexpected credential success response"))
                     }
-                } catch (e: Exception) {
-                    failure(ReachFiveError.from(e))
                 }
-            }
-        }
+
+            },
+            cancellationSignal = cancellationSignal,
+            executor = ContextCompat.getMainExecutor(context),
+        )
     }
 
 
@@ -628,41 +633,47 @@ internal class WebauthnAuthClient(
         val getCredentialRequest =
             GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
 
-        runBlocking {
-            try {
-                val getCredentialResponse = credentialManager.getCredential(
-                    context = context,
-                    request = getCredentialRequest
-                )
+        val cancellationSignal = CancellationSignal()
 
-                when (val credential = getCredentialResponse.credential) {
-                    is PublicKeyCredential -> {
-                        val authenticationPublicKeyCredential = Gson().fromJson(
-                            credential.authenticationResponseJson,
-                            AuthenticationPublicKeyCredential::class.java
-                        )
+        credentialManager.getCredentialAsync(
+            context = context,
+            request = getCredentialRequest,
+            cancellationSignal = cancellationSignal,
+            executor = ContextCompat.getMainExecutor(context),
+            callback = object :
+                CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
+                override fun onError(e: GetCredentialException) {
+                    failure(ReachFiveError.from(e))
+                }
 
-                        reachFiveApi
-                            .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-                            .enqueue(
-                                ReachFiveApiCallback.withContent<AuthenticationToken>(
-                                    success = {
-                                        sessionUtils.loginCallback(
-                                            it.tkn,
-                                            scope,
-                                            success,
-                                            failure
-                                        )
-                                    },
-                                    failure = failure
-                                )
+                override fun onResult(result: GetCredentialResponse) {
+                    when (val credential = result.credential) {
+                        is PublicKeyCredential -> {
+                            val authenticationPublicKeyCredential = Gson().fromJson(
+                                credential.authenticationResponseJson,
+                                AuthenticationPublicKeyCredential::class.java
                             )
+
+                            reachFiveApi
+                                .authenticateWithWebAuthn(authenticationPublicKeyCredential)
+                                .enqueue(
+                                    ReachFiveApiCallback.withContent<AuthenticationToken>(
+                                        success = {
+                                            sessionUtils.loginCallback(
+                                                it.tkn,
+                                                scope,
+                                                success,
+                                                failure
+                                            )
+                                        },
+                                        failure = failure
+                                    )
+                                )
+                        }
                     }
                 }
-            } catch (e: GetCredentialException) {
-                failure(ReachFiveError.from(e))
             }
-        }
+        )
     }
 
 }
