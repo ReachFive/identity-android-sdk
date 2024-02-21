@@ -400,7 +400,7 @@ internal class WebauthnAuthClient(
         friendlyName: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        context: Context
     ) {
         this.authToken = authToken
 
@@ -416,7 +416,7 @@ internal class WebauthnAuthClient(
                             registrationOptions,
                             success,
                             failure,
-                            activity
+                            context
                         )
                     },
                     failure = failure
@@ -428,12 +428,14 @@ internal class WebauthnAuthClient(
         registrationOptions: RegistrationOptions,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        context: Context
     ) {
         val authToken = this.authToken ?: return failure(ReachFiveError.from("No auth token!"))
 
         val register =
-            { registrationPublicKeyCredential: RegistrationPublicKeyCredential, success: Success<Unit>, failure: Failure<ReachFiveError> ->
+            { registrationPublicKeyCredential: RegistrationPublicKeyCredential,
+              success: Success<Unit>,
+              failure: Failure<ReachFiveError> ->
                 reachFiveApi
                     .registerWithWebAuthn(
                         authToken.authHeader,
@@ -445,7 +447,7 @@ internal class WebauthnAuthClient(
 
         handleNewPasskey(
             registrationOptions.options.publicKey,
-            activity.applicationContext,
+            context,
             success,
             failure,
             register
@@ -478,7 +480,7 @@ internal class WebauthnAuthClient(
         // FIXME Application Not Responding when the credential selector is exited by a tap out of
         //  the dialog (rather than by the "Cancel" button)
         runBlocking {
-            withTimeout(10000) {
+            withTimeout(20000) {
                 try {
                     val jsonRegistrationOptions =
                         GsonBuilder().create().toJson(authenticatorSelectionFiller)
@@ -515,12 +517,13 @@ internal class WebauthnAuthClient(
     override fun signupWithPasskey(
         profile: ProfileWebAuthnSignupRequest,
         // FIXME in login scope are in the request, not here?
-        //scope: Collection<String>,
+        scope: Collection<String>,
         origin: String,
         friendlyName: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        // TODO clarify, activity context
+        context: Context
     ) {
         val newFriendlyName = formatFriendlyName(friendlyName)
 
@@ -537,7 +540,7 @@ internal class WebauthnAuthClient(
                             //scope,
                             success,
                             failure,
-                            activity
+                            context
                         )
                     },
                     failure = failure
@@ -547,15 +550,16 @@ internal class WebauthnAuthClient(
 
     private fun handlePasskeySignup(
         registrationOptions: RegistrationOptions,
-        //scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        context: Context
     ) {
         val webauthnId = registrationOptions.options.publicKey.user.id
 
         val signup =
-            { registrationPublicKeyCredential: RegistrationPublicKeyCredential, success: Success<AuthToken>, failure: Failure<ReachFiveError> ->
+            { registrationPublicKeyCredential: RegistrationPublicKeyCredential,
+              success: Success<AuthToken>,
+              failure: Failure<ReachFiveError> ->
                 reachFiveApi
                     .signupWithWebAuthn(
                         WebauthnSignupCredential(
@@ -580,7 +584,7 @@ internal class WebauthnAuthClient(
 
         handleNewPasskey(
             registrationOptions.options.publicKey,
-            activity.applicationContext,
+            context,
             success,
             failure,
             signup
@@ -595,7 +599,7 @@ internal class WebauthnAuthClient(
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        context: Context
     ) {
         reachFiveApi.createWebAuthnAuthenticationOptions(
             WebAuthnLoginRequest.enrichWithClientId(
@@ -605,7 +609,7 @@ internal class WebauthnAuthClient(
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
-                    handlePasskeyLogin(authenticationOptions, activity, scope, success, failure)
+                    handlePasskeyLogin(authenticationOptions, context, scope, success, failure)
                 },
                 failure = failure
             )
@@ -614,7 +618,7 @@ internal class WebauthnAuthClient(
 
     private fun handlePasskeyLogin(
         authenticationOptions: AuthenticationOptions,
-        activity: Activity,
+        context: Context,
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
@@ -627,7 +631,7 @@ internal class WebauthnAuthClient(
         runBlocking {
             try {
                 val getCredentialResponse = credentialManager.getCredential(
-                    context = activity.applicationContext,
+                    context = context,
                     request = getCredentialRequest
                 )
 
@@ -724,24 +728,24 @@ internal interface WebauthnAuth {
         friendlyName: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        context: Context
     )
 
     fun loginWithPasskey(
         loginRequest: WebAuthnLoginRequest,
-        scope: Collection<String>,
+        scope: Collection<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        context: Context
     )
 
     fun signupWithPasskey(
         profile: ProfileWebAuthnSignupRequest,
-        //scope: Collection<String>,
+        scope: Collection<String> = defaultScope,
         origin: String,
         friendlyName: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        context: Context
     )
 }
