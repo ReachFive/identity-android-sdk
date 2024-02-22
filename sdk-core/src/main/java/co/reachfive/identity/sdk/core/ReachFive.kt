@@ -21,6 +21,7 @@ class ReachFive private constructor(
     private val profileManagement: ProfileManagementClient,
     private val socialLoginAuth: SocialLoginAuthClient,
     private val webauthnAuth: WebauthnAuthClient,
+    private val credentialManagerAuth: CredentialManagerAuthClient,
     private val sessionUtils: SessionUtilsClient,
     override val sdkConfig: SdkConfig,
     override var defaultScope: Set<String> = emptySet(),
@@ -30,6 +31,7 @@ class ReachFive private constructor(
     ProfileManagement by profileManagement,
     SocialLoginAuth by socialLoginAuth,
     WebauthnAuth by webauthnAuth,
+    CredentialManagerAuth by credentialManagerAuth,
     SessionUtils by sessionUtils {
 
     companion object {
@@ -51,7 +53,8 @@ class ReachFive private constructor(
             val socialLoginAuthClient =
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient =
-                WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils, credentialManager)
+                WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
+            val credentialManagerAuthClient = CredentialManagerAuthClient(reachFiveApi, sdkConfig, sessionUtils, credentialManager)
 
             return ReachFive(
                 reachFiveApi,
@@ -60,6 +63,7 @@ class ReachFive private constructor(
                 profileManagementClient,
                 socialLoginAuthClient,
                 webauthnAuthClient,
+                credentialManagerAuthClient,
                 sessionUtils,
                 sdkConfig
             )

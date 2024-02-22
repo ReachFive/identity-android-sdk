@@ -3,12 +3,7 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.CancellationSignal
 import android.util.Log
-import androidx.core.content.ContextCompat
-import androidx.credentials.*
-import androidx.credentials.exceptions.CreateCredentialException
-import androidx.credentials.exceptions.GetCredentialException
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.WebauthnAuth.Companion.RC_LOGIN
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
@@ -22,8 +17,6 @@ import co.reachfive.identity.sdk.core.models.requests.webAuthn.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.DeviceCredential
-import co.reachfive.identity.sdk.core.models.responses.webAuthn.R5AuthenticatorSelectionCriteria
-import co.reachfive.identity.sdk.core.models.responses.webAuthn.R5PublicKeyCredentialCreationOptions
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
@@ -32,16 +25,12 @@ import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionRespon
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
 import com.google.android.gms.fido.fido2.api.common.ErrorCode
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import kotlinx.coroutines.runBlocking
 
 
 internal class WebauthnAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val sessionUtils: SessionUtilsClient,
-    private val credentialManager: CredentialManager,
 ) : WebauthnAuth {
     private var authToken: AuthToken? = null
 
@@ -396,286 +385,6 @@ internal class WebauthnAuthClient(
         }
     }
 
-    override fun registerNewPasskey(
-        authToken: AuthToken,
-        origin: String,
-        friendlyName: String?,
-        success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-        context: Context
-    ) {
-        this.authToken = authToken
-
-        reachFiveApi
-            .createWebAuthnRegistrationOptions(
-                authToken.authHeader,
-                WebAuthnRegistrationRequest(origin, formatFriendlyName(friendlyName))
-            )
-            .enqueue(
-                ReachFiveApiCallback.withContent<RegistrationOptions>(
-                    success = { registrationOptions ->
-                        handlePasskeyRegistration(
-                            registrationOptions,
-                            success,
-                            failure,
-                            context
-                        )
-                    },
-                    failure = failure
-                )
-            )
-    }
-
-    private fun handlePasskeyRegistration(
-        registrationOptions: RegistrationOptions,
-        success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-        context: Context
-    ) {
-        val authToken = this.authToken ?: return failure(ReachFiveError.from("No auth token!"))
-
-        val register =
-            { registrationPublicKeyCredential: RegistrationPublicKeyCredential,
-              success: Success<Unit>,
-              failure: Failure<ReachFiveError> ->
-                reachFiveApi
-                    .registerWithWebAuthn(
-                        authToken.authHeader,
-                        registrationPublicKeyCredential
-                    )
-                    .enqueue(ReachFiveApiCallback.noContent(success, failure))
-            }
-
-
-        handleNewPasskey(
-            registrationOptions.options.publicKey,
-            context,
-            success,
-            failure,
-            register
-        )
-
-    }
-
-
-    private fun <T> handleNewPasskey(
-        publicKeyCredentialCreationOptions: R5PublicKeyCredentialCreationOptions,
-        context: Context,
-        success: Success<T>,
-        failure: Failure<ReachFiveError>,
-        f: (RegistrationPublicKeyCredential, Success<T>, Failure<ReachFiveError>) -> Unit,
-    ) {
-        // FIXME The `authenticatorSelection` claim is not marked as required in WebAuthn spec,
-        //  but passkey creation with Google Password Manager fails when it is missing or empty.
-        val authenticatorSelectionFiller =
-            if (publicKeyCredentialCreationOptions.authenticatorSelection == null)
-                publicKeyCredentialCreationOptions.copy(
-                    authenticatorSelection = R5AuthenticatorSelectionCriteria(
-                        authenticatorAttachment = "platform",
-                        residentKey = "required",
-                        requireResidentKey = false,
-                        userVerification = "preferred"
-                    )
-                )
-            else publicKeyCredentialCreationOptions
-
-        val jsonRegistrationOptions =
-            GsonBuilder().create().toJson(authenticatorSelectionFiller)
-
-        val createPublicKeyCredentialRequest =
-            CreatePublicKeyCredentialRequest(requestJson = jsonRegistrationOptions)
-
-        val cancellationSignal = CancellationSignal()
-
-        credentialManager.createCredentialAsync(
-            request = createPublicKeyCredentialRequest,
-            context = context,
-            callback = object :
-                CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
-                override fun onError(e: CreateCredentialException) {
-                    failure(ReachFiveError.from(e))
-                }
-
-                override fun onResult(result: CreateCredentialResponse) {
-                    when (result) {
-                        is CreatePublicKeyCredentialResponse -> {
-                            val registrationPublicKeyCredential = Gson().fromJson(
-                                result.registrationResponseJson,
-                                RegistrationPublicKeyCredential::class.java
-                            )
-
-                            f(registrationPublicKeyCredential, success, failure)
-                        }
-
-                        // FIXME error message
-                        else -> failure(ReachFiveError("Unexpected credential success response"))
-                    }
-                }
-
-            },
-            cancellationSignal = cancellationSignal,
-            executor = ContextCompat.getMainExecutor(context),
-        )
-    }
-
-
-    override fun signupWithPasskey(
-        profile: ProfileWebAuthnSignupRequest,
-        // FIXME in login scope are in the request, not here?
-        scope: Collection<String>,
-        origin: String,
-        friendlyName: String?,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>,
-        // TODO clarify, activity context
-        context: Context
-    ) {
-        val newFriendlyName = formatFriendlyName(friendlyName)
-
-        reachFiveApi
-            .createWebAuthnSignupOptions(
-                WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
-                SdkInfos.getQueries()
-            )
-            .enqueue(
-                ReachFiveApiCallback.withContent<RegistrationOptions>(
-                    success = { registrationOptions ->
-                        handlePasskeySignup(
-                            registrationOptions,
-                            //scope,
-                            success,
-                            failure,
-                            context
-                        )
-                    },
-                    failure = failure
-                )
-            )
-    }
-
-    private fun handlePasskeySignup(
-        registrationOptions: RegistrationOptions,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>,
-        context: Context
-    ) {
-        val webauthnId = registrationOptions.options.publicKey.user.id
-
-        val signup =
-            { registrationPublicKeyCredential: RegistrationPublicKeyCredential,
-              success: Success<AuthToken>,
-              failure: Failure<ReachFiveError> ->
-                reachFiveApi
-                    .signupWithWebAuthn(
-                        WebauthnSignupCredential(
-                            webauthnId = webauthnId,
-                            publicKeyCredential = registrationPublicKeyCredential
-                        )
-                    )
-                    .enqueue(
-                        ReachFiveApiCallback.withContent<AuthenticationToken>(
-                            success = {
-                                sessionUtils.loginCallback(
-                                    it.tkn,
-                                    emptyList(),
-                                    success,
-                                    failure
-                                )
-                            },
-                            failure = failure
-                        )
-                    )
-            }
-
-        handleNewPasskey(
-            registrationOptions.options.publicKey,
-            context,
-            success,
-            failure,
-            signup
-        )
-
-    }
-
-
-    override fun loginWithPasskey(
-        // FIXME scope in login request
-        loginRequest: WebAuthnLoginRequest,
-        scope: Collection<String>,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>,
-        context: Context
-    ) {
-        reachFiveApi.createWebAuthnAuthenticationOptions(
-            WebAuthnLoginRequest.enrichWithClientId(
-                loginRequest,
-                sdkConfig.clientId
-            )
-        ).enqueue(
-            ReachFiveApiCallback.withContent<AuthenticationOptions>(
-                success = { authenticationOptions ->
-                    handlePasskeyLogin(authenticationOptions, context, scope, success, failure)
-                },
-                failure = failure
-            )
-        )
-    }
-
-    private fun handlePasskeyLogin(
-        authenticationOptions: AuthenticationOptions,
-        context: Context,
-        scope: Collection<String>,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
-    ) {
-        val requestJson = Gson().toJson(authenticationOptions.publicKey)
-
-        val getCredentialRequest =
-            GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
-
-        val cancellationSignal = CancellationSignal()
-
-        credentialManager.getCredentialAsync(
-            context = context,
-            request = getCredentialRequest,
-            cancellationSignal = cancellationSignal,
-            executor = ContextCompat.getMainExecutor(context),
-            callback = object :
-                CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
-                override fun onError(e: GetCredentialException) {
-                    failure(ReachFiveError.from(e))
-                }
-
-                override fun onResult(result: GetCredentialResponse) {
-                    when (val credential = result.credential) {
-                        is PublicKeyCredential -> {
-                            val authenticationPublicKeyCredential = Gson().fromJson(
-                                credential.authenticationResponseJson,
-                                AuthenticationPublicKeyCredential::class.java
-                            )
-
-                            reachFiveApi
-                                .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-                                .enqueue(
-                                    ReachFiveApiCallback.withContent<AuthenticationToken>(
-                                        success = {
-                                            sessionUtils.loginCallback(
-                                                it.tkn,
-                                                scope,
-                                                success,
-                                                failure
-                                            )
-                                        },
-                                        failure = failure
-                                    )
-                                )
-                        }
-                    }
-                }
-            }
-        )
-    }
-
 }
 
 internal interface WebauthnAuth {
@@ -731,32 +440,5 @@ internal interface WebauthnAuth {
         deviceId: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>
-    )
-
-    fun registerNewPasskey(
-        authToken: AuthToken,
-        origin: String,
-        friendlyName: String?,
-        success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-        context: Context
-    )
-
-    fun loginWithPasskey(
-        loginRequest: WebAuthnLoginRequest,
-        scope: Collection<String> = defaultScope,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>,
-        context: Context
-    )
-
-    fun signupWithPasskey(
-        profile: ProfileWebAuthnSignupRequest,
-        scope: Collection<String> = defaultScope,
-        origin: String,
-        friendlyName: String?,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>,
-        context: Context
     )
 }
