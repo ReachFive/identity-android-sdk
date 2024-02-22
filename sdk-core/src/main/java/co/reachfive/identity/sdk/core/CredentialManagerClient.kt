@@ -29,7 +29,7 @@ internal class CredentialManagerAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val sdkConfig: SdkConfig,
     private val sessionUtils: SessionUtilsClient,
-    private val credentialManager: CredentialManager,
+    private val credentialManager: CredentialManager?,
 ) : CredentialManagerAuth {
     private var authToken: AuthToken? = null
 
@@ -50,6 +50,9 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         context: Context
     ) {
+        if (credentialManager == null)
+            failure(ReachFiveError("Credential Manager is null"))
+
         this.authToken = authToken
 
         reachFiveApi
@@ -133,7 +136,7 @@ internal class CredentialManagerAuthClient(
 
         val cancellationSignal = CancellationSignal()
 
-        credentialManager.createCredentialAsync(
+        credentialManager!!.createCredentialAsync(
             request = createPublicKeyCredentialRequest,
             context = context,
             callback = object :
@@ -167,7 +170,6 @@ internal class CredentialManagerAuthClient(
 
     override fun signupWithPasskey(
         profile: ProfileWebAuthnSignupRequest,
-        // FIXME in login scope are in the request, not here?
         scope: Collection<String>,
         origin: String,
         friendlyName: String?,
@@ -176,11 +178,19 @@ internal class CredentialManagerAuthClient(
         // TODO clarify, activity context
         context: Context
     ) {
+        if (credentialManager == null)
+            failure(ReachFiveError("Credential Manager is null"))
+
         val newFriendlyName = formatFriendlyName(friendlyName)
 
         reachFiveApi
             .createWebAuthnSignupOptions(
-                WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
+                WebAuthnRegistrationRequest(
+                    origin,
+                    newFriendlyName,
+                    profile,
+                    sdkConfig.clientId,
+                ),
                 SdkInfos.getQueries()
             )
             .enqueue(
@@ -188,7 +198,7 @@ internal class CredentialManagerAuthClient(
                     success = { registrationOptions ->
                         handlePasskeySignup(
                             registrationOptions,
-                            //scope,
+                            scope,
                             success,
                             failure,
                             context
@@ -201,6 +211,7 @@ internal class CredentialManagerAuthClient(
 
     private fun handlePasskeySignup(
         registrationOptions: RegistrationOptions,
+        scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         context: Context
@@ -223,7 +234,7 @@ internal class CredentialManagerAuthClient(
                             success = {
                                 sessionUtils.loginCallback(
                                     it.tkn,
-                                    emptyList(),
+                                    scope,
                                     success,
                                     failure
                                 )
@@ -252,11 +263,11 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         context: Context
     ) {
+        if (credentialManager == null)
+            failure(ReachFiveError("Credential Manager is null"))
+
         reachFiveApi.createWebAuthnAuthenticationOptions(
-            WebAuthnLoginRequest.enrichWithClientId(
-                loginRequest,
-                sdkConfig.clientId
-            )
+            WebAuthnLoginRequest.enrichWithClientId(loginRequest, sdkConfig.clientId)
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
@@ -281,7 +292,7 @@ internal class CredentialManagerAuthClient(
 
         val cancellationSignal = CancellationSignal()
 
-        credentialManager.getCredentialAsync(
+        credentialManager!!.getCredentialAsync(
             context = context,
             request = getCredentialRequest,
             cancellationSignal = cancellationSignal,

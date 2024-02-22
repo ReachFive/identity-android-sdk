@@ -56,14 +56,14 @@ sealed class WebAuthnLoginRequest {
                         clientId,
                         request.origin,
                         request.email,
-                        formatScope(request.scope as Collection<String>)
+                        formatScope(request.scope.orEmpty() as Collection<String>)
                     )
                 is PhoneNumberWebAuthnLoginRequest ->
                     PhoneNumberWithClientIdLoginRequest(
                         clientId,
                         request.origin,
                         request.phoneNumber,
-                        formatScope(request.scope as Collection<String>)
+                        formatScope(request.scope.orEmpty() as Collection<String>)
                     )
                 else -> request
             }

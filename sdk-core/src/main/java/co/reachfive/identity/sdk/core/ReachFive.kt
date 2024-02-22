@@ -40,7 +40,7 @@ class ReachFive private constructor(
         operator fun invoke(
             sdkConfig: SdkConfig,
             providersCreators: List<ProviderCreator>,
-            credentialManager: CredentialManager,
+            credentialManager: CredentialManager?,
         ): ReachFive {
             val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
             val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
