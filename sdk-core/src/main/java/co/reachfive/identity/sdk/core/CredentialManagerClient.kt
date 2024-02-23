@@ -107,68 +107,6 @@ internal class CredentialManagerAuthClient(
 
     }
 
-
-    private fun <T> handleNewPasskey(
-        publicKeyCredentialCreationOptions: R5PublicKeyCredentialCreationOptions,
-        context: Context,
-        success: Success<T>,
-        failure: Failure<ReachFiveError>,
-        f: (RegistrationPublicKeyCredential, Success<T>, Failure<ReachFiveError>) -> Unit,
-    ) {
-        // FIXME The `authenticatorSelection` claim is not marked as required in WebAuthn spec,
-        //  but passkey creation with Google Password Manager fails when it is missing or empty.
-        val authenticatorSelectionFiller =
-            if (publicKeyCredentialCreationOptions.authenticatorSelection == null)
-                publicKeyCredentialCreationOptions.copy(
-                    authenticatorSelection = R5AuthenticatorSelectionCriteria(
-                        authenticatorAttachment = "platform",
-                        residentKey = "required",
-                        requireResidentKey = true,
-                        userVerification = "preferred"
-                    )
-                )
-            else publicKeyCredentialCreationOptions
-
-        val jsonRegistrationOptions =
-            GsonBuilder().create().toJson(authenticatorSelectionFiller)
-
-        val createPublicKeyCredentialRequest =
-            CreatePublicKeyCredentialRequest(requestJson = jsonRegistrationOptions)
-
-        val cancellationSignal = CancellationSignal()
-
-        credentialManager!!.createCredentialAsync(
-            request = createPublicKeyCredentialRequest,
-            context = context,
-            callback = object :
-                CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
-                override fun onError(e: CreateCredentialException) {
-                    failure(ReachFiveError.from(e))
-                }
-
-                override fun onResult(result: CreateCredentialResponse) {
-                    when (result) {
-                        is CreatePublicKeyCredentialResponse -> {
-                            val registrationPublicKeyCredential = Gson().fromJson(
-                                result.registrationResponseJson,
-                                RegistrationPublicKeyCredential::class.java
-                            )
-
-                            f(registrationPublicKeyCredential, success, failure)
-                        }
-
-                        // FIXME error message
-                        else -> failure(ReachFiveError("Unexpected credential success response"))
-                    }
-                }
-
-            },
-            cancellationSignal = cancellationSignal,
-            executor = ContextCompat.getMainExecutor(context),
-        )
-    }
-
-
     override fun signupWithPasskey(
         profile: ProfileWebAuthnSignupRequest,
         scope: Collection<String>,
@@ -254,6 +192,103 @@ internal class CredentialManagerAuthClient(
 
     }
 
+
+    private fun <T> handleNewPasskey(
+        publicKeyCredentialCreationOptions: R5PublicKeyCredentialCreationOptions,
+        context: Context,
+        success: Success<T>,
+        failure: Failure<ReachFiveError>,
+        f: (RegistrationPublicKeyCredential, Success<T>, Failure<ReachFiveError>) -> Unit,
+    ) {
+        // FIXME The `authenticatorSelection` claim is not marked as required in WebAuthn spec,
+        //  but passkey creation with Google Password Manager fails when it is missing or empty.
+        val authenticatorSelectionFiller =
+            if (publicKeyCredentialCreationOptions.authenticatorSelection == null)
+                publicKeyCredentialCreationOptions.copy(
+                    authenticatorSelection = R5AuthenticatorSelectionCriteria(
+                        authenticatorAttachment = "platform",
+                        residentKey = "required",
+                        requireResidentKey = true,
+                        userVerification = "preferred"
+                    )
+                )
+            else publicKeyCredentialCreationOptions
+
+        val jsonRegistrationOptions =
+            GsonBuilder().create().toJson(authenticatorSelectionFiller)
+
+        val createPublicKeyCredentialRequest =
+            CreatePublicKeyCredentialRequest(requestJson = jsonRegistrationOptions)
+
+        val cancellationSignal = CancellationSignal()
+
+        credentialManager!!.createCredentialAsync(
+            request = createPublicKeyCredentialRequest,
+            context = context,
+            callback = object :
+                CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
+                override fun onError(e: CreateCredentialException) {
+                    failure(ReachFiveError.from(e))
+                }
+
+                override fun onResult(result: CreateCredentialResponse) {
+                    when (result) {
+                        is CreatePublicKeyCredentialResponse -> {
+                            val registrationPublicKeyCredential = Gson().fromJson(
+                                result.registrationResponseJson,
+                                RegistrationPublicKeyCredential::class.java
+                            )
+
+                            f(registrationPublicKeyCredential, success, failure)
+                        }
+
+                        // FIXME error message
+                        else -> failure(ReachFiveError("Unexpected credential success response"))
+                    }
+                }
+
+            },
+            cancellationSignal = cancellationSignal,
+            executor = ContextCompat.getMainExecutor(context),
+        )
+    }
+
+
+    override fun discoverableLogin(
+        scope: Collection<String>,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+        context: Context
+    ) {
+        if (credentialManager == null || sdkConfig.originWebAuthn == null)
+            failure(ReachFiveError("Credential Manager or origin is null"))
+
+        reachFiveApi.createWebAuthnAuthenticationOptions(
+            WebAuthnLoginRequest.DiscoverableWithClientIdLoginRequest(
+                origin = sdkConfig.originWebAuthn!!,
+                scope = formatScope(scope),
+                clientId = sdkConfig.clientId
+            )
+        ).enqueue(
+            ReachFiveApiCallback.withContent<AuthenticationOptions>(
+                success = { authenticationOptions ->
+                    val requestJson = Gson().toJson(authenticationOptions.publicKey)
+
+                    val getCredentialRequest =
+                        GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
+
+                    handleCredentialManagerLogin(
+                        getCredentialRequest,
+                        context,
+                        scope,
+                        success,
+                        failure
+                    )
+                },
+                failure = failure
+            )
+        )
+    }
 
     override fun loginWithPasskey(
         // FIXME scope in login request
@@ -352,42 +387,6 @@ internal class CredentialManagerAuthClient(
                     }
                 }
             }
-        )
-    }
-
-    override fun discoverableLogin(
-        scope: Collection<String>,
-        success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>,
-        context: Context
-    ) {
-        if (credentialManager == null || sdkConfig.originWebAuthn == null)
-            failure(ReachFiveError("Credential Manager or origin is null"))
-
-        reachFiveApi.createWebAuthnAuthenticationOptions(
-            WebAuthnLoginRequest.DiscoverableWithClientIdLoginRequest(
-                origin = sdkConfig.originWebAuthn!!,
-                scope = formatScope(scope),
-                clientId = sdkConfig.clientId
-            )
-        ).enqueue(
-            ReachFiveApiCallback.withContent<AuthenticationOptions>(
-                success = { authenticationOptions ->
-                    val requestJson = Gson().toJson(authenticationOptions.publicKey)
-
-                    val getCredentialRequest =
-                        GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
-
-                    handleCredentialManagerLogin(
-                        getCredentialRequest,
-                        context,
-                        scope,
-                        success,
-                        failure
-                    )
-                },
-                failure = failure
-            )
         )
     }
 
