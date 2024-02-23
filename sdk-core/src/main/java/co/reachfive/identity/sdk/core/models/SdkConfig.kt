@@ -7,5 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class SdkConfig(
     val domain: String,
     val clientId: String,
-    val scheme: String
+    val scheme: String,
+    val originWebAuthn: String? = null,
 ) : Parcelable

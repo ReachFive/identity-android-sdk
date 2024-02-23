@@ -13,18 +13,26 @@ import java.lang.reflect.Type
 sealed class WebAuthnLoginRequest {
     @Parcelize
     data class EmailWebAuthnLoginRequest(
-        val origin: String,
+        val origin: String? = null,
         val email: String,
         val scope: Set<String>? = null
     ) : WebAuthnLoginRequest(), Parcelable
 
     @Parcelize
     data class PhoneNumberWebAuthnLoginRequest(
-        val origin: String,
+        val origin: String? = null,
         @SerializedName("phone_number")
         val phoneNumber: String,
         val scope: Set<String>? = null
     ) : WebAuthnLoginRequest(), Parcelable
+
+    @Parcelize
+    data class DiscoverableWithClientIdLoginRequest(
+        @SerializedName("client_id")
+        val clientId: String,
+        val origin: String,
+        val scope: String? = null
+    ): WebAuthnLoginRequest(), Parcelable
 
     @Parcelize
     private data class EmailWithClientIdLoginRequest(
@@ -48,20 +56,21 @@ sealed class WebAuthnLoginRequest {
     companion object {
         fun <T : WebAuthnLoginRequest> enrichWithClientId(
             request: T,
-            clientId: String
+            clientId: String,
+            origin: String,
         ): WebAuthnLoginRequest {
             return when (request) {
                 is EmailWebAuthnLoginRequest ->
                     EmailWithClientIdLoginRequest(
                         clientId,
-                        request.origin,
+                        request.origin ?: origin,
                         request.email,
                         formatScope(request.scope.orEmpty() as Collection<String>)
                     )
                 is PhoneNumberWebAuthnLoginRequest ->
                     PhoneNumberWithClientIdLoginRequest(
                         clientId,
-                        request.origin,
+                        request.origin ?: origin,
                         request.phoneNumber,
                         formatScope(request.scope.orEmpty() as Collection<String>)
                     )
