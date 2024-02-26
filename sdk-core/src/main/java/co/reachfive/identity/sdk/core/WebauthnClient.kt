@@ -37,9 +37,9 @@ internal class WebauthnAuthClient(
 
     override fun signupWithWebAuthn(
         profile: ProfileWebAuthnSignupRequest,
-        origin: String,
+        originWebauthn: String,
         friendlyName: String?,
-        r5Origin: String?,
+        origin: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -48,8 +48,8 @@ internal class WebauthnAuthClient(
 
         reachFiveApi
             .createWebAuthnSignupOptions(
-                WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
-                SdkInfos.getQueries() + if (r5Origin != null) mapOf("origin" to r5Origin) else emptyMap()
+                WebAuthnRegistrationRequest(originWebauthn, newFriendlyName, profile, sdkConfig.clientId),
+                SdkInfos.getQueries() + if (origin != null) mapOf("origin" to origin) else emptyMap()
             )
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
@@ -142,9 +142,9 @@ internal class WebauthnAuthClient(
 
     override fun addNewWebAuthnDevice(
         authToken: AuthToken,
-        origin: String,
+        originWebauthn: String,
         friendlyName: String?,
-        r5Origin: String?,
+        origin: String?,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -154,8 +154,8 @@ internal class WebauthnAuthClient(
         reachFiveApi
             .createWebAuthnRegistrationOptions(
                 authToken.authHeader,
-                WebAuthnRegistrationRequest(origin, newFriendlyName),
-                if (r5Origin != null) mapOf("origin" to r5Origin) else emptyMap()
+                WebAuthnRegistrationRequest(originWebauthn, newFriendlyName),
+                if (origin != null) mapOf("origin" to origin) else emptyMap()
             )
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
@@ -416,9 +416,9 @@ internal interface WebauthnAuth {
 
     fun signupWithWebAuthn(
         profile: ProfileWebAuthnSignupRequest,
-        origin: String,
+        originWebauthn: String,
         friendlyName: String?,
-        r5Origin: String? = null,
+        origin: String? = null,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -426,9 +426,9 @@ internal interface WebauthnAuth {
 
     fun addNewWebAuthnDevice(
         authToken: AuthToken,
-        origin: String,
+        originWebauthn: String,
         friendlyName: String?,
-        r5Origin: String? = null,
+        origin: String? = null,
         failure: Failure<ReachFiveError>,
         activity: Activity
     )
