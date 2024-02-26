@@ -398,7 +398,6 @@ internal interface WebauthnAuth {
             setOf(
                 RC_SIGNUP,
                 RC_LOGIN,
-                RC_REGISTER_DEVICE
             ).any { it == code }
 
         fun isWebauthnActionRequestCode(code: Int): Boolean =
