@@ -202,6 +202,7 @@ class SessionUtilsClient(
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
+        origin: String? = null
     ) {
         val redirectUri = sdkConfig.scheme
         val pkce = PkceAuthCodeFlow.generate(redirectUri)
@@ -212,6 +213,7 @@ class SessionUtilsClient(
             clientId = sdkConfig.clientId,
             redirectUri = redirectUri,
             scope = scope,
+            origin = origin,
             success = { authCode ->
                 exchangeAuthorizationCode(
                     authCode,

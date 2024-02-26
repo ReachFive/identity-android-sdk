@@ -39,6 +39,7 @@ internal class WebauthnAuthClient(
         profile: ProfileWebAuthnSignupRequest,
         origin: String,
         friendlyName: String?,
+        r5Origin: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -48,7 +49,7 @@ internal class WebauthnAuthClient(
         reachFiveApi
             .createWebAuthnSignupOptions(
                 WebAuthnRegistrationRequest(origin, newFriendlyName, profile, sdkConfig.clientId),
-                SdkInfos.getQueries()
+                SdkInfos.getQueries() + if (r5Origin != null) mapOf("origin" to r5Origin) else emptyMap()
             )
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
@@ -70,6 +71,7 @@ internal class WebauthnAuthClient(
         resultCode: Int,
         intent: Intent,
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -79,7 +81,7 @@ internal class WebauthnAuthClient(
                 if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
                     failure(extractFIDO2Error(intent))
                 else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA))
-                    handleSignupSuccess(intent, scope, success, failure, activity)
+                    handleSignupSuccess(intent, scope, origin, success, failure, activity)
 
             Activity.RESULT_CANCELED -> {
                 Log.d(TAG, "Operation is cancelled")
@@ -99,6 +101,7 @@ internal class WebauthnAuthClient(
     private fun handleSignupSuccess(
         intent: Intent,
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity,
@@ -118,7 +121,8 @@ internal class WebauthnAuthClient(
                         WebauthnSignupCredential(
                             webauthnId = webauthnId,
                             publicKeyCredential = registrationPublicKeyCredential
-                        )
+                        ),
+                        if (origin != null) mapOf("origin" to origin) else emptyMap()
                     )
                     .enqueue(
                         ReachFiveApiCallback.withContent<AuthenticationToken>(
@@ -140,6 +144,7 @@ internal class WebauthnAuthClient(
         authToken: AuthToken,
         origin: String,
         friendlyName: String?,
+        r5Origin: String?,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -149,7 +154,8 @@ internal class WebauthnAuthClient(
         reachFiveApi
             .createWebAuthnRegistrationOptions(
                 authToken.authHeader,
-                WebAuthnRegistrationRequest(origin, newFriendlyName)
+                WebAuthnRegistrationRequest(origin, newFriendlyName),
+                if (r5Origin != null) mapOf("origin" to r5Origin) else emptyMap()
             )
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
@@ -191,13 +197,15 @@ internal class WebauthnAuthClient(
     override fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        origin: String?
     ) {
         reachFiveApi.createWebAuthnAuthenticationOptions(
             WebAuthnLoginRequest.enrichWithClientId(
                 loginRequest,
                 sdkConfig.clientId
-            )
+            ),
+            if (origin != null) mapOf("origin" to origin) else emptyMap()
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
@@ -234,6 +242,7 @@ internal class WebauthnAuthClient(
     internal fun onLoginWithWebAuthnResult(
         resultCode: Int,
         intent: Intent,
+        origin: String?,
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
@@ -243,7 +252,7 @@ internal class WebauthnAuthClient(
                 if (intent.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA))
                     extractFIDO2Error(intent).let { failure(it) }
                 else if (intent.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA))
-                    handleLoginSuccess(intent, scope, success, failure)
+                    handleLoginSuccess(intent, origin, scope, success, failure)
 
             Activity.RESULT_CANCELED -> {
                 Log.d(TAG, "Operation is cancelled")
@@ -263,6 +272,7 @@ internal class WebauthnAuthClient(
 
     private fun handleLoginSuccess(
         intent: Intent,
+        origin: String?,
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
@@ -278,7 +288,7 @@ internal class WebauthnAuthClient(
             )
 
         return reachFiveApi
-            .authenticateWithWebAuthn(authenticationPublicKeyCredential)
+            .authenticateWithWebAuthn(authenticationPublicKeyCredential, if (origin != null) mapOf("origin" to origin) else emptyMap())
             .enqueue(
                 ReachFiveApiCallback.withContent<AuthenticationToken>(
                     success = { sessionUtils.loginCallback(it.tkn, scope, success, failure) },
@@ -408,6 +418,7 @@ internal interface WebauthnAuth {
         profile: ProfileWebAuthnSignupRequest,
         origin: String,
         friendlyName: String?,
+        r5Origin: String? = null,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -417,6 +428,7 @@ internal interface WebauthnAuth {
         authToken: AuthToken,
         origin: String,
         friendlyName: String?,
+        r5Origin: String? = null,
         failure: Failure<ReachFiveError>,
         activity: Activity
     )
@@ -424,7 +436,8 @@ internal interface WebauthnAuth {
     fun loginWithWebAuthn(
         loginRequest: WebAuthnLoginRequest,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        origin: String? = null
     )
 
     fun listWebAuthnDevices(

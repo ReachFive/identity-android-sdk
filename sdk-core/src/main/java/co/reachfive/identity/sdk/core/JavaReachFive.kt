@@ -67,9 +67,10 @@ class JavaReachFive(
         scope: Collection<String>,
         redirectUrl: String? = null,
         success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        origin: String? = null
     ) {
-        return reach5.signup(profile, scope, redirectUrl, success::call, failure::call)
+        return reach5.signup(profile, scope, redirectUrl, origin, success::call, failure::call)
     }
 
     /**
@@ -78,9 +79,10 @@ class JavaReachFive(
     fun signup(
         profile: ProfileSignupRequest,
         success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        origin: String? = null
     ) {
-        return reach5.signup(profile, success = success::call, failure = failure::call)
+        return reach5.signup(profile, origin = origin, success = success::call, failure = failure::call)
     }
 
     /**
@@ -92,7 +94,8 @@ class JavaReachFive(
         redirectUri: String,
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        origin: String? = null
     ) {
         reach5.startPasswordless(
             email,
@@ -100,7 +103,8 @@ class JavaReachFive(
             redirectUri,
             { success.call(Unit) },
             failure::call,
-            activity
+            activity,
+            origin
         )
     }
 
@@ -131,9 +135,10 @@ class JavaReachFive(
         password: String,
         scope: Collection<String>,
         success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        origin: String? = null
     ) {
-        return reach5.loginWithPassword(email, phoneNumber, customIdentifier, password, scope, success::call, failure::call)
+        return reach5.loginWithPassword(email, phoneNumber, customIdentifier, password, scope, origin, success::call, failure::call)
     }
 
     /**
@@ -146,13 +151,15 @@ class JavaReachFive(
         customIdentifier: String? = null,
         password: String,
         success: Callback<AuthToken>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        origin: String? = null
     ) {
         return reach5.loginWithPassword(
             email,
             phoneNumber,
             customIdentifier,
             password,
+            origin = origin,
             success = success::call,
             failure = failure::call
         )
@@ -292,7 +299,8 @@ class JavaReachFive(
         data: Intent?,
         loginSuccess: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        origin: String? = null
     ) {
         return reach5.onLoginActivityResult(
             requestCode,
@@ -300,7 +308,8 @@ class JavaReachFive(
             data,
             loginSuccess::call,
             failure::call,
-            activity
+            activity,
+            origin
         )
     }
 
