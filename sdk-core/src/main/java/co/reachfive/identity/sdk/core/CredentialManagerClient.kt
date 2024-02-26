@@ -2,6 +2,7 @@ package co.reachfive.identity.sdk.core
 
 import android.content.Context
 import android.os.CancellationSignal
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.credentials.*
 import androidx.credentials.exceptions.CreateCredentialException
@@ -59,7 +60,10 @@ internal class CredentialManagerAuthClient(
         reachFiveApi
             .createWebAuthnRegistrationOptions(
                 authToken.authHeader,
-                WebAuthnRegistrationRequest(sdkConfig.originWebAuthn!!, formatFriendlyName(friendlyName))
+                WebAuthnRegistrationRequest(
+                    sdkConfig.originWebAuthn!!,
+                    formatFriendlyName(friendlyName)
+                )
             )
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
@@ -109,8 +113,8 @@ internal class CredentialManagerAuthClient(
 
     override fun signupWithPasskey(
         profile: ProfileWebAuthnSignupRequest,
-        scope: Collection<String>,
         friendlyName: String?,
+        scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         // TODO clarify, activity context
@@ -192,7 +196,6 @@ internal class CredentialManagerAuthClient(
 
     }
 
-
     private fun <T> handleNewPasskey(
         publicKeyCredentialCreationOptions: R5PublicKeyCredentialCreationOptions,
         context: Context,
@@ -253,6 +256,42 @@ internal class CredentialManagerAuthClient(
         )
     }
 
+    override fun createPasswordCredential(
+        id: String,
+        password: String,
+        context: Context,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        val createPasswordRequest =
+            CreatePasswordRequest(
+                id = id,
+                password = password,
+                origin = sdkConfig.originWebAuthn!!
+            )
+
+
+        val cancellationSignal = CancellationSignal()
+
+        credentialManager!!.createCredentialAsync(
+            request = createPasswordRequest,
+            context = context,
+            callback =
+            object :
+                CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
+                override fun onError(e: CreateCredentialException) {
+                    failure(ReachFiveError.from(e))
+                }
+
+                override fun onResult(result: CreateCredentialResponse) {
+                    success(Unit)
+                }
+
+            },
+            cancellationSignal = cancellationSignal,
+            executor = ContextCompat.getMainExecutor(context),
+        )
+    }
 
     override fun discoverableLogin(
         scope: Collection<String>,
@@ -302,7 +341,11 @@ internal class CredentialManagerAuthClient(
             failure(ReachFiveError("Credential Manager or origin is null"))
 
         reachFiveApi.createWebAuthnAuthenticationOptions(
-            WebAuthnLoginRequest.enrichWithClientId(loginRequest, sdkConfig.clientId, sdkConfig.originWebAuthn!!)
+            WebAuthnLoginRequest.enrichWithClientId(
+                loginRequest,
+                sdkConfig.clientId,
+                sdkConfig.originWebAuthn!!
+            )
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
@@ -331,7 +374,6 @@ internal class CredentialManagerAuthClient(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
-
         val cancellationSignal = CancellationSignal()
 
         credentialManager!!.getCredentialAsync(
@@ -415,8 +457,8 @@ internal interface CredentialManagerAuth {
 
     fun signupWithPasskey(
         profile: ProfileWebAuthnSignupRequest,
-        scope: Collection<String> = defaultScope,
         friendlyName: String?,
+        scope: Collection<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         context: Context
@@ -428,5 +470,13 @@ internal interface CredentialManagerAuth {
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         context: Context
+    )
+
+    fun createPasswordCredential(
+        id: String,
+        password: String,
+        context: Context,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
     )
 }
