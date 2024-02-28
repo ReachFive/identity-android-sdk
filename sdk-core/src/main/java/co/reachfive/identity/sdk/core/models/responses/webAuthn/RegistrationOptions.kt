@@ -7,7 +7,6 @@ import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import java.lang.reflect.Type
 
 @Parcelize
 data class RegistrationOptions(
@@ -99,12 +98,12 @@ data class R5PublicKeyCredentialParameter(
 
 @Parcelize
 data class R5AuthenticatorSelectionCriteria(
-    @SerializedName(value="authenticatorAttachment", alternate=["authenticator_attachement"])
-    val authenticatorAttachment: String,
+    @SerializedName(value="authenticatorAttachment", alternate=["authenticator_attachment"])
+    val authenticatorAttachment: String? = null,
     @SerializedName(value="requireResidentKey", alternate=["require_resident_key"])
-    val requireResidentKey: Boolean,
+    val requireResidentKey: Boolean? = null,
     @SerializedName(value="residentKey", alternate=["resident_key"])
-    val residentKey: String,
+    val residentKey: String? = null,
     @SerializedName(value="userVerification", alternate = ["user_verification"])
-    val userVerification: String
+    val userVerification: String? = null
 ) : Parcelable
