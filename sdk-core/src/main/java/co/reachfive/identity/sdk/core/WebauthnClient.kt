@@ -144,7 +144,6 @@ internal class WebauthnAuthClient(
         authToken: AuthToken,
         originWebauthn: String,
         friendlyName: String?,
-        origin: String?,
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
@@ -154,8 +153,7 @@ internal class WebauthnAuthClient(
         reachFiveApi
             .createWebAuthnRegistrationOptions(
                 authToken.authHeader,
-                WebAuthnRegistrationRequest(originWebauthn, newFriendlyName),
-                if (origin != null) mapOf("origin" to origin) else emptyMap()
+                WebAuthnRegistrationRequest(originWebauthn, newFriendlyName)
             )
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
@@ -428,7 +426,6 @@ internal interface WebauthnAuth {
         authToken: AuthToken,
         originWebauthn: String,
         friendlyName: String?,
-        origin: String? = null,
         failure: Failure<ReachFiveError>,
         activity: Activity
     )
