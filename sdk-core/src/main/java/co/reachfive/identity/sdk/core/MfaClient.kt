@@ -7,8 +7,9 @@ import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsStartEmailRegisteringRequest
 import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsStartPhoneRegisteringRequest
+import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsVerifyPhoneRegisteringRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
-import co.reachfive.identity.sdk.core.models.requests.VerifyPhoneNumberRequest
+import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
@@ -19,8 +20,7 @@ internal class MfaCredentialsClient(
         authToken: AuthToken,
         phoneNumber: String,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-        activity: Activity
+        failure: Failure<ReachFiveError>
     ) {
         reachFiveApi.startMfaPhoneNumberRegistration(authToken.authHeader, MfaCredentialsStartPhoneRegisteringRequest(phoneNumber))
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
@@ -28,13 +28,11 @@ internal class MfaCredentialsClient(
 
     override fun verifyMfaPhoneNumberRegistration(
         authToken: AuthToken,
-        phoneNumber: String,
         verificationCode: String,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-        activity: Activity
+        failure: Failure<ReachFiveError>
     ) {
-        reachFiveApi.verifyMfaPhoneNumberRegistration(authToken.authHeader, VerifyPhoneNumberRequest(phoneNumber, verificationCode))
+        reachFiveApi.verifyMfaPhoneNumberRegistration(authToken.authHeader, MfaCredentialsVerifyPhoneRegisteringRequest(verificationCode))
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
 
@@ -42,8 +40,7 @@ internal class MfaCredentialsClient(
         authToken: AuthToken,
         redirectUri: String?,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-        activity: Activity
+        failure: Failure<ReachFiveError>
     ) {
         reachFiveApi.startMfaEmailRegistration(authToken.authHeader, MfaCredentialsStartEmailRegisteringRequest(redirectUri))
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
@@ -53,11 +50,20 @@ internal class MfaCredentialsClient(
         authToken: AuthToken,
         verificationCode: String,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-        activity: Activity
+        failure: Failure<ReachFiveError>
     ) {
         reachFiveApi.verifyMfaEmailRegistration(authToken.authHeader, VerifyEmailRequest(verificationCode))
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
+    }
+
+    override fun listMfaCredentials(
+        authToken: AuthToken,
+        success: Success<ListMfaCredentials>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .listMfaCredentials(authToken.authHeader)
+            .enqueue(ReachFiveApiCallback.withContent<ListMfaCredentials>(success, failure))
     }
 
 }
@@ -69,16 +75,13 @@ internal interface MfaCredentials {
         phoneNumber: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
     )
 
     fun verifyMfaPhoneNumberRegistration(
         authToken: AuthToken,
-        phoneNumber: String,
         verificationCode: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
     )
 
     fun startMfaEmailRegistration(
@@ -86,7 +89,6 @@ internal interface MfaCredentials {
         redirectUri: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
     )
 
     fun verifyMfaEmailRegistration(
@@ -94,6 +96,11 @@ internal interface MfaCredentials {
         verificationCode: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+    )
+
+    fun listMfaCredentials(
+        authToken: AuthToken,
+        success: Success<ListMfaCredentials>,
+        failure: Failure<ReachFiveError>
     )
 }
