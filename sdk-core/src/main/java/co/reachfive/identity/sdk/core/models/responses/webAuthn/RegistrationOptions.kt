@@ -32,7 +32,7 @@ data class RegistrationOptions(
                 PublicKeyCredentialUserEntity(
                     publicKey.user.id.toByteArray(),
                     publicKey.user.name,
-                    null,
+                    "",
                     publicKey.user.displayName
                 )
             )

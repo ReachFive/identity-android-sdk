@@ -12,7 +12,7 @@ android {
 dependencies {
     implementation ext.kotlin_stdlib
     implementation libs.result
-    implementation "com.google.android.gms:play-services-fido:18.1.0"
+    implementation "com.google.android.gms:play-services-fido:20.1.0"
     implementation libs.retrofit
     implementation libs.retrofitConverterGson
     implementation "com.squareup.okhttp3:logging-interceptor:4.9.3"

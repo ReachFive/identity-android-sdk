@@ -269,24 +269,34 @@ internal class WebauthnAuthClient(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
     ) {
-        val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+        return when (val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            null -> failure(ReachFiveError.from("Unexpected: null Fido2 Intent data"))
+            else -> {
+                val authenticatorAssertionResponse: AuthenticatorAssertionResponse =
+                    AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
 
-        val authenticatorAssertionResponse: AuthenticatorAssertionResponse =
-            AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
+                val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential =
+                    WebAuthnAuthentication.createAuthenticationPublicKeyCredential(
+                        authenticatorAssertionResponse
+                    )
 
-        val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential =
-            WebAuthnAuthentication.createAuthenticationPublicKeyCredential(
-                authenticatorAssertionResponse
-            )
-
-        return reachFiveApi
-            .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-            .enqueue(
-                ReachFiveApiCallback.withContent<AuthenticationToken>(
-                    success = { sessionUtils.loginCallback(it.tkn, scope, success, failure) },
-                    failure = failure
-                )
-            )
+                reachFiveApi
+                    .authenticateWithWebAuthn(authenticationPublicKeyCredential)
+                    .enqueue(
+                        ReachFiveApiCallback.withContent<AuthenticationToken>(
+                            success = {
+                                sessionUtils.loginCallback(
+                                    it.tkn,
+                                    scope,
+                                    success,
+                                    failure
+                                )
+                            },
+                            failure = failure
+                        )
+                    )
+            }
+        }
     }
 
     override fun listWebAuthnDevices(
