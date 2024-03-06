@@ -289,7 +289,7 @@ internal class WebauthnAuthClient(
             .authenticateWithWebAuthn(authenticationPublicKeyCredential, if (origin != null) mapOf("origin" to origin) else emptyMap())
             .enqueue(
                 ReachFiveApiCallback.withContent<AuthenticationToken>(
-                    success = { sessionUtils.loginCallback(it.tkn, scope, success, failure) },
+                    success = { sessionUtils.loginCallback(it.tkn, scope, success, failure, origin) },
                     failure = failure
                 )
             )

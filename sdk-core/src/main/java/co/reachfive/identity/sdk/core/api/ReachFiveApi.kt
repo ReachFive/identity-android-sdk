@@ -122,7 +122,7 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<PasswordlessVerificationResponse>
 
-    @POST("identity/v1/webauthn/signup-options")
+    @POST("/identity/v1/webauthn/signup-options")
     fun createWebAuthnSignupOptions(
         @Body webAuthnRegistrationRequest: WebAuthnRegistrationRequest,
         @QueryMap options: Map<String, String>
