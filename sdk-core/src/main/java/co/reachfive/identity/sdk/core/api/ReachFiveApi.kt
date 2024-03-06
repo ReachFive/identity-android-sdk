@@ -7,6 +7,7 @@ import co.reachfive.identity.sdk.core.models.requests.*
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
+import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
 import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
@@ -181,7 +182,7 @@ interface ReachFiveApi {
     @POST("/identity/v1/mfa/credentials/phone-numbers/verify")
     fun verifyMfaPhoneNumberRegistration(
         @Header("Authorization") authorization: String,
-        @Body verifyPhoneNumberRequest: VerifyPhoneNumberRequest,
+        @Body verifyPhoneNumberRequest: MfaCredentialsVerifyPhoneRegisteringRequest,
     ): Call<Unit>
 
     @POST("/identity/v1/mfa/credentials/emails/verify")
@@ -189,6 +190,12 @@ interface ReachFiveApi {
         @Header("Authorization") authorization: String,
         @Body verifyEmailRequest: VerifyEmailRequest
     ): Call<Unit>
+
+    @GET("/identity/v1/mfa/credentials")
+    fun listMfaCredentials(
+        @Header("Authorization") authorization: String
+    ): Call<ListMfaCredentials>
+
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
