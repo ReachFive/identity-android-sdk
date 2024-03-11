@@ -1,6 +1,6 @@
 package co.reachfive.identity.sdk.core
 
-import android.content.Context
+import android.app.Activity
 import android.os.CancellationSignal
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -50,7 +50,7 @@ internal class CredentialManagerAuthClient(
         friendlyName: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     ) {
         if (credentialManager == null || sdkConfig.originWebAuthn == null)
             failure(ReachFiveError("Credential Manager or origin is null"))
@@ -72,7 +72,7 @@ internal class CredentialManagerAuthClient(
                             registrationOptions,
                             success,
                             failure,
-                            context
+                            activity
                         )
                     },
                     failure = failure
@@ -84,7 +84,7 @@ internal class CredentialManagerAuthClient(
         registrationOptions: RegistrationOptions,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     ) {
         val authToken = this.authToken ?: return failure(ReachFiveError.from("No auth token!"))
 
@@ -103,7 +103,7 @@ internal class CredentialManagerAuthClient(
 
         handleNewPasskey(
             registrationOptions.options.publicKey,
-            context,
+            activity,
             success,
             failure,
             register
@@ -118,7 +118,7 @@ internal class CredentialManagerAuthClient(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         // TODO clarify, activity context
-        context: Context
+        activity: Activity
     ) {
         if (credentialManager == null || sdkConfig.originWebAuthn == null)
             failure(ReachFiveError("Credential Manager or origin is null"))
@@ -138,12 +138,16 @@ internal class CredentialManagerAuthClient(
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
                     success = { registrationOptions ->
+                        Log.d(
+                            "CACATOES",
+                            "signupWithPasskey registrationOptions $registrationOptions"
+                        )
                         handlePasskeySignup(
                             registrationOptions,
                             scope,
                             success,
                             failure,
-                            context
+                            activity
                         )
                     },
                     failure = failure
@@ -156,7 +160,7 @@ internal class CredentialManagerAuthClient(
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     ) {
         val webauthnId = registrationOptions.options.publicKey.user.id
 
@@ -164,6 +168,7 @@ internal class CredentialManagerAuthClient(
             { registrationPublicKeyCredential: RegistrationPublicKeyCredential,
               success: Success<AuthToken>,
               failure: Failure<ReachFiveError> ->
+                Log.d("CACATOES", "handlePasskeySignup $registrationPublicKeyCredential")
                 reachFiveApi
                     .signupWithWebAuthn(
                         WebauthnSignupCredential(
@@ -188,7 +193,7 @@ internal class CredentialManagerAuthClient(
 
         handleNewPasskey(
             registrationOptions.options.publicKey,
-            context,
+            activity,
             success,
             failure,
             signup
@@ -198,22 +203,20 @@ internal class CredentialManagerAuthClient(
 
     private fun <T> handleNewPasskey(
         publicKeyCredentialCreationOptions: R5PublicKeyCredentialCreationOptions,
-        context: Context,
+        activity: Activity,
         success: Success<T>,
         failure: Failure<ReachFiveError>,
         f: (RegistrationPublicKeyCredential, Success<T>, Failure<ReachFiveError>) -> Unit,
     ) {
-        // FIXME The `authenticatorSelection` claim is not marked as required in WebAuthn spec,
+        // NOTE: The `authenticatorSelection` claim is not marked as required in WebAuthn spec,
         //  but passkey creation with Google Password Manager fails when it is missing or empty.
         val authenticatorSelectionFiller =
             if (publicKeyCredentialCreationOptions.authenticatorSelection == null)
                 publicKeyCredentialCreationOptions.copy(
                     authenticatorSelection = R5AuthenticatorSelectionCriteria(
-                        authenticatorAttachment = "platform",
-                        residentKey = "required",
+                        residentKey = "preferred",
                         requireResidentKey = true,
-                        userVerification = "preferred"
-                    )
+                    ),
                 )
             else publicKeyCredentialCreationOptions
 
@@ -227,7 +230,7 @@ internal class CredentialManagerAuthClient(
 
         credentialManager!!.createCredentialAsync(
             request = createPublicKeyCredentialRequest,
-            context = context,
+            context = activity,
             callback = object :
                 CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
                 override fun onError(e: CreateCredentialException) {
@@ -252,14 +255,14 @@ internal class CredentialManagerAuthClient(
 
             },
             cancellationSignal = cancellationSignal,
-            executor = ContextCompat.getMainExecutor(context),
+            executor = ContextCompat.getMainExecutor(activity),
         )
     }
 
     override fun createPasswordCredential(
         id: String,
         password: String,
-        context: Context,
+        activity: Activity,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
@@ -267,15 +270,17 @@ internal class CredentialManagerAuthClient(
             CreatePasswordRequest(
                 id = id,
                 password = password,
-                origin = sdkConfig.originWebAuthn!!
+                //origin = sdkConfig.originWebAuthn!!
             )
 
 
         val cancellationSignal = CancellationSignal()
 
+        Log.d("CACATOES", "createPasswordCredential")
+
         credentialManager!!.createCredentialAsync(
             request = createPasswordRequest,
-            context = context,
+            context = activity,
             callback =
             object :
                 CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
@@ -284,12 +289,14 @@ internal class CredentialManagerAuthClient(
                 }
 
                 override fun onResult(result: CreateCredentialResponse) {
+                    Log.d("CACATOES", "createPasswordCredential success")
+
                     success(Unit)
                 }
 
             },
             cancellationSignal = cancellationSignal,
-            executor = ContextCompat.getMainExecutor(context),
+            executor = ContextCompat.getMainExecutor(activity),
         )
     }
 
@@ -297,7 +304,7 @@ internal class CredentialManagerAuthClient(
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     ) {
         if (credentialManager == null || sdkConfig.originWebAuthn == null)
             failure(ReachFiveError("Credential Manager or origin is null"))
@@ -314,11 +321,16 @@ internal class CredentialManagerAuthClient(
                     val requestJson = Gson().toJson(authenticationOptions.publicKey)
 
                     val getCredentialRequest =
-                        GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
+                        GetCredentialRequest(
+                            listOf(
+                                GetPasswordOption(),
+                                GetPublicKeyCredentialOption(requestJson)
+                            )
+                        )
 
                     handleCredentialManagerLogin(
                         getCredentialRequest,
-                        context,
+                        activity,
                         scope,
                         success,
                         failure
@@ -330,12 +342,11 @@ internal class CredentialManagerAuthClient(
     }
 
     override fun loginWithPasskey(
-        // FIXME scope in login request
         loginRequest: WebAuthnLoginRequest,
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     ) {
         if (credentialManager == null || sdkConfig.originWebAuthn == null)
             failure(ReachFiveError("Credential Manager or origin is null"))
@@ -349,14 +360,21 @@ internal class CredentialManagerAuthClient(
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
-                    val requestJson = Gson().toJson(authenticationOptions.publicKey)
+                    Log.d("CACATOES", "loginWithPasskey $authenticationOptions")
+                    val filler =
+                        authenticationOptions.copy(publicKey = authenticationOptions.publicKey.copy(
+                            allowCredentials =
+                            authenticationOptions.publicKey.allowCredentials.map { it.copy(id = it.id.dropLastWhile { it == '=' }) }
+                        ))
+
+                    val requestJson = Gson().toJson(filler.publicKey)
 
                     val getCredentialRequest =
                         GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
 
                     handleCredentialManagerLogin(
                         getCredentialRequest,
-                        context,
+                        activity,
                         scope,
                         success,
                         failure
@@ -369,18 +387,20 @@ internal class CredentialManagerAuthClient(
 
     private fun handleCredentialManagerLogin(
         getCredentialRequest: GetCredentialRequest,
-        context: Context,
+        activity: Activity,
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
         val cancellationSignal = CancellationSignal()
 
+        Log.d("CACATOES", "handleCredentialManagerLogin")
+
         credentialManager!!.getCredentialAsync(
-            context = context,
+            context = activity,
             request = getCredentialRequest,
             cancellationSignal = cancellationSignal,
-            executor = ContextCompat.getMainExecutor(context),
+            executor = ContextCompat.getMainExecutor(activity),
             callback = object :
                 CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
                 override fun onError(e: GetCredentialException) {
@@ -390,15 +410,18 @@ internal class CredentialManagerAuthClient(
                 override fun onResult(result: GetCredentialResponse) {
                     when (val credential = result.credential) {
                         is PasswordCredential -> {
+                            Log.d("CACATOES", "handleCredentialManagerLogin password")
+
                             val (email, phone) =
                                 if (credential.id.contains('@')) Pair(credential.id, null)
                                 else Pair(null, credential.id)
 
                             passwordAuth.loginWithPassword(
-                                // FIXME Handle other identifier types
+                                // TODO handle custom id as identifier
                                 email = email,
                                 phoneNumber = phone,
                                 password = credential.password,
+                                scope = scope,
                                 success = success,
                                 failure = failure
                             )
@@ -444,7 +467,7 @@ internal interface CredentialManagerAuth {
         scope: Collection<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     )
 
     fun loginWithPasskey(
@@ -452,7 +475,7 @@ internal interface CredentialManagerAuth {
         scope: Collection<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     )
 
     fun signupWithPasskey(
@@ -461,7 +484,7 @@ internal interface CredentialManagerAuth {
         scope: Collection<String> = defaultScope,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     )
 
     fun registerNewPasskey(
@@ -469,13 +492,13 @@ internal interface CredentialManagerAuth {
         friendlyName: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        context: Context
+        activity: Activity
     )
 
     fun createPasswordCredential(
         id: String,
         password: String,
-        context: Context,
+        activity: Activity,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     )
