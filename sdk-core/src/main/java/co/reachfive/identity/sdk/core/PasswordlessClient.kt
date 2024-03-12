@@ -28,6 +28,7 @@ internal class PasswordlessAuthClient(
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity,
+        origin: String?,
     ) =
         PkceAuthCodeFlow.generate(redirectUrl).let { pkce ->
             PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
@@ -39,7 +40,8 @@ internal class PasswordlessAuthClient(
                     codeChallenge = pkce.codeChallenge,
                     codeChallengeMethod = pkce.codeChallengeMethod,
                     responseType = SessionUtilsClient.codeResponseType,
-                    redirectUri = redirectUrl
+                    redirectUri = redirectUrl,
+                    origin = origin
                 ),
                 SdkInfos.getQueries()
             ).enqueue(ReachFiveApiCallback.noContent(success, failure))
@@ -94,7 +96,8 @@ internal interface PasswordlessAuth {
         redirectUrl: String = sdkConfig.scheme,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        origin: String? = null
     )
 
     fun verifyPasswordless(

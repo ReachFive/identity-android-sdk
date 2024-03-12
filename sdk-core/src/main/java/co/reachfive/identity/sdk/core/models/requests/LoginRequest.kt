@@ -14,5 +14,6 @@ data class LoginRequest(
     val password: String,
     @SerializedName("client_id")
     val clientId: String,
-    val scope: String
+    val scope: String,
+    val origin: String?
 ) : Parcelable

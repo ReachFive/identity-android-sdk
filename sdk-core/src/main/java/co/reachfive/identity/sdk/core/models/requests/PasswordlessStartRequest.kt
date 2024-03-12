@@ -19,5 +19,6 @@ data class PasswordlessStartRequest(
     @SerializedName("response_type")
     val responseType: String,
     @SerializedName("redirect_uri")
-    val redirectUri: String
+    val redirectUri: String,
+    val origin: String?
 ) : Parcelable
