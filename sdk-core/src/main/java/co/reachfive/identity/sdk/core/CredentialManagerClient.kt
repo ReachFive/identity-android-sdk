@@ -2,7 +2,6 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.os.CancellationSignal
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.credentials.*
 import androidx.credentials.exceptions.CreateCredentialException
@@ -17,7 +16,6 @@ import co.reachfive.identity.sdk.core.models.requests.ProfileWebAuthnSignupReque
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
-import co.reachfive.identity.sdk.core.models.responses.webAuthn.R5AuthenticatorSelectionCriteria
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.R5PublicKeyCredentialCreationOptions
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
 import co.reachfive.identity.sdk.core.utils.Failure
@@ -117,7 +115,6 @@ internal class CredentialManagerAuthClient(
         scope: Collection<String>,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        // TODO clarify, activity context
         activity: Activity
     ) {
         if (credentialManager == null || sdkConfig.originWebAuthn == null)
@@ -138,10 +135,6 @@ internal class CredentialManagerAuthClient(
             .enqueue(
                 ReachFiveApiCallback.withContent<RegistrationOptions>(
                     success = { registrationOptions ->
-                        Log.d(
-                            "CACATOES",
-                            "signupWithPasskey registrationOptions $registrationOptions"
-                        )
                         handlePasskeySignup(
                             registrationOptions,
                             scope,
@@ -168,7 +161,6 @@ internal class CredentialManagerAuthClient(
             { registrationPublicKeyCredential: RegistrationPublicKeyCredential,
               success: Success<AuthToken>,
               failure: Failure<ReachFiveError> ->
-                Log.d("CACATOES", "handlePasskeySignup $registrationPublicKeyCredential")
                 reachFiveApi
                     .signupWithWebAuthn(
                         WebauthnSignupCredential(
@@ -208,20 +200,9 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         f: (RegistrationPublicKeyCredential, Success<T>, Failure<ReachFiveError>) -> Unit,
     ) {
-        // NOTE: The `authenticatorSelection` claim is not marked as required in WebAuthn spec,
-        //  but passkey creation with Google Password Manager fails when it is missing or empty.
-        val authenticatorSelectionFiller =
-            if (publicKeyCredentialCreationOptions.authenticatorSelection == null)
-                publicKeyCredentialCreationOptions.copy(
-                    authenticatorSelection = R5AuthenticatorSelectionCriteria(
-                        residentKey = "preferred",
-                        requireResidentKey = true,
-                    ),
-                )
-            else publicKeyCredentialCreationOptions
 
         val jsonRegistrationOptions =
-            GsonBuilder().create().toJson(authenticatorSelectionFiller)
+            GsonBuilder().create().toJson(publicKeyCredentialCreationOptions)
 
         val createPublicKeyCredentialRequest =
             CreatePublicKeyCredentialRequest(requestJson = jsonRegistrationOptions)
@@ -248,7 +229,6 @@ internal class CredentialManagerAuthClient(
                             f(registrationPublicKeyCredential, success, failure)
                         }
 
-                        // FIXME error message
                         else -> failure(ReachFiveError("Unexpected credential success response"))
                     }
                 }
@@ -267,16 +247,10 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
     ) {
         val createPasswordRequest =
-            CreatePasswordRequest(
-                id = id,
-                password = password,
-                //origin = sdkConfig.originWebAuthn!!
-            )
+            CreatePasswordRequest(id = id, password = password)
 
 
         val cancellationSignal = CancellationSignal()
-
-        Log.d("CACATOES", "createPasswordCredential")
 
         credentialManager!!.createCredentialAsync(
             request = createPasswordRequest,
@@ -289,8 +263,6 @@ internal class CredentialManagerAuthClient(
                 }
 
                 override fun onResult(result: CreateCredentialResponse) {
-                    Log.d("CACATOES", "createPasswordCredential success")
-
                     success(Unit)
                 }
 
@@ -360,14 +332,7 @@ internal class CredentialManagerAuthClient(
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
-                    Log.d("CACATOES", "loginWithPasskey $authenticationOptions")
-                    val filler =
-                        authenticationOptions.copy(publicKey = authenticationOptions.publicKey.copy(
-                            allowCredentials =
-                            authenticationOptions.publicKey.allowCredentials.map { it.copy(id = it.id.dropLastWhile { it == '=' }) }
-                        ))
-
-                    val requestJson = Gson().toJson(filler.publicKey)
+                    val requestJson = Gson().toJson(authenticationOptions.publicKey)
 
                     val getCredentialRequest =
                         GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
@@ -394,8 +359,6 @@ internal class CredentialManagerAuthClient(
     ) {
         val cancellationSignal = CancellationSignal()
 
-        Log.d("CACATOES", "handleCredentialManagerLogin")
-
         credentialManager!!.getCredentialAsync(
             context = activity,
             request = getCredentialRequest,
@@ -410,14 +373,11 @@ internal class CredentialManagerAuthClient(
                 override fun onResult(result: GetCredentialResponse) {
                     when (val credential = result.credential) {
                         is PasswordCredential -> {
-                            Log.d("CACATOES", "handleCredentialManagerLogin password")
-
                             val (email, phone) =
                                 if (credential.id.contains('@')) Pair(credential.id, null)
                                 else Pair(null, credential.id)
 
                             passwordAuth.loginWithPassword(
-                                // TODO handle custom id as identifier
                                 email = email,
                                 phoneNumber = phone,
                                 password = credential.password,
@@ -458,8 +418,6 @@ internal class CredentialManagerAuthClient(
 }
 
 internal interface CredentialManagerAuth {
-    companion object {
-    }
 
     var defaultScope: Set<String>
 
