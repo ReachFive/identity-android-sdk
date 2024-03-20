@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.lang.reflect.Type
 
+// TODO/CA-3566 simplify
 sealed class WebAuthnLoginRequest {
     @Parcelize
     data class EmailWebAuthnLoginRequest(

@@ -43,6 +43,11 @@ internal class CredentialManagerAuthClient(
         }
     }
 
+    private fun checkInit(failure: Failure<ReachFiveError>) {
+        if (credentialManager == null || sdkConfig.originWebAuthn == null)
+            failure(ReachFiveError("Credential Manager or origin not properly initialized"))
+    }
+
     override fun registerNewPasskey(
         authToken: AuthToken,
         friendlyName: String?,
@@ -50,8 +55,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        if (credentialManager == null || sdkConfig.originWebAuthn == null)
-            failure(ReachFiveError("Credential Manager or origin is null"))
+        checkInit(failure)
 
         this.authToken = authToken
 
@@ -117,8 +121,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        if (credentialManager == null || sdkConfig.originWebAuthn == null)
-            failure(ReachFiveError("Credential Manager or origin is null"))
+        checkInit(failure)
 
         val newFriendlyName = formatFriendlyName(friendlyName)
 
@@ -246,6 +249,8 @@ internal class CredentialManagerAuthClient(
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
+        checkInit(failure)
+
         val createPasswordRequest =
             CreatePasswordRequest(id = id, password = password)
 
@@ -278,8 +283,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        if (credentialManager == null || sdkConfig.originWebAuthn == null)
-            failure(ReachFiveError("Credential Manager or origin is null"))
+        checkInit(failure)
 
         reachFiveApi.createWebAuthnAuthenticationOptions(
             WebAuthnLoginRequest.DiscoverableWithClientIdLoginRequest(
@@ -320,8 +324,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        if (credentialManager == null || sdkConfig.originWebAuthn == null)
-            failure(ReachFiveError("Credential Manager or origin is null"))
+        checkInit(failure)
 
         reachFiveApi.createWebAuthnAuthenticationOptions(
             WebAuthnLoginRequest.enrichWithClientId(

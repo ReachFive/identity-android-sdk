@@ -198,7 +198,7 @@ internal class WebauthnAuthClient(
             WebAuthnLoginRequest.enrichWithClientId(
                 loginRequest,
                 sdkConfig.clientId,
-                "" // FIXME origin is part of the login request, it's not useful here
+                "" // TODO/CA-3566 origin is part of the login request, it's not useful here
             )
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
