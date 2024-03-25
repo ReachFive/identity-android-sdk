@@ -17,6 +17,7 @@ import co.reachfive.identity.sdk.core.utils.Success
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
     private val passwordAuth: PasswordAuthClient,
+    private val mfaCredentials: MfaCredentials,
     private val passwordlessAuth: PasswordlessAuthClient,
     private val profileManagement: ProfileManagementClient,
     private val socialLoginAuth: SocialLoginAuthClient,
@@ -27,6 +28,7 @@ class ReachFive private constructor(
     override var defaultScope: Set<String> = emptySet(),
 ) :
     PasswordAuth by passwordAuth,
+    MfaCredentials by mfaCredentials,
     PasswordlessAuth by passwordlessAuth,
     ProfileManagement by profileManagement,
     SocialLoginAuth by socialLoginAuth,
@@ -52,13 +54,15 @@ class ReachFive private constructor(
             val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
-            val webauthnAuthClient =
-                WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
-            val credentialManagerAuthClient = CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils, credentialManager)
+            val webauthnAuthClient = WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
+            val credentialManagerAuthClient =
+                CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils, credentialManager)
+            val mfaCredentials = MfaCredentialsClient(reachFiveApi)
 
             return ReachFive(
                 reachFiveApi,
                 passwordAuthClient,
+                mfaCredentials,
                 passwordlessAuthClient,
                 profileManagementClient,
                 socialLoginAuthClient,
@@ -119,7 +123,8 @@ class ReachFive private constructor(
         intent: Intent?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        origin: String?
     ) {
         when (requestCode) {
             WebauthnAuth.RC_LOGIN ->
@@ -127,6 +132,7 @@ class ReachFive private constructor(
                     webauthnAuth.onLoginWithWebAuthnResult(
                         resultCode,
                         intent,
+                        origin,
                         defaultScope,
                         success,
                         failure,
@@ -139,6 +145,7 @@ class ReachFive private constructor(
                         resultCode,
                         intent,
                         defaultScope,
+                        origin,
                         success,
                         failure,
                         activity

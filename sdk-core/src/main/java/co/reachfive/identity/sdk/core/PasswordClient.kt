@@ -24,6 +24,7 @@ internal class PasswordAuthClient(
         profile: ProfileSignupRequest,
         scope: Collection<String>,
         redirectUrl: String?,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -31,7 +32,8 @@ internal class PasswordAuthClient(
             clientId = sdkConfig.clientId,
             data = profile,
             redirectUrl = redirectUrl,
-            scope = formatScope(scope)
+            scope = formatScope(scope),
+            origin = origin
         )
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
@@ -52,6 +54,7 @@ internal class PasswordAuthClient(
         customIdentifier: String?,
         password: String,
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -61,6 +64,7 @@ internal class PasswordAuthClient(
             phoneNumber = phoneNumber,
             customIdentifier = customIdentifier,
             password = password,
+            origin = origin,
             scope = formatScope(scope)
         )
         reachFiveApi
@@ -68,7 +72,7 @@ internal class PasswordAuthClient(
             .enqueue(
                 ReachFiveApiCallback.withContent<AuthenticationToken>(
                     success = {
-                        sessionUtils.loginCallback(it.tkn, scope, success, failure)
+                        sessionUtils.loginCallback(it.tkn, scope, success, failure, origin)
                     },
                     failure = failure
                 )
@@ -121,6 +125,7 @@ internal interface PasswordAuth {
         profile: ProfileSignupRequest,
         scope: Collection<String> = defaultScope,
         redirectUrl: String? = null,
+        origin: String? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     )
@@ -131,6 +136,7 @@ internal interface PasswordAuth {
         customIdentifier: String? = null,
         password: String,
         scope: Collection<String> = defaultScope,
+        origin: String? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     )

@@ -7,6 +7,7 @@ import co.reachfive.identity.sdk.core.models.requests.*
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
+import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
 import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
@@ -124,14 +125,17 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<PasswordlessVerificationResponse>
 
-    @POST("identity/v1/webauthn/signup-options")
+    @POST("/identity/v1/webauthn/signup-options")
     fun createWebAuthnSignupOptions(
         @Body webAuthnRegistrationRequest: WebAuthnRegistrationRequest,
         @QueryMap options: Map<String, String>
     ): Call<RegistrationOptions>
 
     @POST("/identity/v1/webauthn/signup")
-    fun signupWithWebAuthn(@Body registrationPublicKeyCredential: WebauthnSignupCredential): Call<AuthenticationToken>
+    fun signupWithWebAuthn(
+        @Body registrationPublicKeyCredential: WebauthnSignupCredential,
+        @QueryMap options: Map<String, String>
+    ): Call<AuthenticationToken>
 
     @POST("/identity/v1/webauthn/registration-options")
     fun createWebAuthnRegistrationOptions(
@@ -160,13 +164,44 @@ interface ReachFiveApi {
 
     @POST("/identity/v1/webauthn/authentication-options")
     fun createWebAuthnAuthenticationOptions(
-        @Body webAuthnLoginRequest: WebAuthnLoginRequest
+        @Body webAuthnLoginRequest: WebAuthnLoginRequest,
+        @QueryMap options: Map<String, String>
     ): Call<AuthenticationOptions>
 
     @POST("/identity/v1/webauthn/authentication")
     fun authenticateWithWebAuthn(
-        @Body authenticationPublicKeyCredential: AuthenticationPublicKeyCredential
+        @Body authenticationPublicKeyCredential: AuthenticationPublicKeyCredential,
+        @QueryMap options: Map<String, String>
     ): Call<AuthenticationToken>
+
+    @POST("/identity/v1/mfa/credentials/phone-numbers")
+    fun startMfaPhoneNumberRegistration(
+        @Header("Authorization") authorization: String,
+        @Body startMfaPhoneNumberRegistration: MfaCredentialsStartPhoneRegisteringRequest
+    ): Call<Unit>
+
+    @POST("/identity/v1/mfa/credentials/emails")
+    fun startMfaEmailRegistration(
+        @Header("Authorization") authorization: String,
+        @Body startEmailRegistration: MfaCredentialsStartEmailRegisteringRequest
+    ): Call<Unit>
+
+    @POST("/identity/v1/mfa/credentials/phone-numbers/verify")
+    fun verifyMfaPhoneNumberRegistration(
+        @Header("Authorization") authorization: String,
+        @Body verifyPhoneNumberRequest: MfaCredentialsVerifyPhoneRegisteringRequest,
+    ): Call<Unit>
+
+    @POST("/identity/v1/mfa/credentials/emails/verify")
+    fun verifyMfaEmailRegistration(
+        @Header("Authorization") authorization: String,
+        @Body verifyEmailRequest: VerifyEmailRequest
+    ): Call<Unit>
+
+    @GET("/identity/v1/mfa/credentials")
+    fun listMfaCredentials(
+        @Header("Authorization") authorization: String
+    ): Call<ListMfaCredentials>
 
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
