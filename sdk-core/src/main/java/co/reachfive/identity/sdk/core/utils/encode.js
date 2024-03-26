@@ -25,15 +25,32 @@ var __webauthn_hooks__;
             pendingResolveCreate = resolve;
             pendingRejectCreate = reject;
         });
+
+        // Translate Web API byte arrays to Android API base 64 url encoded strings
         var temppk = request.publicKey;
+
         if (temppk.hasOwnProperty('challenge')) {
             var str = CM_base64url_encode(temppk.challenge);
             temppk.challenge = str;
         }
+
         if (temppk.hasOwnProperty('user') && temppk.user.hasOwnProperty('id')) {
             var encodedString = CM_base64url_encode(temppk.user.id);
             temppk.user.id = encodedString;
         }
+
+        if (temppk.hasOwnProperty('excludeCredentials') && Array.isArray(temppk.excludeCredentials)) {
+            var stringIds = []
+            temppk.excludeCredentials.forEach( function(arrayId) {
+                 var str = CM_base64url_encode(arrayId.id)
+                 stringIds.push({
+                     id: str,
+                     type: 'public-key'
+                 })
+            })
+            temppk.excludeCredentials = stringIds
+        }
+
         var jsonObj = {"type":"create", "request":temppk}
 
         var json = JSON.stringify(jsonObj);
@@ -51,11 +68,27 @@ var __webauthn_hooks__;
             pendingResolveGet = resolve;
             pendingRejectGet = reject;
         });
+
+        // Translate Web API byte arrays to Android API base 64 url encoded strings
         var temppk = request.publicKey;
+
         if (temppk.hasOwnProperty('challenge')) {
             var str = CM_base64url_encode(temppk.challenge);
             temppk.challenge = str;
         }
+
+        if (temppk.hasOwnProperty('allowCredentials') && Array.isArray(temppk.allowCredentials)) {
+            var stringIds = []
+            temppk.allowCredentials.forEach( function(arrayId) {
+                 var str = CM_base64url_encode(arrayId.id)
+                 stringIds.push({
+                     id: str,
+                     type: 'public-key'
+                 })
+            })
+            temppk.allowCredentials = stringIds
+        }
+
         var jsonObj = {"type":"get", "request":temppk}
 
         var json = JSON.stringify(jsonObj);

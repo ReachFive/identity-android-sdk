@@ -72,6 +72,16 @@ class RedirectionActivity : ComponentActivity() {
             @SuppressLint("SetJavaScriptEnabled")
             settings.javaScriptEnabled = true
             webViewClient = ReachFiveWebViewClient(codeVerifier)
+
+            // Useful for WebView debugging
+            //webChromeClient = object : WebChromeClient() {
+            //
+            //    override fun onConsoleMessage(message: ConsoleMessage): Boolean {
+            //        Log.d(TAG, "${message.message()}")
+            //        return true
+            //    }
+            //}
+
         }
 
         urlString?.let {
