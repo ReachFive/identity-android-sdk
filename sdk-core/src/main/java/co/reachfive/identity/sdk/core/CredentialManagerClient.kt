@@ -117,6 +117,7 @@ internal class CredentialManagerAuthClient(
         profile: ProfileWebAuthnSignupRequest,
         friendlyName: String?,
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -141,6 +142,7 @@ internal class CredentialManagerAuthClient(
                         handlePasskeySignup(
                             registrationOptions,
                             scope,
+                            origin,
                             success,
                             failure,
                             activity
@@ -154,6 +156,7 @@ internal class CredentialManagerAuthClient(
     private fun handlePasskeySignup(
         registrationOptions: RegistrationOptions,
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -169,7 +172,8 @@ internal class CredentialManagerAuthClient(
                         WebauthnSignupCredential(
                             webauthnId = webauthnId,
                             publicKeyCredential = registrationPublicKeyCredential
-                        )
+                        ),
+                        if (origin != null) mapOf("origin" to origin) else emptyMap()
                     )
                     .enqueue(
                         ReachFiveApiCallback.withContent<AuthenticationToken>(
@@ -279,6 +283,7 @@ internal class CredentialManagerAuthClient(
 
     override fun discoverableLogin(
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -290,7 +295,8 @@ internal class CredentialManagerAuthClient(
                 origin = sdkConfig.originWebAuthn!!,
                 scope = formatScope(scope),
                 clientId = sdkConfig.clientId
-            )
+            ),
+            if (origin != null) mapOf("origin" to origin) else emptyMap()
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
@@ -308,6 +314,7 @@ internal class CredentialManagerAuthClient(
                         getCredentialRequest,
                         activity,
                         scope,
+                        origin,
                         success,
                         failure
                     )
@@ -320,6 +327,7 @@ internal class CredentialManagerAuthClient(
     override fun loginWithPasskey(
         loginRequest: WebAuthnLoginRequest,
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -331,7 +339,8 @@ internal class CredentialManagerAuthClient(
                 loginRequest,
                 sdkConfig.clientId,
                 sdkConfig.originWebAuthn!!
-            )
+            ),
+            if (origin != null) mapOf("origin" to origin) else emptyMap()
         ).enqueue(
             ReachFiveApiCallback.withContent<AuthenticationOptions>(
                 success = { authenticationOptions ->
@@ -344,6 +353,7 @@ internal class CredentialManagerAuthClient(
                         getCredentialRequest,
                         activity,
                         scope,
+                        origin,
                         success,
                         failure
                     )
@@ -357,6 +367,7 @@ internal class CredentialManagerAuthClient(
         getCredentialRequest: GetCredentialRequest,
         activity: Activity,
         scope: Collection<String>,
+        origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -397,8 +408,10 @@ internal class CredentialManagerAuthClient(
                             )
 
                             reachFiveApi
-                                .authenticateWithWebAuthn(authenticationPublicKeyCredential)
-                                .enqueue(
+                                .authenticateWithWebAuthn(
+                                    authenticationPublicKeyCredential,
+                                    if (origin != null) mapOf("origin" to origin) else emptyMap()
+                                ).enqueue(
                                     ReachFiveApiCallback.withContent<AuthenticationToken>(
                                         success = {
                                             sessionUtils.loginCallback(
@@ -426,6 +439,7 @@ internal interface CredentialManagerAuth {
 
     fun discoverableLogin(
         scope: Collection<String> = defaultScope,
+        origin: String? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -434,6 +448,7 @@ internal interface CredentialManagerAuth {
     fun loginWithPasskey(
         loginRequest: WebAuthnLoginRequest,
         scope: Collection<String> = defaultScope,
+        origin: String? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
@@ -443,6 +458,7 @@ internal interface CredentialManagerAuth {
         profile: ProfileWebAuthnSignupRequest,
         friendlyName: String?,
         scope: Collection<String> = defaultScope,
+        origin: String? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity
