@@ -25,10 +25,7 @@ data class AuthenticationOptions(
 data class R5PublicKeyCredentialRequestOptions(
     val challenge: String,
     val timeout: Int? = null,
-    @SerializedName("rp_id")
     val rpId: String,
-    @SerializedName("allow_credentials")
     val allowCredentials: List<R5PublicKeyCredentialDescriptor>,
-    @SerializedName("user_verification")
     val userVerification: String
 ) : Parcelable

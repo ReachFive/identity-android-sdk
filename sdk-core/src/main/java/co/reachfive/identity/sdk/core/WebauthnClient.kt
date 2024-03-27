@@ -48,7 +48,12 @@ internal class WebauthnAuthClient(
 
         reachFiveApi
             .createWebAuthnSignupOptions(
-                WebAuthnRegistrationRequest(originWebauthn, newFriendlyName, profile, sdkConfig.clientId),
+                WebAuthnRegistrationRequest(
+                    originWebauthn,
+                    newFriendlyName,
+                    profile,
+                    sdkConfig.clientId
+                ),
                 SdkInfos.getQueries() + if (origin != null) mapOf("origin" to origin) else emptyMap()
             )
             .enqueue(
@@ -201,7 +206,8 @@ internal class WebauthnAuthClient(
         reachFiveApi.createWebAuthnAuthenticationOptions(
             WebAuthnLoginRequest.enrichWithClientId(
                 loginRequest,
-                sdkConfig.clientId
+                sdkConfig.clientId,
+                "" // TODO/CA-3566 origin is part of the login request, it's not useful here
             ),
             if (origin != null) mapOf("origin" to origin) else emptyMap()
         ).enqueue(
@@ -275,24 +281,40 @@ internal class WebauthnAuthClient(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
     ) {
-        val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)
+        return when (val fido2Response = intent.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+            null -> failure(ReachFiveError.from("Unexpected: null Fido2 Intent data"))
+            else -> {
+                val authenticatorAssertionResponse: AuthenticatorAssertionResponse =
+                    AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
 
-        val authenticatorAssertionResponse: AuthenticatorAssertionResponse =
-            AuthenticatorAssertionResponse.deserializeFromBytes(fido2Response)
+                val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential =
+                    WebAuthnAuthentication.createAuthenticationPublicKeyCredential(
+                        authenticatorAssertionResponse
+                    )
+                reachFiveApi
+                    .authenticateWithWebAuthn(
+                        authenticationPublicKeyCredential,
+                        if (origin != null) mapOf("origin" to origin) else emptyMap()
+                    )
+                    .enqueue(
+                        ReachFiveApiCallback.withContent<AuthenticationToken>(
+                            success = {
+                                sessionUtils.loginCallback(
+                                    it.tkn,
+                                    scope,
+                                    success,
+                                    failure,
+                                    origin
+                                )
+                            },
+                            failure = failure
+                        )
+                    )
+            }
+        }
 
-        val authenticationPublicKeyCredential: AuthenticationPublicKeyCredential =
-            WebAuthnAuthentication.createAuthenticationPublicKeyCredential(
-                authenticatorAssertionResponse
-            )
 
-        return reachFiveApi
-            .authenticateWithWebAuthn(authenticationPublicKeyCredential, if (origin != null) mapOf("origin" to origin) else emptyMap())
-            .enqueue(
-                ReachFiveApiCallback.withContent<AuthenticationToken>(
-                    success = { sessionUtils.loginCallback(it.tkn, scope, success, failure, origin) },
-                    failure = failure
-                )
-            )
+
     }
 
     override fun listWebAuthnDevices(
@@ -403,7 +425,6 @@ internal interface WebauthnAuth {
             setOf(
                 RC_SIGNUP,
                 RC_LOGIN,
-                RC_REGISTER_DEVICE
             ).any { it == code }
 
         fun isWebauthnActionRequestCode(code: Int): Boolean =

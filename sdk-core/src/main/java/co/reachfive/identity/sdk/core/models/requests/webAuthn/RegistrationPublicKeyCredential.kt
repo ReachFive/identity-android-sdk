@@ -4,7 +4,6 @@ import android.os.Parcelable
 import co.reachfive.identity.sdk.core.utils.WebAuthn.encodeToBase64
 import co.reachfive.identity.sdk.core.utils.WebAuthn.publicKeyCredentialType
 import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse
-import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 object WebAuthnRegistration {
@@ -24,7 +23,6 @@ object WebAuthnRegistration {
 @Parcelize
 data class RegistrationPublicKeyCredential(
     val id: String,
-    @SerializedName("raw_id")
     val rawId: String,
     val type: String,
     val response: R5AuthenticatorAttestationResponse
@@ -32,8 +30,6 @@ data class RegistrationPublicKeyCredential(
 
 @Parcelize
 data class R5AuthenticatorAttestationResponse(
-    @SerializedName("attestation_object")
     val attestationObject: String,
-    @SerializedName("client_data_json")
     val clientDataJSON: String
 ) : Parcelable
