@@ -9,13 +9,15 @@ import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.requests.ProfileSignupRequest
+import co.reachfive.identity.sdk.core.models.requests.ProfileWebAuthnSignupRequest
 import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest
+import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
 import co.reachfive.identity.sdk.core.utils.Callback
 
 class JavaReachFive(
     sdkConfig: SdkConfig,
     providersCreators: List<ProviderCreator>,
-    credentialManager: CredentialManager,
+    credentialManager: CredentialManager?,
 ) {
     private val reach5 = ReachFive(sdkConfig, providersCreators, credentialManager)
 
@@ -84,7 +86,12 @@ class JavaReachFive(
         failure: Callback<ReachFiveError>,
         origin: String? = null
     ) {
-        return reach5.signup(profile, origin = origin, success = success::call, failure = failure::call)
+        return reach5.signup(
+            profile,
+            origin = origin,
+            success = success::call,
+            failure = failure::call
+        )
     }
 
     /**
@@ -140,7 +147,16 @@ class JavaReachFive(
         failure: Callback<ReachFiveError>,
         origin: String? = null
     ) {
-        return reach5.loginWithPassword(email, phoneNumber, customIdentifier, password, scope, origin, success::call, failure::call)
+        return reach5.loginWithPassword(
+            email,
+            phoneNumber,
+            customIdentifier,
+            password,
+            scope,
+            origin,
+            success::call,
+            failure::call
+        )
     }
 
     /**
@@ -165,6 +181,64 @@ class JavaReachFive(
             success = success::call,
             failure = failure::call
         )
+    }
+
+    fun discoverableLogin(
+        scope: Collection<String>,
+        origin: String? = null,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>,
+        activity: Activity
+    ) {
+        return reach5.discoverableLogin(scope, origin, success::call, failure::call, activity)
+    }
+
+    fun loginWithPasskey(
+        loginRequest: WebAuthnLoginRequest,
+        scope: Collection<String>,
+        origin: String? = null,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>,
+        activity: Activity
+    ) {
+        return reach5.loginWithPasskey(
+            loginRequest,
+            scope,
+            origin,
+            success::call,
+            failure::call,
+            activity
+        )
+    }
+
+    fun signupWithPasskey(
+        profile: ProfileWebAuthnSignupRequest,
+        friendlyName: String?,
+        scope: Collection<String>,
+        origin: String? = null,
+        success: Callback<AuthToken>,
+        failure: Callback<ReachFiveError>,
+        activity: Activity
+    ) {
+        return reach5.signupWithPasskey(
+            profile,
+            friendlyName,
+            scope,
+            origin,
+            success::call,
+            failure::call,
+            activity
+        )
+    }
+
+    fun registerNewPasskey(
+        authToken: AuthToken,
+        friendlyName: String?,
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>,
+        activity: Activity
+    ) {
+        return reach5.registerNewPasskey(authToken, friendlyName, success::call, failure::call, activity)
     }
 
     fun loginWithWeb(
