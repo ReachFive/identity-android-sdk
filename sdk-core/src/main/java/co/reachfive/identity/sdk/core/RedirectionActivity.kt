@@ -23,6 +23,9 @@ import java.util.regex.Pattern
 class RedirectionActivity : ComponentActivity() {
     private lateinit var binding: ReachfiveWebviewBinding
 
+    private var isCustomTabFlow = false
+    private var hasCustomTabStarted = false
+
     val passkeyListener = PasskeyWebListener(this, lifecycleScope)
 
     companion object {
@@ -40,6 +43,7 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG,"create")
 
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
@@ -53,6 +57,8 @@ class RedirectionActivity : ComponentActivity() {
 
     private fun launchCustomTab(urlString: String?, codeVerifier: String?) {
         Log.d(TAG, "RedirectionActivity launchCustomTab url: $urlString")
+
+        isCustomTabFlow = true
 
         val customTabsIntent = CustomTabsIntent.Builder().build().intent
         customTabsIntent.data = Uri.parse(urlString)
@@ -98,6 +104,20 @@ class RedirectionActivity : ComponentActivity() {
             }
 
             binding.webview.loadUrl(urlString)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG,"onResume customTabStarted: $isCustomTabFlow")
+
+        // When Custom Tab returns, the Redirection Activity resumes and we need to end it.
+        if (isCustomTabFlow && !hasCustomTabStarted) {
+            hasCustomTabStarted = true
+        } else if (isCustomTabFlow && hasCustomTabStarted) {
+            isCustomTabFlow = false
+            hasCustomTabStarted = false
+            finish()
         }
     }
 
