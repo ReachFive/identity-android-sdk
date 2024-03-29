@@ -120,12 +120,10 @@ class PasskeyWebListener(
             havePendingRequest = false
             pendingRequestIsDoomed = false
 
-            Log.d(TAG, "registration options: $message")
             val createRequest = CreatePublicKeyCredentialRequest(message)
 
             val response =
                 cm.createCredential(activity, createRequest) as CreatePublicKeyCredentialResponse
-            Log.d(TAG, "registration response: ${response.registrationResponseJson}")
 
             val successArray = ArrayList<Any>()
             successArray.add("success")
@@ -151,13 +149,11 @@ class PasskeyWebListener(
             havePendingRequest = true
             pendingRequestIsDoomed = false
 
-            Log.d(TAG, "authentication options: $message")
             val getRequest =
                 GetCredentialRequest(listOf(GetPublicKeyCredentialOption(message, null)))
 
             val response = cm.getCredential(activity, getRequest)
             val publicKeyCredentialResponse = response.credential as PublicKeyCredential
-            Log.d(TAG, "authentication response: ${publicKeyCredentialResponse.authenticationResponseJson}")
 
             val successArray = ArrayList<Any>()
             successArray.add("success")
