@@ -42,7 +42,6 @@ class ReachFive private constructor(
         operator fun invoke(
             sdkConfig: SdkConfig,
             providersCreators: List<ProviderCreator>,
-            credentialManager: CredentialManager?,
         ): ReachFive {
             val reachFiveApi: ReachFiveApi = ReachFiveApi.create(sdkConfig)
             val webLauncher = RedirectionActivityLauncher(sdkConfig, reachFiveApi)
@@ -56,7 +55,7 @@ class ReachFive private constructor(
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient = WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
             val credentialManagerAuthClient =
-                CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils, credentialManager)
+                CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils)
             val mfaCredentials = MfaCredentialsClient(reachFiveApi)
 
             return ReachFive(

@@ -30,9 +30,10 @@ internal class CredentialManagerAuthClient(
     private val sdkConfig: SdkConfig,
     private val passwordAuth: PasswordAuthClient,
     private val sessionUtils: SessionUtilsClient,
-    private val credentialManager: CredentialManager?,
 ) : CredentialManagerAuth {
     private var authToken: AuthToken? = null
+
+    private lateinit var credentialManager: CredentialManager
 
     override var defaultScope: Set<String> = emptySet()
 
@@ -43,9 +44,11 @@ internal class CredentialManagerAuthClient(
         }
     }
 
-    private fun checkInit(failure: Failure<ReachFiveError>) {
-        if (credentialManager == null || sdkConfig.originWebAuthn == null)
-            failure(ReachFiveError("Credential Manager or origin not properly initialized"))
+    private fun checkInit(activity: Activity, failure: Failure<ReachFiveError>) {
+        if (sdkConfig.originWebAuthn == null)
+            failure(ReachFiveError("WebAuthn origin not initialized"))
+        else
+            credentialManager = CredentialManager.create(activity)
     }
 
     override fun registerNewPasskey(
@@ -55,7 +58,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        checkInit(failure)
+        checkInit(activity, failure)
 
         this.authToken = authToken
 
@@ -122,7 +125,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        checkInit(failure)
+        checkInit(activity, failure)
 
         val newFriendlyName = formatFriendlyName(friendlyName)
 
@@ -216,7 +219,7 @@ internal class CredentialManagerAuthClient(
 
         val cancellationSignal = CancellationSignal()
 
-        credentialManager!!.createCredentialAsync(
+        credentialManager.createCredentialAsync(
             request = createPublicKeyCredentialRequest,
             context = activity,
             callback = object :
@@ -253,7 +256,7 @@ internal class CredentialManagerAuthClient(
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
     ) {
-        checkInit(failure)
+        checkInit(activity, failure)
 
         val createPasswordRequest =
             CreatePasswordRequest(id = id, password = password)
@@ -261,7 +264,7 @@ internal class CredentialManagerAuthClient(
 
         val cancellationSignal = CancellationSignal()
 
-        credentialManager!!.createCredentialAsync(
+        credentialManager.createCredentialAsync(
             request = createPasswordRequest,
             context = activity,
             callback =
@@ -288,7 +291,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        checkInit(failure)
+        checkInit(activity, failure)
 
         reachFiveApi.createWebAuthnAuthenticationOptions(
             WebAuthnLoginRequest.DiscoverableWithClientIdLoginRequest(
@@ -332,7 +335,7 @@ internal class CredentialManagerAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity
     ) {
-        checkInit(failure)
+        checkInit(activity, failure)
 
         reachFiveApi.createWebAuthnAuthenticationOptions(
             WebAuthnLoginRequest.enrichWithClientId(
@@ -373,7 +376,7 @@ internal class CredentialManagerAuthClient(
     ) {
         val cancellationSignal = CancellationSignal()
 
-        credentialManager!!.getCredentialAsync(
+        credentialManager.getCredentialAsync(
             context = activity,
             request = getCredentialRequest,
             cancellationSignal = cancellationSignal,

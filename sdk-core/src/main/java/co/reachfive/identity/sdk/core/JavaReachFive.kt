@@ -3,7 +3,6 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.credentials.CredentialManager
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
@@ -17,9 +16,8 @@ import co.reachfive.identity.sdk.core.utils.Callback
 class JavaReachFive(
     sdkConfig: SdkConfig,
     providersCreators: List<ProviderCreator>,
-    credentialManager: CredentialManager?,
 ) {
-    private val reach5 = ReachFive(sdkConfig, providersCreators, credentialManager)
+    private val reach5 = ReachFive(sdkConfig, providersCreators)
 
     fun isReachFiveLoginRequestCode(code: Int): Boolean =
         reach5.isReachFiveLoginRequestCode(code)
