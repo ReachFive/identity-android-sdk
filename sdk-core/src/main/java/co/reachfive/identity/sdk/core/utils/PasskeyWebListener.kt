@@ -26,6 +26,7 @@ import org.json.JSONObject
 // See https://developer.android.com/training/sign-in/credential-manager-webview
 
 class PasskeyWebListener(
+    private val originWebAuthn: String,
     private val activity: Activity,
     private val coroutineScope: CoroutineScope,
 ) : WebViewCompat.WebMessageListener {
@@ -76,11 +77,12 @@ class PasskeyWebListener(
 
         val originScheme = sourceOrigin.scheme
         if (originScheme == null || originScheme.lowercase() != "https") {
-            reportFailure("WebAuthn not permitted for curent URL", type)
+            reportFailure("WebAuthn not permitted for current URL", type)
             return
         }
 
-        if (isUnknownOrigin(originScheme)) {
+        if (!isTrustedOrigin(sourceOrigin)) {
+            reportFailure("URL incompatible with WebAuthn configuration", type)
             return
         }
 
@@ -108,8 +110,13 @@ class PasskeyWebListener(
         }
     }
 
-    private fun isUnknownOrigin(s: String): Boolean { // TODO be strict about loginUrl?
-        return false
+    // Allowed origins are prefixes of the RP id
+    private fun isTrustedOrigin(originSource: Uri): Boolean {
+        val originIsSuffixToRpId = Uri.parse(originWebAuthn)?.host?.let{
+            originSource.host?.endsWith(it)
+        } ?: false
+
+        return originIsSuffixToRpId
     }
 
     private suspend fun handleCreateFlow(

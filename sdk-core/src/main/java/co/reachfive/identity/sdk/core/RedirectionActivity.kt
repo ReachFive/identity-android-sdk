@@ -26,9 +26,10 @@ class RedirectionActivity : ComponentActivity() {
     private var isCustomTabFlow = false
     private var hasCustomTabStarted = false
 
-    val passkeyListener = PasskeyWebListener(this, lifecycleScope)
+    lateinit var passkeyListener: PasskeyWebListener
 
     companion object {
+        const val ORIGIN_WEBAUTHN = "ORIGIN_WEBAUTHN"
         const val FQN = "co.reachfive.identity.sdk.core.RedirectionActivity"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
         const val URL_KEY = "URL"
@@ -49,8 +50,9 @@ class RedirectionActivity : ComponentActivity() {
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
         val useWebView = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
+        val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
         if (useWebView)
-            launchWebView(codeVerifier, urlString)
+            launchWebView(codeVerifier, urlString, originWebAuthn)
         else
             launchCustomTab(urlString, codeVerifier)
     }
@@ -67,7 +69,7 @@ class RedirectionActivity : ComponentActivity() {
         startActivity(customTabsIntent)
     }
 
-    private fun launchWebView(codeVerifier: String?, urlString: String?) {
+    private fun launchWebView(codeVerifier: String?, urlString: String?, originWebAuthn: String?) {
         Log.d(TAG, "RedirectionActivity launchWebView url: $urlString")
 
         binding = ReachfiveWebviewBinding.inflate(layoutInflater)
@@ -83,7 +85,11 @@ class RedirectionActivity : ComponentActivity() {
         urlString?.let {
             if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
                 Log.i(TAG, "Web Message Listener not supported: no passkey support in WebView.")
+            } else if (originWebAuthn == null) {
+                Log.i(TAG, "WebView: webauthn origin not configured")
             } else {
+                passkeyListener = PasskeyWebListener(originWebAuthn, this, lifecycleScope)
+
                 val rules = setOf("*")
                 WebViewCompat.addWebMessageListener(
                     binding.webview,
