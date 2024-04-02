@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CredentialType
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
@@ -186,9 +187,17 @@ class JavaReachFive(
         origin: String? = null,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        requestCredentialTypes: Set<CredentialType>
     ) {
-        return reach5.discoverableLogin(scope, origin, success::call, failure::call, activity)
+        return reach5.discoverableLogin(
+            scope,
+            origin,
+            success::call,
+            failure::call,
+            activity,
+            requestCredentialTypes
+        )
     }
 
     fun loginWithPasskey(
@@ -236,7 +245,13 @@ class JavaReachFive(
         failure: Callback<ReachFiveError>,
         activity: Activity
     ) {
-        return reach5.registerNewPasskey(authToken, friendlyName, success::call, failure::call, activity)
+        return reach5.registerNewPasskey(
+            authToken,
+            friendlyName,
+            success::call,
+            failure::call,
+            activity
+        )
     }
 
     fun loginWithWeb(

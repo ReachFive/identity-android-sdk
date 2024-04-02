@@ -2,13 +2,16 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.os.CancellationSignal
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.credentials.*
 import androidx.credentials.exceptions.CreateCredentialException
 import androidx.credentials.exceptions.GetCredentialException
+import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CredentialType
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
@@ -289,42 +292,56 @@ internal class CredentialManagerAuthClient(
         origin: String?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        requestCredentialTypes: Set<CredentialType>
     ) {
         checkInit(activity, failure)
 
-        reachFiveApi.createWebAuthnAuthenticationOptions(
-            WebAuthnLoginRequest.DiscoverableWithClientIdLoginRequest(
-                origin = sdkConfig.originWebAuthn!!,
-                scope = formatScope(scope),
-                clientId = sdkConfig.clientId
-            ),
-            if (origin != null) mapOf("origin" to origin) else emptyMap()
-        ).enqueue(
-            ReachFiveApiCallback.withContent<AuthenticationOptions>(
-                success = { authenticationOptions ->
-                    val requestJson = Gson().toJson(authenticationOptions.publicKey)
-
-                    val getCredentialRequest =
-                        GetCredentialRequest(
-                            listOf(
-                                GetPasswordOption(),
-                                GetPublicKeyCredentialOption(requestJson)
-                            )
-                        )
-
-                    handleCredentialManagerLogin(
-                        getCredentialRequest,
-                        activity,
-                        scope,
-                        origin,
-                        success,
-                        failure
-                    )
-                },
-                failure = failure
+        if (requestCredentialTypes == setOf(CredentialType.Password))
+            handleCredentialManagerLogin(
+                GetCredentialRequest(listOf(GetPasswordOption())),
+                activity,
+                scope,
+                origin,
+                success,
+                failure
             )
-        )
+        else if (requestCredentialTypes.contains(CredentialType.Passkey))
+            reachFiveApi.createWebAuthnAuthenticationOptions(
+                WebAuthnLoginRequest.DiscoverableWithClientIdLoginRequest(
+                    origin = sdkConfig.originWebAuthn!!,
+                    scope = formatScope(scope),
+                    clientId = sdkConfig.clientId
+                ),
+                if (origin != null) mapOf("origin" to origin) else emptyMap()
+            ).enqueue(
+                ReachFiveApiCallback.withContent<AuthenticationOptions>(
+                    success = { authenticationOptions ->
+                        val requestJson = Gson().toJson(authenticationOptions.publicKey)
+
+                        val credentialOptions = requestCredentialTypes.map {
+                            when (it) {
+                                CredentialType.Password -> GetPasswordOption()
+                                CredentialType.Passkey -> GetPublicKeyCredentialOption(requestJson)
+                            }
+                        }
+
+                        val getCredentialRequest = GetCredentialRequest(credentialOptions)
+
+                        handleCredentialManagerLogin(
+                            getCredentialRequest,
+                            activity,
+                            scope,
+                            origin,
+                            success,
+                            failure
+                        )
+                    },
+                    failure = failure
+                )
+            )
+        else
+            Log.w(TAG, "discoverableLogin should request at least one type of credential")
     }
 
     override fun loginWithPasskey(
@@ -445,7 +462,11 @@ internal interface CredentialManagerAuth {
         origin: String? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
-        activity: Activity
+        activity: Activity,
+        requestCredentialTypes: Set<CredentialType> = setOf(
+            CredentialType.Password,
+            CredentialType.Passkey
+        )
     )
 
     fun loginWithPasskey(
