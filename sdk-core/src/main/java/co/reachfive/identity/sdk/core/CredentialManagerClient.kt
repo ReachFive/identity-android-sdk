@@ -252,41 +252,6 @@ internal class CredentialManagerAuthClient(
         )
     }
 
-    override fun createPasswordCredential(
-        id: String,
-        password: String,
-        activity: Activity,
-        success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-    ) {
-        checkInit(activity, failure)
-
-        val createPasswordRequest =
-            CreatePasswordRequest(id = id, password = password)
-
-
-        val cancellationSignal = CancellationSignal()
-
-        credentialManager.createCredentialAsync(
-            request = createPasswordRequest,
-            context = activity,
-            callback =
-            object :
-                CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> {
-                override fun onError(e: CreateCredentialException) {
-                    failure(ReachFiveError.from(e))
-                }
-
-                override fun onResult(result: CreateCredentialResponse) {
-                    success(Unit)
-                }
-
-            },
-            cancellationSignal = cancellationSignal,
-            executor = ContextCompat.getMainExecutor(activity),
-        )
-    }
-
     override fun discoverableLogin(
         scope: Collection<String>,
         origin: String?,
@@ -496,11 +461,4 @@ internal interface CredentialManagerAuth {
         activity: Activity
     )
 
-    fun createPasswordCredential(
-        id: String,
-        password: String,
-        activity: Activity,
-        success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
-    )
 }
