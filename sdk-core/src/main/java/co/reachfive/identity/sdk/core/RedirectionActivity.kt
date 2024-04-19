@@ -1,26 +1,35 @@
 package co.reachfive.identity.sdk.core
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
-import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.activity.ComponentActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.webkit.WebViewClientCompat
+import androidx.webkit.WebViewCompat
+import androidx.webkit.WebViewFeature
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.databinding.ReachfiveWebviewBinding
+import co.reachfive.identity.sdk.core.utils.PasskeyWebListener
 import java.util.regex.Pattern
 
 
-class RedirectionActivity : Activity() {
+class RedirectionActivity : ComponentActivity() {
     private lateinit var binding: ReachfiveWebviewBinding
 
+    private var isCustomTabFlow = false
+    private var hasCustomTabStarted = false
+
+    lateinit var passkeyListener: PasskeyWebListener
+
     companion object {
+        const val ORIGIN_WEBAUTHN = "ORIGIN_WEBAUTHN"
         const val FQN = "co.reachfive.identity.sdk.core.RedirectionActivity"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
         const val URL_KEY = "URL"
@@ -33,43 +42,84 @@ class RedirectionActivity : Activity() {
             setOf(RC_WEBLOGIN).contains(code)
     }
 
-    private var started = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG,"create")
 
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
-        val useWebview = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
-        if (useWebview) {
+        val useWebView = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
+        val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
+        if (useWebView)
+            launchWebView(codeVerifier, urlString, originWebAuthn)
+        else
+            launchCustomTab(urlString, codeVerifier)
+    }
 
-            binding = ReachfiveWebviewBinding.inflate(layoutInflater)
+    private fun launchCustomTab(urlString: String?, codeVerifier: String?) {
+        Log.d(TAG, "RedirectionActivity launchCustomTab url: $urlString")
 
-            setContentView(binding.root)
+        isCustomTabFlow = true
 
-            binding.webview.apply {
-                @SuppressLint("SetJavaScriptEnabled")
-                settings.javaScriptEnabled = true
-                webViewClient = ReachFiveWebViewClient(codeVerifier)
+        val customTabsIntent = CustomTabsIntent.Builder().build().intent
+        customTabsIntent.data = Uri.parse(urlString)
+        customTabsIntent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
+
+        startActivity(customTabsIntent)
+    }
+
+    private fun launchWebView(codeVerifier: String?, urlString: String?, originWebAuthn: String?) {
+        Log.d(TAG, "RedirectionActivity launchWebView url: $urlString")
+
+        binding = ReachfiveWebviewBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
+        binding.webview.apply {
+            @SuppressLint("SetJavaScriptEnabled")
+            settings.javaScriptEnabled = true
+            webViewClient = ReachFiveWebViewClient(codeVerifier)
+        }
+
+        urlString?.let {
+            if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+                Log.i(TAG, "Web Message Listener not supported: no passkey support in WebView.")
+            } else if (originWebAuthn == null) {
+                Log.i(TAG, "WebView: webauthn origin not configured")
+            } else {
+                passkeyListener = PasskeyWebListener(originWebAuthn, this, lifecycleScope)
+
+                val rules = setOf("*")
+                WebViewCompat.addWebMessageListener(
+                    binding.webview,
+                    PasskeyWebListener.INTERFACE_NAME,
+                    rules,
+                    passkeyListener
+                )
             }
 
-            urlString?.let { binding.webview.loadUrl(urlString) }
+            binding.webview.loadUrl(urlString)
+        }
+    }
 
-        } else {
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG,"onResume customTabStarted: $isCustomTabFlow")
 
-            Log.d(TAG, "RedirectionActivity onCreate url: $urlString")
-
-            val customTabsIntent = CustomTabsIntent.Builder().build().intent
-            customTabsIntent.data = Uri.parse(urlString)
-            customTabsIntent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
-
-            startActivity(customTabsIntent)
-
+        // When Custom Tab returns, the Redirection Activity resumes and we need to end it.
+        if (isCustomTabFlow && !hasCustomTabStarted) {
+            hasCustomTabStarted = true
+        } else if (isCustomTabFlow && hasCustomTabStarted) {
+            isCustomTabFlow = false
+            hasCustomTabStarted = false
+            finish()
         }
     }
 
     override fun onNewIntent(newIntent: Intent) {
+        super.onNewIntent(newIntent)
+
         // remove any flags from the new intent
         newIntent.flags = 0
 
@@ -100,18 +150,9 @@ class RedirectionActivity : Activity() {
         finish()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        if (!started) {
-            started = true
-        } else {
-            finish()
-        }
-    }
-
-
     override fun onBackPressed() {
+        super.onBackPressed()
+
         if (binding.webview.canGoBack()) {
             binding.webview.goBack()
         } else {
@@ -120,35 +161,35 @@ class RedirectionActivity : Activity() {
         }
     }
 
-    inner class ReachFiveWebViewClient(val codeVerifier: String?) : WebViewClient() {
+    inner class ReachFiveWebViewClient(private val codeVerifier: String?) : WebViewClientCompat() {
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            val urlString = request.url.toString()
-            Log.d(TAG, "ReachfiveWebViewClient shouldOverrideUrlLoading url: $urlString")
-            return dispatchUrl(urlString)
+            request.url?.let { url ->
+                // regex : (reachfive://word character: [a-zA-Z_0-9]/callback)(any character zero or more times)
+                val pattern = Pattern.compile("^(reachfive:\\/\\/\\w+\\/callback)(.*)$")
+                val isTargetReachFive = pattern.matcher(url.toString()).matches()
+
+                if (isTargetReachFive) {
+                    val intent = Intent()
+                    intent.data = url
+                    intent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
+                    setResult(RC_WEBLOGIN, intent)
+                    finish()
+                    return true
+                } else return false
+            }
+
+            Log.d(TAG, "WebView: unexpected empty url.")
+            finish()
+            return true
         }
 
-        @Suppress("DEPRECATION")
-        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            Log.e(TAG, "ReachfiveWebViewClient shouldOverrideUrlLoading deprecated url: $url")
-            return dispatchUrl(url)
-        }
-
-        private fun dispatchUrl(url: String): Boolean {
-            // regex : (reachfive://word character: [a-zA-Z_0-9]/callback)(any character zero or more times)
-            val pattern = Pattern.compile("^(reachfive:\\/\\/\\w+\\/callback)(.*)$")
-            val isTargetReachFive = pattern.matcher(url).matches()
-            Log.d(TAG, "ReachfiveWebViewClient dispatchUrl isReachFiveScheme: $isTargetReachFive")
-
-            return if (isTargetReachFive) {
-                val intent = Intent()
-                intent.data = Uri.parse(url)
-                intent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
-                setResult(RC_WEBLOGIN, intent)
-                finish()
-                true
-            } else false
+        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+            super.onPageStarted(view, url, favicon)
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+                passkeyListener.onPageStarted()
+                binding.webview.evaluateJavascript(PasskeyWebListener.INJECTED_VAL, null)
+            }
         }
     }
 

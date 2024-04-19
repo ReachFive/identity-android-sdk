@@ -13,6 +13,7 @@ import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
+import com.google.gson.FieldNamingStrategy
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,6 +21,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.lang.reflect.Field
 
 interface ReachFiveApi {
     @GET("/identity/v1/config")
@@ -218,7 +220,23 @@ interface ReachFiveApi {
                 .registerTypeAdapter(
                     WebAuthnLoginRequest::class.java,
                     WebAuthnLoginRequestSerializer()
-                )
+                ).setFieldNamingStrategy(object : FieldNamingStrategy {
+                    // TODO/CA-3469 Better handling of ser/de.
+                    override fun translateName(f: Field): String {
+                        return when(f.name) {
+                            "displayName" -> "display_name"
+                            "clientDataJSON" -> "client_data_json"
+                            "rawId" -> "raw_id"
+                            "attestationObject" -> "attestation_object"
+                            "rpId" -> "rp_id"
+                            "allowCredentials" -> "allow_credentials"
+                            "userVerification" -> "user_verification"
+                            "authenticatorData" -> "authenticator_data"
+                            "userHandle" -> "user_handle"
+                            else -> f.name
+                        }
+                    }
+                })
                 .create()
 
             val retrofit = Retrofit.Builder()
@@ -231,5 +249,3 @@ interface ReachFiveApi {
         }
     }
 }
-
-

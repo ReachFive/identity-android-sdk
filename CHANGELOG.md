@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Fixes
+- Fix completion of WebAuthn device registration
+
+### Features
+
+- Passkey support:
+  - methods `signupWithPasskey`, `loginWithPasskey`, `discoverableLogin`, `registerNewPasskey`
+  - for passkeys, `originWebAuthn` is to be configured in the `SdkConfig` object
+  - support in WebView flow
+
 ## v9.1.0 (25/01/2024)
 
 ### Breaking changes

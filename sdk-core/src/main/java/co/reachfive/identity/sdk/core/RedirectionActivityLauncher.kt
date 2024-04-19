@@ -96,6 +96,9 @@ class RedirectionActivityLauncher(
         intent.putExtra(RedirectionActivity.URL_KEY, url)
         intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
         intent.putExtra(RedirectionActivity.SCHEME, sdkConfig.scheme)
+        sdkConfig.originWebAuthn?.let {
+            intent.putExtra(RedirectionActivity.ORIGIN_WEBAUTHN, it)
+        }
 
         return intent
     }

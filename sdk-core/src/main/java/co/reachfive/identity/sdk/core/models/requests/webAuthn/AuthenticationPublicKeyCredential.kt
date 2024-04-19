@@ -26,7 +26,6 @@ object WebAuthnAuthentication {
 @Parcelize
 data class AuthenticationPublicKeyCredential(
     val id: String,
-    @SerializedName("raw_id")
     val rawId: String,
     val type: String,
     val response: R5AuthenticatorAssertionResponse
@@ -34,11 +33,8 @@ data class AuthenticationPublicKeyCredential(
 
 @Parcelize
 data class R5AuthenticatorAssertionResponse(
-    @SerializedName("authenticator_data")
     val authenticatorData: String,
-    @SerializedName("client_data_json")
     val clientDataJSON: String,
     val signature: String,
-    @SerializedName("user_handle")
     val userHandle: String? = null
 ) : Parcelable
