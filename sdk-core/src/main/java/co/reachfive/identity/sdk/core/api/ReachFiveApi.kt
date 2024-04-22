@@ -9,7 +9,10 @@ import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
+import co.reachfive.identity.sdk.core.models.responses.StartMfaPasswordlessResponse
+import co.reachfive.identity.sdk.core.models.responses.StepUpResponse
 import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
+import co.reachfive.identity.sdk.core.models.responses.VerifyMfaPassordlessResponse
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.DeviceCredential
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.RegistrationOptions
@@ -203,6 +206,22 @@ interface ReachFiveApi {
         @Header("Authorization") authorization: String
     ): Call<ListMfaCredentials>
 
+    @POST("/identity/v1/mfa/stepup")
+    fun getMfaStepUpToken(
+        @Header("Authorization") authorization: String,
+        @Body startStepUpRequest: StartStepUpRequest
+    ): Call<StepUpResponse>
+
+    @POST("/identity/v1/passwordless/start")
+    fun startMfaPasswordless(
+        @Body startMfaPasswordlessRequest: StartMfaPasswordlessRequest
+    ): Call<StartMfaPasswordlessResponse>
+
+    @POST("/identity/v1/passwordless/verify")
+    fun verifyMfaPasswordless(
+        @Body verifyMfaPasswordlessRequest: VerifyMfaPasswordlessRequest
+    ): Call<VerifyMfaPassordlessResponse>
+
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
@@ -223,7 +242,7 @@ interface ReachFiveApi {
                 ).setFieldNamingStrategy(object : FieldNamingStrategy {
                     // TODO/CA-3469 Better handling of ser/de.
                     override fun translateName(f: Field): String {
-                        return when(f.name) {
+                        return when (f.name) {
                             "displayName" -> "display_name"
                             "clientDataJSON" -> "client_data_json"
                             "rawId" -> "raw_id"
