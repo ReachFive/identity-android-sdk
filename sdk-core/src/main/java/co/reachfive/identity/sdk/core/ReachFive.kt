@@ -17,7 +17,7 @@ import co.reachfive.identity.sdk.core.utils.Success
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
     private val passwordAuth: PasswordAuthClient,
-    private val mfaCredentials: MfaCredentials,
+    private val mfa: MfaClient,
     private val passwordlessAuth: PasswordlessAuthClient,
     private val profileManagement: ProfileManagementClient,
     private val socialLoginAuth: SocialLoginAuthClient,
@@ -28,7 +28,8 @@ class ReachFive private constructor(
     override var defaultScope: Set<String> = emptySet(),
 ) :
     PasswordAuth by passwordAuth,
-    MfaCredentials by mfaCredentials,
+    MfaStepUp by mfa,
+    MfaCredentials by mfa,
     PasswordlessAuth by passwordlessAuth,
     ProfileManagement by profileManagement,
     SocialLoginAuth by socialLoginAuth,
@@ -56,12 +57,12 @@ class ReachFive private constructor(
             val webauthnAuthClient = WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
             val credentialManagerAuthClient =
                 CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils)
-            val mfaCredentials = MfaCredentialsClient(reachFiveApi)
+            val mfaClient = MfaClient(sdkConfig, reachFiveApi, sessionUtils)
 
             return ReachFive(
                 reachFiveApi,
                 passwordAuthClient,
-                mfaCredentials,
+                mfaClient,
                 passwordlessAuthClient,
                 profileManagementClient,
                 socialLoginAuthClient,
