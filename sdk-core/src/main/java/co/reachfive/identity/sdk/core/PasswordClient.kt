@@ -116,6 +116,26 @@ internal class PasswordAuthClient(
             )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
+
+    override fun requestAccountRecovery(
+        email: String?,
+        phoneNumber: String?,
+        redirectUrl: String?,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .requestAccountRecovery(
+                AccountRecoveryRequest(
+                    sdkConfig.clientId,
+                    email,
+                    phoneNumber,
+                    redirectUrl,
+                ),
+                SdkInfos.getQueries()
+            )
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
+    }
 }
 
 internal interface PasswordAuth {
@@ -151,6 +171,14 @@ internal interface PasswordAuth {
         email: String? = null,
         redirectUrl: String? = null,
         phoneNumber: String? = null,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun requestAccountRecovery(
+        email: String? = null,
+        phoneNumber: String? = null,
+        redirectUrl: String? = null,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>
     )

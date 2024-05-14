@@ -116,6 +116,22 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<Unit>
 
+    @POST("/identity/v1/account-recovery")
+    fun requestAccountRecovery(
+        @Body requestAccountRecoveryRequest: AccountRecoveryRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
+    @POST("/identity/v1/webauthn/reset-options")
+    fun createWebAuthnResetOptions(
+        @Body webAuthnResetOptionsRequest: WebAuthnResetOptionsRequest
+    ): Call<RegistrationOptions>
+
+    @POST("/identity/v1/webauthn/reset")
+    fun resetWebAuthn(
+        @Body webAuthnResetRequest: WebAuthnResetRequest
+    ): Call<Unit>
+
     @POST("/identity/v1/passwordless/start")
     fun requestPasswordlessStart(
         @Body passwordlessStartRequest: PasswordlessStartRequest,
