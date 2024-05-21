@@ -54,6 +54,81 @@ internal class CredentialManagerAuthClient(
             credentialManager = CredentialManager.create(activity)
     }
 
+    override fun resetPasskeys(
+        email: String?,
+        phoneNumber: String?,
+        friendlyName: String,
+        verificationCode: String,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+        activity: Activity
+    ) {
+        checkInit(activity, failure)
+
+        reachFiveApi.createWebAuthnResetOptions(
+            WebAuthnResetOptionsRequest(
+                sdkConfig.clientId,
+                sdkConfig.originWebAuthn!!,
+                formatFriendlyName(friendlyName),
+                verificationCode,
+                email,
+                phoneNumber,
+            )
+        ).enqueue(
+            ReachFiveApiCallback.withContent<RegistrationOptions>(
+                success = { registrationOptions ->
+                    handlePasskeyReset(
+                        email,
+                        phoneNumber,
+                        verificationCode,
+                        registrationOptions,
+                        success,
+                        failure,
+                        activity
+                    )
+                },
+                failure = failure
+            )
+        )
+
+    }
+
+    private fun handlePasskeyReset(
+        email: String?,
+        phoneNumber: String?,
+        verificationCode: String,
+        registrationOptions: RegistrationOptions,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+        activity: Activity
+    ) {
+        val reset =
+            { registrationPublicKeyCredential: RegistrationPublicKeyCredential,
+              success: Success<Unit>,
+              failure: Failure<ReachFiveError> ->
+                reachFiveApi
+                    .resetWebAuthn(
+                        WebAuthnResetRequest(
+                            sdkConfig.clientId,
+                            registrationPublicKeyCredential,
+                            verificationCode,
+                            email,
+                            phoneNumber,
+                        )
+                    )
+                    .enqueue(ReachFiveApiCallback.noContent(success, failure))
+            }
+
+        handleNewPasskey(
+            registrationOptions.options.publicKey,
+            activity,
+            success,
+            failure,
+            reset
+        )
+
+    }
+
     override fun registerNewPasskey(
         authToken: AuthToken,
         friendlyName: String?,
@@ -456,6 +531,16 @@ internal interface CredentialManagerAuth {
     fun registerNewPasskey(
         authToken: AuthToken,
         friendlyName: String?,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+        activity: Activity
+    )
+
+    fun resetPasskeys(
+        email: String?,
+        phoneNumber: String?,
+        friendlyName: String,
+        verificationCode: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity

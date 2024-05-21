@@ -361,6 +361,42 @@ class JavaReachFive(
         )
     }
 
+    fun requestAccountRecovery(
+        email: String?,
+        phoneNumber: String?,
+        redirectUrl: String?,
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>
+    ) {
+        return reach5.requestAccountRecovery(
+            email,
+            phoneNumber,
+            redirectUrl,
+            { success.call(Unit) },
+            failure::call
+        )
+    }
+
+    fun resetPasskeys(
+        email: String?,
+        phoneNumber: String?,
+        friendlyName: String,
+        verificationCode: String,
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>,
+        activity: Activity
+    ) {
+        return reach5.resetPasskeys(
+            email,
+            phoneNumber,
+            friendlyName,
+            verificationCode,
+            success::call,
+            failure::call,
+            activity
+        )
+    }
+
     fun refreshAccessToken(
         authToken: AuthToken,
         success: Callback<AuthToken>,
