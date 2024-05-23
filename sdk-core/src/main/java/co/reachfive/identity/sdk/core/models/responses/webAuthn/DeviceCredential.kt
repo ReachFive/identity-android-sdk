@@ -8,5 +8,10 @@ import kotlinx.parcelize.Parcelize
 data class DeviceCredential(
     @SerializedName("friendly_name")
     val friendlyName: String,
-    val id: String
+    val id: String,
+    @SerializedName("created_at")
+    val createdAt: String?,
+    @SerializedName("last_used_at")
+    val lastUsedAt: String?,
+    val aaguid: String?
 ) : Parcelable
