@@ -238,6 +238,17 @@ interface ReachFiveApi {
         @Body verifyMfaPasswordlessRequest: VerifyMfaPasswordlessRequest
     ): Call<VerifyMfaPassordlessResponse>
 
+    @DELETE("/identity/v1/mfa/credentials/emails")
+    fun deleteMfaEmail(
+        @Header("Authorization") authorization: String
+    ): Call<Unit>
+
+    @HTTP(method = "DELETE", path = "/identity/v1/mfa/credentials/phone-numbers", hasBody = true)
+    fun deleteMfaPhoneNumber(
+        @Header("Authorization") authorization: String,
+        @Body mfaRemovePhoneNumberRequest: MfaRemovePhoneNumberRequest
+    ): Call<Unit>
+
     companion object {
         fun create(config: SdkConfig): ReachFiveApi {
             val logging = HttpLoggingInterceptor()
