@@ -14,10 +14,16 @@ data class MfaCredentialsStartPhoneRegisteringRequest(
 data class MfaCredentialsStartEmailRegisteringRequest(
     @SerializedName("redirect_url")
     val redirectUrl: String?
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class MfaCredentialsVerifyPhoneRegisteringRequest(
     @SerializedName("verification_code")
     val verificationCode: String
+) : Parcelable
+
+@Parcelize
+data class MfaRemovePhoneNumberRequest(
+    @SerializedName("phone_number")
+    val phoneNumber: String
 ) : Parcelable

@@ -10,6 +10,7 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsStartEmailRegisteringRequest
 import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsStartPhoneRegisteringRequest
 import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsVerifyPhoneRegisteringRequest
+import co.reachfive.identity.sdk.core.models.requests.MfaRemovePhoneNumberRequest
 import co.reachfive.identity.sdk.core.models.requests.StartMfaPasswordlessRequest
 import co.reachfive.identity.sdk.core.models.requests.StartStepUpRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
@@ -90,6 +91,27 @@ internal class MfaClient(
         reachFiveApi
             .listMfaCredentials(authToken.authHeader)
             .enqueue(ReachFiveApiCallback.withContent<ListMfaCredentials>(success, failure))
+    }
+
+    override fun removeMfaEmail(
+        authToken: AuthToken,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .deleteMfaEmail(authToken.authHeader)
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
+    }
+
+    override fun removeMfaPhoneNumber(
+        authToken: AuthToken,
+        phoneNumber: String,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .deleteMfaPhoneNumber(authToken.authHeader, MfaRemovePhoneNumberRequest(phoneNumber))
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
 
     override fun startStepUp(
@@ -210,6 +232,19 @@ internal interface MfaCredentials {
     fun listMfaCredentials(
         authToken: AuthToken,
         success: Success<ListMfaCredentials>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun removeMfaPhoneNumber(
+        authToken: AuthToken,
+        phoneNumber: String,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun removeMfaEmail(
+        authToken: AuthToken,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     )
 }
