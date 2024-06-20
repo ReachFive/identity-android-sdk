@@ -2,12 +2,14 @@
 
 ## Unreleased
 
+## v9.2.0 (20/09/2024)
+
 ### Features
 
 - MFA support:
-    -
-    Methods `startMfaPhoneNumberRegistration`, `verifyMfaPhoneNumberRegistration`, `startMfaEmailRegistration`,
-    `verifyMfaEmailRegistration`, `listMfaCredentials`, `removeMfaEmail`, `removeMfaPhoneNumber`, `startStepUp`, `endStepUp`
+  -
+  Methods `startMfaPhoneNumberRegistration`, `verifyMfaPhoneNumberRegistration`, `startMfaEmailRegistration`,
+  `verifyMfaEmailRegistration`, `listMfaCredentials`, `removeMfaEmail`, `removeMfaPhoneNumber`, `startStepUp`, `endStepUp`
 
 ### Fixes
 
