@@ -4,23 +4,20 @@
 
 ## v9.2.0 (20/06/2024)
 
-### Features
-
-- MFA support:
-  -
-  Methods `startMfaPhoneNumberRegistration`, `verifyMfaPhoneNumberRegistration`, `startMfaEmailRegistration`,
-  `verifyMfaEmailRegistration`, `listMfaCredentials`, `removeMfaEmail`, `removeMfaPhoneNumber`, `startStepUp`, `endStepUp`
-
 ### Fixes
 
 - Fix completion of WebAuthn device registration
 
 ### Features
 
+- MFA support:
+    - Methods `startMfaPhoneNumberRegistration`, `verifyMfaPhoneNumberRegistration`, `startMfaEmailRegistration`,
+    `verifyMfaEmailRegistration`, `listMfaCredentials`, `removeMfaEmail`, `removeMfaPhoneNumber`, `startStepUp`, `endStepUp`
+
 - Passkey support:
-    - methods `signupWithPasskey`, `loginWithPasskey`, `discoverableLogin`, `registerNewPasskey`
-    - for passkeys, `originWebAuthn` is to be configured in the `SdkConfig` object
-    - support in WebView flow
+  - methods `signupWithPasskey`, `loginWithPasskey`, `discoverableLogin`, `registerNewPasskey`
+  - for passkeys, `originWebAuthn` is to be configured in the `SdkConfig` object
+  - support in WebView flow
 
 ## v9.1.0 (25/01/2024)
 
@@ -38,17 +35,14 @@
 
 ### Breaking changes
 
-- Upgrade Facebook Login 12.2 => 16.3: a client token is now required in the manifest (
-  see https://developers.facebook.com/docs/android/getting-started/#add-app_id)
+- Upgrade Facebook Login 12.2 => 16.3: a client token is now required in the manifest (see https://developers.facebook.com/docs/android/getting-started/#add-app_id)
 
 ## v8.3.0 (12/12/2023)
 
 ### Features
-
 - `loginWithWebView` performs the same flows as `loginWithWeb`, but within a WebView
 
 ## v8.2.0 (02/10/2023)
-
 - Added WeChat provider's login
 
 ## v8.1.2 (18/04/2023)
@@ -78,34 +72,25 @@
 
 ## v8.0.0 (05/08/2022)
 
-This major releases includes many breaking changes but greatly simplifies the SDK integration
-overall.
+This major releases includes many breaking changes but greatly simplifies the SDK integration overall.
 
 ### Features
 
-- `loginWithWeb` enables SDK integrators to delegate login to another ReachFive first-party identity
-  client such as web page they control.
-- `onLoginActivityResult` handles all login flow results and automatically calls the appropriate
-  internal completion flow. SDK integrators no longer have to match on request codes themselves. The
-  method ignores any request code that does not concern the SDK.
-- SDK integrators can use `ReachFive.resolveResultHandler` to let the SDK automatically wire the
-  appropriate activity result handler (i.e., `onLoginActivityHandler`
-  or `onAddNewWebAuthnDeviceResult`).
+- `loginWithWeb` enables SDK integrators to delegate login to another ReachFive first-party identity client such as web page they control.
+- `onLoginActivityResult` handles all login flow results and automatically calls the appropriate internal completion flow. SDK integrators no longer have to match on request codes themselves. The method ignores any request code that does not concern the SDK.
+- SDK integrators can use `ReachFive.resolveResultHandler` to let the SDK automatically wire the appropriate activity result handler (i.e., `onLoginActivityHandler` or `onAddNewWebAuthnDeviceResult`).
 
 ### Changes
 
 - Client implementation was broken down into smaller modules.
 - Client constructor no longer takes an `Activity`.
 - Client initialization now only fetches client configuration.
-- A separate initialization method (`loadSocialProviders`) has been added for social providers
-  configuration.
+- A separate initialization method (`loadSocialProviders`) has been added for social providers configuration.
 - `WebViewProvider` social login flows now use a Custom Tab.
 - Internal login callback no longer open a custom tab and silently obtain an authorization code.
-- All errors are now communicated through the `failure` callback channel; Android `Activity` result
-  codes no longer need to be manually inspected.
+- All errors are now communicated through the `failure` callback channel; Android `Activity` result codes no longer need to be manually inspected.
 - An `ErrorCode` enumeration class documents all ReachFive API and SDK errors.
-- The `SuccessWithNoContent<Unit>` type has been removed; all success callbacks now only
-  use `Success<T>` or `Success<Unit>`.
+- The `SuccessWithNoContent<Unit>` type has been removed; all success callbacks now only use `Success<T>` or `Success<Unit>`.
 
 ### Removed methods
 
@@ -116,8 +101,7 @@ overall.
 
 - Social login providers that did not support webviews are now fixed by virtue of using custom tabs.
 - Social login errors have been improved.
-- Activity callback methods no longer throw exceptions when the request code does not concern an SDK
-  flow. Instead, no action is taken and a debug-level log is emitted.
+- Activity callback methods no longer throw exceptions when the request code does not concern an SDK flow. Instead, no action is taken and a debug-level log is emitted.
 
 ## v7.0.3 (18/07/2022)
 
@@ -200,8 +184,7 @@ the [Webview SDK](https://developer.reachfive.com/sdk-android/index.html#sdk-web
 
 You can now implement a biometric authentication flow.
 
-> Follow our [FIDO2](https://developer.reachfive.com/sdk-android/fido2.html) guide for more
-> information on the configuration and methods.
+> Follow our [FIDO2](https://developer.reachfive.com/sdk-android/fido2.html) guide for more information on the configuration and methods.
 
 ## v5.7.0 (01/07/2020)
 
@@ -235,9 +218,9 @@ SCHEME=my-reachfive-url-scheme
 
 ```kotlin
 val sdkConfig = SdkConfig(
-    domain = DOMAIN,
-    clientId = CLIENT_ID,
-    scheme = SCHEME
+  domain = DOMAIN,
+  clientId = CLIENT_ID,
+  scheme = SCHEME
 )
 ```
 
