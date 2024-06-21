@@ -18,6 +18,8 @@
   - methods `signupWithPasskey`, `loginWithPasskey`, `discoverableLogin`, `registerNewPasskey`
   - for passkeys, `originWebAuthn` is to be configured in the `SdkConfig` object
   - support in WebView flow
+ 
+- Account Recovery support.
 
 ## v9.1.0 (25/01/2024)
 
