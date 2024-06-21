@@ -2,15 +2,24 @@
 
 ## Unreleased
 
+## v9.2.0 (20/06/2024)
+
 ### Fixes
+
 - Fix completion of WebAuthn device registration
 
 ### Features
+
+- MFA support:
+    - Methods `startMfaPhoneNumberRegistration`, `verifyMfaPhoneNumberRegistration`, `startMfaEmailRegistration`,
+    `verifyMfaEmailRegistration`, `listMfaCredentials`, `removeMfaEmail`, `removeMfaPhoneNumber`, `startStepUp`, `endStepUp`
 
 - Passkey support:
   - methods `signupWithPasskey`, `loginWithPasskey`, `discoverableLogin`, `registerNewPasskey`
   - for passkeys, `originWebAuthn` is to be configured in the `SdkConfig` object
   - support in WebView flow
+ 
+- Account Recovery support.
 
 ## v9.1.0 (25/01/2024)
 
