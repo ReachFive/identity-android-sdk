@@ -30,6 +30,7 @@ class ReachFive private constructor(
     PasswordAuth by passwordAuth,
     MfaStepUp by mfa,
     MfaCredentials by mfa,
+    MfaTrustedDevices by mfa,
     PasswordlessAuth by passwordlessAuth,
     ProfileManagement by profileManagement,
     SocialLoginAuth by socialLoginAuth,
