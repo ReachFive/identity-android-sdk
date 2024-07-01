@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- RBA support: 
+  - Methods: `listMfaTrustedDevices`, `removeMfaTrustedDevice`
 
 ## v9.2.0 (20/06/2024)
 
