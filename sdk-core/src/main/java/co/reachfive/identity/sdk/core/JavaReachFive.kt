@@ -147,14 +147,14 @@ class JavaReachFive(
         origin: String? = null
     ) {
         return reach5.loginWithPassword(
-            email,
-            phoneNumber,
+            email = email,
+            phoneNumber = phoneNumber,
             customIdentifier,
             password,
             scope,
             origin,
-            success::call,
-            failure::call
+            success = success::call,
+            failure = failure::call
         )
     }
 
