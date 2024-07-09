@@ -16,6 +16,7 @@ data class StartStepUpRequest(
     val codeChallenge: String,
     @SerializedName("code_challenge_method")
     val codeChallengeMethod: String,
+    val tkn: String? = null,
     val scope: String
 )
 

@@ -3,7 +3,8 @@
 ## Unreleased
 - RBA support: 
   - Methods: `listMfaTrustedDevices`, `removeMfaTrustedDevice`
-
+  - Allow to start step up from `loginWithPassword` when mfa is required
+  
 ## v9.2.0 (20/06/2024)
 
 ### Fixes

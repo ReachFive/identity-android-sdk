@@ -1,5 +1,6 @@
 package co.reachfive.identity.sdk.core.api
 
+import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ProvidersConfigsResult
 import co.reachfive.identity.sdk.core.models.SdkConfig
@@ -11,7 +12,6 @@ import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
 import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
 import co.reachfive.identity.sdk.core.models.responses.StartMfaPasswordlessResponse
-import co.reachfive.identity.sdk.core.models.responses.StepUpResponse
 import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.models.responses.VerifyMfaPassordlessResponse
 import co.reachfive.identity.sdk.core.models.responses.webAuthn.AuthenticationOptions
@@ -225,9 +225,9 @@ interface ReachFiveApi {
 
     @POST("/identity/v1/mfa/stepup")
     fun getMfaStepUpToken(
-        @Header("Authorization") authorization: String,
+        @HeaderMap headers: Map<String, String>,
         @Body startStepUpRequest: StartStepUpRequest
-    ): Call<StepUpResponse>
+    ): Call<AuthToken>
 
     @GET("/identity/v1/mfa/trusteddevices")
     fun listMfaTrustedDevices(

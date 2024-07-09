@@ -18,7 +18,6 @@ import co.reachfive.identity.sdk.core.models.requests.VerifyMfaPasswordlessReque
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
 import co.reachfive.identity.sdk.core.models.responses.StartMfaPasswordlessResponse
-import co.reachfive.identity.sdk.core.models.responses.StepUpResponse
 import co.reachfive.identity.sdk.core.models.responses.VerifyMfaPassordlessResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
@@ -116,54 +115,75 @@ internal class MfaClient(
     }
 
     override fun startStepUp(
-        authToken: AuthToken,
+        authToken: AuthToken?,
+        stepUpToken: String?,
         authType: CredentialMfaType,
         redirectUri: String,
         scope: Collection<String>,
         success: Success<StartMfaPasswordlessResponse>,
         failure: Failure<ReachFiveError>,
-        activity: Activity,
+        activity: Activity?,
         origin: String?
     ) {
-        PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
-            PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
-            reachFiveApi
-                .getMfaStepUpToken(
-                    authToken.authHeader,
-                    StartStepUpRequest
-                        (
-                        clientId = sdkConfig.clientId,
-                        redirectUri = redirectUri,
-                        codeChallenge = pkce.codeChallenge,
-                        codeChallengeMethod = pkce.codeChallengeMethod,
-                        scope = formatScope(scope)
-                    )
-                )
-                .enqueue(
-                    ReachFiveApiCallback.withContent<StepUpResponse>(
-                        success = { stepUpResponse ->
-                            reachFiveApi
-                                .startMfaPasswordless(
-                                    StartMfaPasswordlessRequest(
-                                        authType = authType,
-                                        redirectUri = redirectUri,
-                                        clientId = sdkConfig.clientId,
-                                        stepUp = stepUpResponse.token,
-                                        origin = origin,
-                                    )
-                                )
-                                .enqueue(
-                                    ReachFiveApiCallback.withContent<StartMfaPasswordlessResponse>(
-                                        success = success,
-                                        failure = failure
-                                    )
-                                )
-
-                        },
-                        failure = failure
-                    )
-                )
+        if (authToken == null && stepUpToken == null) {
+            return failure(ReachFiveError.from("authToken and stepUpToken cannot be both null"))
         }
+        if(stepUpToken != null) {
+            achieveStartStepUp(authType, redirectUri, stepUpToken, origin, success, failure)
+        } else {
+            PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
+                val activity = activity ?: return failure(ReachFiveError.from("activity must not be null"))
+                val authToken = authToken ?: return failure(ReachFiveError.from("auth token must not be null"))
+
+                PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
+                reachFiveApi
+                    .getMfaStepUpToken(
+                        mapOf("Authorization" to authToken.authHeader),
+                        StartStepUpRequest
+                            (
+                            clientId = sdkConfig.clientId,
+                            redirectUri = redirectUri,
+                            codeChallenge = pkce.codeChallenge,
+                            codeChallengeMethod = pkce.codeChallengeMethod,
+                            scope = formatScope(scope)
+                        )
+                    )
+                    .enqueue(
+                        ReachFiveApiCallback.withContent<AuthToken>(
+                            success = { stepUpResponse ->
+                                achieveStartStepUp(authType, redirectUri, stepUpResponse.stepUpToken, origin, success, failure)
+
+                            },
+                            failure = failure
+                        )
+                    )
+            }
+        }
+    }
+
+    private fun achieveStartStepUp(
+        authType: CredentialMfaType,
+        redirectUri: String,
+        stepUpToken: String?,
+        origin: String?,
+        success: Success<StartMfaPasswordlessResponse>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .startMfaPasswordless(
+                StartMfaPasswordlessRequest(
+                    authType = authType,
+                    redirectUri = redirectUri,
+                    clientId = sdkConfig.clientId,
+                    stepUp = stepUpToken!!,
+                    origin = origin
+                )
+            ).enqueue(
+                ReachFiveApiCallback.withContent<StartMfaPasswordlessResponse>(
+                    success = success,
+                    failure = failure
+                )
+            )
     }
 
     override fun endStepUp(
@@ -293,13 +313,14 @@ internal interface MfaStepUp {
     var defaultScope: Set<String>
 
     fun startStepUp(
-        authToken: AuthToken,
+        authToken: AuthToken? = null,
+        stepUpToken: String? = null,
         authType: CredentialMfaType,
         redirectUri: String,
         scope: Collection<String> = defaultScope,
         success: Success<StartMfaPasswordlessResponse>,
         failure: Failure<ReachFiveError>,
-        activity: Activity,
+        activity: Activity? = null,
         origin: String? = null
     )
 

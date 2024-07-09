@@ -1,5 +1,6 @@
 package co.reachfive.identity.sdk.core
 
+import android.app.Activity
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -10,6 +11,7 @@ import co.reachfive.identity.sdk.core.models.requests.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.formatScope
 
@@ -55,6 +57,8 @@ internal class PasswordAuthClient(
         password: String,
         scope: Collection<String>,
         origin: String?,
+        redirectUrl: String?,
+        activity: Activity?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -72,7 +76,29 @@ internal class PasswordAuthClient(
             .enqueue(
                 ReachFiveApiCallback.withContent<AuthenticationToken>(
                     success = {
-                        sessionUtils.loginCallback(it.tkn, scope, success, failure, origin)
+                        if(it.mfaRequired == true) {
+                            if(redirectUrl == null || activity == null) {
+                                failure(ReachFiveError.from("A redirect url and an activity are required to achieve a login with password."))
+                            } else {
+                                PkceAuthCodeFlow.generate(redirectUrl).let { pkce ->
+                                    PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
+                                    reachFiveApi
+                                        .getMfaStepUpToken(
+                                            mapOf(),
+                                            StartStepUpRequest(
+                                                clientId = sdkConfig.clientId,
+                                                redirectUri = redirectUrl,
+                                                codeChallenge = pkce.codeChallenge,
+                                                codeChallengeMethod = pkce.codeChallengeMethod,
+                                                scope = formatScope(scope),
+                                                tkn = it.tkn
+                                            )
+                                        ).enqueue(ReachFiveApiCallback.withContent<AuthToken>(success = success, failure = failure))
+                                }
+                            }
+                        } else {
+                            sessionUtils.loginCallback(it.tkn, scope, success, failure, origin)
+                        }
                     },
                     failure = failure
                 )
@@ -157,6 +183,8 @@ internal interface PasswordAuth {
         password: String,
         scope: Collection<String> = defaultScope,
         origin: String? = null,
+        redirectUrl: String? = null,
+        activity: Activity? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     )
