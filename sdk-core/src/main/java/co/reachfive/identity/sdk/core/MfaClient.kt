@@ -132,13 +132,13 @@ internal class MfaClient(
             achieveStartStepUp(authType, redirectUri, stepUpToken, origin, success, failure)
         } else {
             PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
-                val activity = activity ?: return failure(ReachFiveError.from("activity must not be null"))
-                val authToken = authToken ?: return failure(ReachFiveError.from("auth token must not be null"))
+                val activityGuard = activity ?: return failure(ReachFiveError.from("activity must not be null"))
+                val token = authToken ?: return failure(ReachFiveError.from("auth token must not be null"))
 
-                PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
+                PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activityGuard)
                 reachFiveApi
                     .getMfaStepUpToken(
-                        mapOf("Authorization" to authToken.authHeader),
+                        mapOf("Authorization" to token.authHeader),
                         StartStepUpRequest
                             (
                             clientId = sdkConfig.clientId,
