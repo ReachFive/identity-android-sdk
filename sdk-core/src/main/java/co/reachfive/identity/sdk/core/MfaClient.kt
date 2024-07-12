@@ -16,6 +16,7 @@ import co.reachfive.identity.sdk.core.models.requests.StartStepUpRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyMfaPasswordlessRequest
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
+import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
 import co.reachfive.identity.sdk.core.models.responses.StartMfaPasswordlessResponse
 import co.reachfive.identity.sdk.core.models.responses.StepUpResponse
 import co.reachfive.identity.sdk.core.models.responses.VerifyMfaPassordlessResponse
@@ -28,7 +29,7 @@ internal class MfaClient(
     private val sdkConfig: SdkConfig,
     private val reachFiveApi: ReachFiveApi,
     private val sessionUtils: SessionUtilsClient,
-) : MfaStepUp, MfaCredentials {
+) : MfaStepUp, MfaCredentials, MfaTrustedDevices {
     override var defaultScope: Set<String> = emptySet()
 
     override fun startMfaPhoneNumberRegistration(
@@ -197,6 +198,45 @@ internal class MfaClient(
             )
     }
 
+    override fun listMfaTrustedDevices(
+        authToken: AuthToken,
+        success: Success<ListMfaTrustedDevices>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .listMfaTrustedDevices(authToken.authHeader)
+            .enqueue(
+                ReachFiveApiCallback.withContent<ListMfaTrustedDevices>(
+                    success = success,
+                    failure = failure
+                )
+            )
+    }
+
+    override fun removeMfaTrustedDevice(
+        authToken: AuthToken,
+        trustedDeviceId: String,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .deleteMfaTrustedDevice(
+                authToken.authHeader,
+                trustedDeviceId,
+            ).enqueue(
+                ReachFiveApiCallback.noContent(
+                    success = success,
+                    failure = failure
+                )
+            )
+    }
+
+}
+
+internal interface MfaTrustedDevices {
+    fun listMfaTrustedDevices(authToken: AuthToken, success: Success<ListMfaTrustedDevices>, failure: Failure<ReachFiveError>)
+
+    fun removeMfaTrustedDevice(authToken: AuthToken, trustedDeviceId: String, success: Success<Unit>, failure: Failure<ReachFiveError>)
 }
 
 internal interface MfaCredentials {

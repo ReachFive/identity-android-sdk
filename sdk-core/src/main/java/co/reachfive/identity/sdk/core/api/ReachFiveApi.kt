@@ -8,6 +8,7 @@ import co.reachfive.identity.sdk.core.models.requests.webAuthn.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
+import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
 import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
 import co.reachfive.identity.sdk.core.models.responses.StartMfaPasswordlessResponse
 import co.reachfive.identity.sdk.core.models.responses.StepUpResponse
@@ -227,6 +228,17 @@ interface ReachFiveApi {
         @Header("Authorization") authorization: String,
         @Body startStepUpRequest: StartStepUpRequest
     ): Call<StepUpResponse>
+
+    @GET("/identity/v1/mfa/trusteddevices")
+    fun listMfaTrustedDevices(
+        @Header("Authorization") authorization: String
+    ): Call<ListMfaTrustedDevices>
+
+    @DELETE("/identity/v1/mfa/trusteddevices/{id}")
+    fun deleteMfaTrustedDevice(
+        @Header("Authorization") authorization: String,
+        @Path("id") id: String
+        ): Call<Unit>
 
     @POST("/identity/v1/passwordless/start")
     fun startMfaPasswordless(
