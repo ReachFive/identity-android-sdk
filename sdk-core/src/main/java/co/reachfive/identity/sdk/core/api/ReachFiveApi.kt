@@ -240,17 +240,6 @@ interface ReachFiveApi {
         @Path("id") id: String
         ): Call<Unit>
 
-    @GET("/identity/v1/mfa/trusteddevices")
-    fun listMfaTrustedDevices(
-        @Header("Authorization") authorization: String
-    ): Call<ListMfaTrustedDevices>
-
-    @DELETE("/identity/v1/mfa/trusteddevices/{id}")
-    fun deleteMfaTrustedDevice(
-        @Header("Authorization") authorization: String,
-        @Path("id") id: String
-        ): Call<Unit>
-
     @POST("/identity/v1/passwordless/start")
     fun startMfaPasswordless(
         @Body startMfaPasswordlessRequest: StartMfaPasswordlessRequest
