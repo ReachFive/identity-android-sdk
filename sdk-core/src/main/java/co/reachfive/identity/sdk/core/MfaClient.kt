@@ -12,6 +12,9 @@ import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsStartPhoneRe
 import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsVerifyPhoneRegisteringRequest
 import co.reachfive.identity.sdk.core.models.requests.MfaRemovePhoneNumberRequest
 import co.reachfive.identity.sdk.core.models.requests.StartMfaPasswordlessRequest
+import co.reachfive.identity.sdk.core.models.requests.StartStepUpAuthTokenFlow
+import co.reachfive.identity.sdk.core.models.requests.StartStepUpFlow
+import co.reachfive.identity.sdk.core.models.requests.StartStepUpLoginFlow
 import co.reachfive.identity.sdk.core.models.requests.StartStepUpRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyMfaPasswordlessRequest
@@ -115,30 +118,21 @@ internal class MfaClient(
     }
 
     override fun startStepUp(
-        authToken: AuthToken?,
-        stepUpToken: String?,
+        startStepUpFlow: StartStepUpFlow,
         authType: CredentialMfaType,
         redirectUri: String,
         scope: Collection<String>,
         success: Success<StartMfaPasswordlessResponse>,
         failure: Failure<ReachFiveError>,
-        activity: Activity?,
         origin: String?
     ) {
-        if (authToken == null && stepUpToken == null) {
-            return failure(ReachFiveError.from("authToken and stepUpToken cannot be both null"))
-        }
-        if(stepUpToken != null) {
-            achieveStartStepUp(authType, redirectUri, stepUpToken, origin, success, failure)
-        } else {
-            PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
-                val activityGuard = activity ?: return failure(ReachFiveError.from("activity must not be null"))
-                val token = authToken ?: return failure(ReachFiveError.from("auth token must not be null"))
-
-                PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activityGuard)
+        when(startStepUpFlow) {
+            is StartStepUpLoginFlow -> achieveStartStepUp(authType, redirectUri, startStepUpFlow.stepUpToken, origin, success, failure)
+            is StartStepUpAuthTokenFlow -> PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
+                PkceAuthCodeFlow.storeAuthCodeFlow(pkce, startStepUpFlow.activity)
                 reachFiveApi
                     .getMfaStepUpToken(
-                        mapOf("Authorization" to token.authHeader),
+                        mapOf("Authorization" to startStepUpFlow.authToken.authHeader),
                         StartStepUpRequest
                             (
                             clientId = sdkConfig.clientId,
@@ -313,14 +307,12 @@ internal interface MfaStepUp {
     var defaultScope: Set<String>
 
     fun startStepUp(
-        authToken: AuthToken? = null,
-        stepUpToken: String? = null,
+        startStepUpFlow: StartStepUpFlow,
         authType: CredentialMfaType,
         redirectUri: String,
         scope: Collection<String> = defaultScope,
         success: Success<StartMfaPasswordlessResponse>,
         failure: Failure<ReachFiveError>,
-        activity: Activity? = null,
         origin: String? = null
     )
 
