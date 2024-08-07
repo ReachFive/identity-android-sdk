@@ -1,6 +1,5 @@
 package co.reachfive.identity.sdk.core
 
-import android.app.Activity
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -57,8 +56,7 @@ internal class PasswordAuthClient(
         password: String,
         scope: Collection<String>,
         origin: String?,
-        redirectUrl: String?,
-        activity: Activity?,
+        mfaConf: LoginMfaConf?,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
@@ -77,17 +75,17 @@ internal class PasswordAuthClient(
                 ReachFiveApiCallback.withContent<AuthenticationToken>(
                     success = {
                         if(it.mfaRequired == true) {
-                            if(redirectUrl == null || activity == null) {
+                            if(mfaConf == null) {
                                 failure(ReachFiveError.from("A redirect url and an activity are required to achieve a login with password."))
                             } else {
-                                PkceAuthCodeFlow.generate(redirectUrl).let { pkce ->
-                                    PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
+                                PkceAuthCodeFlow.generate(mfaConf.redirectUri).let { pkce ->
+                                    PkceAuthCodeFlow.storeAuthCodeFlow(pkce, mfaConf.activity)
                                     reachFiveApi
                                         .getMfaStepUpToken(
                                             mapOf(),
                                             StartStepUpRequest(
                                                 clientId = sdkConfig.clientId,
-                                                redirectUri = redirectUrl,
+                                                redirectUri = mfaConf.redirectUri,
                                                 codeChallenge = pkce.codeChallenge,
                                                 codeChallengeMethod = pkce.codeChallengeMethod,
                                                 scope = formatScope(scope),
@@ -183,8 +181,7 @@ internal interface PasswordAuth {
         password: String,
         scope: Collection<String> = defaultScope,
         origin: String? = null,
-        redirectUrl: String? = null,
-        activity: Activity? = null,
+        mfaConf: LoginMfaConf? = null,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     )
