@@ -1,8 +1,10 @@
 package co.reachfive.identity.sdk.core.models.requests
 
+import android.app.Activity
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class LoginRequest(
@@ -16,4 +18,10 @@ data class LoginRequest(
     val clientId: String,
     val scope: String,
     val origin: String?
+) : Parcelable
+
+@Parcelize
+data class LoginMfaConf(
+    val activity: @RawValue Activity,
+    val redirectUri: String
 ) : Parcelable

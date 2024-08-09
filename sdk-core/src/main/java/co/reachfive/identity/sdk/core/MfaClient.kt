@@ -12,13 +12,15 @@ import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsStartPhoneRe
 import co.reachfive.identity.sdk.core.models.requests.MfaCredentialsVerifyPhoneRegisteringRequest
 import co.reachfive.identity.sdk.core.models.requests.MfaRemovePhoneNumberRequest
 import co.reachfive.identity.sdk.core.models.requests.StartMfaPasswordlessRequest
+import co.reachfive.identity.sdk.core.models.requests.StartStepUpAuthTokenFlow
+import co.reachfive.identity.sdk.core.models.requests.StartStepUpFlow
+import co.reachfive.identity.sdk.core.models.requests.StartStepUpLoginFlow
 import co.reachfive.identity.sdk.core.models.requests.StartStepUpRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyMfaPasswordlessRequest
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
 import co.reachfive.identity.sdk.core.models.responses.StartMfaPasswordlessResponse
-import co.reachfive.identity.sdk.core.models.responses.StepUpResponse
 import co.reachfive.identity.sdk.core.models.responses.VerifyMfaPassordlessResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
@@ -116,54 +118,66 @@ internal class MfaClient(
     }
 
     override fun startStepUp(
-        authToken: AuthToken,
+        startStepUpFlow: StartStepUpFlow,
         authType: CredentialMfaType,
         redirectUri: String,
         scope: Collection<String>,
         success: Success<StartMfaPasswordlessResponse>,
         failure: Failure<ReachFiveError>,
-        activity: Activity,
         origin: String?
     ) {
-        PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
-            PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
-            reachFiveApi
-                .getMfaStepUpToken(
-                    authToken.authHeader,
-                    StartStepUpRequest
-                        (
-                        clientId = sdkConfig.clientId,
-                        redirectUri = redirectUri,
-                        codeChallenge = pkce.codeChallenge,
-                        codeChallengeMethod = pkce.codeChallengeMethod,
-                        scope = formatScope(scope)
+        when(startStepUpFlow) {
+            is StartStepUpLoginFlow -> achieveStartStepUp(authType, redirectUri, startStepUpFlow.stepUpToken, origin, success, failure)
+            is StartStepUpAuthTokenFlow -> PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
+                PkceAuthCodeFlow.storeAuthCodeFlow(pkce, startStepUpFlow.activity)
+                reachFiveApi
+                    .getMfaStepUpToken(
+                        mapOf("Authorization" to startStepUpFlow.authToken.authHeader),
+                        StartStepUpRequest
+                            (
+                            clientId = sdkConfig.clientId,
+                            redirectUri = redirectUri,
+                            codeChallenge = pkce.codeChallenge,
+                            codeChallengeMethod = pkce.codeChallengeMethod,
+                            scope = formatScope(scope)
+                        )
                     )
-                )
-                .enqueue(
-                    ReachFiveApiCallback.withContent<StepUpResponse>(
-                        success = { stepUpResponse ->
-                            reachFiveApi
-                                .startMfaPasswordless(
-                                    StartMfaPasswordlessRequest(
-                                        authType = authType,
-                                        redirectUri = redirectUri,
-                                        clientId = sdkConfig.clientId,
-                                        stepUp = stepUpResponse.token,
-                                        origin = origin,
-                                    )
-                                )
-                                .enqueue(
-                                    ReachFiveApiCallback.withContent<StartMfaPasswordlessResponse>(
-                                        success = success,
-                                        failure = failure
-                                    )
-                                )
+                    .enqueue(
+                        ReachFiveApiCallback.withContent<AuthToken>(
+                            success = { stepUpResponse ->
+                                achieveStartStepUp(authType, redirectUri, stepUpResponse.stepUpToken, origin, success, failure)
 
-                        },
-                        failure = failure
+                            },
+                            failure = failure
+                        )
                     )
-                )
+            }
         }
+    }
+
+    private fun achieveStartStepUp(
+        authType: CredentialMfaType,
+        redirectUri: String,
+        stepUpToken: String?,
+        origin: String?,
+        success: Success<StartMfaPasswordlessResponse>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .startMfaPasswordless(
+                StartMfaPasswordlessRequest(
+                    authType = authType,
+                    redirectUri = redirectUri,
+                    clientId = sdkConfig.clientId,
+                    stepUp = stepUpToken!!,
+                    origin = origin
+                )
+            ).enqueue(
+                ReachFiveApiCallback.withContent<StartMfaPasswordlessResponse>(
+                    success = success,
+                    failure = failure
+                )
+            )
     }
 
     override fun endStepUp(
@@ -293,13 +307,12 @@ internal interface MfaStepUp {
     var defaultScope: Set<String>
 
     fun startStepUp(
-        authToken: AuthToken,
+        startStepUpFlow: StartStepUpFlow,
         authType: CredentialMfaType,
         redirectUri: String,
         scope: Collection<String> = defaultScope,
         success: Success<StartMfaPasswordlessResponse>,
         failure: Failure<ReachFiveError>,
-        activity: Activity,
         origin: String? = null
     )
 
