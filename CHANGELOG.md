@@ -1,10 +1,14 @@
 # Changelog
-
-## Unreleased
-- RBA support: 
+ 
+## v9.3.0 (20/09/2024)
+### Features
+- RBA support:
   - Methods: `listMfaTrustedDevices`, `removeMfaTrustedDevice`
   - Allow to start step up from `loginWithPassword` when mfa is required
-  
+### Changes
+AuthToken change:
+  - add optional amr stepUpToken field + make accessToken optional
+
 ## v9.2.0 (20/06/2024)
 
 ### Fixes
