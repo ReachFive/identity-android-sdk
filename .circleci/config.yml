@@ -90,7 +90,7 @@ release_filters: &release_filters
 snapshot_filters: &snapshot_filters
   filters:
     branches:
-      only: master
+      only: /.*/
 
 default_workflows_tags: &default_workflows_tags
   filters:
