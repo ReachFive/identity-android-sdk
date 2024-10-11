@@ -6,7 +6,7 @@ import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class CookieInterceptor(private val domain: String) : Interceptor {
+class TokenEndpointCookieInterceptor(private val domain: String) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
