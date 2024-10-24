@@ -1,6 +1,12 @@
 # Changelog
  
+## Unreleased
+
+### Features
+- Save cookies from `https://$domain/oauth/token` to cookie jar
+
 ## v9.3.0 (20/09/2024)
+
 ### Features
 - RBA support:
   - Methods: `listMfaTrustedDevices`, `removeMfaTrustedDevice`
