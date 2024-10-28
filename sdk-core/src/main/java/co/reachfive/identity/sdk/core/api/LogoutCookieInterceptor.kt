@@ -12,14 +12,14 @@ class LogoutCookieInterceptor(private val domain: String) : Interceptor {
         val originalRequest = chain.request()
 
         val request =
-            if (originalRequest.url.toString().startsWith("https://$domain/logout"))
+            if (originalRequest.url.toString().startsWith("https://$domain/identity/v1/logout"))
                 CookieManager.getInstance()?.let { cm ->
                     val cookies = cm.getCookie("https://$domain")?.split("; ") ?: emptyList()
 
                     val requestBuilder = originalRequest.newBuilder()
 
                     cookies.forEach {
-                        Log.d(TAG, "cookie attached to https://$domain/logout: $it")
+                        Log.d(TAG, "cookie attached to https://$domain/identity/v1/logout: $it")
                         requestBuilder.addHeader("Cookie", it)
                     }
 
