@@ -278,7 +278,32 @@ class JavaReachFive(
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.logout({ success.call(Unit) }, failure::call)
+        return reach5.logout({ success.call(Unit) }, failure::call, null)
+    }
+
+    fun logout(
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>,
+        authToken: AuthToken
+    ) {
+        return reach5.logout({ success.call(Unit) }, failure::call, authToken)
+    }
+
+    fun logout(
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>,
+        sso: Boolean
+    ) {
+        return reach5.logout({ success.call(Unit) }, failure::call, null, sso)
+    }
+
+    fun logout(
+        success: Callback<Unit>,
+        failure: Callback<ReachFiveError>,
+        authToken: AuthToken,
+        sso: Boolean
+    ) {
+        return reach5.logout({ success.call(Unit) }, failure::call, authToken, sso)
     }
 
     fun getProfile(

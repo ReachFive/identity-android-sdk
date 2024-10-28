@@ -10,6 +10,7 @@ import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.requests.RevokeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
@@ -98,8 +99,25 @@ class ReachFive private constructor(
 
     fun logout(
         success: Success<Unit>,
-        @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        tokens: AuthToken? = null,
+        sso: Boolean = false
     ) {
+        tokens?.accessToken?.let {
+            reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, it, "access_token"))
+                .enqueue(ReachFiveApiCallback.noContent({}, failure))
+        }
+
+        tokens?.refreshToken?.let {
+            reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, it, "refresh_token"))
+                .enqueue(ReachFiveApiCallback.noContent({}, failure))
+        }
+
+        if (sso) {
+            reachFiveApi.logout(emptyMap())
+                .enqueue(ReachFiveApiCallback.noContent({}, failure))
+        }
+
         socialLoginAuth.logoutFromAll()
         success(Unit)
     }

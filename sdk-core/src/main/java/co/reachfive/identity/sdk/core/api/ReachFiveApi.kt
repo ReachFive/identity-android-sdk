@@ -67,6 +67,11 @@ interface ReachFiveApi {
     @GET("/oauth/authorize")
     fun authorize(@QueryMap options: Map<String, String>): Call<Unit>
 
+    @POST("/oauth/revoke")
+    fun revokeTokens(
+        @Body revokeRequest: RevokeRequest
+    ): Call<Unit>
+
     @GET("/identity/v1/logout")
     fun logout(@QueryMap options: Map<String, String>): Call<Unit>
 
@@ -269,6 +274,7 @@ interface ReachFiveApi {
             val client = OkHttpClient.Builder()
                 .addInterceptor(logging)
                 .addInterceptor(TokenEndpointCookieInterceptor(config.domain))
+                .addInterceptor(LogoutCookieInterceptor(config.domain))
                 .addNetworkInterceptor(AcceptLanguageInterceptor())
                 .build()
 
