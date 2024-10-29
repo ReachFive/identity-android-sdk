@@ -58,7 +58,12 @@ class ReachFive private constructor(
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient = WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
             val credentialManagerAuthClient =
-                CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils)
+                CredentialManagerAuthClient(
+                    reachFiveApi,
+                    sdkConfig,
+                    passwordAuthClient,
+                    sessionUtils
+                )
             val mfaClient = MfaClient(sdkConfig, reachFiveApi, sessionUtils)
 
             return ReachFive(
@@ -101,21 +106,27 @@ class ReachFive private constructor(
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         tokens: AuthToken? = null,
-        sso: Boolean = false
+        ssoWebView: Boolean = false,
+        ssoCustomTab: Activity? = null
     ) {
-        tokens?.accessToken?.let {
-            reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, it, "access_token"))
-                .enqueue(ReachFiveApiCallback.noContent({}, failure))
-        }
+        tokens?.accessToken?.let { Pair(it, "access_token") }
+            ?: tokens?.refreshToken?.let { Pair(it, "refresh_token") }
+                ?.let { (token, hint) ->
+                    Log.d(TAG, "revoke ${hint}: $token")
+                    reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, token, hint))
+                        .enqueue(ReachFiveApiCallback.noContent({}, failure))
+                }
 
-        tokens?.refreshToken?.let {
-            reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, it, "refresh_token"))
-                .enqueue(ReachFiveApiCallback.noContent({}, failure))
-        }
 
-        if (sso) {
+        if (ssoWebView) {
+            Log.d(TAG, "WebView logout")
             reachFiveApi.logout(emptyMap())
                 .enqueue(ReachFiveApiCallback.noContent({}, failure))
+        }
+
+        if (ssoCustomTab != null) {
+            Log.d(TAG, "CustomTab logout")
+            sessionUtils.logoutWithWeb(ssoCustomTab)
         }
 
         socialLoginAuth.logoutFromAll()

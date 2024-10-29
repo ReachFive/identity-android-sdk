@@ -2,16 +2,28 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.browser.customtabs.CustomTabsIntent
+import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.formatScope
 
+
 class RedirectionActivityLauncher(
     val sdkConfig: SdkConfig,
     val api: ReachFiveApi,
 ) {
+
+    fun logoutWithWeb(activity: Activity) {
+        Log.d(TAG, "logoutWithWeb")
+        val url = "https://${sdkConfig.domain}/identity/v1/logout?redirect_to=${sdkConfig.scheme}"
+        val intent = CustomTabsIntent.Builder().build()
+        intent.launchUrl(activity, Uri.parse(url))
+    }
 
     /**
      * Orchestrated login with a Custom Tab. The client must configure a Login URL and enable orchestration tokens
