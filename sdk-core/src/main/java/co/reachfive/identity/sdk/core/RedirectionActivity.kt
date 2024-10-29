@@ -44,14 +44,18 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"create")
+        Log.d(TAG, "create")
 
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
         val useWebView = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
         val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
-        if (useWebView)
+
+        if (urlString == null) {
+            Log.d(TAG, "RedirectionActivity onCreate: no URL")
+            finish()
+        } else if (useWebView)
             launchWebView(codeVerifier, urlString, originWebAuthn)
         else
             launchCustomTab(urlString, codeVerifier)
@@ -105,7 +109,7 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG,"onResume customTabStarted: $isCustomTabFlow")
+        Log.d(TAG, "onResume customTabStarted: $isCustomTabFlow")
 
         // When Custom Tab returns, the Redirection Activity resumes and we need to end it.
         if (isCustomTabFlow && !hasCustomTabStarted) {

@@ -36,6 +36,8 @@ internal interface SessionUtils {
         activity: Activity,
     )
 
+    fun logoutWithWeb(activity: Activity)
+
     fun loginWithWebView(
         scope: Collection<String> = defaultScope,
         state: String? = null,
@@ -236,6 +238,10 @@ class SessionUtilsClient(
         activity: Activity,
     ) {
         webLauncher.loginWithWeb(activity, scope, state, nonce, origin)
+    }
+
+    override fun logoutWithWeb(activity: Activity) {
+        webLauncher.logoutWithWeb(activity)
     }
 
     override fun loginWithWebView(
