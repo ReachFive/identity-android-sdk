@@ -104,7 +104,7 @@ class ReachFive private constructor(
 
     fun logout(
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>,
+        @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>,
         tokens: AuthToken? = null,
         ssoWebView: Boolean = false,
         ssoCustomTab: Activity? = null
@@ -114,14 +114,14 @@ class ReachFive private constructor(
                 ?.let { (token, hint) ->
                     Log.d(TAG, "revoke ${hint}: $token")
                     reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, token, hint))
-                        .enqueue(ReachFiveApiCallback.noContent({}, failure))
+                        .enqueue(ReachFiveApiCallback.noContent({}, {}))
                 }
 
 
         if (ssoWebView) {
             Log.d(TAG, "WebView logout")
             reachFiveApi.logout(emptyMap())
-                .enqueue(ReachFiveApiCallback.noContent({}, failure))
+                .enqueue(ReachFiveApiCallback.noContent({}, {}))
         }
 
         if (ssoCustomTab != null) {
