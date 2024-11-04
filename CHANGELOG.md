@@ -4,6 +4,7 @@
 
 ### Features
 - Save cookies from `https://$domain/oauth/token` to cookie jar
+- Logout method extend for native & custom tab SSO logout, and token revocation
 
 ## v9.3.0 (20/09/2024)
 
