@@ -14,6 +14,7 @@ import co.reachfive.identity.sdk.core.models.requests.RevokeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
+import retrofit2.Call
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
@@ -104,33 +105,40 @@ class ReachFive private constructor(
 
     fun logout(
         success: Success<Unit>,
-        @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>,
+        failure: Failure<ReachFiveError>,
         tokens: AuthToken? = null,
-        ssoWebView: Boolean = false,
         ssoCustomTab: Activity? = null
     ) {
-        tokens?.accessToken?.let { Pair(it, "access_token") }
+        val tokenToRevoke = tokens?.accessToken?.let { Pair(it, "access_token") }
             ?: tokens?.refreshToken?.let { Pair(it, "refresh_token") }
-                ?.let { (token, hint) ->
-                    Log.d(TAG, "revoke ${hint}: $token")
-                    reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, token, hint))
-                        .enqueue(ReachFiveApiCallback.noContent({}, {}))
-                }
+        val revokeCall = tokenToRevoke?.let { (token, hint) ->
+            {
+                Log.d(TAG, "revoke ${hint}: $token")
+                reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, token, hint))
+            }
+        }
 
-
-        if (ssoWebView) {
+        val logoutCall = {
             Log.d(TAG, "WebView logout")
             reachFiveApi.logout(emptyMap())
-                .enqueue(ReachFiveApiCallback.noContent({}, {}))
         }
 
-        if (ssoCustomTab != null) {
-            Log.d(TAG, "CustomTab logout")
-            sessionUtils.logoutWithWeb(ssoCustomTab)
+        val customTabCallback = {
+            if (ssoCustomTab != null) {
+                Log.d(TAG, "CustomTab logout")
+                sessionUtils.logoutWithWeb(ssoCustomTab)
+            }
+            success(Unit)
         }
 
-        socialLoginAuth.logoutFromAll()
-        success(Unit)
+        revokeCall?.let {
+            it().enqueue(ReachFiveApiCallback.noContent({
+                logoutCall()
+                    .enqueue(ReachFiveApiCallback.noContent({ customTabCallback() }, failure))
+            }, failure))
+        } ?: logoutCall()
+            .enqueue(ReachFiveApiCallback.noContent({ customTabCallback() }, failure))
+
     }
 
     fun onAddNewWebAuthnDeviceResult(
