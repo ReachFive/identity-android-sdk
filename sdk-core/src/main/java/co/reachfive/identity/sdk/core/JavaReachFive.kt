@@ -278,7 +278,7 @@ class JavaReachFive(
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>
     ) {
-        return reach5.logout({ success.call(Unit) }, failure::call, null)
+        return reach5.logout({ success.call(Unit) }, failure::call, null, null)
     }
 
     fun logout(
@@ -286,24 +286,24 @@ class JavaReachFive(
         failure: Callback<ReachFiveError>,
         authToken: AuthToken
     ) {
-        return reach5.logout({ success.call(Unit) }, failure::call, authToken)
+        return reach5.logout({ success.call(Unit) }, failure::call, authToken, null)
     }
 
     fun logout(
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>,
-        sso: Boolean
+        ssoCustomTab: Activity
     ) {
-        return reach5.logout({ success.call(Unit) }, failure::call, null, sso)
+        return reach5.logout({ success.call(Unit) }, failure::call, null, ssoCustomTab)
     }
 
     fun logout(
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>,
         authToken: AuthToken,
-        sso: Boolean
+        ssoCustomTab: Activity
     ) {
-        return reach5.logout({ success.call(Unit) }, failure::call, authToken, sso)
+        return reach5.logout({ success.call(Unit) }, failure::call, authToken, ssoCustomTab)
     }
 
     fun getProfile(
