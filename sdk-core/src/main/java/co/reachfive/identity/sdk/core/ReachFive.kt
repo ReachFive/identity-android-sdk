@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import android.util.Log
-import androidx.credentials.CredentialManager
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -14,7 +13,6 @@ import co.reachfive.identity.sdk.core.models.requests.RevokeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
-import retrofit2.Call
 
 class ReachFive private constructor(
     private val reachFiveApi: ReachFiveApi,
