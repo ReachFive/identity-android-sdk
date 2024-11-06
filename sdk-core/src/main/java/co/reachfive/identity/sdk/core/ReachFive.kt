@@ -232,6 +232,9 @@ class ReachFive private constructor(
     fun isReachFiveActionRequestCode(code: Int): Boolean =
         WebauthnAuth.isWebauthnActionRequestCode(code)
 
+    fun isReachFiveLogoutRequestCode(code: Int): Boolean =
+        RedirectionActivity.isLogoutRequestCode(code)
+
     private fun logNotReachFiveRequestCode(code: Int) {
         Log.d(TAG, "Request code ${code} does not match any ReachFive actions.")
     }

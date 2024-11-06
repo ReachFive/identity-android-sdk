@@ -38,13 +38,17 @@ class RedirectionActivity : ComponentActivity() {
 
         const val RC_WEBLOGIN = 52557
 
+        const val RC_WEBLOGOUT = 32478
+
         fun isLoginRequestCode(code: Int): Boolean =
             setOf(RC_WEBLOGIN).contains(code)
+
+        fun isLogoutRequestCode(code: Int): Boolean =
+            setOf(RC_WEBLOGOUT).contains(code)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "create")
 
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
@@ -53,7 +57,7 @@ class RedirectionActivity : ComponentActivity() {
         val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
 
         if (urlString == null) {
-            Log.d(TAG, "RedirectionActivity onCreate: no URL")
+            Log.d(TAG, "RedirectionActivity: no URL")
             finish()
         } else if (useWebView)
             launchWebView(codeVerifier, urlString, originWebAuthn)
@@ -109,7 +113,8 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume customTabStarted: $isCustomTabFlow")
+        Log.d(TAG, "RedirectionActivity onResume hasCustomTabStarted: $hasCustomTabStarted")
+        Log.d(TAG, "RedirectionActivity onResume isCustomTabFlow: $isCustomTabFlow")
 
         // When Custom Tab returns, the Redirection Activity resumes and we need to end it.
         if (isCustomTabFlow && !hasCustomTabStarted) {
@@ -131,6 +136,9 @@ class RedirectionActivity : ComponentActivity() {
 
         val scheme = intent.getStringExtra(SCHEME)
         val url = newIntent.data
+        Log.d(TAG, "RedirectionActivity onNewIntent url: $url")
+        Log.d(TAG, "RedirectionActivity onNewIntent scheme: $scheme")
+
         val isTargetR5 = intentClass == FQN && scheme != null && url.toString().startsWith(scheme)
         if (!isTargetR5) {
             Log.e(TAG, "Unrecognized intent class: $intentClass")
@@ -156,6 +164,7 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        Log.d(TAG, "RedirectionActivity onBackPressed")
 
         if (binding.webview.canGoBack()) {
             binding.webview.goBack()
@@ -172,6 +181,7 @@ class RedirectionActivity : ComponentActivity() {
                 // regex : (reachfive://word character: [a-zA-Z_0-9]/callback)(any character zero or more times)
                 val pattern = Pattern.compile("^(reachfive:\\/\\/\\w+\\/callback)(.*)$")
                 val isTargetReachFive = pattern.matcher(url.toString()).matches()
+                Log.d(TAG, "WebViewClient isTargetReachFive: $isTargetReachFive")
 
                 if (isTargetReachFive) {
                     val intent = Intent()
@@ -183,7 +193,7 @@ class RedirectionActivity : ComponentActivity() {
                 } else return false
             }
 
-            Log.d(TAG, "WebView: unexpected empty url.")
+            Log.d(TAG, "WebViewClient: unexpected empty url.")
             finish()
             return true
         }
@@ -191,9 +201,12 @@ class RedirectionActivity : ComponentActivity() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+                Log.d(TAG, "WebViewClient: passkey support available")
                 passkeyListener.onPageStarted()
                 binding.webview.evaluateJavascript(PasskeyWebListener.INJECTED_VAL, null)
-            }
+            } else
+                Log.d(TAG, "WebViewClient: no passkey support")
+
         }
     }
 
