@@ -38,13 +38,18 @@ class RedirectionActivity : ComponentActivity() {
 
         const val RC_WEBLOGIN = 52557
 
+        const val RC_WEBLOGOUT = 32478
+
         fun isLoginRequestCode(code: Int): Boolean =
             setOf(RC_WEBLOGIN).contains(code)
+
+        fun isLogoutRequestCode(code: Int): Boolean =
+            setOf(RC_WEBLOGOUT).contains(code)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "create")
+        Log.d(TAG,"create")
 
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
@@ -53,7 +58,7 @@ class RedirectionActivity : ComponentActivity() {
         val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
 
         if (urlString == null) {
-            Log.d(TAG, "RedirectionActivity onCreate: no URL")
+            Log.d(TAG, "RedirectionActivity: no URL")
             finish()
         } else if (useWebView)
             launchWebView(codeVerifier, urlString, originWebAuthn)
@@ -109,7 +114,7 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume customTabStarted: $isCustomTabFlow")
+        Log.d(TAG,"onResume customTabStarted: $isCustomTabFlow")
 
         // When Custom Tab returns, the Redirection Activity resumes and we need to end it.
         if (isCustomTabFlow && !hasCustomTabStarted) {

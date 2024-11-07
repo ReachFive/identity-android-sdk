@@ -23,6 +23,9 @@ class JavaReachFive(
     fun isReachFiveLoginRequestCode(code: Int): Boolean =
         reach5.isReachFiveLoginRequestCode(code)
 
+    fun isReachFiveLogoutRequestCode(code: Int): Boolean =
+        reach5.isReachFiveLogoutRequestCode(code)
+
     fun isReachFiveActionRequestCode(code: Int): Boolean =
         reach5.isReachFiveActionRequestCode(code)
 

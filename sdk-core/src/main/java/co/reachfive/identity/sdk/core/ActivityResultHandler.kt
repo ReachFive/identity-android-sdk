@@ -15,7 +15,12 @@ open class LoginResultHandler(
     val resultCode: Int,
     val intent: Intent?,
 ) : ActivityResultHandler {
-    fun handle(success: Success<AuthToken>, failure: Failure<ReachFiveError>, activity: Activity, origin: String? = null) {
+    fun handle(
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+        activity: Activity,
+        origin: String? = null
+    ) {
         reachFive.onLoginActivityResult(
             requestCode,
             resultCode,
@@ -25,6 +30,16 @@ open class LoginResultHandler(
             activity = activity,
             origin = origin
         )
+    }
+}
+
+open class LogoutResultHandler(
+    private val reachFive: ReachFive,
+    val requestCode: Int,
+    val intent: Intent?,
+) : ActivityResultHandler {
+    fun handle(success: Success<Unit>, failure: Failure<ReachFiveError>) {
+        reachFive.onLogoutResult(requestCode, intent, success, failure)
     }
 }
 
