@@ -38,7 +38,7 @@ class RedirectionActivity : ComponentActivity() {
 
         const val RC_WEBLOGIN = 52557
 
-        const val RC_WEBLOGOUT = 32478
+        const val RC_WEBLOGOUT = 52558
 
         fun isLoginRequestCode(code: Int): Boolean =
             setOf(RC_WEBLOGIN).contains(code)
