@@ -49,7 +49,6 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"create")
 
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
@@ -204,14 +203,10 @@ class RedirectionActivity : ComponentActivity() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
-                Log.d(TAG, "WebViewClient: passkey support available")
                 passkeyListener.onPageStarted()
                 binding.webview.evaluateJavascript(PasskeyWebListener.INJECTED_VAL, null)
-            } else
-                Log.d(TAG, "WebViewClient: no passkey support")
-
-
-    }
+            }
+        }
     }
 
 }
