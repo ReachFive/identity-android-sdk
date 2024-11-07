@@ -57,12 +57,7 @@ class ReachFive private constructor(
                 SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
             val webauthnAuthClient = WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
             val credentialManagerAuthClient =
-                CredentialManagerAuthClient(
-                    reachFiveApi,
-                    sdkConfig,
-                    passwordAuthClient,
-                    sessionUtils
-                )
+                CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils)
             val mfaClient = MfaClient(sdkConfig, reachFiveApi, sessionUtils)
 
             return ReachFive(
