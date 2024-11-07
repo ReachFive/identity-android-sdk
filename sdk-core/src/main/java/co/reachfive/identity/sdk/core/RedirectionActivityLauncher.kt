@@ -2,10 +2,6 @@ package co.reachfive.identity.sdk.core
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
-import android.util.Log
-import androidx.browser.customtabs.CustomTabsIntent
-import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
