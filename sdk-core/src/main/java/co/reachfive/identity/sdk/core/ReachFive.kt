@@ -210,18 +210,34 @@ class ReachFive private constructor(
         }
     }
 
+    fun onLogoutResult(
+        requestCode: Int,
+        intent: Intent?,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        if (requestCode == RedirectionActivity.RC_WEBLOGOUT)
+            if (intent != null)
+                success(Unit)
+            else
+                failure(ReachFiveError.NullIntent)
+        else logNotReachFiveRequestCode(requestCode)
+    }
+
     fun resolveResultHandler(
         requestCode: Int,
         resultCode: Int,
         intent: Intent?
     ): ActivityResultHandler? {
-        if (isReachFiveLoginRequestCode(requestCode))
-            return LoginResultHandler(this, requestCode, resultCode, intent)
+        return if (isReachFiveLoginRequestCode(requestCode))
+            LoginResultHandler(this, requestCode, resultCode, intent)
+        else if (isReachFiveLogoutRequestCode(requestCode))
+            LogoutResultHandler(this, requestCode, intent)
         else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode)) {
             if (WebauthnAuth.RC_REGISTER_DEVICE == requestCode)
-                return WebAuthnDeviceAddResult(this, requestCode, intent)
-            else return null
-        } else return null
+                WebAuthnDeviceAddResult(this, requestCode, intent)
+            else null
+        } else null
     }
 
     fun isReachFiveLoginRequestCode(code: Int): Boolean =
@@ -236,6 +252,6 @@ class ReachFive private constructor(
         RedirectionActivity.isLogoutRequestCode(code)
 
     private fun logNotReachFiveRequestCode(code: Int) {
-        Log.d(TAG, "Request code ${code} does not match any ReachFive actions.")
+        Log.d(TAG, "Request code $code does not match any ReachFive actions.")
     }
 }
