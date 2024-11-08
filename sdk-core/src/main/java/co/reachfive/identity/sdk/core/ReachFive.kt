@@ -106,19 +106,19 @@ class ReachFive private constructor(
             ?: tokens?.refreshToken?.let { Pair(it, "refresh_token") }
         val revokeCall = tokenToRevoke?.let { (token, hint) ->
             {
-                Log.d(TAG, "revoke ${hint}: $token")
+                Log.d(TAG, "logout revoke $hint")
                 reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, token, hint))
             }
         }
 
         val logoutCall = {
-            Log.d(TAG, "WebView logout")
+            Log.d(TAG, "logout WebView")
             reachFiveApi.logout(emptyMap())
         }
 
         val customTabCallback = {
             if (ssoCustomTab != null) {
-                Log.d(TAG, "CustomTab logout")
+                Log.d(TAG, "logout CustomTab")
                 sessionUtils.logoutWithWeb(ssoCustomTab)
             }
             success(Unit)
