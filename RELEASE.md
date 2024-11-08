@@ -4,7 +4,7 @@
 
 2. Describe the new features and the bug fixes in the [CHANGELOG.md](CHANGELOG.md) file.
 
-3. Upgrade the `x.y.z` version in `libversion.gradle`:
+3. Upgrade the `x.y.z` version in `libversion.gradle` if necessary:
 
 ```groovy
 ext.libversion="x.y.z"
