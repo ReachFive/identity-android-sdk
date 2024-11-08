@@ -113,8 +113,7 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "RedirectionActivity onResume hasCustomTabStarted: $hasCustomTabStarted")
-        Log.d(TAG, "RedirectionActivity onResume isCustomTabFlow: $isCustomTabFlow")
+        Log.d(TAG, "RedirectionActivity onResume hasCustomTabStarted: $hasCustomTabStarted ; isCustomTabFlow: $isCustomTabFlow")
 
         // When Custom Tab returns, the Redirection Activity resumes and we need to end it.
         if (isCustomTabFlow && !hasCustomTabStarted) {
@@ -136,8 +135,7 @@ class RedirectionActivity : ComponentActivity() {
 
         val scheme = intent.getStringExtra(SCHEME)
         val url = newIntent.data
-        Log.d(TAG, "RedirectionActivity onNewIntent url: $url")
-        Log.d(TAG, "RedirectionActivity onNewIntent scheme: $scheme")
+        Log.d(TAG, "RedirectionActivity onNewIntent\nurl: $url\nscheme: $scheme")
 
         val isTargetR5 = intentClass == FQN && scheme != null && url.toString().startsWith(scheme)
         if (!isTargetR5) {

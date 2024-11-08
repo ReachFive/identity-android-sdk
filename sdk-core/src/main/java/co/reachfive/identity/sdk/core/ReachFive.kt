@@ -106,7 +106,7 @@ class ReachFive private constructor(
             ?: tokens?.refreshToken?.let { Pair(it, "refresh_token") }
         val revokeCall = tokenToRevoke?.let { (token, hint) ->
             {
-                Log.d(TAG, "logout revoke ${hint}: $token")
+                Log.d(TAG, "logout revoke $hint")
                 reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, token, hint))
             }
         }
