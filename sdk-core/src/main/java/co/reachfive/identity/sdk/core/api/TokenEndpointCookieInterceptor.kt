@@ -14,7 +14,7 @@ class TokenEndpointCookieInterceptor(private val domain: String) : Interceptor {
         if (chain.request().url.toString().startsWith("https://$domain/oauth/token"))
             CookieManager.getInstance()?.let { cm ->
                 response.headers("Set-Cookie").forEach { cookie ->
-                    Log.d(TAG, "set cookie $cookie")
+                    Log.d(TAG, "set cookie")
                     cm.setCookie("https://$domain", cookie)
                 }
             }

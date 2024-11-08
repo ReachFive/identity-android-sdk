@@ -19,7 +19,7 @@ class LogoutCookieInterceptor(private val domain: String) : Interceptor {
                     val requestBuilder = originalRequest.newBuilder()
 
                     cookies.forEach {
-                        Log.d(TAG, "cookie attached to https://$domain/identity/v1/logout: $it")
+                        Log.d(TAG, "cookie attached to https://$domain/identity/v1/logout")
                         requestBuilder.addHeader("Cookie", it)
                     }
 
