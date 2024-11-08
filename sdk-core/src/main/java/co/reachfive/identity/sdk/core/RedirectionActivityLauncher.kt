@@ -8,10 +8,25 @@ import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.formatScope
 
+
 class RedirectionActivityLauncher(
     val sdkConfig: SdkConfig,
     val api: ReachFiveApi,
 ) {
+
+    fun logoutWithWeb(activity: Activity) {
+        val intent = Intent(activity, RedirectionActivity::class.java)
+        val redirectUri = sdkConfig.scheme
+        val request: Map<String, String> =
+            mapOf("redirect_to" to redirectUri) + SdkInfos.getQueries()
+
+        val url = api.logout(request).request().url.toString()
+
+        intent.putExtra(RedirectionActivity.URL_KEY, url)
+        intent.putExtra(RedirectionActivity.SCHEME, sdkConfig.scheme)
+        activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGOUT)
+
+    }
 
     /**
      * Orchestrated login with a Custom Tab. The client must configure a Login URL and enable orchestration tokens

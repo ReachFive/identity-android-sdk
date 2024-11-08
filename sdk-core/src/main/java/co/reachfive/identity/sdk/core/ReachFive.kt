@@ -4,12 +4,12 @@ import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import android.util.Log
-import androidx.credentials.CredentialManager
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.requests.RevokeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
@@ -98,10 +98,40 @@ class ReachFive private constructor(
 
     fun logout(
         success: Success<Unit>,
-        @Suppress("UNUSED_PARAMETER") failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        tokens: AuthToken? = null,
+        ssoCustomTab: Activity? = null
     ) {
-        socialLoginAuth.logoutFromAll()
-        success(Unit)
+        val tokenToRevoke = tokens?.accessToken?.let { Pair(it, "access_token") }
+            ?: tokens?.refreshToken?.let { Pair(it, "refresh_token") }
+        val revokeCall = tokenToRevoke?.let { (token, hint) ->
+            {
+                Log.d(TAG, "logout revoke $hint")
+                reachFiveApi.revokeTokens(RevokeRequest(sdkConfig.clientId, token, hint))
+            }
+        }
+
+        val logoutCall = {
+            Log.d(TAG, "logout WebView")
+            reachFiveApi.logout(emptyMap())
+        }
+
+        val customTabCallback = {
+            if (ssoCustomTab != null) {
+                Log.d(TAG, "logout CustomTab")
+                sessionUtils.logoutWithWeb(ssoCustomTab)
+            }
+            success(Unit)
+        }
+
+        revokeCall?.let {
+            it().enqueue(ReachFiveApiCallback.noContent({
+                logoutCall()
+                    .enqueue(ReachFiveApiCallback.noContent({ customTabCallback() }, failure))
+            }, failure))
+        } ?: logoutCall()
+            .enqueue(ReachFiveApiCallback.noContent({ customTabCallback() }, failure))
+
     }
 
     fun onAddNewWebAuthnDeviceResult(
@@ -175,18 +205,34 @@ class ReachFive private constructor(
         }
     }
 
+    fun onLogoutResult(
+        requestCode: Int,
+        intent: Intent?,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>,
+    ) {
+        if (requestCode == RedirectionActivity.RC_WEBLOGOUT)
+            if (intent != null)
+                success(Unit)
+            else
+                failure(ReachFiveError.NullIntent)
+        else logNotReachFiveRequestCode(requestCode)
+    }
+
     fun resolveResultHandler(
         requestCode: Int,
         resultCode: Int,
         intent: Intent?
     ): ActivityResultHandler? {
-        if (isReachFiveLoginRequestCode(requestCode))
-            return LoginResultHandler(this, requestCode, resultCode, intent)
+        return if (isReachFiveLoginRequestCode(requestCode))
+            LoginResultHandler(this, requestCode, resultCode, intent)
+        else if (isReachFiveLogoutRequestCode(requestCode))
+            LogoutResultHandler(this, requestCode, intent)
         else if (WebauthnAuth.isWebauthnActionRequestCode(requestCode)) {
             if (WebauthnAuth.RC_REGISTER_DEVICE == requestCode)
-                return WebAuthnDeviceAddResult(this, requestCode, intent)
-            else return null
-        } else return null
+                WebAuthnDeviceAddResult(this, requestCode, intent)
+            else null
+        } else null
     }
 
     fun isReachFiveLoginRequestCode(code: Int): Boolean =
@@ -197,7 +243,10 @@ class ReachFive private constructor(
     fun isReachFiveActionRequestCode(code: Int): Boolean =
         WebauthnAuth.isWebauthnActionRequestCode(code)
 
+    fun isReachFiveLogoutRequestCode(code: Int): Boolean =
+        RedirectionActivity.isLogoutRequestCode(code)
+
     private fun logNotReachFiveRequestCode(code: Int) {
-        Log.d(TAG, "Request code ${code} does not match any ReachFive actions.")
+        Log.d(TAG, "Request code $code does not match any ReachFive actions.")
     }
 }
