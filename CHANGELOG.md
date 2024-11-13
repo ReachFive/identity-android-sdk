@@ -2,6 +2,11 @@
  
 ## Unreleased
 
+## v9.4.1 (13/11/2024)
+
+### Changes
+- Remove cookies from the cookie jar on `logout`
+
 ## v9.4.0 (08/11/2024)
 
 ### Features
