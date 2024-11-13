@@ -6,12 +6,16 @@ import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class TokenEndpointCookieInterceptor(private val domain: String) : Interceptor {
+class SessionCookieInterceptor(private val domain: String) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
 
-        if (chain.request().url.toString().startsWith("https://$domain/oauth/token"))
+        val url =  chain.request().url.toString()
+        val isTokenEndpoint = url.startsWith("https://$domain/oauth/token")
+        val isLogoutEndpoint = url.startsWith("https://$domain/identity/v1/logout")
+
+        if (isTokenEndpoint || isLogoutEndpoint)
             CookieManager.getInstance()?.let { cm ->
                 response.headers("Set-Cookie").forEach { cookie ->
                     Log.d(TAG, "set cookie")

@@ -273,7 +273,7 @@ interface ReachFiveApi {
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(logging)
-                .addInterceptor(TokenEndpointCookieInterceptor(config.domain))
+                .addInterceptor(SessionCookieInterceptor(config.domain))
                 .addInterceptor(LogoutCookieInterceptor(config.domain))
                 .addNetworkInterceptor(AcceptLanguageInterceptor())
                 .build()
