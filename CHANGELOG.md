@@ -2,6 +2,10 @@
  
 ## Unreleased
 
+### Fixes
+
+- Fix WebView crash when WebAuthn is not configured
+
 ## v9.4.1 (13/11/2024)
 
 ### Changes

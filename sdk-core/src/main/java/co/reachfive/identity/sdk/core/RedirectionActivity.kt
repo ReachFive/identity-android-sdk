@@ -200,9 +200,12 @@ class RedirectionActivity : ComponentActivity() {
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER) && ::passkeyListener.isInitialized) {
+                Log.d(TAG, "RedirectionActivity onPageStarted: injecting passkey boilerplate")
                 passkeyListener.onPageStarted()
                 binding.webview.evaluateJavascript(PasskeyWebListener.INJECTED_VAL, null)
+            } else {
+                Log.d(TAG, "RedirectionActivity onPageStarted: not injecting passkey boilerplate")
             }
         }
     }
