@@ -155,7 +155,7 @@ class ReachFive private constructor(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity,
-        origin: String?
+        origin: String? = null,
     ) {
         when (requestCode) {
             WebauthnAuth.RC_LOGIN ->
