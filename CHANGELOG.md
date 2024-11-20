@@ -2,9 +2,12 @@
  
 ## Unreleased
 
+## v9.4.2 (20/11/2024)
+
 ### Fixes
 
 - Fix WebView crash when WebAuthn is not configured
+- Set default value `null` for `origin` parameter of `onLoginActivityResult`
 
 ## v9.4.1 (13/11/2024)
 
