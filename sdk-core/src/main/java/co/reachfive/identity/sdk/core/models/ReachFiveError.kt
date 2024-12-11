@@ -73,7 +73,7 @@ data class ReachFiveError(
     val data: ReachFiveApiError? = null,
 ) : java.lang.Exception(message), Parcelable {
 
-    fun getErrorCode(): ErrorCode? = code?.let { ErrorCode.valueOf(it.toString()) }
+    fun getErrorCode(): ErrorCode? = code?.let { ErrorCode.from(it) }
 
     fun getFidoErrorCode(): FidoError? = code?.let { tryOrNull { FidoError.toErrorCode(it) } }
 
