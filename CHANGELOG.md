@@ -2,6 +2,8 @@
  
 ## Unreleased
 
+## v9.4.3 (12/12/2024)
+
 ### Fixes
 
 - Fix `ReachFiveError.getErrorCode`.
