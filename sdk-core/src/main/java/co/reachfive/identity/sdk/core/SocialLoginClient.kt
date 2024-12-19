@@ -10,6 +10,7 @@ import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ProvidersConfigsResult
 import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
@@ -47,6 +48,7 @@ class SocialLoginAuthClient(
     private val reachFiveApi: ReachFiveApi,
     private val providersCreators: List<ProviderCreator>,
     private val sessionUtils: SessionUtilsClient,
+    private val sdkConfig: SdkConfig,
 ) : SocialLoginAuth {
 
     override fun loadSocialProviders(
@@ -134,12 +136,14 @@ class SocialLoginAuthClient(
                 nativeProvider != null -> nativeProvider.create(
                     config,
                     sessionUtils,
-                    context
+                    context,
+                    sdkConfig
                 )
                 webViewProvider != null -> webViewProvider.create(
                     config,
                     sessionUtils,
-                    context
+                    context,
+                    sdkConfig
                 )
                 else -> {
                     Log.w(

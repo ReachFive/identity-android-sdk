@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.api.LoginCallbackHandler
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
@@ -224,6 +225,41 @@ class SessionUtilsClient(
                     success,
                     failure,
                     sdkMethod = "loginCallback"
+                )
+            },
+            failure = failure
+        )
+    }
+
+    fun idTokenCallback(
+        provider: String,
+        idToken: String,
+        nonce: String,
+        scope: Collection<String>,
+        success: Success<AuthToken>,
+        failure: Failure<ReachFiveError>,
+        origin: String? = null
+    ) {
+        val redirectUri = sdkConfig.scheme
+        val pkce = PkceAuthCodeFlow.generate(redirectUri)
+
+        loginCallbackHandler.getAuthorizationCode(
+            provider = provider,
+            idToken = idToken,
+            nonce = nonce,
+            pkce = pkce,
+            clientId = sdkConfig.clientId,
+            redirectUri = redirectUri,
+            scope = scope,
+            origin = origin,
+            success = { authCode ->
+                exchangeAuthorizationCode(
+                    authCode,
+                    redirectUri,
+                    pkce.codeVerifier,
+                    success,
+                    failure,
+                    sdkMethod = "idTokenCallback"
                 )
             },
             failure = failure
