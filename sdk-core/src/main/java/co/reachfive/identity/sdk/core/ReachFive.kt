@@ -102,6 +102,8 @@ class ReachFive private constructor(
         tokens: AuthToken? = null,
         ssoCustomTab: Activity? = null
     ) {
+        socialLoginAuth.logoutFromAll()
+
         val tokenToRevoke = tokens?.accessToken?.let { Pair(it, "access_token") }
             ?: tokens?.refreshToken?.let { Pair(it, "refresh_token") }
         val revokeCall = tokenToRevoke?.let { (token, hint) ->

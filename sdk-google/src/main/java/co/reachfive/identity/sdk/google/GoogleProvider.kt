@@ -9,11 +9,13 @@ import android.os.CancellationSignal
 import android.util.Base64
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CredentialManagerCallback
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.ClearCredentialException
 import androidx.credentials.exceptions.GetCredentialException
 import co.reachfive.identity.sdk.core.Provider
 import co.reachfive.identity.sdk.core.ProviderCreator
@@ -170,5 +172,26 @@ internal class ConfiguredGoogleProvider(
                 failure(ReachFiveError.from("permission denied"))
             }
         }
+    }
+
+    override fun logout() {
+        val cancellationSignal = CancellationSignal()
+
+        credentialManager.clearCredentialStateAsync(
+            request = ClearCredentialStateRequest(),
+            cancellationSignal = cancellationSignal,
+            executor = ContextCompat.getMainExecutor(context),
+            callback = object: CredentialManagerCallback<Void?, ClearCredentialException> {
+
+                override fun onError(e: ClearCredentialException) {
+                    Log.e(TAG, "Error logging out from Google", e)
+                }
+
+                override fun onResult(result: Void?) {
+                    Log.d(TAG, "Successful logout from Google")
+                }
+
+            }
+        )
     }
 }
