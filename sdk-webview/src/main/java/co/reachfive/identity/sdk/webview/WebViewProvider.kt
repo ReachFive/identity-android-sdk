@@ -9,6 +9,7 @@ import co.reachfive.identity.sdk.core.SessionUtilsClient
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ProviderConfig
 import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.webview.WebViewProvider.Companion.REQUEST_CODE
@@ -19,7 +20,8 @@ class WebViewProvider : ProviderCreator {
     override fun create(
         providerConfig: ProviderConfig,
         sessionUtils: SessionUtilsClient,
-        context: Context
+        context: Context,
+        sdkConfig: SdkConfig,
     ): Provider {
         return ConfiguredWebViewProvider(providerConfig, sessionUtils)
     }

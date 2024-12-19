@@ -40,6 +40,8 @@ class RedirectionActivity : ComponentActivity() {
 
         const val RC_WEBLOGOUT = 52558
 
+        const val PROVIDER_KEY = "PROVIDER"
+
         fun isLoginRequestCode(code: Int): Boolean =
             setOf(RC_WEBLOGIN).contains(code)
 
@@ -56,7 +58,12 @@ class RedirectionActivity : ComponentActivity() {
         val useWebView = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
         val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
 
-        if (urlString == null) {
+        val provider = intent.getStringExtra(PROVIDER_KEY)
+
+        if (provider == "google") {
+            setResult(RESULT_OK)
+            finish()
+        } else if (urlString == null) {
             Log.d(TAG, "RedirectionActivity: no URL")
             finish()
         } else if (useWebView)

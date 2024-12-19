@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+
     implementation ext.kotlin_stdlib
     implementation libs.result
     implementation "com.google.android.gms:play-services-fido:20.1.0"

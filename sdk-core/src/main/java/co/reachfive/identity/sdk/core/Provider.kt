@@ -6,6 +6,7 @@ import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ProviderConfig
 import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
@@ -14,7 +15,8 @@ interface ProviderCreator {
     fun create(
         providerConfig: ProviderConfig,
         sessionUtils: SessionUtilsClient,
-        context: Context
+        context: Context,
+        sdkConfig: SdkConfig,
     ): Provider
 }
 

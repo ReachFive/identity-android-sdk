@@ -55,6 +55,41 @@ internal class LoginCallbackHandler(
             .enqueue(AuthCodeExtractorCallback(success, failure))
     }
 
+    fun getAuthorizationCode(
+        provider: String,
+        idToken: String,
+        pkce: PkceAuthCodeFlow,
+        clientId: String,
+        redirectUri: String,
+        scope: Collection<String>,
+        nonce: String,
+        origin: String? = null,
+        success: Success<String>,
+        failure: Failure<ReachFiveError>,
+    ) {
+
+        val maybeOrigin = if (origin != null) {
+            mapOf("origin" to origin)
+        } else emptyMap()
+
+        val query = mapOf(
+            "response_type" to "code",
+            "client_id" to clientId,
+            "redirect_uri" to redirectUri,
+            "scope" to formatScope(scope),
+            "response_mode" to "query",
+            "code_challenge" to pkce.codeChallenge,
+            "code_challenge_method" to pkce.codeChallengeMethod,
+            "id_token" to idToken,
+            "provider" to provider,
+            "nonce" to nonce,
+        ) + SdkInfos.getQueries() + maybeOrigin
+
+        noFollowClient
+            .loginCallback(query)
+            .enqueue(AuthCodeExtractorCallback(success, failure))
+    }
+
     companion object {
         fun create(sdkConfig: SdkConfig): LoginCallbackHandler {
             val logging = HttpLoggingInterceptor()
