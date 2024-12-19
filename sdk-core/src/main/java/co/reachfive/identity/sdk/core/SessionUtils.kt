@@ -3,7 +3,6 @@ package co.reachfive.identity.sdk.core
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.api.LoginCallbackHandler
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
