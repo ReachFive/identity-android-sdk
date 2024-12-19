@@ -77,7 +77,7 @@ internal class ConfiguredGoogleProvider(
         this.scope = scope
 
         // Going through the redirection activity is useless,
-        // this is merely a trick to preserve the Provider interface for now
+        // this is merely a trick to preserve the Provider interface for now till it is refactored
         val intent = Intent(activity, RedirectionActivity::class.java)
         intent.putExtra(RedirectionActivity.PROVIDER_KEY, providerConfig.provider)
         intent.putExtra(RedirectionActivity.SCHEME, sdkConfig.scheme)
@@ -93,21 +93,24 @@ internal class ConfiguredGoogleProvider(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>
     ) {
+
         val nonce = SecureRandom()
             .let { secureRandom -> ByteArray(32).also { secureRandom.nextBytes(it) } }
             .let { Base64.encodeToString(it, b64Flags) }
-
         val nonceHash = md.digest(nonce.toByteArray()).let { Base64.encodeToString(it, b64Flags) }
 
-        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(true)
+        val googleIdOption = GetGoogleIdOption.Builder()
             .setServerClientId(this.providerConfig.clientId)
-            .setAutoSelectEnabled(true)
             .setNonce(nonceHash)
+            // If `filterByAuthorizedAccounts = true`, the user will only be prompted for accounts
+            // that have already been registered and have not been deleted by the user, and no option
+            // is given to use another account.
+            // Note that if `true`, combined with `autoSelectEnabled` it would be possible to enable
+            // faster login.
+            .setFilterByAuthorizedAccounts(false)
             .build()
 
         val cancellationSignal = CancellationSignal()
-
         credentialManager.getCredentialAsync(
             context = context,
             request = GetCredentialRequest(listOf(googleIdOption)),
@@ -181,7 +184,7 @@ internal class ConfiguredGoogleProvider(
             request = ClearCredentialStateRequest(),
             cancellationSignal = cancellationSignal,
             executor = ContextCompat.getMainExecutor(context),
-            callback = object: CredentialManagerCallback<Void?, ClearCredentialException> {
+            callback = object : CredentialManagerCallback<Void?, ClearCredentialException> {
 
                 override fun onError(e: ClearCredentialException) {
                     Log.e(TAG, "Error logging out from Google", e)
@@ -194,4 +197,5 @@ internal class ConfiguredGoogleProvider(
             }
         )
     }
+
 }
