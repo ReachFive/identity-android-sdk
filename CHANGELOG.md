@@ -2,6 +2,8 @@
  
 ## Unreleased
 
+## v9.5.0 (08/01/2025)
+
 ### Changes
 
 - Replace deprecated Google Sign-In with Credential Manager for Google social login
