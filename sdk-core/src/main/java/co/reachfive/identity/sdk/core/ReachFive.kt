@@ -54,7 +54,7 @@ class ReachFive private constructor(
             val passwordlessAuthClient = PasswordlessAuthClient(reachFiveApi, sdkConfig)
             val profileManagementClient = ProfileManagementClient(reachFiveApi)
             val socialLoginAuthClient =
-                SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils)
+                SocialLoginAuthClient(reachFiveApi, providersCreators, sessionUtils, sdkConfig)
             val webauthnAuthClient = WebauthnAuthClient(reachFiveApi, sdkConfig, sessionUtils)
             val credentialManagerAuthClient =
                 CredentialManagerAuthClient(reachFiveApi, sdkConfig, passwordAuthClient, sessionUtils)
@@ -102,6 +102,8 @@ class ReachFive private constructor(
         tokens: AuthToken? = null,
         ssoCustomTab: Activity? = null
     ) {
+        socialLoginAuth.logoutFromAll()
+
         val tokenToRevoke = tokens?.accessToken?.let { Pair(it, "access_token") }
             ?: tokens?.refreshToken?.let { Pair(it, "refresh_token") }
         val revokeCall = tokenToRevoke?.let { (token, hint) ->

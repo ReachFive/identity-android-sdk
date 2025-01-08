@@ -9,6 +9,7 @@ import co.reachfive.identity.sdk.core.SessionUtilsClient
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.ProviderConfig
 import co.reachfive.identity.sdk.core.models.ReachFiveError
+import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.wechat.WechatProvider.Companion.REQUEST_CODE
@@ -25,6 +26,7 @@ class WechatProvider : ProviderCreator {
         providerConfig: ProviderConfig,
         sessionUtils: SessionUtilsClient,
         context: Context,
+        sdkConfig: SdkConfig,
     ): Provider {
         return ConfiguredWechatProvider(providerConfig, sessionUtils, context)
     }
