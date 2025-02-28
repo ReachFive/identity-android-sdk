@@ -8,7 +8,7 @@ defaults: &defaults
   docker:
     - image: cimg/android:2021.12.2
   environment:
-    JVM_OPTS: -Xmx3200m
+    JVM_OPTS: -Xmx4096m
 
 release_upload_steps: &release_upload_steps
   steps:
