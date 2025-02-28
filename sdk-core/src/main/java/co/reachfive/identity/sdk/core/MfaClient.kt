@@ -16,7 +16,7 @@ import co.reachfive.identity.sdk.core.models.requests.StartStepUpAuthTokenFlow
 import co.reachfive.identity.sdk.core.models.requests.StartStepUpFlow
 import co.reachfive.identity.sdk.core.models.requests.StartStepUpLoginFlow
 import co.reachfive.identity.sdk.core.models.requests.StartStepUpRequest
-import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
+import co.reachfive.identity.sdk.core.models.requests.VerifyMfaEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyMfaPasswordlessRequest
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
@@ -81,7 +81,7 @@ internal class MfaClient(
     ) {
         reachFiveApi.verifyMfaEmailRegistration(
             authToken.authHeader,
-            VerifyEmailRequest(verificationCode)
+            VerifyMfaEmailRequest(verificationCode)
         )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
