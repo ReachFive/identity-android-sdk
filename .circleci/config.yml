@@ -7,7 +7,7 @@ version: 2.1
 defaults: &defaults
   docker:
     - image: cimg/android:2021.12.2
-  resource_class: xlarge
+  resource_class: large
   environment:
     JVM_OPTS: -Xmx3600m
 
@@ -62,7 +62,7 @@ default_build_steps: &default_build_steps
         paths:
           - ~/.gradle
         key: v1-jars-{{ checksum "build.gradle" }}
-    - run: ./gradlew lint test build --debug
+    - run: ./gradlew lint test build
 
 jobs:
 
