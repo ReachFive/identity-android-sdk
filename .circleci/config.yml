@@ -61,7 +61,7 @@ default_build_steps: &default_build_steps
         paths:
           - ~/.gradle
         key: v1-jars-{{ checksum "build.gradle" }}
-    - run: ./gradlew lint test build
+    - run: ./gradlew lint test build --stacktrace
 
 jobs:
 
