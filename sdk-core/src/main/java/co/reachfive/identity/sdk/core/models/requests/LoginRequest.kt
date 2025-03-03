@@ -23,5 +23,6 @@ data class LoginRequest(
 @Parcelize
 data class LoginMfaConf(
     val activity: @RawValue Activity,
-    val redirectUri: String
+    @Deprecated("redirectUri will be removed in a future release")
+    val redirectUri: String? = null
 ) : Parcelable
