@@ -76,16 +76,16 @@ internal class PasswordAuthClient(
                     success = {
                         if(it.mfaRequired == true) {
                             if(mfaConf == null) {
-                                failure(ReachFiveError.from("A redirect url and an activity are required to achieve a login with password."))
+                                failure(ReachFiveError.from("An activity is required to achieve a login with password."))
                             } else {
-                                PkceAuthCodeFlow.generate(mfaConf.redirectUri).let { pkce ->
+                                PkceAuthCodeFlow.generate(sdkConfig.scheme).let { pkce ->
                                     PkceAuthCodeFlow.storeAuthCodeFlow(pkce, mfaConf.activity)
                                     reachFiveApi
                                         .getMfaStepUpToken(
                                             mapOf(),
                                             StartStepUpRequest(
                                                 clientId = sdkConfig.clientId,
-                                                redirectUri = mfaConf.redirectUri,
+                                                redirectUri = sdkConfig.scheme,
                                                 codeChallenge = pkce.codeChallenge,
                                                 codeChallengeMethod = pkce.codeChallengeMethod,
                                                 scope = formatScope(scope),
