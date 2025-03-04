@@ -88,6 +88,20 @@ interface ReachFiveApi {
         @QueryMap options: Map<String, String>
     ): Call<Unit>
 
+    @POST("/identity/v1/send-email-verification")
+    fun sendEmailVerification(
+        @Header("Authorization") authorization: String,
+        @Body sendVerificationEmailRequest: SendVerificationEmailRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
+    @POST("/identity/v1/verify-email")
+    fun verifyEmail(
+        @Header("Authorization") authorization: String,
+        @Body verifyEmailRequest: VerifyEmailRequest,
+        @QueryMap options: Map<String, String>
+    ): Call<Unit>
+
     @POST("/identity/v1/update-email")
     fun updateEmail(
         @Header("Authorization") authorization: String,
@@ -220,7 +234,7 @@ interface ReachFiveApi {
     @POST("/identity/v1/mfa/credentials/emails/verify")
     fun verifyMfaEmailRegistration(
         @Header("Authorization") authorization: String,
-        @Body verifyEmailRequest: VerifyEmailRequest
+        @Body verifyMfaEmailRequest: VerifyMfaEmailRequest
     ): Call<Unit>
 
     @GET("/identity/v1/mfa/credentials")
