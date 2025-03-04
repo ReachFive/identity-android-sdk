@@ -12,8 +12,8 @@ buildscript {
 
         libraries = [
                 result               : "com.github.kittinunf.result:result:5.2.0",
-                retrofit             : "com.squareup.retrofit2:retrofit:2.9.0", // TODO update
-                retrofitConverterGson: "com.squareup.retrofit2:converter-gson:2.9.0", // TODO update
+                retrofit             : "com.squareup.retrofit2:retrofit:2.9.0",
+                retrofitConverterGson: "com.squareup.retrofit2:converter-gson:2.9.0",
                 browser              : "androidx.browser:browser:1.8.0",
         ]
     }
