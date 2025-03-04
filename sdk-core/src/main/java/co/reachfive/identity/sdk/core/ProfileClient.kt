@@ -25,7 +25,9 @@ internal class ProfileManagementClient(
         reachFiveApi
             .getProfile(
                 authToken.authHeader,
-                SdkInfos.getQueries().plus(Pair("fields", fields.joinToString(",")))
+                SdkInfos.getQueries()
+                    .plus(Pair("fields", fields.joinToString(",")))
+                    .plus(Pair("flatcf", "true"))
             )
             .enqueue(ReachFiveApiCallback.withContent<Profile>(success, failure))
     }
