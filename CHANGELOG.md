@@ -2,6 +2,10 @@
  
 ## Unreleased
 
+### Features
+
+- Support for structured custom fields (with fully qualified path)
+
 ## v9.5.0 (08/01/2025)
 
 ### Changes
