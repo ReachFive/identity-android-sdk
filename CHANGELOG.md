@@ -1,6 +1,7 @@
 # Changelog
  
 ## Unreleased
+- trusted device cookie is set during verify passwordless when trust device is true
 
 ## v9.6.0 (04/03/2025)
 
