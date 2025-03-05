@@ -14,8 +14,9 @@ class SessionCookieInterceptor(private val domain: String) : Interceptor {
         val url =  chain.request().url.toString()
         val isTokenEndpoint = url.startsWith("https://$domain/oauth/token")
         val isLogoutEndpoint = url.startsWith("https://$domain/identity/v1/logout")
+        val isVerifyPasswordless = url.startsWith("https://$domain/identity/v1/passwordless/verify")
 
-        if (isTokenEndpoint || isLogoutEndpoint)
+        if (isTokenEndpoint || isLogoutEndpoint || isVerifyPasswordless)
             CookieManager.getInstance()?.let { cm ->
                 response.headers("Set-Cookie").forEach { cookie ->
                     Log.d(TAG, "set cookie")
