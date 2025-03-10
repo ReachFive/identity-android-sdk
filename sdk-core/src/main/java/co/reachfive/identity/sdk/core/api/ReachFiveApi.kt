@@ -289,6 +289,7 @@ interface ReachFiveApi {
                 .addInterceptor(logging)
                 .addInterceptor(SessionCookieInterceptor(config.domain))
                 .addInterceptor(LogoutCookieInterceptor(config.domain))
+                .addInterceptor(TrustedDeviceCookieInterceptor(config.domain))
                 .addNetworkInterceptor(AcceptLanguageInterceptor())
                 .build()
 
