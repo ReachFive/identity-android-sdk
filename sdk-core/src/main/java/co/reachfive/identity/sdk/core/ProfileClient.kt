@@ -12,6 +12,7 @@ import co.reachfive.identity.sdk.core.models.requests.UpdateEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.UpdatePhoneNumberRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyPhoneNumberRequest
+import co.reachfive.identity.sdk.core.models.responses.EmailVerification
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
@@ -95,12 +96,12 @@ internal class ProfileManagementClient(
         authToken: AuthToken,
         redirectUrl: String?,
         returnToAfterEmailConfirmation: String?,
-        success: Success<Unit>,
+        success: Success<EmailVerification>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi
             .sendEmailVerification(authToken.authHeader, SendVerificationEmailRequest(redirectUrl, returnToAfterEmailConfirmation), SdkInfos.getQueries())
-            .enqueue(ReachFiveApiCallback.noContent(success, failure))
+            .enqueue(ReachFiveApiCallback.withContent<EmailVerification>(success, failure))
     }
 
     override fun verifyEmail(
@@ -207,7 +208,7 @@ internal interface ProfileManagement {
         authToken: AuthToken,
         redirectUrl: String? = null,
         returnToAfterEmailConfirmation: String? = null,
-        success: Success<Unit>,
+        success: Success<EmailVerification>,
         failure: Failure<ReachFiveError>
     )
 

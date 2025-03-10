@@ -8,6 +8,7 @@ import co.reachfive.identity.sdk.core.models.requests.*
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
+import co.reachfive.identity.sdk.core.models.responses.EmailVerification
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
 import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
@@ -93,7 +94,7 @@ interface ReachFiveApi {
         @Header("Authorization") authorization: String,
         @Body sendVerificationEmailRequest: SendVerificationEmailRequest,
         @QueryMap options: Map<String, String>
-    ): Call<Unit>
+    ): Call<EmailVerification>
 
     @POST("/identity/v1/verify-email")
     fun verifyEmail(
