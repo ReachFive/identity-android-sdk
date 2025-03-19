@@ -7,9 +7,12 @@ import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkInfos
+import co.reachfive.identity.sdk.core.models.requests.SendVerificationEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.UpdateEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.UpdatePhoneNumberRequest
+import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyPhoneNumberRequest
+import co.reachfive.identity.sdk.core.models.responses.EmailVerification
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
@@ -87,6 +90,29 @@ internal class ProfileManagementClient(
         reachFiveApi
             .updateProfile(authToken.authHeader, profile, SdkInfos.getQueries())
             .enqueue(ReachFiveApiCallback.withContent<Profile>(success, failure))
+    }
+
+    override fun sendEmailVerification(
+        authToken: AuthToken,
+        redirectUrl: String?,
+        returnToAfterEmailConfirmation: String?,
+        success: Success<EmailVerification>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi
+            .sendEmailVerification(authToken.authHeader, SendVerificationEmailRequest(redirectUrl, returnToAfterEmailConfirmation), SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback.withContent<EmailVerification>(success, failure))
+    }
+
+    override fun verifyEmail(
+        authToken: AuthToken,
+        email: String,
+        verificationCode: String,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi.verifyEmail(authToken.authHeader, VerifyEmailRequest(verificationCode, email), SdkInfos.getQueries())
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
 }
 
@@ -175,6 +201,22 @@ internal interface ProfileManagement {
         authToken: AuthToken,
         profile: Profile,
         success: Success<Profile>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun sendEmailVerification(
+        authToken: AuthToken,
+        redirectUrl: String? = null,
+        returnToAfterEmailConfirmation: String? = null,
+        success: Success<EmailVerification>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun verifyEmail(
+        authToken: AuthToken,
+        email: String,
+        verificationCode: String,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     )
 }
