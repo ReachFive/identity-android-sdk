@@ -1,5 +1,11 @@
 # Changelog
  
+## v9.8.0 (26/03/2025)
+
+### Features
+
+- Add sendEmailVerification and verifyEmail
+
 ## v9.7.0 (06/03/2025)
 
 ### Features
