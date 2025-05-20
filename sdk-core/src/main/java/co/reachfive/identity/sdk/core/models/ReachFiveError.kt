@@ -146,6 +146,12 @@ data class ReachFiveError(
         )
 
         @JvmStatic
+        val CustomTabUnavailable = ReachFiveError(
+            code = ErrorCode.CustomTabUnavailable.code,
+            message = "Custom Tab activity failed to start."
+        )
+
+        @JvmStatic
         val NoAuthCode = ReachFiveError(
             code = ErrorCode.NoPkce.code,
             message = "No authorization code could be found when expected."

@@ -16,6 +16,7 @@ import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.databinding.ReachfiveWebviewBinding
+import co.reachfive.identity.sdk.core.models.ErrorCode
 import co.reachfive.identity.sdk.core.utils.PasskeyWebListener
 import java.util.regex.Pattern
 
@@ -81,7 +82,13 @@ class RedirectionActivity : ComponentActivity() {
         customTabsIntent.data = Uri.parse(urlString)
         customTabsIntent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
 
-        startActivity(customTabsIntent)
+        try {
+            startActivity(customTabsIntent)
+        } catch(e: Exception) {
+            Log.e(TAG, "RedirectionActivity launchCustomTab error: ${e.message}")
+            setResult(ErrorCode.CustomTabUnavailable.code)
+            finish()
+        }
     }
 
     private fun launchWebView(codeVerifier: String?, urlString: String?, originWebAuthn: String?) {
