@@ -170,7 +170,7 @@ class RedirectionActivity : ComponentActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
 
-        if (binding.webview.canGoBack()) {
+        if (::binding.isInitialized && binding.webview.canGoBack()) {
             Log.d(TAG, "RedirectionActivity onBackPressed go back")
             binding.webview.goBack()
         } else {
