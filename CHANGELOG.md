@@ -1,5 +1,12 @@
 # Changelog
  
+## v9.8.1 (27/05/2025)
+
+### Fixes
+
+- Guard against crash that may occur within a small amount of time loading a custom tab
+- Catch exception raised by custom tab initialization
+
 ## v9.8.0 (26/03/2025)
 
 ### Features
