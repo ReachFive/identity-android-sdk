@@ -4,7 +4,7 @@
 
 ### Fixes
 
-- Guard against crash that may occur within a small amount of time loading a custom tab
+- Guard against crash that may occur within a small amount of time before loading a custom tab
 - Catch exception raised by custom tab initialization
 
 ## v9.8.0 (26/03/2025)
