@@ -7,6 +7,7 @@ import android.util.Log
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.ErrorCode
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.requests.RevokeRequest
@@ -190,6 +191,8 @@ class ReachFive private constructor(
                 if (RedirectionActivity.isLoginRequestCode(requestCode)) {
                     if (resultCode == RESULT_CANCELED)
                         failure(ReachFiveError.WebFlowCanceled)
+                    else if (resultCode == ErrorCode.CustomTabUnavailable.code)
+                        failure(ReachFiveError.CustomTabUnavailable)
                     else if (intent != null)
                         sessionUtils.handleAuthorizationCompletion(intent, success, failure)
                     else
