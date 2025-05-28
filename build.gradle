@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = "1.8.22"
+        kotlin_version = "1.9.25"
         kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
         androidSettings = [
@@ -25,7 +25,7 @@ buildscript {
 
     dependencies {
         classpath "com.github.ben-manes:gradle-versions-plugin:0.51.0"
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath "com.google.gms:google-services:4.4.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.github.dcendents:android-maven-gradle-plugin:2.1"
@@ -70,7 +70,16 @@ subprojects {
     }
 
     android {
+
         compileSdkVersion androidSettings.compile_sdk_version
+
+        kotlinOptions {
+            jvmTarget = '1.8'
+        }
+
+        buildFeatures {
+            buildConfig true
+        }
 
         defaultConfig {
             minSdkVersion androidSettings.min_sdk_version

@@ -2,6 +2,8 @@ def ext = rootProject.ext
 def libs = ext.libraries
 
 android {
+    namespace 'co.reachfive.identity.sdk.webview'
+
     buildFeatures {
         viewBinding true
     }

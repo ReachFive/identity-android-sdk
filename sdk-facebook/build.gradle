@@ -3,6 +3,10 @@ apply plugin: "com.android.library"
 def ext = rootProject.ext
 def libs = ext.libraries
 
+android {
+    namespace 'co.reachfive.identity.sdk.facebook'
+}
+
 dependencies {
     implementation project(":sdk-core")
 
