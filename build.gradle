@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = "1.9.25"
+        kotlin_version = '2.1.21'
         kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
         androidSettings = [
@@ -11,9 +11,9 @@ buildscript {
         ]
 
         libraries = [
-                result               : "com.github.kittinunf.result:result:5.2.0",
-                retrofit             : "com.squareup.retrofit2:retrofit:2.9.0",
-                retrofitConverterGson: "com.squareup.retrofit2:converter-gson:2.9.0",
+                result               : "com.github.kittinunf.result:result:5.6.0",
+                retrofit             : "com.squareup.retrofit2:retrofit:3.0.0",
+                retrofitConverterGson: "com.squareup.retrofit2:converter-gson:3.0.0",
                 browser              : "androidx.browser:browser:1.8.0",
         ]
     }
@@ -24,8 +24,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.51.0"
-        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath 'com.android.tools.build:gradle:8.10.1'
         classpath "com.google.gms:google-services:4.4.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.github.dcendents:android-maven-gradle-plugin:2.1"
@@ -34,7 +33,6 @@ buildscript {
 
 plugins {
     id 'base'
-    id "com.github.ben-manes.versions" version "0.51.0"
     id 'org.jreleaser' version '1.18.0'
 }
 
@@ -62,6 +60,11 @@ subprojects {
     android {
 
         compileSdkVersion androidSettings.compile_sdk_version
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
 
         kotlinOptions {
             jvmTarget = '1.8'
