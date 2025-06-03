@@ -18,17 +18,18 @@ release_upload_steps: &release_upload_steps
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
-        name: Inject Maven signing key
-        command: |
-          echo "ext.signingKey=\"$SIGNING_KEY\"" > signingkey.gradle
-    - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
     - save_cache:
         paths:
           - ~/.gradle
         key: v2-jars-{{ checksum "build.gradle" }}
-    - run: ./gradlew clean build publishToSonatype closeAndReleaseSonatypeStagingRepository
+    - run:
+        name: Stage artifacts
+        command: ./gradlew clean build publishReleasePublicationToLocalStagingRepository
+    - run:
+        name: Deploy artifacts to Maven Central
+        command: ./gradlew jreleaserDeploy
 
 snapshot_upload_steps: &snapshot_upload_steps
   steps:
@@ -47,7 +48,7 @@ snapshot_upload_steps: &snapshot_upload_steps
         paths:
           - ~/.gradle
         key: v2-jars-{{ checksum "build.gradle" }}
-    - run: ./gradlew -Psnapshot clean build publishToSonatype
+    - run: ./gradlew -P snapshot clean build publishReleasePublicationToSonatypeSnapshotsRepository
 
 default_build_steps: &default_build_steps
   steps:

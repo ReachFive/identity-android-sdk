@@ -1,4 +1,6 @@
-ext.ossrhUsername = null
-ext.ossrhPassword = null
+ext.signingKeyPassphrase = null
 ext.signingKey = null
-ext.signingKeyPwd = null
+ext.signingKeyPublic = null
+ext.githubToken = null
+ext.sonatypeUsername = null
+ext.sonatypePassword = null
