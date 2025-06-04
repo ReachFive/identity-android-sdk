@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = '2.1.21'
+        kotlin_version = "2.1.21"
         kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
         androidSettings = [
@@ -24,16 +24,16 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.10.1'
-        classpath "com.google.gms:google-services:4.4.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.github.dcendents:android-maven-gradle-plugin:2.1"
+        classpath("com.android.tools.build:gradle:8.10.1")
+        classpath("com.google.gms:google-services:4.4.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
     }
 }
 
 plugins {
-    id 'base'
-    id 'org.jreleaser' version '1.18.0'
+    id("base")
+    id("org.jreleaser") version "1.18.0"
 }
 
 apply from: rootProject.file("libversion.gradle")
@@ -59,38 +59,38 @@ subprojects {
 
     android {
 
-        compileSdkVersion androidSettings.compile_sdk_version
+        compileSdkVersion = androidSettings.compile_sdk_version
 
         compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
         }
 
         kotlinOptions {
-            jvmTarget = '1.8'
+            jvmTarget = "1.8"
         }
 
         buildFeatures {
-            buildConfig true
+            buildConfig = true
         }
 
         defaultConfig {
-            minSdkVersion androidSettings.min_sdk_version
-            targetSdkVersion androidSettings.target_sdk_version
-            versionCode androidSettings.version_code
-            versionName this.version
+            minSdkVersion = androidSettings.min_sdk_version
+            targetSdkVersion = androidSettings.target_sdk_version
+            versionCode = androidSettings.version_code
+            versionName = this.version
             buildConfigField("String", "r5_sdk_version", "\"$libversion\"")
         }
 
         buildTypes {
             release {
-                minifyEnabled false
-                proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+                minifyEnabled = false
+                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             }
         }
 
         lintOptions {
-            abortOnError false
+            abortOnError = false
         }
     }
 
@@ -98,35 +98,35 @@ subprojects {
         publishing {
             publications {
                 release(MavenPublication) {
-                    from components.release
+                    from(components.release)
 
                     pom {
-                        name = 'ReachFive'
-                        description = 'SDK'
-                        inceptionYear = '2019'
-                        url = 'https://github.com/ReachFive/identity-android-sdk'
+                        name = "ReachFive"
+                        description = "SDK"
+                        inceptionYear = "2019"
+                        url = "https://github.com/ReachFive/identity-android-sdk"
 
                         groupId = this.group
                         version = this.version
-                        packaging = 'aar'
+                        packaging = "aar"
 
                         licenses {
                             license {
-                                name = 'The MIT License (MIT)'
-                                url = 'https://opensource.org/licenses/MIT'
+                                name = "The MIT License (MIT)"
+                                url = "https://opensource.org/licenses/MIT"
                             }
                         }
 
                         scm {
-                            connection = 'https://github.com/ReachFive/identity-android-sdk.git'
-                            url = 'https://github.com/ReachFive/identity-android-sdk'
+                            connection = "https://github.com/ReachFive/identity-android-sdk.git"
+                            url = "https://github.com/ReachFive/identity-android-sdk"
 
                         }
 
                         developers {
                             developer {
-                                id = 'reachfive'
-                                name = 'Reachfive'
+                                id = "reachfive"
+                                name = "Reachfive"
                             }
                         }
                     }
@@ -135,12 +135,12 @@ subprojects {
 
             repositories {
                 maven {
-                    name = 'localStaging'
-                    url = layout.buildDirectory.dir('staging-deploy')
+                    name = "localStaging"
+                    url = layout.buildDirectory.dir("staging-deploy")
                 }
                 maven {
-                    name = 'sonatypeSnapshots'
-                    url = 'https://central.sonatype.com/repository/maven-snapshots/'
+                    name = "sonatypeSnapshots"
+                    url = "https://central.sonatype.com/repository/maven-snapshots/"
                     credentials {
                         username = sonatypeUsername
                         password = sonatypePassword
@@ -152,13 +152,13 @@ subprojects {
         if (signingKey != null) {
             signing {
                 useInMemoryPgpKeys(signingKey, signingKeyPassphrase)
-                sign publishing.publications.release
+                sign(publishing.publications.release)
             }
         }
 
         jreleaser {
             signing {
-                active = 'ALWAYS'
+                active = "ALWAYS"
                 armored = true
                 passphrase = signingKeyPassphrase
                 secretKey = signingKey
@@ -168,8 +168,8 @@ subprojects {
                 maven {
                     mavenCentral {
                         sonatype {
-                            active = 'RELEASE'
-                            url = 'https://central.sonatype.com/api/v1/publisher'
+                            active = "RELEASE"
+                            url = "https://central.sonatype.com/api/v1/publisher"
                             stagingRepository(layout.buildDirectory.dir("staging-deploy").get().toString())
                             username = sonatypeUsername
                             password = sonatypePassword

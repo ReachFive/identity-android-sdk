@@ -2,7 +2,7 @@ def ext = rootProject.ext
 def libs = ext.libraries
 
 android {
-    namespace 'co.reachfive.identity.sdk.wechat'
+    namespace "co.reachfive.identity.sdk.wechat"
 }
 
 dependencies {

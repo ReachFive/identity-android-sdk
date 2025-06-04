@@ -4,7 +4,7 @@ def ext = rootProject.ext
 def libs = ext.libraries
 
 android {
-    namespace 'co.reachfive.identity.sdk.facebook'
+    namespace "co.reachfive.identity.sdk.facebook"
 }
 
 dependencies {
