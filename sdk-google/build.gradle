@@ -1,6 +1,10 @@
 def ext = rootProject.ext
 def libs = ext.libraries
 
+android {
+    namespace "co.reachfive.identity.sdk.google"
+}
+
 dependencies {
     implementation project(":sdk-core")
 
@@ -8,6 +12,6 @@ dependencies {
     implementation libs.retrofit
     implementation libs.result
     implementation "com.google.android.gms:play-services-auth:21.3.0"
-    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
+    implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
     
 }

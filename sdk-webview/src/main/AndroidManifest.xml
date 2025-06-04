@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="co.reachfive.identity.sdk.webview">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <queries>
         <intent>
