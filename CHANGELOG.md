@@ -1,5 +1,11 @@
 # Changelog
  
+## v9.9.0 (12/06/2025)
+
+### Changes
+
+- Upgrade project to Kotlin 2.0.0, upgrade dependencies.
+
 ## v9.8.1 (27/05/2025)
 
 ### Fixes
