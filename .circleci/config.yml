@@ -18,6 +18,11 @@ release_upload_steps: &release_upload_steps
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
+        name: Inject signing key
+        command: |
+          echo "ext.signingKey=\"$SIGNING_KEY\"" > signingkey.gradle
+          echo "ext.signingKeyPublic=\"$SIGNING_KEY_PUBLIC\"" >> signingkey.gradle
+    - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
     - save_cache:
@@ -38,9 +43,10 @@ snapshot_upload_steps: &snapshot_upload_steps
     - restore_cache:
         key: v1-jars-{{ checksum "build.gradle" }}
     - run:
-        name: Inject Maven signing key
+        name: Inject signing key
         command: |
           echo "ext.signingKey=\"$SIGNING_KEY\"" > signingkey.gradle
+          echo "ext.signingKeyPublic=\"$SIGNING_KEY_PUBLIC\"" >> signingkey.gradle
     - run:
         name: Download Dependencies
         command: ./gradlew androidDependencies
