@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = "1.8.22"
+        kotlin_version = "2.0.0"
         kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
         androidSettings = [
@@ -11,9 +11,9 @@ buildscript {
         ]
 
         libraries = [
-                result               : "com.github.kittinunf.result:result:5.2.0",
-                retrofit             : "com.squareup.retrofit2:retrofit:2.9.0",
-                retrofitConverterGson: "com.squareup.retrofit2:converter-gson:2.9.0",
+                result               : "com.github.kittinunf.result:result:5.6.0",
+                retrofit             : "com.squareup.retrofit2:retrofit:2.12.0",
+                retrofitConverterGson: "com.squareup.retrofit2:converter-gson:2.12.0",
                 browser              : "androidx.browser:browser:1.8.0",
         ]
     }
@@ -24,17 +24,16 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.51.0"
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "com.google.gms:google-services:4.4.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.github.dcendents:android-maven-gradle-plugin:2.1"
+        classpath("com.android.tools.build:gradle:8.5.0")
+        classpath("com.google.gms:google-services:4.4.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
     }
 }
 
 plugins {
-    id "io.github.gradle-nexus.publish-plugin" version "1.3.0"
-    id "com.github.ben-manes.versions" version "0.51.0"
+    id("base")
+    id("org.jreleaser") version "1.18.0"
 }
 
 apply from: rootProject.file("libversion.gradle")
@@ -45,17 +44,6 @@ if (project.hasProperty("snapshot")) {
     version = libversion + "-SNAPSHOT"
 } else {
     version = libversion
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username = ossrhUsername
-            password = ossrhPassword
-        }
-    }
 }
 
 subprojects {
@@ -70,25 +58,39 @@ subprojects {
     }
 
     android {
-        compileSdkVersion androidSettings.compile_sdk_version
+
+        compileSdkVersion = androidSettings.compile_sdk_version
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+
+        buildFeatures {
+            buildConfig = true
+        }
 
         defaultConfig {
-            minSdkVersion androidSettings.min_sdk_version
-            targetSdkVersion androidSettings.target_sdk_version
-            versionCode androidSettings.version_code
-            versionName this.version
+            minSdkVersion = androidSettings.min_sdk_version
+            targetSdkVersion = androidSettings.target_sdk_version
+            versionCode = androidSettings.version_code
+            versionName = this.version
             buildConfigField("String", "r5_sdk_version", "\"$libversion\"")
         }
 
         buildTypes {
             release {
-                minifyEnabled false
-                proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+                minifyEnabled = false
+                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             }
         }
 
         lintOptions {
-            abortOnError false
+            abortOnError = false
         }
     }
 
@@ -96,37 +98,52 @@ subprojects {
         publishing {
             publications {
                 release(MavenPublication) {
-                    from components.release
+                    from(components.release)
 
                     pom {
-                        name = 'ReachFive'
-                        description = 'SDK'
-                        inceptionYear = '2019'
-                        url = 'https://github.com/ReachFive/identity-android-sdk'
+                        name = "ReachFive"
+                        description = "SDK"
+                        inceptionYear = "2019"
+                        url = "https://github.com/ReachFive/identity-android-sdk"
 
                         groupId = this.group
                         version = this.version
-                        packaging = 'aar'
+                        packaging = "aar"
 
                         licenses {
                             license {
-                                name = 'The MIT License (MIT)'
-                                url = 'https://opensource.org/licenses/MIT'
+                                name = "The MIT License (MIT)"
+                                url = "https://opensource.org/licenses/MIT"
                             }
                         }
 
                         scm {
-                            connection = 'https://github.com/ReachFive/identity-android-sdk.git'
-                            url = 'https://github.com/ReachFive/identity-android-sdk'
+                            connection = "https://github.com/ReachFive/identity-android-sdk.git"
+                            url = "https://github.com/ReachFive/identity-android-sdk"
 
                         }
 
                         developers {
                             developer {
-                                id = 'reachfive'
-                                name = 'Reachfive'
+                                id = "reachfive"
+                                name = "Reachfive"
                             }
                         }
+                    }
+                }
+            }
+
+            repositories {
+                maven {
+                    name = "localStaging"
+                    url = layout.buildDirectory.dir("staging-deploy")
+                }
+                maven {
+                    name = "sonatypeSnapshots"
+                    url = "https://central.sonatype.com/repository/maven-snapshots/"
+                    credentials {
+                        username = sonatypeUsername
+                        password = sonatypePassword
                     }
                 }
             }
@@ -134,8 +151,32 @@ subprojects {
 
         if (signingKey != null) {
             signing {
-                useInMemoryPgpKeys(signingKey, signingKeyPwd)
-                sign publishing.publications.release
+                useInMemoryPgpKeys(signingKey, signingKeyPassphrase)
+                sign(publishing.publications.release)
+            }
+        }
+
+        jreleaser {
+            signing {
+                active = "ALWAYS"
+                armored = true
+                passphrase = signingKeyPassphrase
+                secretKey = signingKey
+                publicKey = signingKeyPublic
+            }
+            deploy {
+                maven {
+                    mavenCentral {
+                        sonatype {
+                            active = "RELEASE"
+                            url = "https://central.sonatype.com/api/v1/publisher"
+                            stagingRepository(layout.buildDirectory.dir("staging-deploy").get().toString())
+                            username = sonatypeUsername
+                            password = sonatypePassword
+                            verifyPom = false
+                        }
+                    }
+                }
             }
         }
     }
