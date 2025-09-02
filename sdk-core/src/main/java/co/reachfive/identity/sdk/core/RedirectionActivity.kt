@@ -101,6 +101,7 @@ class RedirectionActivity : ComponentActivity() {
         binding.webview.apply {
             @SuppressLint("SetJavaScriptEnabled")
             settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
             webViewClient = ReachFiveWebViewClient(codeVerifier)
         }
 
