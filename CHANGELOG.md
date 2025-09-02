@@ -1,5 +1,11 @@
 # Changelog
  
+## v9.9.1 (02/09/2025)
+
+### Fixes 
+
+- Enable dom storage for step up in login webview
+
 ## v9.9.0 (12/06/2025)
 
 ### Changes
