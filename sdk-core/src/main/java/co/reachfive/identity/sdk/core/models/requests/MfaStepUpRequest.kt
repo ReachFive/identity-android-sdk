@@ -16,7 +16,8 @@ abstract class StartStepUpFlow {
 data class StartStepUpAuthTokenFlow (
     override val authToken: AuthToken,
     override val stepUpToken: String? = null,
-    override val activity: Activity
+    override val activity: Activity,
+    val action: String? = null
 ): StartStepUpFlow()
 
 data class StartStepUpLoginFlow (
@@ -37,7 +38,8 @@ data class StartStepUpRequest(
     @SerializedName("code_challenge_method")
     val codeChallengeMethod: String,
     val tkn: String? = null,
-    val scope: String
+    val scope: String,
+    val action: String? = null
 )
 
 @Parcelize

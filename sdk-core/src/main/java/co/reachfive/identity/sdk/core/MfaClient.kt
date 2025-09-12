@@ -38,11 +38,12 @@ internal class MfaClient(
         authToken: AuthToken,
         phoneNumber: String,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        action: String?
     ) {
         reachFiveApi.startMfaPhoneNumberRegistration(
             authToken.authHeader,
-            MfaCredentialsStartPhoneRegisteringRequest(phoneNumber)
+            MfaCredentialsStartPhoneRegisteringRequest(phoneNumber, action)
         )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
@@ -64,11 +65,12 @@ internal class MfaClient(
         authToken: AuthToken,
         redirectUri: String?,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        action: String?,
     ) {
         reachFiveApi.startMfaEmailRegistration(
             authToken.authHeader,
-            MfaCredentialsStartEmailRegisteringRequest(redirectUri)
+            MfaCredentialsStartEmailRegisteringRequest(redirectUri, action)
         )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
@@ -139,7 +141,8 @@ internal class MfaClient(
                             redirectUri = redirectUri,
                             codeChallenge = pkce.codeChallenge,
                             codeChallengeMethod = pkce.codeChallengeMethod,
-                            scope = formatScope(scope)
+                            scope = formatScope(scope),
+                            action = startStepUpFlow.action
                         )
                     )
                     .enqueue(
@@ -260,6 +263,7 @@ internal interface MfaCredentials {
         phoneNumber: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
+        action: String? = null
     )
 
     fun verifyMfaPhoneNumberRegistration(
@@ -274,6 +278,7 @@ internal interface MfaCredentials {
         redirectUri: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
+        action: String? = null
     )
 
     fun verifyMfaEmailRegistration(
