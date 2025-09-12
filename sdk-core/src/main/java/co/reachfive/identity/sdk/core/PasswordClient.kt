@@ -8,11 +8,14 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.models.requests.*
 import co.reachfive.identity.sdk.core.models.responses.AuthenticationToken
+import co.reachfive.identity.sdk.core.models.responses.SignupResponse
 import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 import co.reachfive.identity.sdk.core.utils.formatScope
+import com.github.kittinunf.result.map
+import com.github.kittinunf.result.success
 
 internal class PasswordAuthClient(
     private val sdkConfig: SdkConfig,
@@ -26,7 +29,7 @@ internal class PasswordAuthClient(
         scope: Collection<String>,
         redirectUrl: String?,
         origin: String?,
-        success: Success<AuthToken>,
+        success: Success<SignupResponse>,
         failure: Failure<ReachFiveError>
     ) {
         val signupRequest = SignupRequest(
@@ -40,7 +43,13 @@ internal class PasswordAuthClient(
             .signup(signupRequest, SdkInfos.getQueries())
             .enqueue(
                 ReachFiveApiCallback.withContent<TokenEndpointResponse>(
-                    success = { it.toAuthToken().fold(success, failure) },
+                    success = {
+                        if(it.accessToken != null ) {
+                            it.toAuthToken().map { el -> SignupResponse.AchievedLogin(el) }.fold(success, failure)
+                        } else {
+                            SignupResponse.AwaitingIdentifierVerification.success().fold(success, failure)
+                        }
+                    },
                     failure = failure
                 )
             )
@@ -170,7 +179,7 @@ internal interface PasswordAuth {
         scope: Collection<String> = defaultScope,
         redirectUrl: String? = null,
         origin: String? = null,
-        success: Success<AuthToken>,
+        success: Success<SignupResponse>,
         failure: Failure<ReachFiveError>
     )
 
