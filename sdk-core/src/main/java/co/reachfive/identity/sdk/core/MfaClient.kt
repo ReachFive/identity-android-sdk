@@ -310,7 +310,7 @@ internal interface MfaCredentials {
         failure: Failure<ReachFiveError>,
         action: String? = null,
         trustDevice: Boolean = false,
-        )
+    )
 
     fun verifyMfaEmailRegistration(
         authToken: AuthToken,
@@ -318,7 +318,7 @@ internal interface MfaCredentials {
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         trustDevice: Boolean = false,
-        )
+    )
 
     fun listMfaCredentials(
         authToken: AuthToken,
