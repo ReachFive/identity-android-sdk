@@ -7,7 +7,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class VerifyMfaEmailRequest(
     @SerializedName("verification_code")
-    val verificationCode: String
+    val verificationCode: String,
+    @SerializedName("trust_device")
+    val trustDevice: Boolean
 ) : Parcelable
 
 @Parcelize

@@ -8,20 +8,26 @@ import kotlinx.parcelize.Parcelize
 data class MfaCredentialsStartPhoneRegisteringRequest(
     @SerializedName("phone_number")
     val phoneNumber: String,
-    val action: String?
+    val action: String?,
+    @SerializedName("trust_device")
+    val trustDevice: Boolean
 ) : Parcelable
 
 @Parcelize
 data class MfaCredentialsStartEmailRegisteringRequest(
     @SerializedName("redirect_url")
     val redirectUrl: String?,
-    val action: String?
+    val action: String?,
+    @SerializedName("trust_device")
+    val trustDevice: Boolean
 ) : Parcelable
 
 @Parcelize
 data class MfaCredentialsVerifyPhoneRegisteringRequest(
     @SerializedName("verification_code")
-    val verificationCode: String
+    val verificationCode: String,
+    @SerializedName("trust_device")
+    val trustDevice: Boolean
 ) : Parcelable
 
 @Parcelize
