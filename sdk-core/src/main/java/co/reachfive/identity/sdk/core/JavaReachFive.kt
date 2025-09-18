@@ -12,6 +12,7 @@ import co.reachfive.identity.sdk.core.models.requests.ProfileSignupRequest
 import co.reachfive.identity.sdk.core.models.requests.ProfileWebAuthnSignupRequest
 import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest
 import co.reachfive.identity.sdk.core.models.requests.webAuthn.WebAuthnLoginRequest
+import co.reachfive.identity.sdk.core.models.responses.SignupResponse
 import co.reachfive.identity.sdk.core.utils.Callback
 
 class JavaReachFive(
@@ -72,7 +73,7 @@ class JavaReachFive(
         profile: ProfileSignupRequest,
         scope: Collection<String>,
         redirectUrl: String? = null,
-        success: Callback<AuthToken>,
+        success: Callback<SignupResponse>,
         failure: Callback<ReachFiveError>,
         origin: String? = null
     ) {
@@ -84,7 +85,7 @@ class JavaReachFive(
      */
     fun signup(
         profile: ProfileSignupRequest,
-        success: Callback<AuthToken>,
+        success: Callback<SignupResponse>,
         failure: Callback<ReachFiveError>,
         origin: String? = null
     ) {
