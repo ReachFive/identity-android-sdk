@@ -135,7 +135,8 @@ internal class PasswordAuthClient(
         redirectUrl: String?,
         phoneNumber: String?,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        origin: String?
     ) {
         reachFiveApi
             .requestPasswordReset(
@@ -143,7 +144,8 @@ internal class PasswordAuthClient(
                     sdkConfig.clientId,
                     email,
                     redirectUrl,
-                    phoneNumber
+                    phoneNumber,
+                    origin
                 ),
                 SdkInfos.getQueries()
             )
@@ -206,7 +208,8 @@ internal interface PasswordAuth {
         redirectUrl: String? = null,
         phoneNumber: String? = null,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        origin: String? = null
     )
 
     fun requestAccountRecovery(

@@ -12,5 +12,6 @@ data class RequestPasswordResetRequest(
     @SerializedName("redirect_url")
     val redirectUrl: String? = null,
     @SerializedName("phone_number")
-    val phoneNumber: String?
+    val phoneNumber: String?,
+    val origin: String?
 ) : Parcelable
