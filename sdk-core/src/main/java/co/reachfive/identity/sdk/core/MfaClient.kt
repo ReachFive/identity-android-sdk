@@ -39,11 +39,12 @@ internal class MfaClient(
         phoneNumber: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        action: String?
+        action: String?,
+        trustDevice: Boolean
     ) {
         reachFiveApi.startMfaPhoneNumberRegistration(
             authToken.authHeader,
-            MfaCredentialsStartPhoneRegisteringRequest(phoneNumber, action)
+            MfaCredentialsStartPhoneRegisteringRequest(phoneNumber, action, trustDevice)
         )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
@@ -52,11 +53,12 @@ internal class MfaClient(
         authToken: AuthToken,
         verificationCode: String,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        trustDevice: Boolean
     ) {
         reachFiveApi.verifyMfaPhoneNumberRegistration(
             authToken.authHeader,
-            MfaCredentialsVerifyPhoneRegisteringRequest(verificationCode)
+            MfaCredentialsVerifyPhoneRegisteringRequest(verificationCode, trustDevice)
         )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
@@ -67,10 +69,11 @@ internal class MfaClient(
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         action: String?,
+        trustDevice: Boolean
     ) {
         reachFiveApi.startMfaEmailRegistration(
             authToken.authHeader,
-            MfaCredentialsStartEmailRegisteringRequest(redirectUri, action)
+            MfaCredentialsStartEmailRegisteringRequest(redirectUri, action, trustDevice)
         )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
@@ -79,11 +82,12 @@ internal class MfaClient(
         authToken: AuthToken,
         verificationCode: String,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        trustDevice: Boolean
     ) {
         reachFiveApi.verifyMfaEmailRegistration(
             authToken.authHeader,
-            VerifyMfaEmailRequest(verificationCode)
+            VerifyMfaEmailRequest(verificationCode, trustDevice)
         )
             .enqueue(ReachFiveApiCallback.noContent(success, failure))
     }
@@ -128,8 +132,16 @@ internal class MfaClient(
         failure: Failure<ReachFiveError>,
         origin: String?
     ) {
-        when(startStepUpFlow) {
-            is StartStepUpLoginFlow -> achieveStartStepUp(authType, redirectUri, startStepUpFlow.stepUpToken, origin, success, failure)
+        when (startStepUpFlow) {
+            is StartStepUpLoginFlow -> achieveStartStepUp(
+                authType,
+                redirectUri,
+                startStepUpFlow.stepUpToken,
+                origin,
+                success,
+                failure
+            )
+
             is StartStepUpAuthTokenFlow -> PkceAuthCodeFlow.generate(redirectUri).let { pkce ->
                 PkceAuthCodeFlow.storeAuthCodeFlow(pkce, startStepUpFlow.activity)
                 reachFiveApi
@@ -148,7 +160,14 @@ internal class MfaClient(
                     .enqueue(
                         ReachFiveApiCallback.withContent<AuthToken>(
                             success = { stepUpResponse ->
-                                achieveStartStepUp(authType, redirectUri, stepUpResponse.stepUpToken, origin, success, failure)
+                                achieveStartStepUp(
+                                    authType,
+                                    redirectUri,
+                                    stepUpResponse.stepUpToken,
+                                    origin,
+                                    success,
+                                    failure
+                                )
 
                             },
                             failure = failure
@@ -251,9 +270,18 @@ internal class MfaClient(
 }
 
 internal interface MfaTrustedDevices {
-    fun listMfaTrustedDevices(authToken: AuthToken, success: Success<ListMfaTrustedDevices>, failure: Failure<ReachFiveError>)
+    fun listMfaTrustedDevices(
+        authToken: AuthToken,
+        success: Success<ListMfaTrustedDevices>,
+        failure: Failure<ReachFiveError>
+    )
 
-    fun removeMfaTrustedDevice(authToken: AuthToken, trustedDeviceId: String, success: Success<Unit>, failure: Failure<ReachFiveError>)
+    fun removeMfaTrustedDevice(
+        authToken: AuthToken,
+        trustedDeviceId: String,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    )
 }
 
 internal interface MfaCredentials {
@@ -263,7 +291,8 @@ internal interface MfaCredentials {
         phoneNumber: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        action: String? = null
+        action: String? = null,
+        trustDevice: Boolean = false,
     )
 
     fun verifyMfaPhoneNumberRegistration(
@@ -271,6 +300,7 @@ internal interface MfaCredentials {
         verificationCode: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
+        trustDevice: Boolean = false,
     )
 
     fun startMfaEmailRegistration(
@@ -278,7 +308,8 @@ internal interface MfaCredentials {
         redirectUri: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        action: String? = null
+        action: String? = null,
+        trustDevice: Boolean = false,
     )
 
     fun verifyMfaEmailRegistration(
@@ -286,6 +317,7 @@ internal interface MfaCredentials {
         verificationCode: String,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
+        trustDevice: Boolean = false,
     )
 
     fun listMfaCredentials(
