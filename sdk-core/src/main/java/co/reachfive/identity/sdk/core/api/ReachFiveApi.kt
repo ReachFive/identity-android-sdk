@@ -27,6 +27,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.lang.reflect.Field
+import java.util.UUID
 
 interface ReachFiveApi {
     @GET("/identity/v1/config")
@@ -292,6 +293,7 @@ interface ReachFiveApi {
                 .addInterceptor(LogoutCookieInterceptor(config.domain))
                 .addInterceptor(TrustedDeviceCookieInterceptor(config.domain))
                 .addNetworkInterceptor(AcceptLanguageInterceptor())
+                .addNetworkInterceptor(CorrelationIdInterceptor(UUID.randomUUID().toString()))
                 .build()
 
             val gson = GsonBuilder()
