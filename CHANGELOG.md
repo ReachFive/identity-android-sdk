@@ -1,5 +1,18 @@
 # Changelog
  
+## v10.0.0 (10/10/2025)
+
+### Features
+
+- allow to trust devices during mfa credential registering
+- add optional origin parameter to requestPasswordReset
+- allow to specify an action parameter during step up and mfa registering
+- support for new feature forbidUnverifiedIdentifierLoginAfterSignup
+
+### Breaking change
+
+- method signup no longer returns an AuthToken but a SignupResponse
+
 ## v9.9.1 (02/09/2025)
 
 ### Fixes 
