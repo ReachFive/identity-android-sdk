@@ -265,7 +265,18 @@ class JavaReachFive(
         origin: String? = null,
         activity: Activity
     ) {
-        return reach5.loginWithWeb(scope, state, nonce, origin, activity)
+        return reach5.loginWithWeb(scope, state, nonce, origin, activity, false)
+    }
+
+    fun loginWithWeb(
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+        activity: Activity,
+        useEphemeralBrowsing: Boolean = false,
+    ) {
+        return reach5.loginWithWeb(scope, state, nonce, origin, activity, useEphemeralBrowsing)
     }
 
     fun loginWithWebView(

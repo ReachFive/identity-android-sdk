@@ -38,8 +38,10 @@ class RedirectionActivityLauncher(
         state: String? = null,
         nonce: String? = null,
         origin: String? = null,
+        useEphemeralBrowsing: Boolean = false,
     ) {
         val intent = prepareIntent(activity, scope, origin = origin, state = state, nonce = nonce)
+        intent.putExtra(RedirectionActivity.USE_EPHEMERAL_BROWSING, useEphemeralBrowsing)
         activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGIN)
     }
 
