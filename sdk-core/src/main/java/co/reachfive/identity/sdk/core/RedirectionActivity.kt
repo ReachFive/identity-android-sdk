@@ -37,6 +37,8 @@ class RedirectionActivity : ComponentActivity() {
         const val SCHEME = "SCHEME"
         const val USE_NATIVE_WEBVIEW = "USE_NATIVE_WEBVIEW"
 
+        const val USE_EPHEMERAL_BROWSING = "USE_EPHEMERAL_BROWSING"
+
         const val RC_WEBLOGIN = 52557
 
         const val RC_WEBLOGOUT = 52558
@@ -61,6 +63,8 @@ class RedirectionActivity : ComponentActivity() {
 
         val provider = intent.getStringExtra(PROVIDER_KEY)
 
+        val useEphemeralBrowsing = intent.getBooleanExtra(USE_EPHEMERAL_BROWSING, false)
+
         if (provider == "google") {
             setResult(RESULT_OK)
             finish()
@@ -70,15 +74,15 @@ class RedirectionActivity : ComponentActivity() {
         } else if (useWebView)
             launchWebView(codeVerifier, urlString, originWebAuthn)
         else
-            launchCustomTab(urlString, codeVerifier)
+            launchCustomTab(urlString, codeVerifier, useEphemeralBrowsing)
     }
 
-    private fun launchCustomTab(urlString: String?, codeVerifier: String?) {
+    private fun launchCustomTab(urlString: String?, codeVerifier: String?, useEphemeralBrowsing: Boolean) {
         Log.d(TAG, "RedirectionActivity launchCustomTab url: $urlString")
 
         isCustomTabFlow = true
 
-        val customTabsIntent = CustomTabsIntent.Builder().build().intent
+        val customTabsIntent = CustomTabsIntent.Builder().setEphemeralBrowsingEnabled(useEphemeralBrowsing).build().intent
         customTabsIntent.data = Uri.parse(urlString)
         customTabsIntent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
 

@@ -5,8 +5,8 @@ buildscript {
 
         androidSettings = [
                 min_sdk_version    : 21,
-                target_sdk_version : 34,
-                compile_sdk_version: 34,
+                target_sdk_version : 36,
+                compile_sdk_version: 36,
                 version_code       : 4
         ]
 
@@ -14,7 +14,7 @@ buildscript {
                 result               : "com.github.kittinunf.result:result:5.6.0",
                 retrofit             : "com.squareup.retrofit2:retrofit:2.12.0",
                 retrofitConverterGson: "com.squareup.retrofit2:converter-gson:2.12.0",
-                browser              : "androidx.browser:browser:1.8.0",
+                browser              : "androidx.browser:browser:1.9.0",
         ]
     }
 
@@ -75,8 +75,8 @@ subprojects {
         }
 
         defaultConfig {
-            minSdkVersion = androidSettings.min_sdk_version
-            targetSdkVersion = androidSettings.target_sdk_version
+            minSdkVersion androidSettings.min_sdk_version
+            targetSdkVersion androidSettings.target_sdk_version
             versionCode = androidSettings.version_code
             versionName = this.version
             buildConfigField("String", "r5_sdk_version", "\"$libversion\"")

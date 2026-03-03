@@ -34,6 +34,7 @@ internal interface SessionUtils {
         nonce: String? = null,
         origin: String? = null,
         activity: Activity,
+        useEphemeralBrowsing: Boolean = false,
     )
 
     fun logoutWithWeb(activity: Activity)
@@ -271,8 +272,9 @@ class SessionUtilsClient(
         nonce: String?,
         origin: String?,
         activity: Activity,
+        useEphemeralBrowsing: Boolean,
     ) {
-        webLauncher.loginWithWeb(activity, scope, state, nonce, origin)
+        webLauncher.loginWithWeb(activity, scope, state, nonce, origin, useEphemeralBrowsing)
     }
 
     override fun logoutWithWeb(activity: Activity) {
