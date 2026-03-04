@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.animation.AnimationUtils
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.browser.customtabs.CustomTabsIntent
@@ -215,6 +217,13 @@ class RedirectionActivity : ComponentActivity() {
             Log.d(TAG, "WebViewClient: unexpected empty url.")
             finish()
             return true
+        }
+
+        override fun onPageFinished(view: WebView?, url: String?) {
+            super.onPageFinished(view, url)
+            binding.webview.visibility = View.VISIBLE
+            val fadeIn = AnimationUtils.loadAnimation(this@RedirectionActivity, R.anim.fade_in)
+            binding.webview.startAnimation(fadeIn)
         }
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
