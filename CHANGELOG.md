@@ -1,5 +1,19 @@
 # Changelog
  
+## Unreleaased
+
+### Features
+
+- new parameter `useEphemeralBrowsing` to `loginWithWeb` (optional, defaults to `false`) that, when supported by the browser, initiate a Custom Tab isolated from the browser's main context
+
+### Breaking change (visual)
+
+- `loginWithWebView`:
+  - the theme now hides the WebView till the page is ready (change `visibility` to `VISIBLE` in `onPageFinished`)
+  - the WebView fades in when the page is ready
+  - note: WebView theme `Theme.ReachFiveWebView`, WebView layout `reachfive_webview`, and fade-in animation `reachfive_fade_in` may be overridden by the calling app
+
+
 ## v10.0.0 (10/10/2025)
 
 ### Features
