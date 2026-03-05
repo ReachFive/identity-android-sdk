@@ -222,7 +222,7 @@ class RedirectionActivity : ComponentActivity() {
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
             binding.webview.visibility = View.VISIBLE
-            val fadeIn = AnimationUtils.loadAnimation(this@RedirectionActivity, R.anim.fade_in)
+            val fadeIn = AnimationUtils.loadAnimation(this@RedirectionActivity, R.anim.reachfive_fade_in)
             binding.webview.startAnimation(fadeIn)
         }
 

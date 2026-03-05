@@ -4,7 +4,6 @@
         <activity
             android:name="co.reachfive.identity.sdk.core.RedirectionActivity"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.ReachFiveWebView"
             />
     </application>
 </manifest>

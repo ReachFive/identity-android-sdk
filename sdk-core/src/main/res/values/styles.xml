@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.ReachFiveWebView" parent="android:Theme">
+    <style name="Theme.ReachFiveWebView" parent="android:Theme.DeviceDefault.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowAnimationStyle">@style/NoAnimation</item>
+        <item name="android:windowAnimationStyle">@style/ReachFiveNoAnimation</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <style name="NoAnimation">
+    <style name="ReachFiveNoAnimation">
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@null</item>
     </style>
