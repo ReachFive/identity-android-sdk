@@ -4,6 +4,7 @@
 
 ### Features
 
+- enable to customize WebViewClient implementation used for `loginWithWebView`
 - new parameter `useEphemeralBrowsing` to `loginWithWeb` (optional, defaults to `false`) that, when supported by the browser, initiate a Custom Tab isolated from the browser's main context
 
 ### Breaking change (visual)
