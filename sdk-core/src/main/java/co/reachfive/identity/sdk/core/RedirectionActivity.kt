@@ -114,34 +114,7 @@ class RedirectionActivity : ComponentActivity() {
 
         setContentView(binding.root)
 
-        if (fullScreenWebView) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                window.attributes.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-            }
-            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-                val systemBars = insets.getInsets(
-                    WindowInsetsCompat.Type.systemBars()
-                            or WindowInsetsCompat.Type.displayCutout()
-                            or WindowInsetsCompat.Type.ime())
-                val density = resources.displayMetrics.density
-                binding.webview.context.resources.displayMetrics.density
-                val top = systemBars.top / density
-                val right = systemBars.right / density
-                val bottom = systemBars.bottom / density
-                val left = systemBars.left / density
-
-                val js = """
-                    document.documentElement.style.setProperty('--safe-area-inset-top', '${top}px');
-                    document.documentElement.style.setProperty('--safe-area-inset-right', '${right}px');
-                    document.documentElement.style.setProperty('--safe-area-inset-bottom', '${bottom}px');
-                    document.documentElement.style.setProperty('--safe-area-inset-left', '${left}px');
-                """.trimIndent()
-
-                binding.webview.evaluateJavascript(js, null)
-                WindowInsetsCompat.CONSUMED
-            }
-        } else {
+        if (!fullScreenWebView) {
             ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
                 val systemBars = insets.getInsets(
                     WindowInsetsCompat.Type.systemBars()
