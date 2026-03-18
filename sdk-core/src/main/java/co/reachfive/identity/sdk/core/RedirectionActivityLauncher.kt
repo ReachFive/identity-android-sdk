@@ -55,9 +55,11 @@ class RedirectionActivityLauncher(
         state: String? = null,
         nonce: String? = null,
         origin: String? = null,
+        fullScreenWebView: Boolean = false,
     ) {
         val intent = prepareIntent(activity, scope, origin = origin, state = state, nonce = nonce)
         intent.putExtra(RedirectionActivity.USE_NATIVE_WEBVIEW, true)
+        intent.putExtra(RedirectionActivity.FULL_SCREEN_WEBVIEW, fullScreenWebView)
         activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGIN)
     }
 
