@@ -295,7 +295,7 @@ class JavaReachFive(
         nonce: String? = null,
         origin: String? = null,
         activity: Activity,
-        fullScreenWebView: Boolean = true,
+        fullScreenWebView: Boolean = false,
     ) {
         return reach5.loginWithWebView(scope, state, nonce, origin, activity, fullScreenWebView)
     }

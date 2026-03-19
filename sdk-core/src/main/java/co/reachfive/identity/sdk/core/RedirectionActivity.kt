@@ -61,7 +61,7 @@ class RedirectionActivity : ComponentActivity() {
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
         val useWebView = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
-        val fullScreenWebView = intent.getBooleanExtra(FULL_SCREEN_WEBVIEW, true)
+        val fullScreenWebView = intent.getBooleanExtra(FULL_SCREEN_WEBVIEW, false)
         val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
 
         val provider = intent.getStringExtra(PROVIDER_KEY)

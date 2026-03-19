@@ -45,7 +45,7 @@ internal interface SessionUtils {
         nonce: String? = null,
         origin: String? = null,
         activity: Activity,
-        fullScreenWebView: Boolean = true,
+        fullScreenWebView: Boolean = false,
     )
 
     fun exchangeCodeForToken(
