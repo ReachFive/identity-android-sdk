@@ -2,34 +2,31 @@ package co.reachfive.identity.sdk.core
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.activity.ComponentActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
-import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.databinding.ReachfiveWebviewBinding
 import co.reachfive.identity.sdk.core.models.ErrorCode
 import co.reachfive.identity.sdk.core.utils.PasskeyWebListener
-import java.util.regex.Pattern
 
 
 class RedirectionActivity : ComponentActivity() {
-    private lateinit var binding: ReachfiveWebviewBinding
+    lateinit var binding: ReachfiveWebviewBinding
 
     private var isCustomTabFlow = false
     private var hasCustomTabStarted = false
 
-    lateinit var passkeyListener: PasskeyWebListener
+    var passkeyListener: PasskeyWebListener? = null
 
     companion object {
+        var webViewClientFactory: ((RedirectionActivity, String?) -> ReachFiveWebViewClient)? = null
+
         const val ORIGIN_WEBAUTHN = "ORIGIN_WEBAUTHN"
         const val FQN = "co.reachfive.identity.sdk.core.RedirectionActivity"
         const val CODE_VERIFIER_KEY = "CODE_VERIFIER"
@@ -95,6 +92,13 @@ class RedirectionActivity : ComponentActivity() {
         }
     }
 
+    fun createReachFiveWebViewClient(codeVerifier: String?): ReachFiveWebViewClient {
+        return webViewClientFactory?.invoke(this, codeVerifier) ?: ReachFiveWebViewClient(
+            this,
+            codeVerifier
+        )
+    }
+
     private fun launchWebView(codeVerifier: String?, urlString: String?, originWebAuthn: String?) {
         Log.d(TAG, "RedirectionActivity launchWebView url: $urlString")
 
@@ -106,7 +110,7 @@ class RedirectionActivity : ComponentActivity() {
             @SuppressLint("SetJavaScriptEnabled")
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            webViewClient = ReachFiveWebViewClient(codeVerifier)
+            webViewClient = createReachFiveWebViewClient(codeVerifier)
         }
 
         urlString?.let {
@@ -122,7 +126,7 @@ class RedirectionActivity : ComponentActivity() {
                     binding.webview,
                     PasskeyWebListener.INTERFACE_NAME,
                     rules,
-                    passkeyListener
+                    passkeyListener!!
                 )
             }
 
@@ -190,42 +194,6 @@ class RedirectionActivity : ComponentActivity() {
 
             setResult(RESULT_CANCELED)
             finish()
-        }
-    }
-
-    inner class ReachFiveWebViewClient(private val codeVerifier: String?) : WebViewClientCompat() {
-
-        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            request.url?.let { url ->
-                // regex : (reachfive://word character: [a-zA-Z_0-9]/callback)(any character zero or more times)
-                val pattern = Pattern.compile("^(reachfive:\\/\\/\\w+\\/callback)(.*)$")
-                val isTargetReachFive = pattern.matcher(url.toString()).matches()
-                Log.d(TAG, "WebViewClient isTargetReachFive: $isTargetReachFive")
-
-                if (isTargetReachFive) {
-                    val intent = Intent()
-                    intent.data = url
-                    intent.putExtra(CODE_VERIFIER_KEY, codeVerifier)
-                    setResult(RC_WEBLOGIN, intent)
-                    finish()
-                    return true
-                } else return false
-            }
-
-            Log.d(TAG, "WebViewClient: unexpected empty url.")
-            finish()
-            return true
-        }
-
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            super.onPageStarted(view, url, favicon)
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER) && ::passkeyListener.isInitialized) {
-                Log.d(TAG, "RedirectionActivity onPageStarted: injecting passkey boilerplate")
-                passkeyListener.onPageStarted()
-                binding.webview.evaluateJavascript(PasskeyWebListener.INJECTED_VAL, null)
-            } else {
-                Log.d(TAG, "RedirectionActivity onPageStarted: not injecting passkey boilerplate")
-            }
         }
     }
 
