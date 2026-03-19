@@ -3,10 +3,8 @@ package co.reachfive.identity.sdk.core
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.activity.enableEdgeToEdge
@@ -63,7 +61,7 @@ class RedirectionActivity : ComponentActivity() {
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
         val useWebView = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
-        val fullScreenWebView = intent.getBooleanExtra(FULL_SCREEN_WEBVIEW, false)
+        val fullScreenWebView = intent.getBooleanExtra(FULL_SCREEN_WEBVIEW, true)
         val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
 
         val provider = intent.getStringExtra(PROVIDER_KEY)

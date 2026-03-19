@@ -7,6 +7,10 @@
 - enable to customize WebViewClient implementation used for `loginWithWebView`
 - new parameter `useEphemeralBrowsing` to `loginWithWeb` (optional, defaults to `false`) that, when supported by the browser, initiate a Custom Tab isolated from the browser's main context
 
+### Breaking change
+
+- WebView now is edge-to-edge by default and adds padding for system bars. Parameter `fullScreenWebview = false` to `loginWithWebView` disables the padding.
+
 ## v10.0.0 (10/10/2025)
 
 ### Features
