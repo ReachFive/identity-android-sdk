@@ -45,6 +45,7 @@ internal interface SessionUtils {
         nonce: String? = null,
         origin: String? = null,
         activity: Activity,
+        fullScreenWebView: Boolean = false,
     )
 
     fun exchangeCodeForToken(
@@ -287,8 +288,9 @@ class SessionUtilsClient(
         nonce: String?,
         origin: String?,
         activity: Activity,
+        fullScreenWebView: Boolean,
     ) {
-        webLauncher.loginWithWebView(activity, scope, state, nonce, origin)
+        webLauncher.loginWithWebView(activity, scope, state, nonce, origin, fullScreenWebView)
     }
 
 }

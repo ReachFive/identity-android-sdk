@@ -7,6 +7,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
@@ -33,6 +36,7 @@ class RedirectionActivity : ComponentActivity() {
         const val URL_KEY = "URL"
         const val SCHEME = "SCHEME"
         const val USE_NATIVE_WEBVIEW = "USE_NATIVE_WEBVIEW"
+        const val FULL_SCREEN_WEBVIEW = "FULL_SCREEN_WEBVIEW"
 
         const val USE_EPHEMERAL_BROWSING = "USE_EPHEMERAL_BROWSING"
 
@@ -51,11 +55,13 @@ class RedirectionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         val urlString = intent.getStringExtra(URL_KEY)
         val codeVerifier = intent.getStringExtra(CODE_VERIFIER_KEY)
 
         val useWebView = intent.getBooleanExtra(USE_NATIVE_WEBVIEW, false)
+        val fullScreenWebView = intent.getBooleanExtra(FULL_SCREEN_WEBVIEW, false)
         val originWebAuthn = intent.getStringExtra(ORIGIN_WEBAUTHN)
 
         val provider = intent.getStringExtra(PROVIDER_KEY)
@@ -69,7 +75,7 @@ class RedirectionActivity : ComponentActivity() {
             Log.d(TAG, "RedirectionActivity: no URL")
             finish()
         } else if (useWebView)
-            launchWebView(codeVerifier, urlString, originWebAuthn)
+            launchWebView(codeVerifier, urlString, originWebAuthn, fullScreenWebView)
         else
             launchCustomTab(urlString, codeVerifier, useEphemeralBrowsing)
     }
@@ -99,12 +105,22 @@ class RedirectionActivity : ComponentActivity() {
         )
     }
 
-    private fun launchWebView(codeVerifier: String?, urlString: String?, originWebAuthn: String?) {
+    private fun launchWebView(codeVerifier: String?, urlString: String?, originWebAuthn: String?, fullScreenWebView: Boolean) {
         Log.d(TAG, "RedirectionActivity launchWebView url: $urlString")
 
         binding = ReachfiveWebviewBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
+        if (!fullScreenWebView) {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+                val systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            or WindowInsetsCompat.Type.ime())
+                view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
 
         binding.webview.apply {
             @SuppressLint("SetJavaScriptEnabled")
