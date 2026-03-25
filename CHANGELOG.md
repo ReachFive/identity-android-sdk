@@ -2,7 +2,9 @@
  
 ## Unreleased
 
----
+### Breaking change
+
+- WebView now is edge-to-edge by default and adds padding for system bars. Parameter `fullScreenWebview = true` to `loginWithWebView` disables the padding.
 
 ## v10.1.0 (20/03/2026)
 

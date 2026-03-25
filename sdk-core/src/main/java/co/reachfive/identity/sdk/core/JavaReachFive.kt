@@ -284,9 +284,20 @@ class JavaReachFive(
         state: String? = null,
         nonce: String? = null,
         origin: String? = null,
-        activity: Activity
+        activity: Activity,
     ) {
-        return reach5.loginWithWebView(scope, state, nonce, origin, activity)
+        return reach5.loginWithWebView(scope, state, nonce, origin, activity, true)
+    }
+
+    fun loginWithWebView(
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+        activity: Activity,
+        fullScreenWebView: Boolean = false,
+    ) {
+        return reach5.loginWithWebView(scope, state, nonce, origin, activity, fullScreenWebView)
     }
 
     fun logout(
