@@ -2,6 +2,10 @@
  
 ## Unreleased
 
+---
+
+## v10.1.0 (20/03/2026)
+
 ### Features
 
 - enable to customize WebViewClient implementation used for `loginWithWebView`
