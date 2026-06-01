@@ -9,9 +9,16 @@ data class ListSessionDevices(
     val sessionDevices: List<SessionDevice>
 ): Parcelable
 
+enum class TokenType {
+    RT,
+    ST
+}
+
 @Parcelize
 data class SessionDevice(
     val id: String,
+    @SerializedName("token_type")
+    val tokenType: TokenType,
     val ip: String?,
     val country: String?,
     val city: String?,
@@ -23,8 +30,10 @@ data class SessionDevice(
     val deviceClass: String?,
     @SerializedName("device_name")
     val deviceName: String?,
-    @SerializedName("first_connection")
-    val firstConnection: String,
+    @SerializedName("created_at")
+    val createdAt: String,
     @SerializedName("last_connection")
-    val lastConnection: String
+    val lastConnection: String,
+    @SerializedName("expires_at")
+    val expiresAt: String,
 ): Parcelable
