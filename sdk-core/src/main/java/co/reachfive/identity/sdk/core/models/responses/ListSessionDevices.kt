@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ListSessionDevices(
+    @SerializedName("session_devices")
     val sessionDevices: List<SessionDevice>
 ): Parcelable
 
