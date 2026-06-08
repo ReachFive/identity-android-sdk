@@ -48,6 +48,12 @@ interface ReachFiveApi {
         @Header("Authorization") authorization: String
     ): Call<ListSessionDevices>
 
+    @DELETE("identity/v1/session-devices/{id}")
+    fun deleteSessionDevice(
+        @Path("id") id: String,
+        @Header("Authorization") authorization: String
+    ): Call<Unit>
+
     @POST("/identity/v1/oauth/provider/token")
     fun loginWithProvider(
         @Body loginProviderRequest: LoginProviderRequest,
