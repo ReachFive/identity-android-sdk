@@ -13,7 +13,8 @@ import co.reachfive.identity.sdk.core.models.requests.UpdatePhoneNumberRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyEmailRequest
 import co.reachfive.identity.sdk.core.models.requests.VerifyPhoneNumberRequest
 import co.reachfive.identity.sdk.core.models.responses.EmailVerification
-import co.reachfive.identity.sdk.core.models.responses.ListSessionDevices
+import co.reachfive.identity.sdk.core.models.responses.SessionDevice
+import co.reachfive.identity.sdk.core.models.responses.SessionDevicesResponse
 import co.reachfive.identity.sdk.core.utils.Failure
 import co.reachfive.identity.sdk.core.utils.Success
 
@@ -118,11 +119,15 @@ internal class ProfileManagementClient(
 
     override fun listSessionDevices(
         authToken: AuthToken,
-        success: Success<ListSessionDevices>,
+        success: Success<List<SessionDevice>>,
         failure: Failure<ReachFiveError>
     ) {
         reachFiveApi.listSessionDevices(authToken.authHeader)
-            .enqueue(ReachFiveApiCallback.withContent<ListSessionDevices>(success, failure))
+            .enqueue(ReachFiveApiCallback.withContent<SessionDevicesResponse>(
+                success = { dto -> success(dto.sessionDevices)},
+                failure = failure
+                )
+            )
     }
 
     override fun deleteSessionDevice(
@@ -242,7 +247,7 @@ internal interface ProfileManagement {
 
     fun listSessionDevices(
         authToken: AuthToken,
-        success: Success<ListSessionDevices>,
+        success: Success<List<SessionDevice>>,
         failure: Failure<ReachFiveError>
     )
 
