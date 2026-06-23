@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ListSessionDevices(
+data class SessionDevicesResponse(
     @SerializedName("session_devices")
     val sessionDevices: List<SessionDevice>
 ): Parcelable

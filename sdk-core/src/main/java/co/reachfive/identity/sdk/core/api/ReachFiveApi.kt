@@ -11,8 +11,8 @@ import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.models.responses.EmailVerification
 import co.reachfive.identity.sdk.core.models.responses.ListMfaCredentials
 import co.reachfive.identity.sdk.core.models.responses.ListMfaTrustedDevices
-import co.reachfive.identity.sdk.core.models.responses.ListSessionDevices
 import co.reachfive.identity.sdk.core.models.responses.PasswordlessVerificationResponse
+import co.reachfive.identity.sdk.core.models.responses.SessionDevicesResponse
 import co.reachfive.identity.sdk.core.models.responses.StartMfaPasswordlessResponse
 import co.reachfive.identity.sdk.core.models.responses.TokenEndpointResponse
 import co.reachfive.identity.sdk.core.models.responses.VerifyMfaPassordlessResponse
@@ -46,7 +46,7 @@ interface ReachFiveApi {
     @GET("/identity/v1/session-devices")
     fun listSessionDevices(
         @Header("Authorization") authorization: String
-    ): Call<ListSessionDevices>
+    ): Call<SessionDevicesResponse>
 
     @POST("/identity/v1/oauth/provider/token")
     fun loginWithProvider(
