@@ -129,6 +129,16 @@ internal class ProfileManagementClient(
                 )
             )
     }
+
+    override fun deleteSessionDevice(
+        id: String,
+        authToken: AuthToken,
+        success: Success<Unit>,
+        failure: Failure<ReachFiveError>
+    ) {
+        reachFiveApi.deleteSessionDevice(id, authToken.authHeader)
+            .enqueue(ReachFiveApiCallback.noContent(success, failure))
+    }
 }
 
 internal interface ProfileManagement {
@@ -238,6 +248,13 @@ internal interface ProfileManagement {
     fun listSessionDevices(
         authToken: AuthToken,
         success: Success<List<SessionDevice>>,
+        failure: Failure<ReachFiveError>
+    )
+
+    fun deleteSessionDevice(
+        id: String,
+        authToken: AuthToken,
+        success: Success<Unit>,
         failure: Failure<ReachFiveError>
     )
 }
