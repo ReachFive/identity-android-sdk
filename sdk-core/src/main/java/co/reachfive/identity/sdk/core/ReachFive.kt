@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import android.util.Log
+import co.reachfive.identity.sdk.core.RedirectionActivity.Companion.CODE_VERIFIER_KEY
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
@@ -13,6 +14,7 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.requests.RevokeRequest
 import co.reachfive.identity.sdk.core.models.responses.ClientConfigResponse
 import co.reachfive.identity.sdk.core.utils.Failure
+import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.Success
 
 class ReachFive private constructor(
@@ -198,10 +200,11 @@ class ReachFive private constructor(
                     else
                         failure(ReachFiveError.NullIntent)
                 } else if (socialLoginAuth.isSocialLoginRequestCode(requestCode)) {
+                    val pkce = PkceAuthCodeFlow.readAuthCodeFlow(activity)
                     socialLoginAuth.onActivityResult(
                         requestCode,
                         resultCode,
-                        intent,
+                        intent?.putExtra(CODE_VERIFIER_KEY, pkce?.codeVerifier),
                         success,
                         failure
                     )

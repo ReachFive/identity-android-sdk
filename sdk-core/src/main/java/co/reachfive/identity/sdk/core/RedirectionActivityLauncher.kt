@@ -88,6 +88,7 @@ class RedirectionActivityLauncher(
 
         val redirectUri = sdkConfig.scheme
         val pkce = PkceAuthCodeFlow.generate(redirectUri)
+        PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
 
         val maybeProvider = if (provider != null) {
             mapOf("provider" to provider)
