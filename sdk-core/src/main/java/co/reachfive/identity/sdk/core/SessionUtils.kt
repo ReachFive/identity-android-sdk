@@ -28,6 +28,10 @@ internal interface SessionUtils {
         failure: Failure<ReachFiveError>
     )
 
+    /**
+     * @param loginUrlFragment key/value pairs propagated in the **fragment** of the
+     * `/oauth/authorize` URL.
+     */
     fun loginWithWeb(
         scope: Collection<String> = defaultScope,
         state: String? = null,
@@ -35,10 +39,15 @@ internal interface SessionUtils {
         origin: String? = null,
         activity: Activity,
         useEphemeralBrowsing: Boolean = false,
+        loginUrlFragment: Map<String, String>? = null,
     )
 
     fun logoutWithWeb(activity: Activity)
 
+    /**
+     * @param loginUrlFragment key/value pairs propagated in the **fragment** of the
+     * `/oauth/authorize` URL.
+     */
     fun loginWithWebView(
         scope: Collection<String> = defaultScope,
         state: String? = null,
@@ -46,6 +55,7 @@ internal interface SessionUtils {
         origin: String? = null,
         activity: Activity,
         fullScreenWebView: Boolean = false,
+        loginUrlFragment: Map<String, String>? = null,
     )
 
     fun exchangeCodeForToken(
@@ -274,8 +284,17 @@ class SessionUtilsClient(
         origin: String?,
         activity: Activity,
         useEphemeralBrowsing: Boolean,
+        loginUrlFragment: Map<String, String>?,
     ) {
-        webLauncher.loginWithWeb(activity, scope, state, nonce, origin, useEphemeralBrowsing)
+        webLauncher.loginWithWeb(
+            activity,
+            scope,
+            state,
+            nonce,
+            origin,
+            useEphemeralBrowsing,
+            loginUrlFragment
+        )
     }
 
     override fun logoutWithWeb(activity: Activity) {
@@ -289,8 +308,17 @@ class SessionUtilsClient(
         origin: String?,
         activity: Activity,
         fullScreenWebView: Boolean,
+        loginUrlFragment: Map<String, String>?,
     ) {
-        webLauncher.loginWithWebView(activity, scope, state, nonce, origin, fullScreenWebView)
+        webLauncher.loginWithWebView(
+            activity,
+            scope,
+            state,
+            nonce,
+            origin,
+            fullScreenWebView,
+            loginUrlFragment
+        )
     }
 
 }
