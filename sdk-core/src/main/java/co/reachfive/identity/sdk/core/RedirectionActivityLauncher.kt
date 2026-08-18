@@ -7,6 +7,7 @@ import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
 import co.reachfive.identity.sdk.core.utils.PkceAuthCodeFlow
 import co.reachfive.identity.sdk.core.utils.formatScope
+import co.reachfive.identity.sdk.core.utils.withLoginUrlFragment
 
 
 class RedirectionActivityLauncher(
@@ -39,8 +40,16 @@ class RedirectionActivityLauncher(
         nonce: String? = null,
         origin: String? = null,
         useEphemeralBrowsing: Boolean = false,
+        loginUrlFragment: Map<String, String>? = null,
     ) {
-        val intent = prepareIntent(activity, scope, origin = origin, state = state, nonce = nonce)
+        val intent = prepareIntent(
+            activity,
+            scope,
+            origin = origin,
+            state = state,
+            nonce = nonce,
+            loginUrlFragment = loginUrlFragment
+        )
         intent.putExtra(RedirectionActivity.USE_EPHEMERAL_BROWSING, useEphemeralBrowsing)
         activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGIN)
     }
@@ -56,8 +65,16 @@ class RedirectionActivityLauncher(
         nonce: String? = null,
         origin: String? = null,
         fullScreenWebView: Boolean = false,
+        loginUrlFragment: Map<String, String>? = null,
     ) {
-        val intent = prepareIntent(activity, scope, origin = origin, state = state, nonce = nonce)
+        val intent = prepareIntent(
+            activity,
+            scope,
+            origin = origin,
+            state = state,
+            nonce = nonce,
+            loginUrlFragment = loginUrlFragment
+        )
         intent.putExtra(RedirectionActivity.USE_NATIVE_WEBVIEW, true)
         intent.putExtra(RedirectionActivity.FULL_SCREEN_WEBVIEW, fullScreenWebView)
         activity.startActivityForResult(intent, RedirectionActivity.RC_WEBLOGIN)
@@ -83,6 +100,7 @@ class RedirectionActivityLauncher(
         origin: String? = null,
         state: String? = null,
         nonce: String? = null,
+        loginUrlFragment: Map<String, String>? = null,
     ): Intent {
         val intent = Intent(activity, RedirectionActivity::class.java)
 
@@ -111,7 +129,9 @@ class RedirectionActivityLauncher(
             "code_challenge_method" to pkce.codeChallengeMethod
         ) + SdkInfos.getQueries() + maybeProvider + maybeOrigin + maybeNonce + maybeState
 
-        val url = api.authorize(request).request().url.toString()
+        val url = api.authorize(request).request().url
+            .withLoginUrlFragment(loginUrlFragment)
+            .toString()
         intent.putExtra(RedirectionActivity.URL_KEY, url)
         intent.putExtra(RedirectionActivity.CODE_VERIFIER_KEY, pkce.codeVerifier)
         intent.putExtra(RedirectionActivity.SCHEME, sdkConfig.scheme)

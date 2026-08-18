@@ -279,6 +279,26 @@ class JavaReachFive(
         return reach5.loginWithWeb(scope, state, nonce, origin, activity, useEphemeralBrowsing)
     }
 
+    fun loginWithWeb(
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+        activity: Activity,
+        useEphemeralBrowsing: Boolean = false,
+        loginUrlFragment: Map<String, String>?,
+    ) {
+        return reach5.loginWithWeb(
+            scope,
+            state,
+            nonce,
+            origin,
+            activity,
+            useEphemeralBrowsing,
+            loginUrlFragment
+        )
+    }
+
     fun loginWithWebView(
         scope: Collection<String>,
         state: String? = null,
@@ -298,6 +318,26 @@ class JavaReachFive(
         fullScreenWebView: Boolean = false,
     ) {
         return reach5.loginWithWebView(scope, state, nonce, origin, activity, fullScreenWebView)
+    }
+
+    fun loginWithWebView(
+        scope: Collection<String>,
+        state: String? = null,
+        nonce: String? = null,
+        origin: String? = null,
+        activity: Activity,
+        fullScreenWebView: Boolean = false,
+        loginUrlFragment: Map<String, String>?,
+    ) {
+        return reach5.loginWithWebView(
+            scope,
+            state,
+            nonce,
+            origin,
+            activity,
+            fullScreenWebView,
+            loginUrlFragment
+        )
     }
 
     fun logout(
