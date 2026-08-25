@@ -1,0 +1,8 @@
+name: sdk-android
+version: kdoc-probe
+prerelease: true
+display_version: KDoc probe
+title: Android SDK
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc

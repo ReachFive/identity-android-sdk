@@ -1,0 +1,21 @@
+= KDoc to AsciiDoc probe
+
+This component version is a **local experiment**.
+It is not a replacement for the published Android SDK docs.
+
+The xref:loginWithPassword.adoc[`loginWithPassword`] page is generated from:
+
+* the Kotlin function signature (names, types, defaults)
+* the KDoc on `PasswordAuth.loginWithPassword`
+* nested fields from `LoginMfaConf`, `AuthToken`, and `OpenIdUser`
+
+Signature parameter names are AsciiDoc xrefs (`<<email>>`) pointing at the parameter table.
+
+Regenerate it from the SDK repo root:
+
+[source,bash]
+----
+node docs/generator/generate.mjs
+----
+
+Compare with the hand-written page: xref:master@sdk-android:ROOT:loginWithPassword.adoc[loginWithPassword on current docs].
