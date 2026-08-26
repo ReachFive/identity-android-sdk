@@ -1,0 +1,420 @@
+// tag::activity[]
+|[[activity, activity]]activity `Activity` | The Android activity.
+// end::activity[]
+
+// tag::authorizationcode[]
+|[[authorizationCode, authorizationCode]]authorizationCode `string` |The authorization code.
+// end::authorizationcode[]
+
+// tag::authtoken[]
+|[[authToken, authToken]]authToken `AuthToken`|Authorization token of the profile retrieved from login.
+[cols="1,3a"]
+!===
+! idToken `string` ! The ID token {rfc-7519}[JSON Web Token (JWT)^] that contains the profile's information.
+! accessToken `string` ! The authorization credential {rfc-7519}[JSON Web Token (JWT)^] used to access the {company} API.
+! amr `string[]`  ! Authentication Methods Reference. It indicates the method(s) used during the authentication process
+! refreshToken `string` ! The refresh token {rfc-7519}[JSON Web Token (JWT)^] used to obtain new access tokens once they expire.
+
+! [[stepUpToken, stepUpToken]] stepUpToken `string`  
+! The step up token used to continue the step up flow and validate the user for authentication purposes.
+
+This only applies for MFA flows.
+
+! tokenType `string` ! The type of token. Always equal to `Bearer`.
+! expiresIn `number` ! The lifetime in seconds of the access token.
+
+If `expiresIn` is less than or equal to `0`, the `AuthToken` is expired.
+
+! user `OpenIdUser` ! The user's information contained in the ID token.
+!===
+// end::authtoken[]
+
+// tag::stepUpToken[]
+| [[stepUpToken, stepUpToken]] stepUpToken `string`  
+| The step up token used to continue the step up flow and validate the user for authentication purposes.
+// end::stepUpToken[]
+
+// tag::challengeId[]
+|[[challengeId,challengeId]]challengeId `string` 
+|The code challenge ID to verify the user.
+// end::challengeId[]
+
+// tag::trustedDeviceId[]
+|[[trustedDeviceId, trustedDeviceId]] trustedDeviceId `string`
+|The ID of the trusted device.
+// end::trustedDeviceId[]
+
+// tag::startStepUpFlow[]
+|[[startStepUpFlow, startStepUpFlow]] startStepUpFlow
+|Starts the step up flow with either an `authToken` which contains `activity` or with the `stepUpToken` received from xref:sdk-android:ROOT:loginWithPassword.adoc[].
+
+[tabs]
+====
+startStepUpAuthTokenFlow::
++
+--
+Initiates the step up flow with the `authToken`.
+
+[source,js,subs="normal"]
+----
+StartStepUpAuthTokenFlow(<<authToken>>: AuthToken, activity: Activity)
+----
+
+--
+startStepUpLoginFlow::
++
+--
+Initiates the step up flow with the `stepUpToken` from the xref:sdk-android:ROOT:loginWithPassword.adoc[`loginWithPassword` method].
+
+[source,js]
+----
+StartStepUpLoginFlow(stepUpToken: String)
+----
+
+--
+====
+// end::startStepUpFlow[]
+
+// tag::trustDevice[]
+|[[trustDevice,trustDevice]]trustDevice `boolean` 
+|Boolean indicating if the device should be trusted or not.
+
+* `true` = trust the device
+* `false` = do not trust the device
+
+Defaults to `false`.
+
+NOTE: This option only applies during registration when the second factor is already verified and the user doesn't need to enter a verification code to complete enrollment.
+
+// end::trustDevice[]
+
+// tag::authType[]
+|[[authType,authType]]authType `string`
+|The type of passwordless authentication.
+
+Allowed values:
+
+* `email`
+* `sms`
+
+// end::authType[]
+
+// tag::deviceid[]
+|[[deviceId, deviceId]]deviceId `string` | The identifier of the device.
+// end::deviceid[]
+
+// tag::email[]
+|[[email, email]]email `string` 
+| The email address of the profile.
+// end::email[]
+
+// tag::failure[]
+|[[failure, failure]]failure `function` | Callback called once the request has failed. You'll get a `ReachFiveError` as an argument.
+// end::failure[]
+
+// tag::tokens[]
+|[[tokens, tokens]]tokens `AuthToken` 
+|*optional* The authorization token.
+
+ifeval::["{docname}" == "logout"]
+This revokes any access and refresh tokens associated with the specified authorization token.
+endif::[]
+
+// end::tokens[]
+
+// tag::action[]
+|[[action, action]]action `String` 
+|An optional string describing the action for the MFA flow.
+
+You can value this with whatever you like.
+It should match the value you describe in your xref:docs:ROOT:mfa-templates.adoc[].
+
+We recommend using meaningful values like `login` or `transaction` to help better align with MFA email and SMS templates.
+// end::action[]
+
+// tag::ssoCustomTab[]
+|[[ssoCustomTab,ssoCustomTab]] ssoCustomTab `Activity`
+|*optional* A custom tab calling link:{site-url}/openapi/identity.html#operation/destroySSOsession[`/identity/v1/logout` endpoint^] opened to kill the browser's SSO session.
+// end::ssoCustomTab[]
+
+// tag::requestcode[]
+|[[requestcode, requestCode]]requestCode `Int` | The Android request code obtained in `onActivityResult`.
+// end::requestcode[]
+
+// tag::fido2intent[]
+|[[fido2intent, fido2intent]]intent `Intent` | The intent received after launching a FIDO2 task.
+// end::fido2intent[]
+
+// tag::freshauthtoken[]
+|[[freshAuthToken-{docname}, freshAuthToken]] `AuthToken`|Authorization token of the profile retrieved from login (less than 5 minutes old).
+[cols="1,3a"]
+!===
+! idToken `string` ! The ID token {rfc-7519}[JSON Web Token (JWT)^] that contains the profile's information.
+! accessToken `string` ! The authorization credential {rfc-7519}[JSON Web Token (JWT)^] used to access the {company} API.
+! refreshToken `string` ! The refresh token {rfc-7519}[JSON Web Token (JWT)^] used to obtain new access tokens once they expire.
+! tokenType `string` ! The type of token. Always equal to `Bearer`.
+! expiresIn `number` a! The lifetime in seconds of the access token.
+
+If `expiresIn` is less than or equal to `0`, the `AuthToken` is expired.
+
+! user `OpenIdUser` ! The user's information contained in the ID token.
+!===
+// end::freshauthtoken[]
+
+// tag::friendlyname[]
+|[[friendlyName, friendlyName]]friendlyName `string` 
+|The name associated to the passkey in {company}.
+
+Default to the name of the Android product.
+// end::friendlyname[]
+
+// tag::loginrequest[]
+|[[loginRequest, loginRequest]]loginRequest `WebAuthnLoginRequest` | The parameters required to login with a registered FIDO2 device.
+
+The `WebAuthnLoginRequest` enum class consists into:
+
+- `EmailWebAuthnLoginRequest`
+- `PhoneNumberWebAuthnLoginRequest`
+// end::loginrequest[]
+
+// tag::name[]
+|[[name, name]]name `string` | The name of the provider.
+// end::name[]
+
+// tag::newpassword[]
+|password `string` | The new password of the profile. Password must meet the minimum requirements defined by the {zxcvbn} used. It must also be different from the old one.
+// end::newpassword[]
+
+// tag::oldpassword[]
+|[[oldPassword,oldPassword]]oldPassword `string` | The old password of the profile.
+// end::oldpassword[]
+
+// tag::origin[]
+|[[origin, origin]]origin `string` | Free text parameter describing the source of the event (only for reporting purposes).
+// end::origin[]
+
+// tag::state[]
+|[[state, state]]state `string` | An OAuth2 state value.
+// end::state[]
+
+// tag::nonce[]
+|[[nonce, nonce]]nonce `string` | An OIDC nonce value.
+// end::nonce[]
+
+// tag::originwebauthn[]
+|[[originWebAuthn-{docname}]]originWebAuthn `string` | The domain of the origin.
+// end::originwebauthn[]
+
+// tag::password[]
+|[[password, password]]password `string` | The password of the profile
+// end::password[]
+
+// tag::phonenumber[]
+|[[phoneNumber, phoneNumber]]phoneNumber `string` | The phone number of the profile.
+
+Both the international format and the national conventions of the account's country are accepted if configured in account settings.
+// end::phonenumber[]
+
+// tag::customIdentifier[]
+| [[customIdentifier, customIdentifier]]customIdentifier `string` | A string that allows users to authenticate with something other than an `email` or `phone_number`. It's important to note that an `email` and/or `phone_number` is still required to create a managed profile. Each `custom_identifier` value must be unique. The `custom_identifier` must be between _4-80_ characters.
+// end::customIdentifier[]
+
+
+// tag::profile[]
+|[[profile,profile]] profile `Profile` | The profile with the new data. Only the provided fields will be updated.
+// end::profile[]
+
+// tag::profilesignuprequest[]
+|[[profileSignupRequest, ProfileSignupRequest]] profile `ProfileSignupRequest` | The data of the profile.
+[cols="1,3a"]
+!===
+! password `string` ! The password of the profile. Password must meet the minimum requirements defined by the {zxcvbn} used.
+! email `string` ! The primary email address of the profile.
+! phoneNumber `string` ! The primary phone number of the profile.
+
+Both the international format and the national conventions of the account's country are accepted if configured in account settings.
+
+! customIdentifier `string` !A string that allows users to authenticate with something other than an `email` or `phone_number`. It's important to note that an `email` and/or `phone_number` is still required to create a managed profile. Each `custom_identifier` value must be unique. The `custom_identifier` must be between _4-80_ characters.
+
+! givenName `string` ! The given name of the profile.
+! middleName `string` ! The middle name of the profile.
+! familyName `string` ! The family name of the profile.
+! name `string` ! The full name of the profile.
+! nickname `string` ! The nickname of the profile.
+! birthdate `string` ! The birthdate of the profile, represented as an {iso-8601}[ISO 8601^] `YYYY-MM-DD` format.
+! profileURL `string` ! The URL of one of the user’s profile page (usually a social provider’s page).
+! picture `string` ! The URL of one of the profile picture. This URL refers to an image file (PNG, JPEG, or GIF image file).
+! username `string` ! The username of the profile (the login's name).
+! gender `string` ! The gender of the profile.
+
+Allowed values are `female`, `male` and `other`.
+
+! company `string` 
+! The company's name of the profile.
+
+! addresses `ProfileAddress[]` 
+! The list of the profile's postal addresses
+
+! locale `string` 
+! The profile's language code in lowercase and country code in uppercase, separated by a dash (eg `en`, `fr-FR` ...).
+
+! bio `string` 
+! The biography of the profile.
+
+! customFields `Map<string, any>` 
+! The custom fields of the profile.
+
+xref:docs:ROOT:custom-fields.adoc[Structured custom fields] are only available using the full key for the field (e.g., `full.custom_field.key`).
+They are not supported as nested objects.
+
+! consents `Map<string, Consent>` 
+! The consents granted to the profile. It is a map of string keys with the associated 
+consent object.
+
+!===
+// end::profilesignuprequest[]
+
+// tag::profilewebauthnsignuprequest[]
+|[[profileWebAuthnSignupRequest, ProfileWebAuthnSignupRequest]] profile `ProfileWebAuthnSignupRequest` | The profile data.
+[cols="1,3a"]
+!===
+! email `string` ! The primary email address of the profile.
+! phoneNumber `string` ! The primary phone number of the profile.
+
+NOTE: Both the international format and the national conventions of the account's country are accepted if configured in account settings.
+! givenName `string` ! The given name of the profile.
+! middleName `string` ! The middle name of the profile.
+! familyName `string` ! The family name of the profile.
+! name `string` ! The full name of the profile.
+! nickname `string` ! The nickname of the profile.
+! birthdate `string` ! The birthdate of the profile, represented as an {iso-8601}[ISO 8601^] `YYYY-MM-DD` format.
+! profileURL `string` ! The URL of one of the user’s profile pages (usually a social provider’s page).
+! picture `string` ! The URL of one of the user's profile pictures. This URL refers to an image file (PNG, JPEG, or GIF image file).
+! username `string` ! The username of the profile (the login's name).
+! gender `string` ! The gender of the profile.
+
+NOTE: Currently allowed values are `female`, `male` and `other`.
+! company `string` ! The company name of the profile.
+// submodel to do
+! addresses `ProfileAddress[]` ! The list of the profile's postal addresses.
+! locale `string` ! The profile's language code in lowercase and country code in uppercase, separated by a dash (eg `en`, `fr-FR` ...).
+! bio `string` ! The biography of the profile.
+! customFields `Map<string, any>` ! The custom fields of the profile.
+! consents `Map<string, Consent>` ! The consents granted to the profile. It is a map of string keys with the associated consent object.
+!===
+
+// end::profilewebauthnsignuprequest[]
+
+// tag::redirecturi[]
+|[[redirectUri,redirectUri]] redirectUri `string` 
+| The URL where the user will be redirected after the passwordless success. 
+
+Default value is `reachfive-$\{clientId}://callback`.
+// end::redirecturi[]
+
+// tag::redirectUrl[]
+|[[redirectUrl, redirectUrl]]redirectUrl `string` 
+| The URL sent in the email to which the user is redirected. 
+
+This URL must be whitelisted in the `Allowed Callback URLs` field of your ReachFive client settings.
+// end::redirectUrl[]
+
+// tag::scope[]
+|[[scope, scope]]scope `string[]` | List of space-delimited, case-sensitive strings representing the requested scope.
+
+Default scopes are the allowed scopes set up in the client's configuration.
+// end::scope[]
+
+// tag::successwithupdate[]
+|[[successwithupdate, successWithUpdate]] success `function` 
+| Callback called once the update has succeeded. You'll get the updated `Profile` as an argument.
+// end::successwithupdate[]
+
+// tag::requestCredentialTypes[]
+|[[requestCredentialTypes, requestCredentialTypes]] requestCredentialTypes `enum` 
+| Set the type of credentials to request.
+
+Pass like `CredentialType.Password`, or `CredentialType.Passkey`. Default is both.
+
+[source]
+----
+enum class CredentialType {
+    Password,
+    Passkey
+}
+----
+
+// end::requestCredentialTypes[]
+
+// tag::success[]
+|[[success, success]]success `function` 
+|Callback called once the request has succeeded.
+
+ifdef::callbackWithParam[]
+Takes `authToken` as a parameter.
+endif::[]
+// end::success[]
+
+// tag::mfaConf[]
+|[[mfaConf, mfaConf]] mfaConf `LoginMfaConf`
+| Contains the `activity` used during the MFA step-up when it is required during a login flow.
+// end::mfaConf[]
+
+// tag::updatepasswordrequest[]
+|[[udpatePasswordRequest, udpatePasswordRequest]]updatePasswordRequest `UpdatePasswordRequest` | The parameters required to update the profile's password.
+
+The `UpdatePasswordRequest` enum class consists into:
+
+- `FreshAccessTokenParams`
+- `AccessTokenParams`
+- `EmailParams`
+- `SmsParams`
+// end::updatepasswordrequest[]
+
+// tag::username[]
+|[[username, username]]username `string` | Username of the profile: email address or phone number.
+
+Both the international format and the national conventions of the account's country are accepted if configured in account settings.
+// end::username[]
+
+// tag::verificationcode[]
+|[[verificationCode, verificationCode]]verificationCode `string` | The verification code sent by email or SMS.
+// end::verificationcode[]
+
+// tag::webauthnid[]
+|[[webAuthnId, webAuthnId]]webAuthnId `string` | The user identifier returned in the signup options.
+// end::webauthnid[]
+
+// tag::returntoafteremailconfirmation[]
+| [[returnToAfterEmailConfirmation, returnToAfterEmailConfirmation]]returnToAfterEmailConfirmation `string` 
+| Returned in the `redirectUrl` as a query parameter, this parameter is used as the post-email confirmation URL.
+
+IMPORTANT: This parameter should only be used with xref:docs:ROOT:hosted-pages.adoc[].
+
+// end::returntoafteremailconfirmation[]
+
+// tag::useEphemeralBrowsing[]
+|[[useEphemeralBrowsing, useEphemeralBrowsing]]useEphemeralBrowsing `boolean`
+|*optional* Indicates whether to attempt launching the custom tab in an ephemeral (private) mode.
+
+*Default*: `false`.
+
+When set to `true`, the SDK attempts to open the custom tab using a completely blank context that is isolated from the user's regular browser session. 
+
+* *Session Isolation:* Because it operates in a blank context, it does not share cookies or local data with the browser. 
+It cannot access, create, or update the user's existing web Single Sign-On (SSO) sessions.
+* *Use Case:* This is ideal for preventing session conflicts between your app and the browser. However, be aware that users will be forced to manually authenticate on every login unless they have an active SSO session directly within the app.
+* *Important Fallback Behavior:* Support for ephemeral browsing varies across Android browsers. If the user's default browser does not support this feature, the SDK will automatically fall back to launching a regular custom tab (which *will* share the user's standard browsing context and cookies).
+
+// end::useEphemeralBrowsing[]
+
+// tag::fullScreenWebView[]
+|[[fullScreenWebView, fullScreenWebView]]fullScreenWebView `boolean`
+|Indicates whether to launch the webview in full-screen mode without padding for system bars.
+
+WebView displays edge-to-edge by default and adds padding for system bars.
+Enabling (`true`) `fullScreenWebView` disables the padding for the system bars.
+
+*Default*: `false`
+
+// end::fullScreenWebView[]

@@ -1,0 +1,3 @@
+// tag::version[]
+[.d-post]#*MavenCentral* {page-component-version}#
+// end::version[]

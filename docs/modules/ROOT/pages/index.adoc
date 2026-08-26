@@ -1,21 +1,194 @@
-= KDoc to AsciiDoc probe
+:mobile-sdk:
+= Getting Started
 
-This component version is a **local experiment**.
-It is not a replacement for the published Android SDK docs.
+[.d-post]#*MavenCentral* `{sdk-android-latest-version}`#
 
-The xref:loginWithPassword.adoc[`loginWithPassword`] page is generated from:
+This page introduces you to the *{page-component-title}* documentation for version `{sdk-android-latest-version}` of the `{primary-branch}` release.
 
-* the Kotlin function signature (names, types, defaults)
-* the KDoc on `PasswordAuth.loginWithPassword`
-* nested fields from `LoginMfaConf`, `AuthToken`, and `OpenIdUser`
+[.expand]
+icon:warning[] Breaking changes for `10.0.0`, please read.
 
-Signature parameter names are AsciiDoc xrefs (`<<email>>`) pointing at the parameter table.
+[.expand-content]
+====
+[discrete]
+include::partial$announcements/1000-breaking-changes.adoc[leveloffset=+1]
+====
 
-Regenerate it from the SDK repo root:
+== Requirements
 
-[source,bash]
+The ReachFive SDK supports Android SDK from API Level 21 (Android version `5.0` Lollipop).
+
+include::docs::partial$domain-url-client-id-prereq.adoc[]
+
+== Installation
+
+ReachFive SDKs are published to link:{published-repo}[Maven Central^] as separate modules.
+
+[source,groovy]
 ----
-node docs/generator/generate.mjs
+allprojects {
+    repositories {
+        mavenCentral() <1>
+    }
+}
+----
+<1> Add `mavenCentral` as a repository location in your project's top-level `build.gradle` file.
+
+NOTE: Below are installation instructions for each module.
+
+== SDK Core
+
+Core contains all the main tools and interfaces, and the methods related to authentication.
+
+Add the following line to your `app/build.gradle`, replacing `x.y.z` with the latest SDK version:
+
+[source, groovy]
+----
+dependencies {
+    implementation "co.reachfive.identity:sdk-core:x.y.z"
+}
 ----
 
-Compare with the hand-written page: xref:master@sdk-android:ROOT:loginWithPassword.adoc[loginWithPassword on current docs].
+The following permissions are required to communicate with the {company} servers. Add them to the `AndroidManifest.xml` file.
+
+[source, xml]
+----
+<manifest>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+</manifest>
+----
+
+// proguard minifyEnabled exception
+include::sdk-android:ROOT:partial$proguard/r_proguard-minify-rule.adoc[leveloffset=+2]
+
+== Web-based Flows
+
+If you intend on using non-native social login providers (SDK WebView) or our orchestrated web login flow (Core), then you must properly configure your application accordingly.
+
+TIP: Check out the xref:sdk-android:ROOT:guides/web-based-flows.adoc[Web-Based Flows] guide for more details.
+
+== SDK WebView
+
+This module uses a link:https://developer.chrome.com/docs/android/custom-tabs[Custom Tab^] to authenticate users through a social login provider configured in your account; it enables all xref:docs:ROOT:social-login-overview.adoc[providers] that are supported by {company}.
+
+IMPORTANT: For mobile contexts, you must whitelist `reachfive://${clientId}/callback` using your {company} identity client ID.
+This URL scheme is the *default callback URL* and is used to request a token when implementing the SDK Webview.
+
+Add the following line to your `app/build.gradle`, replacing `x.y.z` with the latest version:
+
+[source, groovy]
+----
+dependencies {
+  implementation "co.reachfive.identity:sdk-webview:x.y.z"
+}
+----
+
+You must also add the following activity into the `AndroidManifest.xml` file:
+
+// xml config file
+include::sdk-android:ROOT:partial$webview/snippets/s_webview-configuration.adoc[]
+
+// webview android.enableR8.fullMode=false issue
+=== Release build considerations
+
+When building your app in release mode, the WebView used by the {company} Android SDK may encounter issues due to code shrinking and obfuscation performed by R8, Android's default optimization tool. 
+These issues can manifest as the WebView failing to load content or authentication flows not completing.
+
+To ensure the WebView functions correctly in release builds, consider the following:
+
+. *Verify Proguard/R8 Rules*:
++
+The {company} Android SDK includes Proguard rules to prevent critical classes and methods from being removed or obfuscated. 
+Ensure that your app's `proguard-rules.pro` file does not conflict with these rules.
+
+. *Disable R8 Full Mode*:
++
+If you encounter issues with the WebView in release builds (e.g., blank WebView or failed authentication), it may be due to R8's aggressive optimizations in full mode. 
+As a workaround, you can disable R8's full mode by adding the following line to your app's `gradle.properties` file:
++
+[source,java]
+----
+android.enableR8.fullMode=false
+----
+
+// Facebook native module
+include::partial$social-providers/p_configure-facebook-native.adoc[leveloffset=+1]
+
+// Google native module
+include::partial$social-providers/p_configure-google-native.adoc[leveloffset=+1]
+
+// WeChat connector
+include::partial$social-providers/p_configure-wechat.adoc[leveloffset=+1]
+
+== Client Initialization
+
+In all the code example below, the {company} client is instantiated and stored in a variable named `client`.
+
+[source,kotlin]
+----
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import co.reachfive.identity.sdk.core.ReachFive
+import co.reachfive.identity.sdk.core.SdkConfig
+import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.ProfileSignupRequest
+import co.reachfive.identity.sdk.facebook.FacebookProvider
+import co.reachfive.identity.sdk.google.GoogleProvider
+import co.reachfive.identity.sdk.webview.WebViewProvider
+import io.github.cdimascio.dotenv.dotenv
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+    private const val TAG = "YourApp"
+
+    // The ReachFive client
+    private lateinit var client: ReachFive
+
+    val DOMAIN    = "Your ReachFive domain"
+    val CLIENT_ID = "Your ReachFive client ID"
+    val SCHEME    = "Your ReachFive scheme" <1>
+    val originWebAuthn = "Your Relying Party ID" <2>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        // The configuration parameters needed by the ReachFive client
+        val sdkConfig = SdkConfig(domain = DOMAIN, clientId = CLIENT_ID, scheme = SCHEME)
+
+        // The list of the social providers needed by your application
+        val providersCreators = listOf(GoogleProvider(), FacebookProvider(), WebViewProvider()) <3>
+
+        client = ReachFive(
+            sdkConfig = sdkConfig,
+            providersCreators = providersCreators, <3>
+        )
+
+        // Initialize the ReachFive client
+        client.initialize({
+            // Success
+        }, {
+            // On failure, log the error message returned by the ReachFive client
+            Log.d(TAG, "ReachFive init ${it.message}")
+        })
+
+        // Load the social providers
+        client.loadSocialProviders( <3>
+            applicationContext,
+            success = { providers -> /* update the providers you display */},
+            failure = { Log.d(TAG, "Loading providers failed ${it.message}") }
+        )
+    }
+}
+----
+<1> The `SCHEME` should follow the format: `reachfive://${clientId}/callback`. It is a URI for native apps.
+<2> *For passkeys only*: The Relying Party ID which is the domain to which passkeys are bound. 
+Once bound to a domain, it can be used on subdomains but not other full domains.
+See xref:guides/passkeys.adoc#relying-party-id[Relying Party ID] for more details.
+<3> Social providers should be initialized even in an activity where the user is expected to be authenticated already. 
+This ensures a proper logout is performed if the user has signed in through a social provider.

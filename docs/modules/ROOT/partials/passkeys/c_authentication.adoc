@@ -1,0 +1,34 @@
+= Authentication
+
+Once the user has a credential registered on the server and the device, they can use it to login easily with their identifier.
+
+Here is a snapshot of the login view displayed to the user.
+
+[cols="^33,^33,^33"]
+|===
+|Step 1: Discoverable |Step 1: Non-discoverable |Step 2
+
+|image:passkeys/passkeys-discoverable.png[width=60%,height=auto,role="zoom"]
+|image:passkeys/passkeys-non-discoverable.png[width=60%,height=auto,role="zoom"]
+|image:passkeys/passkeys-fingerprint-unlock.png[width=60%,height=auto,role="zoom"]
+
+|===
+
+== Log in with passkey
+
+The xref:loginWithPasskey.adoc[] method initiates the passkey authentication process.
+
+[source, kotlin]
+----
+include::example$loginWithPasskeyWithEmail.kt[]
+----
+
+== Discoverable login
+
+The xref:discoverableLogin.adoc[] method discovers a credential to log in a user. 
+This can be via password, passkey, or both.
+
+[source, kotlin]
+----
+include::example$discoverableLogin.kt[]
+----

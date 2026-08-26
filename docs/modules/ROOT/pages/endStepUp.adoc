@@ -1,0 +1,50 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<challengeId>>,
+  <<verificationCode, verificationCode>>,
+  <<success>>,
+  <<failure>>,
+  <<activity>>,
+  // Optional arguments
+  <<trustDevice>>
+)
+----
+
+== About this command
+
+Logs in a user by initiating the authentication code flow, ending the step up flow.
+This is executed when a user uses the SMS verification code or clicks the link provided in the email.
+
+IMPORTANT: The Passwordless feature must be enabled on your {cc} account.
+The SMS feature must be enabled on your {cc} account if the profile can choose a phone number to login.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="challengeId,verificationcode,success,failure,activity,trustDevice"]
+
+|===
+
+== Response
+
+include::partial$models.adoc[tag=authtoken]
+
+=== Error response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

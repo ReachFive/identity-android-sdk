@@ -1,0 +1,47 @@
+= onLogoutResult
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+    <<requestcode, requestCode>>,
+    <<intent>>,
+    <<success>>,
+    <<failure>>,
+)
+----
+
+== About this command
+
+This method handles returning to the app from the custom tab initiated by `logout`.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="3,7a"]
+|===
+
+include::partial$params.adoc[tag="requestcode"]
+
+|[[intent, intent]]intent `Intent` 
+|The intent received from the activity lauching the logout Custom Tab.
+
+|[[success, success]]success `function` 
+|Callback called once the logout Custom Tab has successfully returned. 
+
+include::partial$params.adoc[tag="failure"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

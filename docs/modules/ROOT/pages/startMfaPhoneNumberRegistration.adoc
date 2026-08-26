@@ -1,0 +1,44 @@
+= {docname}
+
+[.signature]
+[subs="normal,callouts"]
+----
+client.{docname}(
+  <<authToken>>,
+  <<phoneNumber>>, <1>
+  <<success>>,
+  <<failure>>,
+  <<action>>,
+  <<trustDevice>>
+)
+----
+<1> If the user already has a verified phone number as an identifier in their account, there's no need to pass the phoneNumber parameter.
+If an existing phone number is unverified, it becomes automatically verified with the `verifyMfaPhoneNumberRegistration` step.
+
+== About this command
+
+Starts the MFA phone number registration flow. 
+When the flow is started, an SMS is sent to the user for verification.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,phonenumber,success,failure,action,trustDevice"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

@@ -1,0 +1,120 @@
+= Get started
+
+This section describes important terms and concepts as well the steps needed to get started with passkeys for Android with {company}.
+
+== Discoverable login
+
+With discoverable logins, the client requests the credential requirements for the Relying Party.
+Then, it shows a list of possible stored user handles such as an email, phone numbers, PIN, or usernames for the device.
+Once the user selects and unlocks the credential, the client continues to complete the authentication flow.
+
+== Non-discoverable login
+
+With non-discoverable logins, the client requests the credential requirements for the Relying Party for a *specific user*.
+The Relying Party replies with the credentials it can accept for this specific user.
+If the credentials are accessible to the client, the client prompts the user to select one.
+
+== Relying Party ID 
+
+[source]
+----
+data class SdkConfig(
+    val domain: String,
+    val clientId: String,
+    val scheme: String,
+    val originWebAuthn: String? = null, <1>
+) : Parcelable
+----
+<1> Relying Party ID is the domain to which passkeys are bound. 
+Once bound to a domain, it can be used on subdomains but not other full domains.
++
+Example: Using the Relying Party ID of ``boulangerie.com`` allows the use of credentials on ``help.boulangerie.com`` for example, but not on a different full domain like ``boulangerie.fr``. 
+In this case, customers would need a common login page for passkeys for varying full domains like the stated example here.
+
+== Digital Asset Links
+
+You need to host a link:https://developer.android.com/training/sign-in/passkeys#add-support-dal[Digital Asset Links^] JSON file on `\https://<your_domain>/.well-known/assetlinks.json` to allow the application to register and authenticate with credentials associated with the Relying Party ID `<your_domain>`.
+
+.assetlinks.json example
+[source,json]
+----
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls","delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "co.reachfive.identity.sdk.demo", <1>
+      "sha256_cert_fingerprints": [ <2>
+        "AF:C8:F2:4C:AF:46:AA:5B:74:7B:8D:47:4D:82:A6:D1:FF:98:BF:A6:16:D0:D0:82:E8:9A:D0:8C:13:EB:B9:CE"
+      ]
+    }
+  }
+]
+----
+<1> `package_name` matches the `applicationId` in the `build.gradle` file.
+<2> `sha256_cert_fingerprints` matches the fingerprint of the signing key.
+
+TIP: Refer to Android Studio's link:https://developer.android.com/studio/publish/app-signing#sign_release[Generate and register an upload certificate^] page to generate a public certificate.
+
+=== `assetlinks` response
+
+The `\https://<RelyingPartyId>/.well-known/assetlinks.json` link must return a `200` HTTP response with a JSON MIME `Content-Type` header. 
+Returning a `301` or `302` HTTP redirect or a non-JSON Content-Type causes verification to fail. See link:https://developer.android.com/training/sign-in/passkeys#add-support-dal[Android's docs^] for more details.
+
+=== Hosted pages
+
+If you are using's {company}'s xref:docs:ROOT:hosted-pages.adoc[] and need the Asset Links file hosted on your domain at {company}, you should input the content of your `assetlinks.json` file into the text area called *assetlinks.json* in the menu:Settings[WebAuthn] section of the {cc}.
+
+CAUTION: We do not perform any validation on the file.
+
+[tabs]
+====
+No custom domain [.red]#icon:close[]#::
++
+--
+If you do not use a custom domain, the Relying Party ID associated to credentials created on Hosted Pages is `<account>.reach5.net`.
+Your Digit Assets Link is served at `\https://<account>.reach5.net/.well-known/assetlinks.json`.
+--
+Using custom domain icon:check-circle[]::
++
+--
+If you do use a custom domain, your Relying Party ID is `\https://<custom-domain>`.
+Your Digit Assets Link is served at `\https://<custom-domain>/.well-known/assetlinks.json`.
+
+You could also choose to host the `assetlinks.json` file on your root domain.
+Hosted Pages are accessible via `auth.example.com`.
+You could then host the `assetlinks.json` file at `example.com`.
+This is a viable long-term option in the case you may not use Hosted Pages in the future.
+--
+====
+
+=== Self-hosted
+
+If you do not use {company}'s Hosted Pages option, you should host the file on your own.
+
+[source]
+----
+https://<RelyingPartyId>/.well-known/assetlinks.json <1>
+----
+<1> Ensure you use the correct Relying Party ID.
+
+== Allowed origins
+
+In the {cc}, under menu:Settings[WebAuthn] you must allow:
+
+* the URL of the domain that corresponds to the Relying Party ID
+* the Facet ID
+
+[NOTE]
+====
+The Facet ID is the platform-specific identifier (_URI_). It matches the format `android:apk-key-hash:<hash-of-apk-signing-cert>` where `hash-of-apk-signing-cert` is the encoded version of the signing key from the application's keystore.
+
+You can compute the Facet ID with the command below:
+
+[source,sh]
+----
+keytool -list -v -keystore <your.keystore> | grep "SHA256: " | cut -d " " -f 3 | xxd -r -p | openssl base64 | sed 's/=//g'
+----
+====
+
+image::webauthn-settings.png[,role="zoom"]

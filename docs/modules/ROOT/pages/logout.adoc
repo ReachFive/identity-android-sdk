@@ -1,0 +1,54 @@
+= logout
+
+
+[.signature]
+[subs="normal,callouts"]
+----
+client.logout(
+    <<success>>, <1>
+    <<failure>>, <2>
+    <<tokens>>, 
+    <<ssoCustomTab>>
+    )
+----
+<1> Required.
+<2> Required.
+
+== About this command
+
+Kills the SSO session corresponding to the app's cookie jar.
+
+If you pass a `token` parameter, all tokens are revoked including access and refresh tokens.
+
+If you pass the `ssoCustomTab parameter`, a custom tab calling link:{site-url}/openapi/identity.html#operation/destroySSOsession[`/identity/v1/logout` endpoint^] is opened to kill the browser's SSO session.
+
+// include::docs::partial$tokens/r_revoke-refresh-token-note.adoc[]
+
+=== Custom tabs and browser session
+
+When using the `{docname}` method for opening a custom tab and logging out in the browser, we have `isReachFiveLogoutRequestCode` boolean to ensure the code is from {company}.
+
+Finally, xref:onLogoutResult.adoc[] assists in dealing with the custom tab opened by the `{docname}` method when it redirects to the app.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="success,failure,tokens,ssoCustomTab"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="reachfiveerror"]

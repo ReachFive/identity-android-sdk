@@ -1,0 +1,44 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<authToken>>,
+  <<success>>,
+  <<failure>>
+)
+----
+
+== About this command
+
+Lists any MFA trusted devices for a user.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,success,failure"]
+
+|===
+
+== Response
+
+Type: `List<TrustedDevice>`
+
+include::partial$models.adoc[tag=TrustedDeviceResponse]
+
+=== Error response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

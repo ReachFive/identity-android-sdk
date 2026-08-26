@@ -1,9 +1,0 @@
-{
-  "name": "sdk-android-kdoc-generator-probe",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "generate": "node generate.mjs",
-    "test": "node generate.test.mjs"
-  }
-}

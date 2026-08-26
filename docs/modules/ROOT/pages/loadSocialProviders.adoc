@@ -1,0 +1,39 @@
+= {docname}
+
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  context,
+  <<success>>,
+  <<failure>>
+)
+----
+
+== About this command
+
+Loads your social providers.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="success,failure"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

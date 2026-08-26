@@ -1,0 +1,45 @@
+:context: android
+:passkeys:
+= {docname}
+
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+    <<authToken>>,
+    <<friendlyName>>,
+    <<success>>,
+    <<failure>>,
+    <<activity>>
+)
+----
+
+== About this command
+
+When authenticated, the user can add a new passkey. 
+
+IMPORTANT: The xref:docs::fido2.adoc#fido2-prerequisites[WebAuthn feature] must be enabled on your {company} account.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,friendlyname,activity,success,failure"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tags="reachfiveerror"]

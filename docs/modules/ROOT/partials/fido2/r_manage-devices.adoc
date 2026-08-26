@@ -1,0 +1,84 @@
+= Manage devices
+
+Once the user is authenticated, they can perform several actions to manage the registered devices such as:
+
+* <<Register a new device, registering a new device>>
+* <<Other actions, listing and removing devices>>
+
+Here is a snapshot of the view displayed to the user after a successful login.
+
+image::webauthn-devices.png[width=40%,height=auto,role="zoom"]
+
+== Register a new device
+
+Registration is a _two-step process_.
+
+TIP: Each tab below shows the code needed for each step.
+
+. The xref:addNewWebAuthnDevice.adoc[] method initiates the FIDO2 registration process to retrieve a randomly generated challenge, the *Relying Party* information, and the user information from the {company} server. The options are then passed to the FIDO2 API which returns an *Android Intent* to open a fingerprint dialog and generates a new credential.
++
+WARNING: A user cannot register several credentials on the same device.
++
+
+[start=2]
+. The xref:onAddNewWebAuthnDeviceResult.adoc[] method is called after the UI successfully generates a new credential. It sends the resulting data (_which contains the information about this new credential_) back to the {company} server and completes the FIDO2 registration process.
+
+[[fido2-register-methods-sample]]
+[tabs]
+====
+addNewWebAuthnDevice::
++
+--
+[source, kotlin]
+----
+include::example$fido2AddNewWebAuthnDevice.kt[]
+----
+--
+
+onAddNewWebAuthnDeviceResult::
++
+--
+[source, kotlin]
+----
+include::example$fido2OnAddNewWebAuthnDeviceResult.kt[]
+----
+--
+====
+
+=======
+Here are some snapshots of the FIDO2 dialogs displayed to the user to save a fingerprint.
+
+image::webauthn-registration.png[,role="zoom"]
+=======
+
+
+== Other actions
+
+The tabs below instruct you on listing and removing devices.
+
+[tabs] 
+==== 
+listWebAuthnDevices:: 
++ 
+-- 
+Use the xref:listWebAuthnDevices.adoc[] method to list the registered FIDO2 devices.
+
+[source, kotlin]
+----
+include::example$fido2ListWebAuthnDevices.kt[]
+----
++
+--
+
+removeWebAuthnDevice::
++
+--
+Use the xref:removeWebAuthnDevice.adoc[] method to delete a registered FIDO2 device.
+
+[source, kotlin]
+----
+include::example$fido2RemoveWebAuthnDevice.kt[]
+----
++
+--
+====

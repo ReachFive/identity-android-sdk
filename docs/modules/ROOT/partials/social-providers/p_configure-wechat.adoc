@@ -1,0 +1,30 @@
+= WeChat Connector
+
+This module uses the WeChat Android SDK to provide a better user experience.
+
+Minimum Android SDK version:: `{wechat-android-version}`
+
+TIP: Refer to the xref:docs:ROOT:wechat.adoc[] guide to create your WeChat application.
+
+. Add the following lines to your `app/build.gradle`, replacing `x.y.z` with the latest version:
++
+[source,groovy,subs="attributes"]
+----
+dependencies {
+    implementation "co.reachfive.identity:sdk-wechat:x.y.z"
+}
+----
+
+. Add these lines into the `AndroidManifest.xml` file:
++
+[source, xml]
+----
+<manifest>
+...
+    <queries>
+        <package android:name="com.tencent.mm" /> <1>
+    </queries>
+...
+</manifest>
+----
+<1> *Required* Tencent is the parent company of WeChat.

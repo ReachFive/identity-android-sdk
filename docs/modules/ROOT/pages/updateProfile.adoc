@@ -1,0 +1,45 @@
+= updateProfile
+
+
+[.signature]
+[subs="normal"]
+----
+client.updateProfile(<<authToken>>, <<profile>>, <<successwithupdate, success>>, <<failure>>)
+----
+
+== About this command
+
+Update the information of the profile.
+
+[NOTE]
+====
+* Your access token must have the `full_write` scope.
+* The `email` and the `password` fields of the profile can't be updated with this method, except if the profile has no email address (usually when it is not provided by the social provider). Instead, use the xref:updateEmail.adoc[] method.
+* The `phoneNumber` field of the profile can't be updated if the SMS verification code is disabled on the account settings.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="authtoken"]
+include::partial$params.adoc[tag="profile"]
+include::partial$params.adoc[tag="successwithupdate"]
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="profile"]
+
+include::partial$models.adoc[tag=reachfiveerror]

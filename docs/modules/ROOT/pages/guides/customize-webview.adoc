@@ -1,0 +1,138 @@
+= Customize WebView
+
+Customizing the WebView allows you to seamlessly integrate the identity experience into your application's native look and feel, as well as apply further adjustments to better suit your design and needs.
+
+For example, WebView customization can help you:
+
+* Eliminate visual glitches, such as a brief "white flash" while the WebView is loading a page.
+* Match the application's color scheme and theme, such as setting transparent backgrounds or custom navigation bar colors.
+* Add custom transition animations, such as a fade-in effect when the page is ready to be displayed.
+* Facilitate multi-account logins by bypassing persistent Single Sign-On (SSO) sessions, making it easier for users to log out and switch accounts.
+
+This guide provides a basic example of how to customize the webview.
+In the following implementation, we will hide the webview before the page is fully loaded and display it with a fade-in animation once it is ready.
+
+== Customize the layout and theme
+
+This demonstrates customizing the WebView launched by `loginWithWebView`.
+The following hides the WebView till the page has loaded. 
+
+NOTE: Customizing the `XML` layout and themes does not require any additional Gradle dependencies.
+
+. Override the default {company} webview layout by creating a file with the same name.
++
+.`res/layout/reachfive_webview.xml`
+[source,xml]
+----
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="co.reachfive.identity.sdk.core.RedirectionActivity">
+    
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" /> <1>
+</RelativeLayout>
+----
+<1> Set `visibility` to `gone` so that it does not display before the page is fully loaded. 
++
+[IMPORTANT]
+====
+If you do this, you must complete the <<Add custom behaviors>> section below to programmatically make the WebView visible again. 
+If you only want to apply layout or theme changes, do not set the visibility to `gone`.
+====
+
+. Define a custom style to modify the webview's background and navigation bar colors, and disable default window animations.
++
+.`res/values/styles.xml`
+[source,xml]
+----
+<resources>
+    <style name="Theme.ReachFiveWebView" parent="Theme.AppCompat.Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowAnimationStyle">@style/ReachFiveNoAnimation</item>
+    </style>
+
+    <style name="ReachFiveNoAnimation">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
+</resources>
+----
+
+. Apply the newly created theme for the `RedirectionActivity` in your `AndroidManifest.xml` file.
++
+.`AndroidManifest.xml`
+[source,xml]
+----
+<activity
+    android:name="co.reachfive.identity.sdk.core.RedirectionActivity"
+    android:screenOrientation="portrait"
+    android:theme="@style/Theme.ReachFiveWebView"
+    android:exported="true">
+</activity>
+----
+
+== Add custom behaviors
+
+If you want to add programmatic behaviors like triggering a custom animation when the WebView finishes loading, you need to extend the custom client.
+
+. Make sure to include the appropriate WebKit dependency in your application's `build.gradle` file.
+This is only required to extend the `ReachFiveWebViewClient`.
++
+[source,groovy]
+----
+implementation 'androidx.webkit:webkit:1.13.0'
+----
+
+. Create a fade-in animation that will be played when the page is ready.
++
+.`res/anim/fade_in.xml`
+[source,xml]
+----
+<?xml version="1.0" encoding="utf-8"?>
+<alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="0"
+    android:fromAlpha="0.0"
+    android:toAlpha="1.0" />
+----
+
+. Finally, create a custom `ReachFiveWebViewClient` that overrides `onPageFinished`.
+This changes the visibility of the webview once it is ready and plays the fade-in animation.
++
+.`CustomWebViewClient.kt`
+[source,kotlin]
+----
+import android.view.View
+import android.view.animation.AnimationUtils
+import android.webkit.WebView
+import co.reachfive.identity.sdk.core.ReachFiveWebViewClient
+import co.reachfive.identity.sdk.core.RedirectionActivity
+
+class CustomWebViewClient(activity: RedirectionActivity, codeVerifier: String?) : ReachFiveWebViewClient(activity, codeVerifier) {
+    override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+        
+        activity.binding.webview.visibility = View.VISIBLE
+        val fadeIn = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+        activity.binding.webview.startAnimation(fadeIn)
+    }
+}
+----
+
+. Once done, you should configure the `RedirectionActivity` to use your custom webview client.
+This must be done before the redirection activity is launched.
++
+[source,kotlin]
+----
+RedirectionActivity.webViewClientFactory = { activity, codeVerifier ->
+    CustomWebViewClient(activity, codeVerifier)
+}
+----

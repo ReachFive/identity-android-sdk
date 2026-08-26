@@ -1,0 +1,56 @@
+= Initialize
+
+== Digital Asset Links
+
+You need to host a https://developers.google.com/digital-asset-links/v1/getting-started[Digital Asset Links^] JSON file on `https://<your_domain>/.well-known/assetlinks.json` to allow the application to use FIDO2 APIs to register and sign credentials for that domain.
+
+In our application example, we are:
+
+* Creating a https://firebase.google.com/docs/hosting/[Firebase Hosting^] project to host the digital asset link.
+* Setting the `domain` to `<your_domain>`.
+* Hosting the `assetlinks.json` at `https://<your_domain>/.well-known/assetlinks.json`.
+
+[source,json]
+----
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls","delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.reach5.identity.sdk.demo", <1>
+      "sha256_cert_fingerprints": [ <2>
+        "AF:C8:F2:4C:AF:46:AA:5B:74:7B:8D:47:4D:82:A6:D1:FF:98:BF:A6:16:D0:D0:82:E8:9A:D0:8C:13:EB:B9:CE"
+      ]
+    }
+  }
+]
+----
+
+In the `assetlinks.json` file sample above:
+
+. `package_name` matches the `applicationId` in the `build.gradle` file.
+. `sha256_cert_fingerprints` matches the fingerprint of the signing key.
+
+TIP: Refer to Android Studio's https://developer.android.com/studio/publish/app-signing#sign_release[Generate and register an upload certificate^] page to generate a public certificate.
+
+== Allowed origins
+
+In the {cc}, under menu:Settings[WebAuthn] you must allow:
+
+* the domain on which the Digital Asset Links file is hosted
+* the Facet ID
+
+
+[NOTE]
+====
+The Facet ID is the platform-specific identifier (_URI_). It matches the format `android:apk-key-hash:<hash-of-apk-signing-cert>` where `hash-of-apk-signing-cert` is the encoded version of the signing key from the application's keystore.
+
+You can compute the Facet ID with the command below:
+
+[source,sh]
+----
+keytool -list -v -keystore <your.keystore> | grep "SHA256: " | cut -d " " -f 3 | xxd -r -p | openssl base64 | sed 's/=//g'
+----
+====
+
+image::webauthn-settings.png[,role="zoom"]

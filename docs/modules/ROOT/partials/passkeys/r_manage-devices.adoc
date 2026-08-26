@@ -1,0 +1,34 @@
+= Manage devices
+
+Once a user is authenticated, they can register a passkey.
+
+Here is an example of a user view for listing registered passkeys.
+
+image::passkeys/passkeys-list.png[width=42%,role="zoom"]
+
+== Register a new passkey
+
+The xref:registerNewPasskey.adoc[] method initiates the passkey registration process.
+
+[source, kotlin]
+----
+include::example$registerNewPasskey.kt[]
+----
+
+== List registered passkeys
+
+The xref:listWebAuthnDevices.adoc[] lists registered devices or passkeys.
+
+[source, kotlin]
+----
+include::example$listWebAuthnDevices.kt[]
+----
+
+== Remove registered passkeys
+
+The xref:removeWebAuthnDevice.adoc[] removes registered devices or passkeys.
+
+[source, kotlin]
+----
+include::example$removeWebAuthnDevice.kt[]
+----

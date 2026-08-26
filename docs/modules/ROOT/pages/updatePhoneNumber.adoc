@@ -1,0 +1,53 @@
+= updatePhoneNumber
+
+
+[.signature]
+[subs="normal"]
+----
+client.updatePhoneNumber(
+    <<freshAuthToken-{docname}, authToken>>,
+    <<phoneNumber>>,
+    <<successwithupdate, success>>,
+    <<failure>>
+)
+----
+
+== About this command
+
+Update the profile phone number and send a verification code by SMS.
+
+[NOTE]
+====
+* Your access token must have the `full_write` scope.
+* Be sure to configure and to enable the _Verification SMS_ template in the account's settings.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+:sdk-fresh-at-desc: authToken
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="freshauthtoken"]
+|[[phoneNumber,phoneNumber]] phoneNumber `string` | The phone number of the profile. The new phone number can be identical to the old one.
+
+Both the international format and the national conventions of the account's country are accepted if configured in account settings.
+include::partial$params.adoc[tag="successwithupdate"]
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="profile"]
+
+include::partial$models.adoc[tag=reachfiveerror]

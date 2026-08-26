@@ -1,0 +1,42 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<authToken>>,
+  <<success>>,
+  <<failure>>
+)
+----
+
+== About this command
+
+Remove email for use as a second-factor MFA credential.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,success,failure"]
+
+|===
+
+== Response
+
+Type: `Promise<void>`
+
+=== Error response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

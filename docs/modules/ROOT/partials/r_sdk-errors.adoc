@@ -1,0 +1,45 @@
+= Android SDK Errors
+
+// tag::noTitle[]
+
+The following are errors specific to the Android SDK.
+
+[cols="1m,4m,5a"]
+|===
+|Code |Message |Description
+
+|303
+|OAuthAuthorizationError
+|An OAuth error occurred.
+
+|49000
+|Unexpected
+|An unexpected error occurred.
+
+|52000
+|WebauthnActionCanceled
+|The ongoing WebAuthn action has been canceled by the user.
+
+|52001
+|WebFlowCanceled
+|The ongoing login with web flow has been canceled by the user.
+
+|52002
+|NullIntent
+|An expected Android Intent was found to be null.
+
+|52003
+|NoAuthCode
+|An authorization code was expected and no other error was resolved either.
+
+|52004
+|NoPkce
+|An expected PKCE code_verifier could not be retrieved while completing an authorization code flow.
+
+|52005
+|CustomTabUnavailable
+|An unexpected error occurred when attempting to initialize a custom tab.
+
+|===
+
+// end::noTitle[]

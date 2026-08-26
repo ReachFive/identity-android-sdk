@@ -1,0 +1,45 @@
+:passkeys:
+:callbackWithParam:
+= {docname}
+
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+    <<profileWebAuthnSignupRequest, profile>>,
+    <<friendlyName>>,
+    <<scope>>,
+    <<origin>>,
+    <<success>>,
+    <<failure>>,
+    <<activity>>,
+)
+----
+
+== About this command
+
+The user requests to sign up with a passkey for the first time. 
+
+IMPORTANT: The xref:docs::fido2.adoc#fido2-prerequisites[WebAuthn feature] must be enabled on your {company} account.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tags="profilewebauthnsignuprequest,friendlyname,scope,origin,success,failure,activity"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

@@ -1,0 +1,47 @@
+:fido:
+= onAddNewWebAuthnDeviceResult
+
+
+[.signature]
+[subs="normal"]
+----
+client.onAddNewWebAuthnDeviceResult(
+    <<requestcode, requestCode>>,
+    <<fido2intent, intent>>,
+    <<success>>,
+    <<failure>>
+)
+----
+
+== About this command
+
+After launching a FIDO2 registration task (with the xref:addNewWebAuthnDevice.adoc[] method), this method will parse the resulting intent and if successful, the new device will be added in the user's registered FIDO2 devices.
+
+[NOTE]
+====
+* The WebAuthn feature must be enabled on your {company} account.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="requestcode"]
+include::partial$params.adoc[tag="fido2intent"]
+include::partial$params.adoc[tag="success"]
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

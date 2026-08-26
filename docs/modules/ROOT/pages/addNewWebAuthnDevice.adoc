@@ -1,0 +1,51 @@
+:context: android
+:fido:
+= addNewWebAuthnDevice
+
+
+[.signature]
+[subs="normal"]
+----
+client.addNewWebAuthnDevice(
+    <<authToken>>,
+    <<originWebAuthn-{docname}, origin>>,
+    <<failure>>,
+    <<activity>>,
+    // Optional arguments
+    <<friendlyName>>
+)
+----
+
+== About this command
+
+When authenticated, the user can add a new FIDO2 device. This method will get a FIDO2 pending intent for registration with the options returned by the {company} server and launch it.
+
+The result will be processed by the xref:onAddNewWebAuthnDeviceResult.adoc[] method.
+
+[NOTE]
+====
+* The WebAuthn feature must be enabled on your {company} account.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,activity,originwebauthn,registerrequestcode,failure,friendlyname"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tags="reachfiveerror"]

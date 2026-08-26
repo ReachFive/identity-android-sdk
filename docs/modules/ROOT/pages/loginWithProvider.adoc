@@ -1,0 +1,45 @@
+= loginWithProvider
+
+
+[.signature]
+[subs="normal"]
+----
+client.loginWithProvider(<<name>>, <<scope>>, <<origin>>, <<activity>>)
+----
+
+== About this command
+
+Authenticate the user with a social provider (Facebook, Google...).
+
+Refer to the Android SDK Installation to initialize the providers at the client's instantiation.
+
+[NOTE]
+====
+* The provider scopes provided are the permissions setup in the provider's configuration through the console.
+====
+
+If the flow is performed through the web, then afer end-users have completed the OpenID flow, the  {company} authorization server will redirect back to your application with an authorization code. Automatically complete the flow by calling `xref:sdk-android:ROOT:onLoginActivityResult.adoc[]` in your activity's `onActivityResult` override.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="name"]
+// tag::scope[]
+|[[scope, scope]]scope `string[]` | List of space-delimited, case-sensitive strings representing the requested scope.
+// end::scope[]
+include::partial$params.adoc[tag="origin"]
+include::partial$params.adoc[tag="activity"]
+|===
+
+== Response
+
+Type: `Unit`

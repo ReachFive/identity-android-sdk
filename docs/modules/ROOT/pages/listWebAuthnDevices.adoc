@@ -1,0 +1,43 @@
+:fido:
+= listWebAuthnDevices
+
+
+[.signature]
+[subs="normal"]
+----
+client.listWebAuthnDevices(<<authToken>>, <<success>>, <<failure>>)
+----
+
+== About this command
+
+When authenticated, the user can list the registered devices and/or passkeys.
+
+[NOTE]
+====
+* The WebAuthn feature must be enabled on your {company} account.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="authtoken"]
+|[[success, success]]success `function` | Callback called once the fetch has succeeded. You'll get the list of `DeviceCredential` as an argument.
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=devicecrendential]
+
+include::partial$models.adoc[tag=reachfiveerror]

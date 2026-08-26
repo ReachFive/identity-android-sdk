@@ -1,0 +1,50 @@
+= verifyPhoneNumber
+
+
+[.signature]
+[subs="normal"]
+----
+client.verifyPhoneNumber(
+  <<freshAuthToken-{docname}, authToken>>,
+  <<phoneNumber>>,
+  <<verificationCode, verificationCode>>,
+  <<success>>,
+  <<failure>>
+)
+----
+
+== About this command
+
+Verify the profile phone number with the verification code sent by SMS.
+
+[NOTE]
+====
+* Your access token must have the `full_write` scope.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+:sdk-fresh-at-desc: authToken
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="freshauthtoken"]
+include::partial$params.adoc[tag="phonenumber"]
+include::partial$params.adoc[tag="verificationcode"]
+include::partial$params.adoc[tag="success"]
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

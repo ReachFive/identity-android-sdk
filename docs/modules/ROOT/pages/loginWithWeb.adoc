@@ -1,0 +1,65 @@
+:context: android
+= loginWithWeb
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+    <<activity>> = this,
+    // Optional arguments
+    <<state>> = "state",
+    <<nonce>> = "nonce",
+    <<origin>> = "origin"
+    <<useEphemeralBrowsing>> = false
+)
+----
+
+== About this command
+
+Opens a custom tab through the authorization endpoint.
+
+When the xref:docs:ROOT:clients.adoc[Include SSO tokens in token endpoint response] option is enabled in the {cc} on your client, session cookies are included in the `/oauth/token` response and added to the app's cookie jar, allowing webviews inside the app to access the SSO session initiated by the browser enhancing session continuity across custom tabs, app views, and web views.
+
+IMPORTANT: Custom tab SSO sessions and app/webview SSO sessions are distinct.
+xref:logout.adoc[] always kills the app/webview's SSO session.
+With the `logout` method's xref:logout.adoc#ssoCustomTab[`ssoCustomTab` parameter], it also kills the browser's session.
+
+* If end-users have an active web SSO session, then the authorization endpoint will immediately redirect to the application.
+* If end-users do not have an active web SSO session, then they will be redirected to the client's Login URL for authentication.
++
+For more on this, see the xref:docs:ROOT:orchestration-token.adoc[request orchestration documentation].
+
+* You must have configured a Login URL and enabled request orchestration tokens in your identity client.
++
+include::docs:ROOT:partial$general/snippets/r_orchestrated-flows-min-version.adoc[]
+
+* Ensure your application is properly configured to open Custom Tabs, see xref:sdk-android:ROOT:guides/web-based-flows.adoc[].
+
+.Next step icon:random[]
+====
+Once end-users have authenticated on the web, the {company} authorization server will redirect back to your application with an authorization code. 
+Automatically complete the flow by calling `xref:sdk-android:ROOT:onLoginActivityResult.adoc[]` in your activity's `onActivityResult` override.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="activity,state,nonce,origin,useEphemeralBrowsing"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tags="reachfiveerror"]

@@ -1,0 +1,14 @@
+= Passkeys prerequisites
+
+To successfully enable passkeys for Android:
+
+* Enable the *WebAuthn* feature on your ReachFive account.
++
+TIP: You may need to contact link:mailto:{r5supportEmail}[support] to have this enabled if you do not see it on your {cc}.
+
+You'll also need:
+
+* An Android device with a fingerprint sensor or a configured screen lock.
+* Android OS {min-android-os-passkey} or later.
+Make sure to register a fingerprint (or screenlock).
+* To install our xref:sdk-android:ROOT:index.adoc#sdk-core[SDK Core] which exposes all of the passkey methods.

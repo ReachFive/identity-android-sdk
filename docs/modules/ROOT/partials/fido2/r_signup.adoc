@@ -1,0 +1,44 @@
+= Signup
+
+The user requests to register a new account for the first time. Users don't need to provide a password, but instead provide an identifier like an email or mobile number as well as some personal data.
+
+NOTE: The data they provide in the signup process is reflected in the `profile` option in the xref:signupWithWebAuthn.adoc#profileWebAuthnSignupRequest[signupWithWebAuthn] method.
+
+Subsection::
+Jump to the <<Signup process, signup process>>
+
+Here is a snapshot of the signup view displayed to the user.
+
+image::webauthn-signup.jpg[width=40%,height=auto,role="zoom"]
+
+== Signup process
+
+Signup is a _two-step process_.
+
+TIP: Each tab below shows the code needed for each step.
+
+. The xref:signupWithWebAuthn.adoc[] method initiates the FIDO2 signup process to retrieve a randomly generated challenge, the Relying Party information, and the user information from the {company} server. The options are then passed to the FIDO2 API which returns an *Android Intent* to open a fingerprint dialog and generates a new credential.
+
+. The xref:onLoginActivityResult.adoc[] method is called after the UI successfully generates a new credential. It sends the resulting data (which contains the information about this new credential) back to the {company} server and finalizes the FIDO2 signup process by returning the user's authentication token.
+
+[[fido2-signup-methods-sample]]
+[tabs]
+====
+signupWithWebAuthn::
++
+--
+[source, kotlin]
+----
+include::example$fido2SignupWithWebAuthn.kt[]
+----
+--
+
+onSignupWithWebAuthnResult::
++
+--
+[source, kotlin]
+----
+include::example$onLoginActivityResult.kt[]
+----
+--
+====
