@@ -70,6 +70,7 @@ class JavaReachFive(
     /**
      * Sign-up with required scopes
      */
+    @JvmOverloads
     fun signup(
         profile: ProfileSignupRequest,
         scope: Collection<String>,
@@ -93,6 +94,7 @@ class JavaReachFive(
     /**
      * Sign-up with no required scopes (needed by the Java API)
      */
+    @JvmOverloads
     fun signup(
         profile: ProfileSignupRequest,
         success: Callback<SignupResponse>,
@@ -112,6 +114,7 @@ class JavaReachFive(
     /**
      * Passwordless
      */
+    @JvmOverloads
     fun startPasswordless(
         email: String? = null,
         phoneNumber: String? = null,
@@ -154,6 +157,7 @@ class JavaReachFive(
      * Login with required scopes
      * @param username You can use email or phone number
      */
+    @JvmOverloads
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,
@@ -182,6 +186,7 @@ class JavaReachFive(
      * Login with no required scopes (needed by the Java API)
      * @param username You can use email or phone number
      */
+    @JvmOverloads
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,
@@ -414,6 +419,7 @@ class JavaReachFive(
         )
     }
 
+    @JvmOverloads
     fun updateEmail(
         authToken: AuthToken,
         email: String,
@@ -462,6 +468,7 @@ class JavaReachFive(
         )
     }
 
+    @JvmOverloads
     fun requestPasswordReset(
         email: String?,
         redirectUrl: String?,
