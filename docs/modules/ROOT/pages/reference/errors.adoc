@@ -1,0 +1,22 @@
+= {sdk-type} SDK Error Handling
+
+
+This page contains information on how errors are formatted and the error types you may encounter while using the {sdk-type} SDK.
+
+Errors maybe be the result of either an API error response or an error produced by the SDK.
+
+TIP: Use `ReachFiveError.getErrorCode` or `ReachFiveError.getFidoErrorCode` to match against specific errors.
+
+NOTE: The <<ReachFive errors>> table below is a comprehensive list and therefore, not all errors present in the table may apply to the {sdk-type} SDK.
+
+// format
+include::docs:ROOT:partial$errors/r_error-formatting.adoc[leveloffset=+1,tags="sdk-error-format"]
+
+// android-specific SDK errors
+include::partial$r_sdk-errors.adoc[leveloffset=+1]
+
+// android-specific webauthn errors
+include::partial$r_webauthn-errors.adoc[leveloffset=+1]
+
+// error table
+include::docs:ROOT:partial$errors/r_error-table.adoc[leveloffset=+1]

@@ -1,0 +1,48 @@
+= Web-based Flows Configuration
+
+
+This guide will help you successfully set up web-based flows, which include:
+
+* Web-based social login flows (SDK WebView)
+* Orchestrated web login (Core)
+
+== Identity Client Configuration
+
+In your list of authorized callback URLs, you must whitelist `reachfive://${clientId}/callback`, where `${clientId}` is your ReachFive identity client ID.
+
+This URL scheme is the *default callback URL* and is used to request an authorization code when using web-based flows.
+
+== Android Manifest
+
+Web-based flows open a link:https://developer.chrome.com/docs/android/custom-tabs[Custom Tab^] to authenticate users. In order to be able to redirect back to your application, you must add the following activity in the `AndroidManifest.xml` file:
+
+[source,xml]
+----
+<activity
+    android:name="co.reachfive.identity.sdk.core.RedirectionActivity"
+    android:screenOrientation="portrait"
+  android:exported="true">
+  <intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data
+      android:host="@string/reachfive_client_id"
+      android:pathPrefix="@string/reachfive_path"
+      android:scheme="@string/reachfive_scheme"
+      tools:ignore="AppLinkUrlError" />
+  </intent-filter>
+</activity>
+----
+
+.Example `settings.xml`:
+[source,subs="verbatim",xml]
+----
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="reachfive_scheme">reachfive</string>
+  <string name="reachfive_client_id”>{YOUR_CLIENT_ID}</string>
+  <string name="reachfive_path">/callback</string>
+</resources>
+----
+

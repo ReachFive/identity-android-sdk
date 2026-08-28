@@ -1,0 +1,3 @@
+= What's new in {page-component-version}?
+
+All properties are now _nullable_. We have also suppressed some link:https://www.guardsquare.com/proguard[ProGuard^] rules.

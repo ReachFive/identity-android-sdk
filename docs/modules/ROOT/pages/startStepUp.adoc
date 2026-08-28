@@ -1,0 +1,73 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<startStepUpFlow>>,
+  <<authType>>,
+  <<redirectUri>>,
+  <<scope>>,
+  <<success>>,
+  <<failure>>,
+  <<origin>>,
+  <<action>>
+)
+----
+
+== About this command
+
+Initiates the step up process needed for the MFA flow and starts the passwordless flow by sending an email or SMS to the user with a single-use auth code or access token (depending on the response type).
+
+You can initiate the step up with an `authToken` or with with the `tkn` received from xref:sdk-android:ROOT:loginWithPassword.adoc[].
+
+IMPORTANT: The Passwordless feature must be enabled on your {cc} account.
+The SMS feature must be enabled on your {cc} account if the profile can choose a phone number to login.
+
+== Examples
+
+[tabs]
+====
+startStepUpFlow: authToken::
++
+--
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+--
+startStepUpFlow: login::
++
+--
+[source, kotlin]
+----
+include::example${docname}-login.kt[]
+----
+--
+====
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="startStepUpFlow,authtoken,authType,redirecturi,scope,success,failure,origin,action"]
+
+|===
+
+== Response
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$models.adoc[tag=challengeId]
+
+|===
+
+=== Error response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

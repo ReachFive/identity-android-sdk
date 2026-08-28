@@ -1,0 +1,44 @@
+= Facebook Native Provider
+
+This module uses the Facebook native SDK to provide a better user experience.
+
+TIP: Refer to the xref:docs::facebook.adoc[] guide to create your Facebook application.
+
+. Add the following lines to your `app/build.gradle`, replacing `x.y.z` with the latest version:
++
+[source,groovy,subs="attributes"]
+----
+dependencies {
+    implementation "co.reachfive.identity:sdk-facebook:x.y.z"
+}
+----
+
+. Add the line below into your `string.xml` resource file with your Facebook application ID:
++
+[source,xml]
+----
+<resources>
+    <string name="facebook_app_id">FACEBOOK_APPLICATION_ID</string> <1>
+    <string name="facebook_client_token">FACEBOOK_CLIENT_TOKEN</string> <1>
+</resources>
+----
+<1> Get your App ID and Client Access Token from your Facebook Developer account.
+
+. Then add these lines into the `AndroidManifest.xml` file:
++
+[source,xml]
+----
+<manifest>
+    <meta-data
+      android:name="com.facebook.sdk.ApplicationId"
+      android:value="@string/facebook_app_id" /> <1>
+    <meta-data
+      android:name="com.facebook.sdk.ClientToken"
+      android:value="@string/facebook_client_token" /> <1>
+    <activity
+      android:name="com.facebook.FacebookActivity"
+      android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+      android:label="@string/app_name" />
+</manifest>
+----
+<1> Get your App ID and Client Access Token from your Facebook Developer account.

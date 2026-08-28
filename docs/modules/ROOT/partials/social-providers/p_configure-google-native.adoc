@@ -1,0 +1,34 @@
+= Configure Google native provider
+
+This module uses the *Google native SDK* to provide a better user experience.
+
+. Add the following line to your `app/build.gradle`, replacing `x.y.z` with the latest version:
++
+[source, groovy]
+----
+dependencies {
+    implementation "co.reachfive.identity:sdk-google:x.y.z"
+}
+----
+
+. Set up your Google Cloud Console project.
+.. You need to create an *Android client ID* with information about your application.
++
+To create the Android client ID, you must provide the SHA-1 certificate fingerprint of your application.
+You can get the SHA-1 fingerprint using the `keytool` utility:
++
+For more details, see link:https://developers.google.com/android/guides/client-auth[Client authentication^].
+
+. Create a *Web client ID*.
++
+This corresponds to the usual Google Provider configuration in the {cc}.
+You will need to copy the *Client ID* and *Client Secret* from this Web client and paste them into your {cc} settings for the Google provider.
+If already configured, you can skip this step.
++
+[.expand]
+Take a peek icon:eye[]
++
+[.expand-content]
+=====
+include::docs:ROOT:partial$social-providers/google/p_configure-console-for-google.adoc[tag="noTitle"]
+=====

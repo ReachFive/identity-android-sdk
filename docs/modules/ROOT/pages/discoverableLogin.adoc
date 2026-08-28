@@ -1,0 +1,46 @@
+:passkeys:
+:callbackWithParam:
+= {docname}
+
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+    <<requestCredentialTypes>>, 
+    <<origin>>, 
+    <<scope>>, 
+    <<failure>>, 
+    <<success>>, 
+    <<activity>>
+)
+----
+
+== About this command
+
+Use this method to discover a credential to log in a user.
+This can be via password, passkey, or both.
+
+IMPORTANT: The xref:docs::fido2.adoc#fido2-prerequisites[WebAuthn feature] must be enabled on your {company} account.
+
+== Examples
+
+[source,kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tags="requestCredentialTypes,origin,scope,success,failure,activity"]
+|===
+
+
+== Response
+
+This method returns `Unit`. The login result will be obtained through the xref:onLoginActivityResult.adoc[] method.
+
+include::partial$models.adoc[tag=reachfiveerror]

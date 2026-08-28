@@ -1,0 +1,73 @@
+= onLoginActivityResult
+
+
+[.signature]
+[subs="normal"]
+----
+client.onLoginActivityResult(
+    <<requestcode, requestCode>>,
+    <<resultCode>>,
+    <<intent>>,
+    <<success>>,
+    <<failure>>,
+    <<activity>>
+)
+----
+
+== About this command
+
+This method is meant to be called within your `onActivityResult` override following any of the below login methods:
+
+* `xref:sdk-android:ROOT:loginWithWeb.adoc[]`
+* `xref:sdk-android:ROOT:loginWithProvider.adoc[]`
+* `xref:sdk-android:ROOT:signupWithWebAuthn.adoc[]`
+* `xref:sdk-android:ROOT:loginWithWebAuthn.adoc[]`
+* `xref:sdk-android:ROOT:loginWithWebView.adoc[]`
+
+CAUTION: Ensure that only a single instance of `ActivityEventListener` calls `{doctitle}`.
+Otherwise, unintended consequences may occur (e.g., repeated code exchanges) that may break your integration.
+
+[TIP]
+====
+Calling this method with a non-{company} request code has no effect (noop); no exception is thrown, but a debug-level log is emitted for development purposes.
+
+Use `ReachFive.isReachFiveLoginRequestCode` to probe whether the request code belongs to {company}.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="3,7a"]
+|===
+
+include::partial$params.adoc[tag="requestcode"]
+
+|[[resultCode, resultCode]]resultCode `int` 
+|Identifies the return result of the authentication callback when the result arrives.
+
+|[[intent, intent]]intent `Intent` 
+|The intent received after launching the activity to retrieve the authentication callback result.
+
+|[[success, success]]success `function` 
+|Callback called once the authentication callback has succeeded. You'll get an `AuthToken` as an argument.
+
+include::partial$params.adoc[tag="failure"]
+
+include::partial$params.adoc[tag="activity"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="authtoken"]
+
+include::partial$models.adoc[tag=reachfiveerror]

@@ -1,0 +1,51 @@
+:fido:
+= signupWithWebAuthn
+
+
+[.signature]
+[subs="normal"]
+----
+client.signupWithWebAuthn(
+    <<profileWebAuthnSignupRequest, profile>>,
+    <<originWebAuthn-{docname}, origin>>,
+    <<success>>,
+    <<failure>>,
+    <<activity>>,
+    // Optional arguments
+    <<friendlyName>>
+)
+----
+
+== About this command
+
+The user requests to register a new account for the first time. This method retrieves a FIDO2 pending intent for signup with the options returned by the {company} server and launches it.
+
+The result is then processed by the xref:onLoginActivityResult.adoc[] method.
+
+IMPORTANT: The xref:docs::fido2.adoc#fido2-prerequisites[WebAuthn feature] must be enabled on your {company} account.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="profilewebauthnsignuprequest"]
+include::partial$params.adoc[tag="originwebauthn"]
+include::partial$params.adoc[tag="friendlyname"]
+include::partial$params.adoc[tag="success"]
+include::partial$params.adoc[tag="failure"]
+include::partial$params.adoc[tag="activity"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

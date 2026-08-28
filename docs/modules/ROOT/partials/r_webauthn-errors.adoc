@@ -1,0 +1,63 @@
+= WebAuthn Errors
+
+// tag::noTitle[]
+
+The errors listed here are specific to WebAuthn methods integrated by the {company} Android SDK.
+
+NOTE: In your failure callbacks, you may also use `getFidoErrorCode` to get the original error enumeration value from the Google WebAuthn library.
+
+[cols="1,4,5a"]
+|===
+|Code |Message |Description
+
+|`9`
+|`NOT_SUPPORTED_ERR`
+|The operation is not supported.
+
+|`11`
+|`INVALID_STATE_ERR`
+|The object is in an invalid state.
+
+|`18`
+|`SECURITY_ERR`
+|The operation is insecure.
+
+|`19`
+|`NETWORK_ERR`
+|A network error has occurred.
+
+|`20`
+|`ABORT_ERR`
+|The operation was aborted.
+
+|`23`
+|`TIMEOUT_ERR`
+|The operation timed out.
+
+|`27`
+|`ENCODING_ERR`
+|The encoding operation (_either encoded or decoding_) failed.
+
+|`28`
+|`UNKNOWN_ERR`
+|The operation failed for an unknown transient reason.
+
+|`29`
+|`CONSTRAINT_ERR`
+|A mutation operation in a transaction failed because a constraint was not satisfied.
+
+|`30`
+|`DATA_ERR`
+|The provided data is inadequate.
+
+|`35`
+|`NOT_ALLOWED_ERR`
+|The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission to the application/request.
+
+|`36`
+|`ATTESTATION_NOT_PRIVATE_ERR`
+|The authenticator violates the privacy requirements that the `AttestationStatementType` it is using.
+
+|===
+
+// end::noTitle[]

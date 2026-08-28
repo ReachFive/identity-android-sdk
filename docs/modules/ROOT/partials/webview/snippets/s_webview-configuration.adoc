@@ -1,0 +1,29 @@
+[source,xml,subs="verbatim"]
+----
+<activity
+    android:name="co.reachfive.identity.sdk.core.RedirectionActivity"
+    android:screenOrientation="portrait"
+  android:exported="true">
+  <intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data
+      android:host="@string/reachfive_client_id" <1>
+      android:pathPrefix="@string/reachfive_path" <1>
+      android:scheme="@string/reachfive_scheme" <1>
+      tools:ignore="AppLinkUrlError" />
+  </intent-filter>
+</activity>
+----
+<1> Define `reachfive_client_id`, `reachfive_path`, and `reachfive_scheme` in the ``<resources>`` section of your *settings.xml* file.
++
+.settings.xml example
+[source,xml]
+----
+<resources>
+    <string name="reachfive_client_id">YOUR_CLIENT_ID</string> <!-- Replace with your actual client ID -->
+    <string name="reachfive_scheme">reachfive</string> 
+    <string name="reachfive_path">/callback</string>
+</resources>
+----

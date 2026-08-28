@@ -1,0 +1,38 @@
+= exchangeCodeForToken
+
+
+[.signature]
+[subs="normal"]
+----
+client.exchangeCodeForToken(<<authorizationCode>>, <<success>>, <<failure>>)
+----
+
+== About this command
+
+Exchange an authorization code for an access token.
+
+WARNING: This method is set to be deprecated. All SDK flows should be fully handled by the client. If you are using this method for a custom implementation, please contact your account's support representative so that we may assist you accordingly.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="authorizationcode"]
+|[[success, success]]success `function` | Callback called once the exchange has succeeded. You'll get an `AuthToken` as an argument.
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="authtoken"]
+
+include::partial$models.adoc[tag=reachfiveerror]

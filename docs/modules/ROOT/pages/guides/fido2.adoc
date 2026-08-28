@@ -1,0 +1,24 @@
+:fido-android:
+= FIDO2
+
+
+== Introduction
+
+This guide explains how to implement the FIDO2 registration and authentication workflow on Android applications. You'll find a detailed introduction about FIDO2 in our xref:docs::fido2.adoc[FIDO2 guide].
+
+TIP: The following code samples and screenshots are issued from our example application using our SDK. Feel free to check out the link:{identity-android-sdk-url}[Github project^]. 
+
+// fido2 requirements including android setup
+include::docs::partial$fido2/r_prerequisites.adoc[leveloffset=+1]
+
+// initialize fido2 for android
+include::partial$fido2/p_initialize.adoc[leveloffset=+1]
+
+// fido2 signup flow for android
+include::partial$fido2/r_signup.adoc[leveloffset=+1]
+
+// fido2 authentication flow for android
+include::partial$fido2/c_authentication.adoc[leveloffset=+1]
+
+// manage fido2 devices for android
+include::partial$fido2/r_manage-devices.adoc[leveloffset=+1]

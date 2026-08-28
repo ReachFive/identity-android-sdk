@@ -1,0 +1,40 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<authToken>>,
+  <<verificationCode, verificationCode>>,
+  <<success>>,
+  <<failure>>,
+  <<trustDevice>>
+)
+----
+
+== About this command
+
+Completes the email as a second factor registration process. 
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,verificationcode,success,failure,trustDevice"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

@@ -1,0 +1,47 @@
+= refreshAccessToken
+
+
+[.signature]
+[subs="normal"]
+----
+client.refreshAccessToken(<<authToken>>, <<success>>, <<failure>>)
+----
+
+== About this command
+
+Obtain a new `AuthToken` once your access token has expired.
+
+[NOTE]
+====
+* An expired access token (short-lived) can be renewed using a refresh token (long-lived).
+* Refreshing access tokens using a revoked refresh token fails and invalidates the current refresh token.
+* The profile must have been granted the `offline_access` scope at the last authentication to obtain a refresh token.
+* In order for a refresh token to be included in your `AuthToken`, your client must be configured on the ReachFive console to enforce PKCE and must enable refresh tokens.
+
+{link-to-refresh-tokens}
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="authtoken"]
+|[[success, success]]success `function` | Callback called once token refresh has succeeded. You'll get an `AuthToken` as an argument, which contains your newly refreshed access token.
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="authtoken"]
+
+include::partial$models.adoc[tag=reachfiveerror]

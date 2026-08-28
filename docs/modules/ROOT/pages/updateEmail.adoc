@@ -1,0 +1,54 @@
+= updateEmail
+
+
+[.signature]
+[subs="normal"]
+----
+client.updateEmail(
+  <<freshAuthToken-{docname}, authToken>>,
+  <<updateEmail,email>>,
+  <<successwithupdate, success>>,
+  <<failure>>,
+  // Optional arguments
+  <<redirectUrl>>
+)
+----
+
+== About this command
+
+Update the profile's email address and send a verification email.
+
+[NOTE]
+====
+* Your access token must have the `full_write` scope.
+* Be sure to configure and to enable the xref:docs:ROOT:email-templates.adoc[Email update template] in the account's settings.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+:sdk-fresh-at-desc: authToken
+
+[.options]
+[cols="1,3a"]
+|===
+|Parameter |Description
+
+include::partial$params.adoc[tags="freshauthtoken,redirectUrl,successwithupdate,failure"]
+include::sdk-ios:ROOT:partial$params.adoc[tag=updateEmail]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="profile"]
+
+include::partial$models.adoc[tag=reachfiveerror]

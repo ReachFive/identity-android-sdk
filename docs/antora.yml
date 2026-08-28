@@ -1,0 +1,17 @@
+name: sdk-android
+version: master
+display_version: '11.0.0'
+title: Android SDK
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    min-android-os-fido: '7.0'
+    min-android-os-passkey: '9.0'
+    primary-branch: '11.x'
+    sdk-type: Android
+    published-repo: https://search.maven.org/search?q=g:co.reachfive.identity
+    facebook-login-version: '12.2.0'
+    wechat-android-version: '8.2.0'

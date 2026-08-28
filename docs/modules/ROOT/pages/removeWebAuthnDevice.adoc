@@ -1,0 +1,42 @@
+:fido:
+= removeWebAuthnDevice
+
+
+[.signature]
+[subs="normal"]
+----
+client.removeWebAuthnDevice(<<authToken>>, <<deviceId>>, <<success>>, <<failure>>)
+----
+
+== About this command
+
+When authenticated, the user can remove a registered device or passkey.
+
+[NOTE]
+====
+* The WebAuthn feature must be enabled on your {company} account.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="authtoken"]
+include::partial$params.adoc[tag="deviceid"]
+include::partial$params.adoc[tag="success"]
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

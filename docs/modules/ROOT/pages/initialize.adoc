@@ -1,0 +1,38 @@
+= {docname}
+
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<success>>,
+  <<failure>>
+)
+----
+
+== About this command
+
+Initializes the client to include the important {company} information.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="success,failure"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

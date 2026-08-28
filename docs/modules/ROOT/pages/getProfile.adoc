@@ -1,0 +1,41 @@
+= getProfile
+
+[.signature]
+[subs="normal"]
+----
+client.getProfile(<<authToken>>, <<success>>, <<failure>>)
+----
+
+== About this command
+
+Retrieve the profile's information.
+
+[NOTE]
+====
+* The profile must have been granted the `profile` scope at the last authentication otherwise the profile's attributes are null.
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="authtoken"]
+|[[success, success]]success `function` | Callback called once the fetch has succeeded. You'll get the `Profile` as an argument.
+include::partial$params.adoc[tag="failure"]
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag="profile"]
+
+include::partial$models.adoc[tag=reachfiveerror]

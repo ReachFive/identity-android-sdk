@@ -1,0 +1,43 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<authToken>>,
+  <<redirectUrl>>,
+  <<returnToAfterEmailConfirmation, returnToAfterEmailConfirmation>>,
+  <<success>>,
+  <<failure>>
+)
+----
+
+== About this command
+
+Initiates the email verification process by sending a verification email to the user's registered email address. 
+The email contains a unique verification code required to confirm the email address. 
+
+This method requires the user to be authenticated and is typically used after signup or an email update.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,redirectUrl,returntoafteremailconfirmation,success,failure"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

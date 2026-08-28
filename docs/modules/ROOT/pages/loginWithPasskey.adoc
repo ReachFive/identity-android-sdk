@@ -1,0 +1,59 @@
+:passkeys:
+:callbackWithParam:
+= {docname}
+
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+    <<loginRequest>>,
+    <<scope>>,
+    <<origin>>,
+    <<success>>,
+    <<failure>>, 
+    <<activity>>
+)
+----
+
+== About this command
+
+A user with an already registered credential can authenticate with a passkey.
+
+IMPORTANT: The xref:docs::fido2.adoc#fido2-prerequisites[WebAuthn feature] must be enabled on your {company} account.
+
+== Examples
+
+[tabs]
+====
+With an email::
++
+--
+[source, kotlin]
+----
+include::example${docname}WithEmail.kt[]
+----
+--
+With a phone number::
++
+--
+[source, kotlin]
+----
+include::example${docname}WithPhoneNumber.kt[]
+----
+--
+====
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tags="loginrequest,scope,origin,success,failure,activity"]
+|===
+
+== Response
+
+This method returns `Unit`. The login result will be obtained through the xref:onLoginActivityResult.adoc[] method.
+
+include::partial$models.adoc[tag=reachfiveerror]

@@ -1,0 +1,42 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<authToken>>,
+  <<phoneNumber>>,
+  <<verificationCode, verificationCode>>,
+  <<success>>,
+  <<failure>>,
+  <<trustDevice>>
+)
+----
+
+== About this command
+
+Completes the phone number as a second factor registration process. 
+It also automatically verifies the existing phone number for the user.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,verificationcode,phonenumber,success,failure,trustDevice"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]

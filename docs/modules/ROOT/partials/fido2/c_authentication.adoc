@@ -1,0 +1,42 @@
+= Authentication
+
+Once the user has a credential registered on the server and the device, they can use it to login easily with their identifier.
+
+Subsection::
+Jump to the <<Authentication process, authentication process>>
+
+Here is a snapshot of the login view displayed to the user.
+
+image::webauthn-login.png[width=40%,height=auto,role="zoom"]
+
+== Authentication process
+
+Authentication is a _two-step process_.
+
+TIP: Each tab below shows the code needed for each step.
+
+. The xref:loginWithWebAuthn.adoc[] method initiates the FIDO2 authentication process to retrieve the list of previously registered credentials and a challenge string from the server. This information is passed to the FIDO2 API which searches for a credential that matches the *Relying Party ID* and creates an *Android Intent* to open the fingerprint dialog for the user to consent for authentication.
+
+. The xref:onLoginActivityResult.adoc[] method is called after the UI successfully retrieves the existing credential. It returns the operation result to the ReachFive server and finalizes the FIDO2 authentication process by returning the user's authentication token.
+
+[[fido2-authentication-methods-sample]]
+[tabs]
+====
+loginWithWebAuthn::
++
+--
+[source, kotlin]
+----
+include::example$fido2LoginWithWebAuthn.kt[]
+----
+--
+
+onLoginActivityResult::
++
+--
+[source, kotlin]
+----
+include::example$onLoginActivityResult.kt[]
+----
+--
+====

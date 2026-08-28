@@ -185,6 +185,21 @@ internal interface PasswordAuth {
         failure: Failure<ReachFiveError>
     )
 
+    /**
+     * Authenticate the user with the specified identifier (email, phone number, or custom identifier) and password.
+     *
+     * A user may identify themselves with either their email address or their phone number if the SMS feature is enabled.
+     *
+     * @param email Email address of the profile. Mutually exclusive with [phoneNumber] and [customIdentifier].
+     * @param phoneNumber Phone number of the profile. Mutually exclusive with [email] and [customIdentifier].
+     * @param customIdentifier Custom identifier of the profile. Mutually exclusive with [email] and [phoneNumber].
+     * @param password Password of the profile.
+     * @param scope List of space-delimited, case-sensitive strings representing the requested scope.
+     * @param origin Free-text parameter describing the source of the event (reporting only).
+     * @param mfaConf MFA continuation configuration. Required when the login must continue into a step-up flow.
+     * @param success Callback invoked when login succeeds. Receives an [AuthToken].
+     * @param failure Callback invoked when login fails. Receives a [ReachFiveError].
+     */
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,

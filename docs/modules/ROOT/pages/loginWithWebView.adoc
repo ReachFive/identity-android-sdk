@@ -1,0 +1,81 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+    <<activity>> = this,
+    // Optional arguments
+    <<state>> = "state",
+    <<nonce>> = "nonce",
+    <<origin>> = "origin",
+    <<fullScreenWebView>> = false <1>
+)
+----
+<1> WebView displays edge-to-edge by default and adds padding for system bars.
+Enabling (`true`) `fullScreenWebView` disables the padding for the system bars.
+See <<fullScreenWebView>> for more details.
+
+== Description
+
+[WARNING]
+====
+We recommend using the standard native login or xref:loginWithWeb.adoc[]. 
+Proceed with caution while using this particular method for user authentication.
+
+
+[.expand]
+Why don't you recommend ``{docname}``? {thinking}
+
+[.expand-content]
+****
+Primarly because it's an insecure way of handling the login. It is also not compliant with Google's secure browser policy.
+
+Find more details at link:https://developers.googleblog.com/2021/06/upcoming-security-changes-to-googles-oauth-2.0-authorization-endpoint.html[Security changes to Google's OAuth 2.0^].
+****
+
+====
+
+Opens an _insecure_ webview through the authorization endpoint:
+
+* If end-users have an active in-app SSO session, the authorization endpoint immediately redirects to the application.
++
+The SSO session being within the webview itself.
+
+* If end-users do not have an active in-app SSO session, they are redirected to the client's Login URL for authentication.
+* You must have configured a Login URL and enabled xref:docs:ROOT:orchestration-token.adoc[request orchestration tokens] for your identity client.
++
+include::docs:ROOT:partial$general/snippets/r_orchestrated-flows-min-version.adoc[]
+
+NOTE: You can optionally xref:guides/customize-webview.adoc[customize the WebView] if desired.
+
+== Examples
+
+[source, swift]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="activity,state,nonce,origin,fullScreenWebView"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tags="reachfiveerror"]
+
+// == Troubleshooting
+
+// === `ActivityEventListener` registered too many times
+
+// When registering the `ActivityEventListener`, you should make sure that it is kept in the main {company} constructor when you xref:sdk-android:ROOT:index.adoc#client-initialization[initialize the {company} Android SDK] instead of inside the `{doctitle}` method itself.
+
+// This ensures it is registered once and is not called redundantly resulting in a race condition.

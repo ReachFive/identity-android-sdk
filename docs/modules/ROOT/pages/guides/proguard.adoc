@@ -1,0 +1,3 @@
+
+// include partial
+include::sdk-android:ROOT:partial$proguard/r_proguard-minify-rule.adoc[]

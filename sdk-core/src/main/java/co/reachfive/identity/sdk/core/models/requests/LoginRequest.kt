@@ -20,9 +20,18 @@ data class LoginRequest(
     val origin: String?
 ) : Parcelable
 
+/**
+ * Configuration used to continue an MFA step-up when it is required during a login flow.
+ */
 @Parcelize
 data class LoginMfaConf(
+    /**
+     * The Android activity used to continue the MFA step-up flow.
+     */
     val activity: @RawValue Activity,
+    /**
+     * Optional redirect URI for the step-up continuation.
+     */
     @Deprecated("redirectUri will be removed in a future release")
     val redirectUri: String? = null
 ) : Parcelable

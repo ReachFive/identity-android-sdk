@@ -1,0 +1,65 @@
+* *Introduction*
+** xref:index.adoc[]
+** Guides icon:book[]
+*** xref:guides/customize-webview.adoc[]
+*** xref:guides/proguard.adoc[]
+*** xref:guides/passkeys.adoc[]
+// *** xref:guides/fido2.adoc[]
+*** xref:guides/web-based-flows.adoc[]
+** Reference icon:bookmark[]
+*** xref:reference/errors.adoc[]
+
+.*Methods*
+* MFA
+** xref:endStepUp.adoc[]
+** xref:listMfaCredentials.adoc[]
+** xref:listMfaTrustedDevices.adoc[]
+** xref:removeMfaEmail.adoc[]
+** xref:removeMfaPhoneNumber.adoc[]
+** xref:removeMfaTrustedDevice.adoc[]
+** xref:startMfaEmailRegistration.adoc[]
+** xref:startMfaPhoneNumberRegistration.adoc[]
+** xref:startStepUp.adoc[]
+** xref:verifyMfaEmailRegistration.adoc[]
+** xref:verifyMfaPhoneNumberRegistration.adoc[]
+* Passkeys
+** xref:loginWithPasskey.adoc[]
+** xref:signupWithPasskey.adoc[]
+** xref:registerNewPasskey.adoc[]
+** xref:discoverableLogin.adoc[]
+* Password
+** xref:loginWithPassword.adoc[]
+** xref:requestPasswordReset.adoc[]
+** xref:signup.adoc[]
+* Passwordless
+** xref:startPasswordless.adoc[]
+** xref:verifyPasswordless.adoc[]
+* Profile
+** xref:getProfile.adoc[]
+** xref:sendEmailVerification.adoc[]
+** xref:updateEmail.adoc[]
+** xref:updatePassword.adoc[]
+** xref:updatePhoneNumber.adoc[]
+** xref:updateProfile.adoc[]
+** xref:verifyEmail.adoc[]
+** xref:verifyPhoneNumber.adoc[]
+* Social
+** xref:loadSocialProviders.adoc[]
+** xref:loginWithProvider.adoc[]
+* Web
+** xref:loginWithWeb.adoc[]
+** xref:loginWithWebView.adoc[]
+* WebAuthn
+** xref:addNewWebAuthnDevice.adoc[]
+** xref:listWebAuthnDevices.adoc[]
+** xref:loginWithWebAuthn.adoc[]
+** xref:onAddNewWebAuthnDeviceResult.adoc[]
+** xref:removeWebAuthnDevice.adoc[]
+** xref:signupWithWebAuthn.adoc[]
+* Other
+** xref:exchangeCodeForToken.adoc[]
+** xref:initialize.adoc[]
+** xref:logout.adoc[]
+** xref:onLoginActivityResult.adoc[]
+** xref:onLogoutResult.adoc[]
+** xref:refreshAccessToken.adoc[]

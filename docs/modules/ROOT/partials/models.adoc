@@ -1,0 +1,341 @@
+// tag::authtoken[]
+=== AuthToken
+
+The authentication token.
+
+[cols="1a,2a"]
+|===
+
+|idToken
+|The ID token {rfc-7519}[JSON Web Token (JWT)^] that contains the profile's information.
+
+|accessToken
+|The authorization credential {rfc-7519}[JSON Web Token (JWT)^] used to access the {company} API.
+
+|refreshToken|
+The refresh token {rfc-7519}[JSON Web Token (JWT)^] used to obtain new access tokens once they expire.
+
+| [[stepUpToken, stepUpToken]] stepUpToken `string`  
+| The step up token used to continue the step up flow and validate the user for authentication purposes.
+
+This only applies for MFA flows.
+
+|tokenType
+|The type of token. Always equal to `Bearer`.
+
+|expiresIn
+|The lifetime in seconds of the access token.
+
+If `expiresIn` is less than or equal to `0`, the `AuthToken` is expired.
+
+|user **OpenIDUser**
+|The user's information contained in the ID token.
+
+!===
+! id `string`! The identifier of the user.
+! name `string`! The full name of the user in displayable form including all name parts, possibly including titles and suffixes, ordered according to the user's locale and preferences.
+! preferredUsername `string`! The shorthand name by which the user wishes to be referred to.
+! givenName `string`! The given name or first name of the user.
+! familyName `string`! The surname or last name of the user.
+! middleName `string`! The middle name of the user.
+! nickname `string`! The casual name of the user that may or may not be the same as the givenName
+! picture `string`! The URL of the user's profile picture.
+! website `string`! The URL of the user's web page or blog.
+! email `string`! The user's preferred e-mail address.
+! emailVerified `boolean`! True if the user's e-mail address has been verified; otherwise false.
+! gender `string`! The user's gender.
+! zoneinfo `string`! The string from zoneinfo time zone database representing the user's time zone.
+! locale `string`! The user's language code in lowercase and country code in uppercase, separated by a dash.
+! phoneNumber `string`! The user's preferred telephone number.
+! phoneNumberVerified `boolean`! `true` if the user's phone number has been verified; otherwise `false`.
+! address `string`! The user's preferred postal address.
+!===
+
+|===
+
+// end::authtoken[]
+
+// tag::TrustedDeviceResponse[]
+[cols="3,7a"]
+|===
+|Field |Description
+
+|id `string` 
+|The trusted device ID.
+
+|userId `string` 
+|The user ID.
+
+|createdAt `string`
+|The date and time when the device was trusted.
+
+|metaData `object`
+|The metadata associated with the trusted device.
+
+This includes:
+
+* ``ip``: The IP of the trusted device.
+* ``operatingSystemAgent``: The Operating System such as Android.
+* ``userAgent``: The User Agent information.
+* ``deviceClass``: The device class such as mobile.
+* ``deviceName``: The device name such as "My Mobile".
+
+|===
+// end::TrustedDeviceResponse[]
+
+// tag::devicecrendential[]
+=== DeviceCredential
+
+The details of a device credential.
+
+[cols="2,5a"]
+|===
+|friendlyName `string` 
+|The name of the FIDO2 device.
+
+|id `string` 
+|The identifier of the FIDO2 device.
+
+|createdAt `string`
+|The date and time when the passkey was created.
+
+|lastUsedAt `string`
+|The date and time when the passkey was last used.
+
+|aaguid `string`
+|The Authenticator Attestation Globally Unique Identifier, a unique number that identifies the model of the authenticator.
+
+NOTE: This isn't always present in the response.
+
+|===
+
+// end::devicecrendential[]
+
+// tag::profile[]
+=== Profile
+
+[cols="1,2a"]
+|===
+| id `string` | The {company} identifier of the profile.
+| givenName `string` | The given name of the profile.
+| middleName `string` | The middle name of the profile.
+| familyName `string` | The family name of the profile.
+| name `string` | The full name of the profile.
+| nickname `string` | The nickname of the profile.
+| birthdate `string` | The birthdate of the profile, represented as an {iso-8601}[ISO 8601^] `YYYY-MM-DD` format.
+| profileURL `string` | The URL of one of the user’s profile page (usually a social provider’s page).
+| picture `string` | The URL of one of the profile picture. This URL refers to an image file (PNG, JPEG, or GIF image file).
+| externalId `string` | The external identifier of the profile.
+| authTypes `String[]` | The list of the authentication providers used to login by the profile (e.g. facebook, password ...).
+| loginSummary `LoginSummary` | The login activities history of the profile.
+!===
+!firstLogin `string`!The time of the first login.
+!lastLogin `string`!The time of the last login.
+!total `string`!The number of login.
+!origins `string`!Some additional information about the login.
+!devices `string`!The devices used for login (`desktop`, `ios`, `android`, `mobile_web` and `windows_phone`).
+!lastProvider `string`!The last provider used for login (e.g. `local`, `lite`, `facebook` ...).
+!===
+| username `string` | The username of the profile (the login's name).
+| gender `string` | The gender of the profile.
+
+Allowed values are `female`, `male` and `other`.
+| email `string` | The primary email address of the profile.
+| emailVerified `boolean` | `true` if the profile's e-mail address has been verified; otherwise `false`.
+| emails `Emails` | The e-mail addresses of the profile.
+!===
+!verified `string[]`!The list of the verified e-mail addresses of the profile.
+!unverified `string[]`!The list of the unverified e-mail addresses of the profile.
+!===
+| phoneNumber `string` | The primary phone number of the profile.
+
+Both the international format and the national conventions of the account's country are accepted if configured in account settings.
+
+| phoneNumberVerified `boolean` | `true` if the user's phone number has been verified; otherwise `false`.
+| addresses `List of ProfileAddress` | The list of the profile's postal addresses. To get this attribute, the profile must have been granted the `address` scope at the last authentication.
+!===
+!title `string`!The title of the address.
+
+This value can't be an empty string.
+!isDefault `boolean`!Whether the address is the default postal address of the profile. Only a single address can be the default address.
+
+Defaults to `true`.
+!addressType `string`!The type of address
+
+Allowed values: `delivery` or `billing`.
+!streetAddress `string`!The full street address component which may include the house number, the street's name and the extended street address information separated by newlines.
+
+This value can't be an empty string.
+
+!address_complement `string`
+!A complementary address field which can contain additional information about the address. This can be the floor, a door number, or any other useful address information.
+
+!locality `string`!The name of the city.
+!region `string`!The name of the region.
+!postalCode `string`!The zip code.
+!country `string`!The name of the country.
+
+This value can't be an empty string.
+!deliveryNote `string`!An additional note from the profile for the delivery.
+!recipient `string`!The name of the recipient located at this address.
+!company `string`!The name of the company located at this address.
+!phoneNumber `string`!The phone number of the contact point at this address (no format validation is required).
+!===
+
+| locale `string` | The profile's language code in lowercase and country code in uppercase, separated by a dash (e.g. `en`, `fr-FR` ...).
+
+| bio `string` | The biography of the profile.
+
+| customFields `Map<string, any>` 
+| The custom fields of the profile.
+
+xref:docs:ROOT:custom-fields.adoc[Structured custom fields] are only available using the full key for the field (e.g., `full.custom_field.key`).
+They are not supported as nested objects.
+
+| consents `Map<string, Consent>` | The consents granted to the profile. It is a map of string keys with the associated consent object.
+
+!===
+!granted `boolean`!Whether the consent was granted to the profile or not.
+!consentType `boolean`!The type of consent.
+
+Allowed values: `opt-in` `opt-out`.
+!date `string`!The time the consent was last updated.
+!===
+
+| createdAt `string` | The time the profile's information was created.
+| updatedAt `string` | The time the profile's information was last updated.
+|===
+// end::profile[]
+
+// tag::reachfiveerror[]
+=== ReachFiveError
+
+[cols="2,5a"]
+|===
+|message `string`
+|The message of the error.
+
+|getErrorCode() `ErrorCode`
+|The error code's enumeration value.
+
+ifndef::webauthn,fido[]
+|code `string`
+|The HTTP status code or SDK error code.
+
+See xref:reference/errors.adoc#android-sdk-errors[Android SDK errors] for more details.
+
+endif::[]
+
+ifdef::webauthn,fido[]
+|code `string`
+|The code from the underlying WebAuthn library.
+
+See xref:reference/errors.adoc#webauthn-errors[WebAuthn errors] for more details.
+
+endif::[]
+
+|exception `string`
+|The stack trace of the error.
+
+|data `ReachFiveApiError`
+|Additional data about the error.
+
+[cols="1,3a"]
+!===
+!error `string`!The main error message.
+!errorId `string`!The identifier of the error.
+!errorUserMsg `string`!The user-friendly error message.
+
+NOTE: This property is translated according to the user's browser settings.  Currently supported languages:
+
+include::docs::partial$general/r_supported-languages.adoc[tags="all"]
+
+!errorMessageKey `string`!The technical error code.
+!errorDescription `string`!The technical error message.
+!errorDetails `ReachFiveApiErrorDetails`!
+
+* field - The field concerned by the error.
+* message - The message error returned for the `field`.
+
+!===
+|===
+// end::reachfiveerror[]
+
+// tag::MfaCredentialResponse[]
+|credentials `array`
+|An array of objects, each containing information on a specific credential.
+
+|&nbsp; &nbsp; type `CredentialType`
+| Specifies the type of credential. 
+
+* `sms`
+* `email`
+
+|&nbsp; &nbsp; createdAt `string`
+| The date on which the credential was created.
+
+Format:: `"YYYY-MM-DD"`
+
+|&nbsp; &nbsp; friendlyName `string`
+|The user-friendly name for the credential.
+
+|&nbsp; &nbsp; phone_number `string`
+|The user's phone number.
+
+// end::MfaCredentialResponse[]
+
+// tag::challengeId[]
+|[[challengeId,challengeId]]challengeId `string` 
+|The code challenge ID to verify the user.
+// end::challengeId[]
+
+// tag::AchievedLogin[]
+=== AchievedLogin
+
+Returns the authentication token.
+
+[cols="1a,2a"]
+|===
+|idToken|The ID token {rfc-7519}[JSON Web Token (JWT)^] that contains the profile's information. Only available when the `openid` xref:docs:ROOT:scope.adoc[scope] is requested.
+|accessToken|The authorization credential {rfc-7519}[JSON Web Token (JWT)^] used to access the {company} API.
+|refreshToken|The refresh token {rfc-7519}[JSON Web Token (JWT)^] used to obtain new access tokens once they expire. Only available when the `offline_access` xref:docs:ROOT:scope.adoc[scope] is requested.
+|tokenType|The type of token. Always equal to `Bearer`.
+|expiresIn|The lifetime in seconds of the access token.
+
+If `expiresIn` is less than or equal to `0`, the `AuthToken` is expired.
+|user **OpenIDUser**|The user's information contained in the ID token.
+
+!===
+! id `string`! The identifier of the user.
+! name `string`! The full name of the user in displayable form including all name parts, possibly including titles and suffixes, ordered according to the user's locale and preferences.
+! preferredUsername `string`! The shorthand name by which the user wishes to be referred to.
+! givenName `string`! The given name or first name of the user.
+! familyName `string`! The surname or last name of the user.
+! middleName `string`! The middle name of the user.
+! nickname `string`! The casual name of the user that may or may not be the same as the givenName.
+! picture `string`! The URL of the user's profile picture.
+! website `string`! The URL of the user's web page or blog.
+! email `string`! The user's preferred e-mail address.
+! emailVerified `boolean`! True if the user's e-mail address has been verified; otherwise false.
+! gender `string`! The user's gender.
+! zoneinfo `string`! The string from the zoneinfo time zone database representing the user's time zone.
+! locale `string`! The user's language code in lowercase and country code in uppercase, separated by a dash.
+! phoneNumber `string`! The user's preferred telephone number.
+! phoneNumberVerified `boolean`! True if the user's phone number has been verified; otherwise false.
+! address `string`! The user's preferred postal address.
+!===
+|===
+// end::AchievedLogin[]
+
+
+// tag::AwaitingIdentifierVerification[]
+=== AwaitingIdentifierVerification
+
+Returned when a signup completes but the user must verify their identifier (email or phone) before logging in.
+
+* No `AuthToken` is returned.
+* You should prompt the user to check their email or SMS for verification instructions.
+* After verification, the user can log in normally to receive an `AuthToken`.
+
+// end::AwaitingIdentifierVerification[]
+

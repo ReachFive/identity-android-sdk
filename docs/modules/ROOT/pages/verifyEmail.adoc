@@ -1,0 +1,50 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<freshAuthToken-{docname}, authToken>>,
+  <<email,email>>,
+  <<verificationCode, verificationCode>>,
+  <<success, success>>,
+  <<failure>>
+)
+----
+
+== About this command
+
+Confirms the user's email address using the provided verification code. 
+This method is called after the user receives the verification email and inputs the code.
+
+If successful, the email is marked as verified in the user's profile.
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+:sdk-fresh-at-desc: authToken
+
+[.options]
+[cols="1,3a"]
+|===
+|Parameter |Description
+
+include::partial$params.adoc[tags="freshauthtoken,email,verificationcode,success,failure"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+If verified, you receive "Successfully verified email".
+
+If the email is already verified, you receive "Email already verified".
+
+include::partial$models.adoc[tag=reachfiveerror]

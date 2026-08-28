@@ -1,0 +1,26 @@
+= Signup
+
+The user requests to register a new account for the first time.
+Users don't need to provide a password, but instead provide an identifier like an email or mobile number as well as some personal data and a xref:signupWithPasskey.adoc[`friendlyName`].
+The data they provide in the signup process is reflected in the `profile` option in the `signupWithPasskey` method.
+
+Here is a snapshot of the signup view displayed to the user.
+
+[cols="^33,^33,^33"]
+|===
+|Step 1| Step 2 |Step 3
+
+|image:passkeys/passkeys-signup-1.png[width=60%,height=auto,role="zoom"]
+|image:passkeys/passkeys-signup-2.png[width=60%,height=auto,role="zoom"]
+|image:passkeys/passkeys-signup-3.png[width=60%,height=auto,role="zoom"]
+
+|===
+
+== Signup process
+
+The xref:signupWithPasskey.adoc[] method initiates the passkey signup process.
+
+[source, kotlin]
+----
+include::example$signupWithPasskey.kt[]
+----

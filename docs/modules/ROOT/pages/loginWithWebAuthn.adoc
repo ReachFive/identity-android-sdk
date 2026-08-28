@@ -1,0 +1,78 @@
+:fido:
+= loginWithWebAuthn
+
+
+[.signature]
+[subs="normal"]
+----
+client.loginWithWebAuthn(<<loginRequest>>, <<failure>>, <<activity>>)
+----
+
+== About this command
+
+A user with an already registered credential can authenticate with a registered FIDO2 device. This method will get a FIDO2 pending intent for authentication with the options returned by the {company} server and launch it.
+
+The result will be processed by the xref:onLoginActivityResult.adoc[] method.
+
+[NOTE]
+====
+* The WebAuthn feature must be enabled on your {company} account.
+====
+
+== Examples
+
+[tabs]
+====
+With an email::
++
+--
+[source, kotlin]
+----
+include::example${docname}WithEmail.kt[]
+----
+--
+With a phone number::
++
+--
+[source, kotlin]
+----
+include::example${docname}WithPhoneNumber.kt[]
+----
+--
+====
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="loginrequest"]
+include::partial$params.adoc[tag="failure"]
+include::partial$params.adoc[tag="activity"]
+|===
+
+`EmailWebAuthnLoginRequest`
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="originwebauthn"]
+include::partial$params.adoc[tag="scope"]
+include::partial$params.adoc[tag="email"]
+|===
+
+`PhoneNumberWebAuthnLoginRequest`
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="originwebauthn"]
+include::partial$params.adoc[tag="scope"]
+include::partial$params.adoc[tag="phonenumber"]
+|===
+
+== Response
+
+This method returns `Unit`. The login result will be obtained through the xref:onLoginActivityResult.adoc[] method.
+
+include::partial$models.adoc[tag=reachfiveerror]

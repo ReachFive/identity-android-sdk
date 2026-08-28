@@ -1,0 +1,94 @@
+= signup
+
+
+[.signature]
+[subs="normal"]
+----
+client.signup(
+  <<profileSignupRequest, profile>>,
+  <<redirectUrl>>,
+  <<success>>,
+  <<failure>>,
+  // Optional arguments
+  <<scope>>
+)
+----
+
+== About this command
+
+Create and authenticate a new user with the specified data.
+
+A user may identify himself with either his email address or his phone number if the SMS feature is enabled.
+
+[.expand]
+icon:warning[] Breaking changes for `10.0.0`, please read.
+
+[.expand-content]
+====
+[discrete]
+include::partial$announcements/1000-breaking-changes.adoc[leveloffset=+1]
+====
+
+== Examples
+
+[tabs]
+====
+With an email::
++
+--
+[source, kotlin]
+----
+include::example${docname}WithEmail.kt[]
+----
+--
+With a phone number::
++
+--
+[source, kotlin]
+----
+include::example${docname}WithPhoneNumber.kt[]
+----
+--
+With a custom identifier::
++
+--
+[source, kotlin]
+----
+include::example${docname}WithCustomIdentifier.kt[]
+----
+--
+====
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+include::partial$params.adoc[tag="profilesignuprequest"]
+include::partial$params.adoc[tag="redirectUrl"]
+include::partial$params.adoc[tag="scope"]
+
+|[[success, success]]success `function` 
+|Callback called once the signup process completes. 
+You receive a `SignupResponse` as an argument, which can be one of:
+
+* `SignupResponse.AchievedLogin(authToken)`: signup succeeded and the user is immediately logged in; contains an `authToken`.
+* `SignupResponse.AwaitingIdentifierVerification`: signup is pending verification (e.g., email or phone number).
+
+include::partial$params.adoc[tag="failure"]
+
+|===
+
+== Response
+
+* *Type*: SignupResponse.<<AchievedLogin,AchievedLogin(authToken)>> | <<AwaitingIdentifierVerification>>
+* *Error*: <<ReachFiveError>>
+
+Depending on the feature configuration and the user's verification status, the response can contain an authentication token or indicate that verification is required before login.
+
+include::partial$models.adoc[tag=AchievedLogin]
+
+include::partial$models.adoc[tag=AwaitingIdentifierVerification]
+
+include::partial$models.adoc[tag=reachfiveerror]
+

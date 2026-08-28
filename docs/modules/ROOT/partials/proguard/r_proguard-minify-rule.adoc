@@ -1,0 +1,11 @@
+= Proguard rule exception
+
+If you have set `minifyEnabled true` in your Android build, you need to add the following Proguard rule in order to make an exception for certain {company} SDK models.
+
+Add the following rule to your `proguard-rules.pro` file to prevent {company} API models from being obfuscated:
+
+[source,subs="verbatim"]
+----
+-keep class co.reachfive.identity.sdk.core.models.** {*;}
+----
+

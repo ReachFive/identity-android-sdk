@@ -1,0 +1,49 @@
+= {docname}
+
+[.signature]
+[subs="normal"]
+----
+client.{docname}(
+  <<authToken>>,
+  <<redirectUri>>,
+  <<success>>,
+  <<failure>>,
+  <<action>>,
+  <<trustDevice>>
+)
+----
+
+== About this command
+
+Starts the MFA email registration flow. 
+When the flow is started, an email is sent to the user for verification.
+
+[NOTE]
+====
+If the user already has a verified email as an identifier in their account, no additional verification code is sent.
+
+If an existing email exists but is unverified, it becomes automatically verified with xref:verifyMfaEmailRegistration.adoc[].
+====
+
+== Examples
+
+[source, kotlin]
+----
+include::example${docname}.kt[]
+----
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tags="authtoken,redirecturi,success,failure,action,trustDevice"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]
