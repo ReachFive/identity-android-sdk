@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CaptchaToken
 import co.reachfive.identity.sdk.core.models.CredentialType
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
@@ -75,9 +76,18 @@ class JavaReachFive(
         redirectUrl: String? = null,
         success: Callback<SignupResponse>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
-        return reach5.signup(profile, scope, redirectUrl, origin, success::call, failure::call)
+        return reach5.signup(
+            profile,
+            scope,
+            redirectUrl,
+            origin,
+            success::call,
+            failure::call,
+            captcha
+        )
     }
 
     /**
@@ -87,13 +97,15 @@ class JavaReachFive(
         profile: ProfileSignupRequest,
         success: Callback<SignupResponse>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.signup(
             profile,
             origin = origin,
             success = success::call,
-            failure = failure::call
+            failure = failure::call,
+            captcha = captcha
         )
     }
 
@@ -107,7 +119,8 @@ class JavaReachFive(
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>,
         activity: Activity,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         reach5.startPasswordless(
             email,
@@ -116,7 +129,8 @@ class JavaReachFive(
             { success.call(Unit) },
             failure::call,
             activity,
-            origin
+            origin,
+            captcha
         )
     }
 
@@ -148,7 +162,8 @@ class JavaReachFive(
         scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.loginWithPassword(
             email = email,
@@ -158,7 +173,8 @@ class JavaReachFive(
             scope,
             origin,
             success = success::call,
-            failure = failure::call
+            failure = failure::call,
+            captcha = captcha
         )
     }
 
@@ -173,7 +189,8 @@ class JavaReachFive(
         password: String,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.loginWithPassword(
             email,
@@ -182,7 +199,8 @@ class JavaReachFive(
             password,
             origin = origin,
             success = success::call,
-            failure = failure::call
+            failure = failure::call,
+            captcha = captcha
         )
     }
 
@@ -401,9 +419,17 @@ class JavaReachFive(
         email: String,
         redirectUrl: String? = null,
         success: Callback<Profile>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     ) {
-        return reach5.updateEmail(authToken, email, redirectUrl, success::call, failure::call)
+        return reach5.updateEmail(
+            authToken,
+            email,
+            redirectUrl,
+            success::call,
+            failure::call,
+            captcha
+        )
     }
 
     fun updatePhoneNumber(
@@ -441,14 +467,18 @@ class JavaReachFive(
         redirectUrl: String?,
         phoneNumber: String?,
         success: Callback<Unit>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.requestPasswordReset(
             email,
             redirectUrl,
             phoneNumber,
             { success.call(Unit) },
-            failure::call
+            failure::call,
+            origin,
+            captcha
         )
     }
 

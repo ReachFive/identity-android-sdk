@@ -5,6 +5,7 @@
 ### Features
 
 - `loginWithWeb` and `loginWithWebView` accept a new optional `loginUrlFragment` parameter (`Map<String, String>`) to pass key/value pairs in the fragment of the `/oauth/authorize` URL.
+- `signup`, `loginWithPassword`, `startPasswordless`, `requestPasswordReset` and `updateEmail` accept a new optional `captcha` parameter, forwarded to the corresponding endpoint. Build one with `ReCaptchaToken("...")` or `CaptchaFoxToken("...")`. Calls that omit it are unchanged.
 
 ## v11.0.0 (15/04/2026)
 

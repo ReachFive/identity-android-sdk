@@ -17,7 +17,11 @@ data class LoginRequest(
     @SerializedName("client_id")
     val clientId: String,
     val scope: String,
-    val origin: String?
+    val origin: String?,
+    @SerializedName("captcha_token")
+    val captchaToken: String? = null,
+    @SerializedName("captcha_provider")
+    val captchaProvider: String? = null
 ) : Parcelable
 
 @Parcelize

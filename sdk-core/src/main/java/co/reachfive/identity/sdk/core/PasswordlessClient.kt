@@ -4,6 +4,7 @@ import android.app.Activity
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CaptchaToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
@@ -29,6 +30,7 @@ internal class PasswordlessAuthClient(
         failure: Failure<ReachFiveError>,
         activity: Activity,
         origin: String?,
+        captcha: CaptchaToken?,
     ) =
         PkceAuthCodeFlow.generate(redirectUrl).let { pkce ->
             PkceAuthCodeFlow.storeAuthCodeFlow(pkce, activity)
@@ -41,7 +43,9 @@ internal class PasswordlessAuthClient(
                     codeChallengeMethod = pkce.codeChallengeMethod,
                     responseType = SessionUtilsClient.codeResponseType,
                     redirectUri = redirectUrl,
-                    origin = origin
+                    origin = origin,
+                    captchaToken = captcha?.token,
+                    captchaProvider = captcha?.provider,
                 ),
                 SdkInfos.getQueries()
             ).enqueue(ReachFiveApiCallback.noContent(success, failure))
@@ -97,7 +101,8 @@ internal interface PasswordlessAuth {
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
         activity: Activity,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     )
 
     fun verifyPasswordless(

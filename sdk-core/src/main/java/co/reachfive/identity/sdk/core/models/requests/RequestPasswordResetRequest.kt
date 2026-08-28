@@ -13,5 +13,9 @@ data class RequestPasswordResetRequest(
     val redirectUrl: String? = null,
     @SerializedName("phone_number")
     val phoneNumber: String?,
-    val origin: String?
+    val origin: String?,
+    @SerializedName("captcha_token")
+    val captchaToken: String? = null,
+    @SerializedName("captcha_provider")
+    val captchaProvider: String? = null
 ) : Parcelable

@@ -3,6 +3,7 @@ package co.reachfive.identity.sdk.core
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CaptchaToken
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
@@ -30,14 +31,17 @@ internal class PasswordAuthClient(
         redirectUrl: String?,
         origin: String?,
         success: Success<SignupResponse>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken?,
     ) {
         val signupRequest = SignupRequest(
             clientId = sdkConfig.clientId,
             data = profile,
             redirectUrl = redirectUrl,
             scope = formatScope(scope),
-            origin = origin
+            origin = origin,
+            captchaToken = captcha?.token,
+            captchaProvider = captcha?.provider,
         )
         reachFiveApi
             .signup(signupRequest, SdkInfos.getQueries())
@@ -67,7 +71,8 @@ internal class PasswordAuthClient(
         origin: String?,
         mfaConf: LoginMfaConf?,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken?,
     ) {
         val loginRequest = LoginRequest(
             clientId = sdkConfig.clientId,
@@ -76,7 +81,9 @@ internal class PasswordAuthClient(
             customIdentifier = customIdentifier,
             password = password,
             origin = origin,
-            scope = formatScope(scope)
+            scope = formatScope(scope),
+            captchaToken = captcha?.token,
+            captchaProvider = captcha?.provider,
         )
         reachFiveApi
             .loginWithPassword(loginRequest, SdkInfos.getQueries())
@@ -136,7 +143,8 @@ internal class PasswordAuthClient(
         phoneNumber: String?,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        origin: String?
+        origin: String?,
+        captcha: CaptchaToken?,
     ) {
         reachFiveApi
             .requestPasswordReset(
@@ -145,7 +153,9 @@ internal class PasswordAuthClient(
                     email,
                     redirectUrl,
                     phoneNumber,
-                    origin
+                    origin,
+                    captcha?.token,
+                    captcha?.provider,
                 ),
                 SdkInfos.getQueries()
             )
@@ -182,7 +192,8 @@ internal interface PasswordAuth {
         redirectUrl: String? = null,
         origin: String? = null,
         success: Success<SignupResponse>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     )
 
     fun loginWithPassword(
@@ -194,7 +205,8 @@ internal interface PasswordAuth {
         origin: String? = null,
         mfaConf: LoginMfaConf? = null,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     )
 
     fun updatePassword(
@@ -209,7 +221,8 @@ internal interface PasswordAuth {
         phoneNumber: String? = null,
         success: Success<Unit>,
         failure: Failure<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     )
 
     fun requestAccountRecovery(

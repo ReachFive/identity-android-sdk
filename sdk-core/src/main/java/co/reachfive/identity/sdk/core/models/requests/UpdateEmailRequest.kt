@@ -8,5 +8,9 @@ import kotlinx.parcelize.Parcelize
 data class UpdateEmailRequest(
     val email: String,
     @SerializedName("redirect_url")
-    val redirectUrl: String? = null
+    val redirectUrl: String? = null,
+    @SerializedName("captcha_token")
+    val captchaToken: String? = null,
+    @SerializedName("captcha_provider")
+    val captchaProvider: String? = null
 ) : Parcelable
