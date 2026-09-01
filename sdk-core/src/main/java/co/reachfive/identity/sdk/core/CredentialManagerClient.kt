@@ -11,6 +11,7 @@ import co.reachfive.identity.sdk.core.ReachFive.Companion.TAG
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CaptchaToken
 import co.reachfive.identity.sdk.core.models.CredentialType
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
@@ -333,7 +334,8 @@ internal class CredentialManagerAuthClient(
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity,
-        requestCredentialTypes: Set<CredentialType>
+        requestCredentialTypes: Set<CredentialType>,
+        captcha: CaptchaToken?,
     ) {
         checkInit(activity, failure)
 
@@ -344,7 +346,8 @@ internal class CredentialManagerAuthClient(
                 scope,
                 origin,
                 success,
-                failure
+                failure,
+                captcha,
             )
         else if (requestCredentialTypes.contains(CredentialType.Passkey))
             reachFiveApi.createWebAuthnAuthenticationOptions(
@@ -374,7 +377,8 @@ internal class CredentialManagerAuthClient(
                             scope,
                             origin,
                             success,
-                            failure
+                            failure,
+                            captcha,
                         )
                     },
                     failure = failure
@@ -415,7 +419,9 @@ internal class CredentialManagerAuthClient(
                         scope,
                         origin,
                         success,
-                        failure
+                        failure,
+                        // Only a passkey is requested here, so no password login can come back.
+                        captcha = null,
                     )
                 },
                 failure = failure
@@ -429,7 +435,8 @@ internal class CredentialManagerAuthClient(
         scope: Collection<String>,
         origin: String?,
         success: Success<AuthToken>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken?,
     ) {
         val cancellationSignal = CancellationSignal()
 
@@ -457,7 +464,8 @@ internal class CredentialManagerAuthClient(
                                 password = credential.password,
                                 scope = scope,
                                 success = success,
-                                failure = failure
+                                failure = failure,
+                                captcha = captcha,
                             )
                         }
 
@@ -497,6 +505,11 @@ internal interface CredentialManagerAuth {
 
     var defaultScope: Set<String>
 
+    /**
+     * @param captcha only applies when [requestCredentialTypes] contains
+     * [CredentialType.Password]. A returned password completes through the password login endpoint,
+     * which may be protected with a captcha; the is ignored for a passkey.
+     */
     fun discoverableLogin(
         scope: Collection<String> = defaultScope,
         origin: String? = null,
@@ -506,7 +519,8 @@ internal interface CredentialManagerAuth {
         requestCredentialTypes: Set<CredentialType> = setOf(
             CredentialType.Password,
             CredentialType.Passkey
-        )
+        ),
+        captcha: CaptchaToken? = null,
     )
 
     fun loginWithPasskey(

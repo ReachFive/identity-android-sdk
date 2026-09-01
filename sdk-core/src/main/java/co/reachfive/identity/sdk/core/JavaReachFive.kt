@@ -209,13 +209,20 @@ class JavaReachFive(
         )
     }
 
+    /**
+     * @param captcha only applies when [requestCredentialTypes] contains
+     * [CredentialType.Password]. A returned password completes through the password login endpoint,
+     * which may be protected with a captcha; the is ignored for a passkey.
+     */
+    @JvmOverloads
     fun discoverableLogin(
         scope: Collection<String>,
         origin: String? = null,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
         activity: Activity,
-        requestCredentialTypes: Set<CredentialType>
+        requestCredentialTypes: Set<CredentialType>,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.discoverableLogin(
             scope,
@@ -223,7 +230,8 @@ class JavaReachFive(
             success::call,
             failure::call,
             activity,
-            requestCredentialTypes
+            requestCredentialTypes,
+            captcha
         )
     }
 
