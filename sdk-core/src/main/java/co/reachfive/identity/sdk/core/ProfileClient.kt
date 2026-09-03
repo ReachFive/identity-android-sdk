@@ -4,6 +4,7 @@ import co.reachfive.identity.sdk.core.ProfileManagement.Companion.fields
 import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CaptchaToken
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkInfos
@@ -58,12 +59,14 @@ internal class ProfileManagementClient(
         email: String,
         redirectUrl: String?,
         success: Success<Profile>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken?,
     ) {
         reachFiveApi
             .updateEmail(
                 authToken.authHeader,
-                UpdateEmailRequest(email, redirectUrl), SdkInfos.getQueries()
+                UpdateEmailRequest(email, redirectUrl, captcha?.token, captcha?.provider),
+                SdkInfos.getQueries()
             )
             .enqueue(ReachFiveApiCallback.withContent<Profile>(success, failure))
     }
@@ -212,7 +215,8 @@ internal interface ProfileManagement {
         email: String,
         redirectUrl: String? = null,
         success: Success<Profile>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     )
 
     fun updatePhoneNumber(

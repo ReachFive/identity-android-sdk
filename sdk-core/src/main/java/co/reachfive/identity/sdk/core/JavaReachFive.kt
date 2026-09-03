@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
+import co.reachfive.identity.sdk.core.models.CaptchaToken
 import co.reachfive.identity.sdk.core.models.CredentialType
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
@@ -69,37 +70,51 @@ class JavaReachFive(
     /**
      * Sign-up with required scopes
      */
+    @JvmOverloads
     fun signup(
         profile: ProfileSignupRequest,
         scope: Collection<String>,
         redirectUrl: String? = null,
         success: Callback<SignupResponse>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
-        return reach5.signup(profile, scope, redirectUrl, origin, success::call, failure::call)
+        return reach5.signup(
+            profile,
+            scope,
+            redirectUrl,
+            origin,
+            success::call,
+            failure::call,
+            captcha
+        )
     }
 
     /**
      * Sign-up with no required scopes (needed by the Java API)
      */
+    @JvmOverloads
     fun signup(
         profile: ProfileSignupRequest,
         success: Callback<SignupResponse>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.signup(
             profile,
             origin = origin,
             success = success::call,
-            failure = failure::call
+            failure = failure::call,
+            captcha = captcha
         )
     }
 
     /**
      * Passwordless
      */
+    @JvmOverloads
     fun startPasswordless(
         email: String? = null,
         phoneNumber: String? = null,
@@ -107,7 +122,8 @@ class JavaReachFive(
         success: Callback<Unit>,
         failure: Callback<ReachFiveError>,
         activity: Activity,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         reach5.startPasswordless(
             email,
@@ -116,7 +132,8 @@ class JavaReachFive(
             { success.call(Unit) },
             failure::call,
             activity,
-            origin
+            origin,
+            captcha
         )
     }
 
@@ -140,6 +157,7 @@ class JavaReachFive(
      * Login with required scopes
      * @param username You can use email or phone number
      */
+    @JvmOverloads
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,
@@ -148,7 +166,8 @@ class JavaReachFive(
         scope: Collection<String>,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.loginWithPassword(
             email = email,
@@ -158,7 +177,8 @@ class JavaReachFive(
             scope,
             origin,
             success = success::call,
-            failure = failure::call
+            failure = failure::call,
+            captcha = captcha
         )
     }
 
@@ -166,6 +186,7 @@ class JavaReachFive(
      * Login with no required scopes (needed by the Java API)
      * @param username You can use email or phone number
      */
+    @JvmOverloads
     fun loginWithPassword(
         email: String? = null,
         phoneNumber: String? = null,
@@ -173,7 +194,8 @@ class JavaReachFive(
         password: String,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
-        origin: String? = null
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.loginWithPassword(
             email,
@@ -182,17 +204,25 @@ class JavaReachFive(
             password,
             origin = origin,
             success = success::call,
-            failure = failure::call
+            failure = failure::call,
+            captcha = captcha
         )
     }
 
+    /**
+     * @param captcha only applies when [requestCredentialTypes] contains
+     * [CredentialType.Password]. A returned password completes through the password login endpoint,
+     * which may be protected with a captcha; the is ignored for a passkey.
+     */
+    @JvmOverloads
     fun discoverableLogin(
         scope: Collection<String>,
         origin: String? = null,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
         activity: Activity,
-        requestCredentialTypes: Set<CredentialType>
+        requestCredentialTypes: Set<CredentialType>,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.discoverableLogin(
             scope,
@@ -200,7 +230,8 @@ class JavaReachFive(
             success::call,
             failure::call,
             activity,
-            requestCredentialTypes
+            requestCredentialTypes,
+            captcha
         )
     }
 
@@ -396,14 +427,23 @@ class JavaReachFive(
         )
     }
 
+    @JvmOverloads
     fun updateEmail(
         authToken: AuthToken,
         email: String,
         redirectUrl: String? = null,
         success: Callback<Profile>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     ) {
-        return reach5.updateEmail(authToken, email, redirectUrl, success::call, failure::call)
+        return reach5.updateEmail(
+            authToken,
+            email,
+            redirectUrl,
+            success::call,
+            failure::call,
+            captcha
+        )
     }
 
     fun updatePhoneNumber(
@@ -436,35 +476,43 @@ class JavaReachFive(
         )
     }
 
+    @JvmOverloads
     fun requestPasswordReset(
         email: String?,
         redirectUrl: String?,
         phoneNumber: String?,
         success: Callback<Unit>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        origin: String? = null,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.requestPasswordReset(
             email,
             redirectUrl,
             phoneNumber,
             { success.call(Unit) },
-            failure::call
+            failure::call,
+            origin,
+            captcha
         )
     }
 
+    @JvmOverloads
     fun requestAccountRecovery(
         email: String?,
         phoneNumber: String?,
         redirectUrl: String?,
         success: Callback<Unit>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.requestAccountRecovery(
             email,
             phoneNumber,
             redirectUrl,
             { success.call(Unit) },
-            failure::call
+            failure::call,
+            captcha
         )
     }
 

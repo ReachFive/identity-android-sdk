@@ -12,5 +12,9 @@ data class SignupRequest(
     val scope: String,
     @SerializedName("redirect_url")
     val redirectUrl: String? = null,
-    val origin: String?
+    val origin: String?,
+    @SerializedName("captcha_token")
+    val captchaToken: String? = null,
+    @SerializedName("captcha_provider")
+    val captchaProvider: String? = null
 ) : Parcelable
