@@ -5,7 +5,7 @@
 ### Features
 
 - `loginWithWeb` and `loginWithWebView` accept a new optional `loginUrlFragment` parameter (`Map<String, String>`) to pass key/value pairs in the fragment of the `/oauth/authorize` URL.
-- `signup`, `loginWithPassword`, `startPasswordless`, `requestPasswordReset`, `updateEmail` and `discoverableLogin` (case where the fetched credential is a password) accept a new optional `captcha` parameter, forwarded to the corresponding endpoint.
+- `signup`, `loginWithPassword`, `startPasswordless`, `requestPasswordReset`, `updateEmail`, `requestAccountRecovery` and `discoverableLogin` (case where the fetched credential is a password) accept a new optional `captcha` parameter, forwarded to the corresponding endpoint. `requestAccountRecovery` is verified against the same `forgot_password` captcha settings as `requestPasswordReset`.
 
 ## v11.0.0 (15/04/2026)
 

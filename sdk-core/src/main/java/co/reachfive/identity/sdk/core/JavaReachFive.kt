@@ -497,19 +497,22 @@ class JavaReachFive(
         )
     }
 
+    @JvmOverloads
     fun requestAccountRecovery(
         email: String?,
         phoneNumber: String?,
         redirectUrl: String?,
         success: Callback<Unit>,
-        failure: Callback<ReachFiveError>
+        failure: Callback<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     ) {
         return reach5.requestAccountRecovery(
             email,
             phoneNumber,
             redirectUrl,
             { success.call(Unit) },
-            failure::call
+            failure::call,
+            captcha
         )
     }
 

@@ -167,7 +167,8 @@ internal class PasswordAuthClient(
         phoneNumber: String?,
         redirectUrl: String?,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken?,
     ) {
         reachFiveApi
             .requestAccountRecovery(
@@ -176,6 +177,8 @@ internal class PasswordAuthClient(
                     email,
                     phoneNumber,
                     redirectUrl,
+                    captcha?.token,
+                    captcha?.provider,
                 ),
                 SdkInfos.getQueries()
             )
@@ -230,6 +233,7 @@ internal interface PasswordAuth {
         phoneNumber: String? = null,
         redirectUrl: String? = null,
         success: Success<Unit>,
-        failure: Failure<ReachFiveError>
+        failure: Failure<ReachFiveError>,
+        captcha: CaptchaToken? = null,
     )
 }
