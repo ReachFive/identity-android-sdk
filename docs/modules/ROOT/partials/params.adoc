@@ -418,3 +418,16 @@ Enabling (`true`) `fullScreenWebView` disables the padding for the system bars.
 *Default*: `false`
 
 // end::fullScreenWebView[]
+
+// tag::captcha[]
+|[[captcha, captcha]]captcha `CaptchaToken`
+| A captcha token and the provider that issued it, as `ReCaptchaToken` or `CaptchaFoxToken`.
+
+Required when the account protects this endpoint with a Captcha. The SDK forwards
+the token as-is and does not obtain one: run the provider's own widget and pass the result here.
+// end::captcha[]
+
+// tag::loginUrlFragment[]
+|[[loginUrlFragment, loginUrlFragment]]loginUrlFragment `Map<String, String>`
+| Key/value pairs to add to the fragment of the `/oauth/authorize` URL.
+// end::loginUrlFragment[]

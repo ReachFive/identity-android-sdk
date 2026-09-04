@@ -12,7 +12,9 @@ client.{docname}(
     <<scope>>, 
     <<failure>>, 
     <<success>>, 
-    <<activity>>
+    <<activity>>,
+    // Optional argument
+    <<captcha>>
 )
 ----
 
@@ -35,7 +37,7 @@ include::example${docname}.kt[]
 [.options]
 [cols="1,3a"]
 |===
-include::partial$params.adoc[tags="requestCredentialTypes,origin,scope,success,failure,activity"]
+include::partial$params.adoc[tags="requestCredentialTypes,origin,scope,success,failure,activity,captcha"]
 |===
 
 
