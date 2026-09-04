@@ -421,13 +421,23 @@ Enabling (`true`) `fullScreenWebView` disables the padding for the system bars.
 
 // tag::captcha[]
 |[[captcha, captcha]]captcha `CaptchaToken`
-| A captcha token and the provider that issued it, as `ReCaptchaToken` or `CaptchaFoxToken`.
+| A `captcha` token and the provider that issued it.
 
-Required when the account protects this endpoint with a Captcha. The SDK forwards
-the token as-is and does not obtain one: run the provider's own widget and pass the result here.
+Pass a `ReCaptchaToken` or a `CaptchaFoxToken`.
+
+This parameter is required when the {cc} protects the endpoint with a `Captcha`.
+The {company} Android SDK forwards the token and does not show a challenge or fetch a token.
+Get the token from Google reCAPTCHA or CaptchaFox in your app, then pass it here.
+
+Enable `Captcha` in the {cc} at xref:docs:ROOT:captcha/recaptcha.adoc[reCAPTCHA] or xref:docs:ROOT:captcha/captcha-fox.adoc[CaptchaFox].
+
 // end::captcha[]
 
 // tag::loginUrlFragment[]
 |[[loginUrlFragment, loginUrlFragment]]loginUrlFragment `Map<String, String>`
-| Key/value pairs to add to the fragment of the `/oauth/authorize` URL.
+| Key/value pairs propagated in the *fragment* of the link:{site-url}/openapi/identity.html#operation/authorizeUser[`/oauth/authorize` URL^] (for example, `#key=value&key2=value2`).
+
+This parameter is intended for the token-orchestration flow: link:{site-url}/openapi/identity.html#operation/authorizeUser[`/oauth/authorize`] redirects to the client's Login URL.
+
+IMPORTANT: Requires the client to have a Login URL configured and xref:docs:ROOT:orchestration-token.adoc[request orchestration tokens] enabled; otherwise this parameter has no effect.
 // end::loginUrlFragment[]

@@ -1,6 +1,6 @@
 name: sdk-android
 version: master
-display_version: '11.0.0'
+display_version: '11.1.0'
 title: Android SDK
 start_page: index.adoc
 nav:
