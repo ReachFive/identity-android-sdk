@@ -29,6 +29,7 @@
 ** xref:discoverableLogin.adoc[]
 * Password
 ** xref:loginWithPassword.adoc[]
+** xref:requestAccountRecovery.adoc[]
 ** xref:requestPasswordReset.adoc[]
 ** xref:signup.adoc[]
 * Passwordless

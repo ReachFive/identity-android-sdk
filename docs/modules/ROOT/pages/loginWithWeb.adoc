@@ -10,7 +10,8 @@ client.{docname}(
     <<state>> = "state",
     <<nonce>> = "nonce",
     <<origin>> = "origin"
-    <<useEphemeralBrowsing>> = false
+    <<useEphemeralBrowsing>> = false,
+    <<loginUrlFragment>> = mapOf()
 )
 ----
 
@@ -54,7 +55,7 @@ include::example${docname}.kt[]
 [cols="1,3a"]
 |===
 
-include::partial$params.adoc[tags="activity,state,nonce,origin,useEphemeralBrowsing"]
+include::partial$params.adoc[tags="activity,state,nonce,origin,useEphemeralBrowsing,loginUrlFragment"]
 
 |===
 

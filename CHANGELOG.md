@@ -2,6 +2,8 @@
  
 ## Unreleased
 
+## v11.1.0 (04/09/2026)
+
 ### Features
 
 - `loginWithWeb` and `loginWithWebView` accept a new optional `loginUrlFragment` parameter (`Map<String, String>`) to pass key/value pairs in the fragment of the `/oauth/authorize` URL.

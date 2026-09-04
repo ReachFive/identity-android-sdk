@@ -327,7 +327,6 @@ If `expiresIn` is less than or equal to `0`, the `AuthToken` is expired.
 |===
 // end::AchievedLogin[]
 
-
 // tag::AwaitingIdentifierVerification[]
 === AwaitingIdentifierVerification
 

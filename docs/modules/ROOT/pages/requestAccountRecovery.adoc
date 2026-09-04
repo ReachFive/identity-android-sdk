@@ -1,27 +1,28 @@
-= requestPasswordReset
-
+= requestAccountRecovery
 
 [.signature]
 [subs="normal"]
 ----
-client.requestPasswordReset(
+client.requestAccountRecovery(
   <<email>>,
-  <<phoneNumber>>
+  <<phoneNumber>>,
   <<success>>,
-  <<failure>>
+  <<failure>>,
   // Optional arguments
   <<redirectUrl>>,
-  <<origin>>,
   <<captcha>>
 )
 ----
 
 == About this command
 
-Request a password reset for a profile. It will send an email if the email address is provided and an SMS if the phone number is given.
+Request account recovery for a profile.
+The profile receives an email if you pass an email address, or an SMS if you pass a phone number.
 
-Be sure to configure and to enable the _Password reset email_ or the _Password reset SMS_ templates
-in the account's settings.
+You must configure and enable the xref:docs:ROOT:email-templates.adoc#account-recovery[Email Account Recovery] and/or the xref:docs:ROOT:sms-templates.adoc#account-recovery[SMS Account Recovery] templates in your {company} account settings.
+
+When the {cc} protects forgot password with a `Captcha`, pass <<captcha,`captcha`>>.
+This method uses the same `Captcha` configuration as xref:requestPasswordReset.adoc[].
 
 == Examples
 
@@ -30,18 +31,20 @@ in the account's settings.
 With an email::
 +
 --
-[source, kotlin]
+[source,kotlin]
 ----
 include::example${docname}WithEmail.kt[]
 ----
+
 --
 With a phone number::
 +
 --
-[source, kotlin]
+[source,kotlin]
 ----
 include::example${docname}WithPhoneNumber.kt[]
 ----
+
 --
 ====
 
@@ -50,13 +53,14 @@ include::example${docname}WithPhoneNumber.kt[]
 [.options]
 [cols="1,3a"]
 |===
+
 include::partial$params.adoc[tag="email"]
 include::partial$params.adoc[tag="phonenumber"]
 include::partial$params.adoc[tag="redirectUrl"]
 include::partial$params.adoc[tag="success"]
 include::partial$params.adoc[tag="failure"]
-include::partial$params.adoc[tag="origin"]
 include::partial$params.adoc[tag="captcha"]
+
 |===
 
 == Response

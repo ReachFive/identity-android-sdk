@@ -10,7 +10,8 @@ client.updateEmail(
   <<successwithupdate, success>>,
   <<failure>>,
   // Optional arguments
-  <<redirectUrl>>
+  <<redirectUrl>>,
+  <<captcha>>
 )
 ----
 
@@ -40,7 +41,7 @@ include::example${docname}.kt[]
 |===
 |Parameter |Description
 
-include::partial$params.adoc[tags="freshauthtoken,redirectUrl,successwithupdate,failure"]
+include::partial$params.adoc[tags="freshauthtoken,redirectUrl,successwithupdate,failure,captcha"]
 include::sdk-ios:ROOT:partial$params.adoc[tag=updateEmail]
 
 |===

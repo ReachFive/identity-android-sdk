@@ -9,7 +9,8 @@ client.{docname}(
     <<state>> = "state",
     <<nonce>> = "nonce",
     <<origin>> = "origin",
-    <<fullScreenWebView>> = false <1>
+    <<fullScreenWebView>> = false, <1>
+    <<loginUrlFragment>> = mapOf()
 )
 ----
 <1> WebView displays edge-to-edge by default and adds padding for system bars.
@@ -62,7 +63,7 @@ include::example${docname}.kt[]
 [cols="1,3a"]
 |===
 
-include::partial$params.adoc[tags="activity,state,nonce,origin,fullScreenWebView"]
+include::partial$params.adoc[tags="activity,state,nonce,origin,fullScreenWebView,loginUrlFragment"]
 
 |===
 

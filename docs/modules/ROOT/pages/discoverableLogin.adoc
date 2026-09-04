@@ -12,7 +12,9 @@ client.{docname}(
     <<scope>>, 
     <<failure>>, 
     <<success>>, 
-    <<activity>>
+    <<activity>>,
+    // Optional argument
+    <<captcha>>
 )
 ----
 
@@ -20,6 +22,9 @@ client.{docname}(
 
 Use this method to discover a credential to log in a user.
 This can be via password, passkey, or both.
+
+The <<captcha,`captcha`>> parameter applies only when the discovered credential is a password.
+The SDK ignores it when the credential is a passkey.
 
 IMPORTANT: The xref:docs::fido2.adoc#fido2-prerequisites[WebAuthn feature] must be enabled on your {company} account.
 
@@ -35,7 +40,7 @@ include::example${docname}.kt[]
 [.options]
 [cols="1,3a"]
 |===
-include::partial$params.adoc[tags="requestCredentialTypes,origin,scope,success,failure,activity"]
+include::partial$params.adoc[tags="requestCredentialTypes,origin,scope,success,failure,activity,captcha"]
 |===
 
 
