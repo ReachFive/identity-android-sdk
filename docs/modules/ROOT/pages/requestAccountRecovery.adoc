@@ -1,0 +1,70 @@
+= requestAccountRecovery
+
+[.signature]
+[subs="normal"]
+----
+client.requestAccountRecovery(
+  <<email>>,
+  <<phoneNumber>>,
+  <<success>>,
+  <<failure>>,
+  // Optional arguments
+  <<redirectUrl>>,
+  <<captcha>>
+)
+----
+
+== About this command
+
+Request account recovery for a profile.
+The profile receives an email if you pass an email address, or an SMS if you pass a phone number.
+
+You must configure and enable the xref:docs:ROOT:email-templates.adoc#account-recovery[Email Account Recovery] and/or the xref:docs:ROOT:sms-templates.adoc#account-recovery[SMS Account Recovery] templates in your {company} account settings.
+
+When the {cc} protects forgot password with a `Captcha`, pass <<captcha,`captcha`>>.
+This method uses the same `Captcha` configuration as xref:requestPasswordReset.adoc[].
+
+== Examples
+
+[tabs]
+====
+With an email::
++
+--
+[source,kotlin]
+----
+include::example${docname}WithEmail.kt[]
+----
+
+--
+With a phone number::
++
+--
+[source,kotlin]
+----
+include::example${docname}WithPhoneNumber.kt[]
+----
+
+--
+====
+
+== Parameters
+
+[.options]
+[cols="1,3a"]
+|===
+
+include::partial$params.adoc[tag="email"]
+include::partial$params.adoc[tag="phonenumber"]
+include::partial$params.adoc[tag="redirectUrl"]
+include::partial$params.adoc[tag="success"]
+include::partial$params.adoc[tag="failure"]
+include::partial$params.adoc[tag="captcha"]
+
+|===
+
+== Response
+
+Type: `Unit`
+
+include::partial$models.adoc[tag=reachfiveerror]
