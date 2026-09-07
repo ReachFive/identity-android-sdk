@@ -1,0 +1,8 @@
+= Breaking changes for `Android SDK 11.0.0`
+
+From {page-component-title} version `11.0.0`, the WebView opened by xref:loginWithWebView.adoc[`loginWithWebView`] is edge-to-edge by default and adds padding for system bars.
+
+* By default (`fullScreenWebView` is `false`), the WebView draws edge-to-edge and applies padding so content is not hidden under the status and navigation bars.
+* Set xref:loginWithWebView.adoc#fullScreenWebView[`fullScreenWebView`] to `true` to disable that padding.
+
+See xref:loginWithWebView.adoc[] and xref:guides/customize-webview.adoc[] for more details.

@@ -15,7 +15,11 @@ In the following implementation, we will hide the webview before the page is ful
 == Customize the layout and theme
 
 This demonstrates customizing the WebView launched by `loginWithWebView`.
-The following hides the WebView till the page has loaded. 
+The following hides the WebView till the page has loaded.
+
+NOTE: From {page-component-title} version `11.0.0`, the WebView is edge-to-edge and adds padding for system bars by default.
+That padding keeps page content out from under the status and navigation bars.
+Pass xref:loginWithWebView.adoc#fullScreenWebView[`fullScreenWebView`] as `true` on xref:loginWithWebView.adoc[`loginWithWebView`] to disable the padding. 
 
 NOTE: Customizing the `XML` layout and themes does not require any additional Gradle dependencies.
 
