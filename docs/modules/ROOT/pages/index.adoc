@@ -6,12 +6,12 @@
 This page introduces you to the *{page-component-title}* documentation for version `{sdk-android-latest-version}` of the `{primary-branch}` release.
 
 [.expand]
-icon:warning[] Breaking changes for `10.0.0`, please read.
+icon:warning[] Breaking changes for `11.0.0`, please read.
 
 [.expand-content]
 ====
 [discrete]
-include::partial$announcements/1000-breaking-changes.adoc[leveloffset=+1]
+include::partial$announcements/1100-breaking-changes.adoc[leveloffset=+1]
 ====
 
 == Requirements

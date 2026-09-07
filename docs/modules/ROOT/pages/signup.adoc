@@ -21,15 +21,6 @@ Create and authenticate a new user with the specified data.
 
 A user may identify himself with either his email address or his phone number if the SMS feature is enabled.
 
-[.expand]
-icon:warning[] Breaking changes for `10.0.0`, please read.
-
-[.expand-content]
-====
-[discrete]
-include::partial$announcements/1000-breaking-changes.adoc[leveloffset=+1]
-====
-
 == Examples
 
 [tabs]
