@@ -2,6 +2,10 @@
  
 ## Unreleased
 
+### Features
+
+- Captcha provider `recaptcha_enterprise`, as `ReCaptchaEnterpriseToken`.
+
 ## v11.1.0 (04/09/2026)
 
 ### Features
