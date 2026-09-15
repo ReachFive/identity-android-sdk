@@ -423,7 +423,7 @@ Enabling (`true`) `fullScreenWebView` disables the padding for the system bars.
 |[[captcha, captcha]]captcha `CaptchaToken`
 | A `captcha` token and the provider that issued it.
 
-Pass a `ReCaptchaToken` or a `CaptchaFoxToken`.
+Pass a `ReCaptchaToken`, `ReCaptchaEnterpriseToken` or a `CaptchaFoxToken`.
 
 This parameter is required when the {cc} protects the endpoint with a `Captcha`.
 The {company} Android SDK forwards the token and does not show a challenge or fetch a token.
