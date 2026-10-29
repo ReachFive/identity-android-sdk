@@ -24,5 +24,6 @@ data class PasswordlessStartRequest(
     @SerializedName("captcha_token")
     val captchaToken: String? = null,
     @SerializedName("captcha_provider")
-    val captchaProvider: String? = null
+    val captchaProvider: String? = null,
+    val data: PasswordlessSignupData? = null
 ) : Parcelable

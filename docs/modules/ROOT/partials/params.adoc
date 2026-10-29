@@ -305,6 +305,35 @@ NOTE: Currently allowed values are `female`, `male` and `other`.
 
 // end::profilewebauthnsignuprequest[]
 
+// tag::passwordlesssignupdata[]
+|[[data, PasswordlessSignupData]] data `PasswordlessSignupData`
+| *optional* The data recorded on the profile if the flow resolves to a signup.
+
+[cols="1,3a"]
+!===
+! email `string` ! An email address of the profile.
+! phoneNumber `string` ! A phone number of the profile.
+! customIdentifier `string` ! A string that allows users to authenticate with something other than an `email` or `phone_number`. Each `custom_identifier` value must be unique. The `custom_identifier` must be between _4-80_ characters.
+! givenName `string` ! The given name of the profile.
+! middleName `string` ! The middle name of the profile.
+! familyName `string` ! The family name of the profile.
+! name `string` ! The full name of the profile.
+! nickname `string` ! The nickname of the profile.
+! birthdate `string` ! The birthdate of the profile, represented as an {iso-8601}[ISO 8601^] `YYYY-MM-DD` format.
+! profileURL `string` ! The URL of one of the user’s profile pages (usually a social provider’s page).
+! picture `string` ! The URL of one of the user's profile pictures. This URL refers to an image file (PNG, JPEG, or GIF image file).
+! username `string` ! The username of the profile (the login's name).
+! gender `string` ! The gender of the profile.
+! company `string` ! The company name of the profile.
+! addresses `ProfileAddress[]` ! The list of the profile's postal addresses.
+! locale `string` ! The profile's language code in lowercase and country code in uppercase, separated by a dash (eg `en`, `fr-FR` ...).
+! bio `string` ! The biography of the profile.
+! customFields `Map<string, any>` ! The custom fields of the profile.
+! consents `Map<string, Consent>` ! The consents granted to the profile. It is a map of string keys with the associated consent object.
+!===
+
+// end::passwordlesssignupdata[]
+
 // tag::redirecturi[]
 |[[redirectUri,redirectUri]] redirectUri `string` 
 | The URL where the user will be redirected after the passwordless success. 

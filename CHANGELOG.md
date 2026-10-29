@@ -2,6 +2,10 @@
  
 ## Unreleased
 
+### Features
+
+- Support `data` parameter for `startPasswordless`.
+
 ## v11.2.0 (15/09/2026)
 
 ### Features
