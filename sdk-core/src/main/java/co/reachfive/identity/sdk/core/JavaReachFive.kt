@@ -9,6 +9,7 @@ import co.reachfive.identity.sdk.core.models.CredentialType
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
+import co.reachfive.identity.sdk.core.models.requests.PasswordlessSignupData
 import co.reachfive.identity.sdk.core.models.requests.ProfileSignupRequest
 import co.reachfive.identity.sdk.core.models.requests.ProfileWebAuthnSignupRequest
 import co.reachfive.identity.sdk.core.models.requests.UpdatePasswordRequest
@@ -124,6 +125,7 @@ class JavaReachFive(
         activity: Activity,
         origin: String? = null,
         captcha: CaptchaToken? = null,
+        data: PasswordlessSignupData? = null,
     ) {
         reach5.startPasswordless(
             email,
@@ -133,7 +135,8 @@ class JavaReachFive(
             failure::call,
             activity,
             origin,
-            captcha
+            captcha,
+            data
         )
     }
 
