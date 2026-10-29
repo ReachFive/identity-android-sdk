@@ -4,7 +4,7 @@
 
 ### Features
 
-- `startPasswordless` accepts a new optional `data` parameter (`PasswordlessSignupData`), forwarded to `/passwordless/start`. It carries the profile data evaluated by the access control rules and recorded on the profile when the flow resolves to a signup. It is ignored when the flow resolves to an existing profile, and when the account is configured to ignore the data on a passwordless signup.
+- Support `data` parameter for `startPasswordless`.
 
 ## v11.2.0 (15/09/2026)
 

@@ -307,12 +307,12 @@ NOTE: Currently allowed values are `female`, `male` and `other`.
 
 // tag::passwordlesssignupdata[]
 |[[data, PasswordlessSignupData]] data `PasswordlessSignupData`
-| *optional* The profile data used by the access control rules, and recorded on the profile if the flow resolves to a signup.
+| *optional* The data recorded on the profile if the flow resolves to a signup.
 
 [cols="1,3a"]
 !===
-! email `string` ! The primary email address of the profile.
-! phoneNumber `string` ! The primary phone number of the profile.
+! email `string` ! An email address of the profile.
+! phoneNumber `string` ! A phone number of the profile.
 ! customIdentifier `string` ! A string that allows users to authenticate with something other than an `email` or `phone_number`. Each `custom_identifier` value must be unique. The `custom_identifier` must be between _4-80_ characters.
 ! givenName `string` ! The given name of the profile.
 ! middleName `string` ! The middle name of the profile.
