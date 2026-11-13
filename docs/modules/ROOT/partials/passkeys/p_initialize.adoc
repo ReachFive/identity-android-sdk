@@ -63,9 +63,9 @@ Returning a `301` or `302` HTTP redirect or a non-JSON Content-Type causes verif
 
 === Hosted pages
 
-If you are using's {company}'s xref:docs:ROOT:hosted-pages.adoc[] and need the Asset Links file hosted on your domain at {company}, you should input the content of your `assetlinks.json` file into the text area called *assetlinks.json* in the menu:Settings[WebAuthn] section of the {cc}.
+If you use {company}'s xref:docs:ROOT:hosted-pages.adoc#mobile-app-links[Hosted Pages] and need the Asset Links file hosted on your domain at {company}, paste your `assetlinks.json` file into the *assetlinks.json* text area at menu:Hosted Pages[Mobile app links].
 
-CAUTION: We do not perform any validation on the file.
+CAUTION: {company} does not validate the file.
 
 [tabs]
 ====
@@ -73,13 +73,13 @@ No custom domain [.red]#icon:close[]#::
 +
 --
 If you do not use a custom domain, the Relying Party ID associated to credentials created on Hosted Pages is `<account>.reach5.net`.
-Your Digit Assets Link is served at `\https://<account>.reach5.net/.well-known/assetlinks.json`.
+Your Digital Asset Links file is served at `\https://<account>.reach5.net/.well-known/assetlinks.json`.
 --
 Using custom domain icon:check-circle[]::
 +
 --
-If you do use a custom domain, your Relying Party ID is `\https://<custom-domain>`.
-Your Digit Assets Link is served at `\https://<custom-domain>/.well-known/assetlinks.json`.
+If you do use a custom domain, your Relying Party ID is `<custom-domain>` (with no `https://` prefix).
+Your Digital Asset Links file is served at `\https://<custom-domain>/.well-known/assetlinks.json`.
 
 You could also choose to host the `assetlinks.json` file on your root domain.
 Hosted Pages are accessible via `auth.example.com`.
