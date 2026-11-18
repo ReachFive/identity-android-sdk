@@ -2,6 +2,9 @@
  
 ## Unreleased
 
+### Breaking change
+- Breaking change `verifyPasswordless` accepts `Identifier` allowing to verify a passwordless with an email
+
 ### Features
 
 - Support `data` parameter for `startPasswordless`.
