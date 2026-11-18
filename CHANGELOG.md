@@ -5,6 +5,7 @@
 ### Features
 
 - Support `data` parameter for `startPasswordless`.
+- Breaking change `verifyPasswordless` accepts `Identifier` allowing to verify a passwordless with an email
 
 ## v11.2.0 (15/09/2026)
 
