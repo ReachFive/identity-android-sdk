@@ -5,6 +5,9 @@ import co.reachfive.identity.sdk.core.api.ReachFiveApi
 import co.reachfive.identity.sdk.core.api.ReachFiveApiCallback
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.CaptchaToken
+import co.reachfive.identity.sdk.core.models.Email
+import co.reachfive.identity.sdk.core.models.Identifier
+import co.reachfive.identity.sdk.core.models.PhoneNumber
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
 import co.reachfive.identity.sdk.core.models.SdkInfos
@@ -55,43 +58,57 @@ internal class PasswordlessAuthClient(
         }
 
     override fun verifyPasswordless(
-        phoneNumber: String,
+        identifier: Identifier,
         verificationCode: String,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,
         activity: Activity,
-    ) =
-        reachFiveApi.requestPasswordlessVerification(
-            PasswordlessVerificationRequest(phoneNumber, verificationCode),
-            SdkInfos.getQueries()
-        ).enqueue(
-            ReachFiveApiCallback.withContent<PasswordlessVerificationResponse>(
-                success = { verificationResponse ->
-                    val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
-                    if (authCodeFlow != null) {
-                        val authCodeRequest = AuthCodeRequest(
-                            sdkConfig.clientId,
-                            verificationResponse.authCode,
-                            redirectUri = authCodeFlow.redirectUri,
-                            codeVerifier = authCodeFlow.codeVerifier
-                        )
+    ) {
+            val passwordlessVerificationRequest = when (identifier) {
+                is Email -> PasswordlessVerificationRequest(
+                    email = identifier.value,
+                    phoneNumber = null,
+                    verificationCode = verificationCode
+                )
 
-                        reachFiveApi
-                            .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
-                            .enqueue(
-                                ReachFiveApiCallback.withContent<TokenEndpointResponse>(
-                                    success = { tokenResponse ->
-                                        tokenResponse.toAuthToken().fold(success, failure)
-                                    },
-                                    failure = failure
-                                )
+                is PhoneNumber -> PasswordlessVerificationRequest(
+                    email = null,
+                    phoneNumber = identifier.value,
+                    verificationCode = verificationCode
+                )
+            }
+             reachFiveApi.requestPasswordlessVerification(
+                passwordlessVerificationRequest,
+                SdkInfos.getQueries()
+            ).enqueue(
+                ReachFiveApiCallback.withContent<PasswordlessVerificationResponse>(
+                    success = { verificationResponse ->
+                        val authCodeFlow = PkceAuthCodeFlow.readAuthCodeFlow(activity)
+                        if (authCodeFlow != null) {
+                            val authCodeRequest = AuthCodeRequest(
+                                sdkConfig.clientId,
+                                verificationResponse.authCode,
+                                redirectUri = authCodeFlow.redirectUri,
+                                codeVerifier = authCodeFlow.codeVerifier
                             )
-                    } else failure(ReachFiveError.from("No PKCE challenge found in memory."))
 
-                },
-                failure = failure
+                            reachFiveApi
+                                .authenticateWithCode(authCodeRequest, SdkInfos.getQueries())
+                                .enqueue(
+                                    ReachFiveApiCallback.withContent<TokenEndpointResponse>(
+                                        success = { tokenResponse ->
+                                            tokenResponse.toAuthToken().fold(success, failure)
+                                        },
+                                        failure = failure
+                                    )
+                                )
+                        } else failure(ReachFiveError.from("No PKCE challenge found in memory."))
+
+                    },
+                    failure = failure
+                )
             )
-        )
+        }
 }
 
 internal interface PasswordlessAuth {
@@ -110,7 +127,7 @@ internal interface PasswordlessAuth {
     )
 
     fun verifyPasswordless(
-        phoneNumber: String,
+        identifier: Identifier,
         verificationCode: String,
         success: Success<AuthToken>,
         failure: Failure<ReachFiveError>,

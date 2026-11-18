@@ -6,6 +6,7 @@ import android.content.Intent
 import co.reachfive.identity.sdk.core.models.AuthToken
 import co.reachfive.identity.sdk.core.models.CaptchaToken
 import co.reachfive.identity.sdk.core.models.CredentialType
+import co.reachfive.identity.sdk.core.models.Identifier
 import co.reachfive.identity.sdk.core.models.Profile
 import co.reachfive.identity.sdk.core.models.ReachFiveError
 import co.reachfive.identity.sdk.core.models.SdkConfig
@@ -141,14 +142,14 @@ class JavaReachFive(
     }
 
     fun verifyPasswordless(
-        phoneNumber: String,
+        identifier: Identifier,
         verificationCode: String,
         success: Callback<AuthToken>,
         failure: Callback<ReachFiveError>,
         activity: Activity
     ) {
         reach5.verifyPasswordless(
-            phoneNumber,
+            identifier,
             verificationCode,
             success::call,
             failure::call,

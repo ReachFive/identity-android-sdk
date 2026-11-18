@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PasswordlessVerificationRequest(
     @SerializedName("phone_number")
-    val phoneNumber: String,
+    val phoneNumber: String?,
+    val email: String?,
     @SerializedName("c")
     val verificationCode: String
 ) : Parcelable
